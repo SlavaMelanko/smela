@@ -2,7 +2,7 @@
   "name": "@smela/api",
   "version": "2026.03.20",
   "scripts": {
-    "clean": "bun pm cache rm && rm -rf node_modules bun.lock",
+    "clean": "bun pm cache rm && rm -rf node_modules",
     "reinstall": "bun clean && bun install",
     "dev": "bun --watch src/app.ts",
     "build": "NODE_ENV=production bun build src/app.ts --outdir dist --target bun --minify",
@@ -42,7 +42,8 @@
     "pino": "^10.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "resend": "^6.5.2"
+    "resend": "^6.5.2",
+    "zod": "^4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.4.3",

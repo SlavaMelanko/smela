@@ -13,7 +13,7 @@ if [ -n "$API_STAGED" ]; then
 
   echo "Running api linter..."
   bun run --filter @smela/api lint:fix
-  git add $API_STAGED
+  git add -u apps/api/
 
   API_STAGED_TS=$(echo "$API_STAGED" | grep -E '\.(ts|js)$' || true)
   if [ -n "$API_STAGED_TS" ]; then

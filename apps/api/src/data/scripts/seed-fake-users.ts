@@ -38,7 +38,9 @@ const DEFAULT_COUNT = 5000
 // Pre-computed bcrypt hash for "FakeUser123!" to avoid slow hashing
 const DUMMY_PASSWORD_HASH = '$2b$10$QKxGzLHk1BrFb7YrLsLnZuvEw3K.vUqhD4TxCPDdKFfqsHVqoA3lC'
 
-const sanitizeForEmail = (name: string) => name.toLowerCase().replace(/[^a-z]/g, '')
+const NON_ALPHA_RE = /[^a-z]/g
+
+const sanitizeForEmail = (name: string) => name.toLowerCase().replace(NON_ALPHA_RE, '')
 
 const generateUser = (index: number) => {
   const firstName = faker.person.firstName()

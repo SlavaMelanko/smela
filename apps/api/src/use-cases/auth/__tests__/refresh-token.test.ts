@@ -414,7 +414,7 @@ describe('Refresh Auth Tokens', () => {
 
         await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
 
-        const lastCall = mockSignJwt.mock.calls[mockSignJwt.mock.calls.length - 1]
+        const lastCall = mockSignJwt.mock.calls.at(-1)
         expect(lastCall[0].role).toBe(role)
       }
     })
