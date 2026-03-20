@@ -30,7 +30,7 @@ if [ -n "$WEB_STAGED" ]; then
   echo "Running web linter..."
   pnpm --filter @smela/web exec lint-staged
 
-  WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.js$|\.jsx$' || true)
+  WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.(js|jsx|ts|tsx)$' || true)
   if [ -n "$WEB_STAGED_JS" ]; then
     echo "Running web tests..."
     pnpm --filter @smela/web exec jest --findRelatedTests $WEB_STAGED_JS --passWithNoTests
