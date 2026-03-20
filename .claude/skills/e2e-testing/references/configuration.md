@@ -3,11 +3,11 @@
 ## Full Configuration
 
 ```typescript
-// playwright.config.ts
+// apps/web/playwright.config.js
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -50,8 +50,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: 'pnpm --filter @smela/web dev',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120000
   }
@@ -132,14 +132,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npx playwright test
+      - run: pnpm install
+      - run: pnpm --filter @smela/web exec playwright install --with-deps
+      - run: pnpm --filter @smela/web e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: apps/web/e2e/html-report/
 ```
 
 ## Quick Reference

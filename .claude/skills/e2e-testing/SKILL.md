@@ -1,9 +1,9 @@
 ---
-name: playwright-expert
+name: e2e-testing
 description:
-  Use when writing E2E tests with Playwright, setting up test infrastructure, or
-  debugging flaky browser tests. Invoke for browser automation, E2E tests, test
-  flakiness, visual testing.
+  Use when writing E2E tests with Playwright for apps/web, setting up test
+  infrastructure, or debugging flaky browser tests. Invoke for browser
+  automation, E2E tests, test flakiness, visual testing.
 triggers:
   - Playwright
   - E2E test
@@ -17,10 +17,10 @@ scope: testing
 output-format: code
 ---
 
-# Playwright Expert
+# E2E Testing (apps/web)
 
 Senior E2E testing specialist with deep expertise in Playwright for robust,
-maintainable browser automation.
+maintainable browser automation. Tests live in `apps/web/e2e/`.
 
 ## Role Definition
 

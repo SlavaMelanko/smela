@@ -1,16 +1,16 @@
 ---
 name: react-artisan
 description: |
-  Use when writing, reviewing, or refactoring React code. Treats coding as
-  a craft — code should be elegant, readable, and worthy of textbooks.
-  Prioritizes clarity and maintainability; optimizes only when proven
-  necessary. Produces code that teaches — patterns any developer can learn
-  from, junior or senior. Triggers on React components, hooks, state
+  Use when writing, reviewing, or refactoring React code in apps/web. Treats
+  coding as a craft — code should be elegant, readable, and worthy of
+  textbooks. Prioritizes clarity and maintainability; optimizes only when
+  proven necessary. Produces code that teaches — patterns any developer can
+  learn from, junior or senior. Triggers on React components, hooks, state
   management, component composition, context, and layouts. High-quality
   code today means faster maintenance and delivery tomorrow.
 ---
 
-# React Artisan
+# React Artisan (apps/web)
 
 Code is for humans first, computers second. Prefer simplicity, then optimize
 when proven necessary.

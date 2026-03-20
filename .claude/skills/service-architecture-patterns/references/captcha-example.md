@@ -19,12 +19,12 @@ The captcha service demonstrates the simplest form of the Modular Service Design
 - Clean separation of concerns
 - Easy to extend with new providers (hCaptcha, Turnstile)
 
-**Location:** `/src/services/captcha/`
+**Location:** `apps/api/apps/api/src/services/captcha/`
 
 ## Complete File Structure
 
 ```text
-src/services/captcha/
+apps/api/src/services/captcha/
 ├── index.ts                    # Public API (4 lines)
 ├── captcha.ts                  # Generic interface (16 lines)
 ├── config.ts                   # Configuration interface (15 lines)
@@ -42,7 +42,7 @@ src/services/captcha/
 
 ### Step 1: Feature Isolation
 
-All CAPTCHA-related code lives under `/src/services/captcha/`, completely isolated from business logic.
+All CAPTCHA-related code lives under `apps/api/apps/api/src/services/captcha/`, completely isolated from business logic.
 
 ### Step 2: Interface Abstraction
 

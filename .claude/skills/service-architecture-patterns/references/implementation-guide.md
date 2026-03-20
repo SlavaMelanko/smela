@@ -30,12 +30,12 @@ The Modular Service Design Pattern provides a systematic approach to integrating
 
 ## Step 1: Feature Isolation
 
-**Principle:** Each external service gets its own isolated directory under `/src/services/`.
+**Principle:** Each external service gets its own isolated directory under `apps/api/src/services/`.
 
 **Directory Structure:**
 
 ```text
-src/services/[service-name]/
+apps/api/src/services/[service-name]/
 ├── index.ts              # Public API exports
 ├── [service].ts          # Generic interface
 ├── factory.ts            # Factory method
@@ -64,7 +64,7 @@ src/services/[service-name]/
 
 ```typescript
 // Good: Isolated service structure
-src/services/captcha/
+apps/api/src/services/captcha/
   ├── captcha.ts
   ├── factory.ts
   └── recaptcha/

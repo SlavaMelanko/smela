@@ -1,19 +1,20 @@
 ---
-name: bun-testing
+name: api-testing
 description: Testing guidelines for Bun/TypeScript projects using bun:test framework. Use when writing tests, creating test files, debugging test failures, setting up mocks, or reviewing test code. Triggers on *.test.ts files, test-related questions, mocking patterns, and coverage discussions.
 ---
 
-# Bun Testing Skill
+# API Testing Skill
 
 ## Quick Reference
 
+- **App**: `apps/api`
 - **Framework**: bun:test
 - **File pattern**: `*.test.ts` inside `__tests__` directories
 - **Module mocking**: Use `ModuleMocker` from `@/__tests__` (see [patterns](references/mocking-patterns.md))
 - **Coverage target**: 60–80% (focus on important logic, not 100%)
-- **Config**: `.env.test` for test environment variables
+- **Config**: `apps/api/.env.test` for test environment variables
 
-## Test Utilities (src/__tests__/)
+## Test Utilities (apps/api/src/__tests__/)
 
 Before writing custom test helpers, check existing utilities:
 
@@ -31,7 +32,7 @@ import { createTestApp, post } from '@/__tests__'
 const app = createTestApp('/api/v1/auth', signupRoute, [captchaMiddleware()])
 const response = await post(app, '/api/v1/auth/signup', {
   email: 'test@example.com',
-  password: 'SecurePass123!'
+  password: 'SecurePass123!',
 })
 ```
 
@@ -50,7 +51,7 @@ const response = await post(app, '/api/v1/auth/signup', {
 
 ## Environment Setup
 
-- Use `.env.test` for test-specific variables
+- Use `apps/api/.env.test` for test-specific variables
 - Bun handles env loading natively — no manual dotenv needed
 - Minimize mocking `@/env` — only mock for special/invalid configs
 

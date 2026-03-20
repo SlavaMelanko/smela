@@ -1,12 +1,12 @@
 ---
 name: react-files-and-folders-manager
 description:
-  File and folder organization conventions for React + Vite + shadcn/ui
-  projects. Use when creating new components, organizing files, deciding folder
-  structure, naming files/folders, or reviewing project organization.
+  File and folder organization conventions for apps/web (React + Vite +
+  shadcn/ui). Use when creating new components, organizing files, deciding
+  folder structure, naming files/folders, or reviewing project organization.
 ---
 
-# React Files and Folders Manager
+# React Files and Folders Manager (apps/web)
 
 ## Core Conventions
 
@@ -58,7 +58,7 @@ export const FormLabel = ({ htmlFor, children, optional }) => (
 ## Directory Structure
 
 ```txt
-src/
+apps/web/src/
 ├── components/
 │   ├── Header/              # PascalCase = standalone component
 │   │   ├── index.js
@@ -82,9 +82,9 @@ src/
 └── hooks/
 ```
 
-## src/components/ui/ Rules
+## apps/web/src/components/ui/ Rules
 
 - Reserved for shadcn/ui primitives only
-- Install via `npx shadcn@latest add <component>`
+- Install via `npx shadcn@latest add <component>` from `apps/web/`
 - Uses regular functions + default exports (shadcn convention)
-- Custom wrappers go in `src/components/`, not `ui/`
+- Custom wrappers go in `apps/web/src/components/`, not `ui/`

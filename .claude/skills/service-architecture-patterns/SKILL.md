@@ -1,9 +1,9 @@
 ---
 name: service-architecture-patterns
-description: Modular design pattern for external service integrations (CAPTCHA, payment, SMS, file storage, analytics). Use when implementing third-party services, designing service abstractions, or reviewing service architecture. Triggers on /src/services/* files, integration questions, and provider implementations.
+description: Modular design pattern for external service integrations in apps/api (CAPTCHA, payment, SMS, file storage, analytics). Use when implementing third-party services, designing service abstractions, or reviewing service architecture. Triggers on apps/api/src/services/* files, integration questions, and provider implementations.
 ---
 
-# Service Architecture Patterns Skill
+# Service Architecture Patterns Skill (apps/api)
 
 ## Overview
 
@@ -28,10 +28,10 @@ The **Modular Service Design Pattern** provides a structured approach for integr
 
 ### 1. Feature Isolation
 
-Create isolated service modules under `/src/services/[service-name]/`:
+Create isolated service modules under `apps/api/src/services/[service-name]/`:
 
 ```text
-src/services/[service-name]/
+apps/api/src/services/[service-name]/
 ├── index.ts              # Public API exports only
 ├── [service].ts          # Generic interface
 ├── factory.ts            # Factory method
@@ -113,8 +113,8 @@ Use this pattern when:
 
 ## Real Examples from Codebase
 
-- **Simple (single provider)**: `/src/services/captcha/` - Google reCAPTCHA
-- **Advanced (multiple providers)**: `/src/services/email/` - Ethereal + Resend with registry pattern
+- **Simple (single provider)**: `apps/api/src/services/captcha/` - Google reCAPTCHA
+- **Advanced (multiple providers)**: `apps/api/src/services/email/` - Ethereal + Resend with registry pattern
 
 ## Deep Dive References
 

@@ -122,9 +122,9 @@ The project uses **PostgreSQL running in Docker** with connection pooling via po
 ### Testing
 
 **Read the testing skill before writing or modifying tests:**
-`.claude/skills/bun-testing/SKILL.md`
+`../../.claude/skills/api-testing/SKILL.md`
 
-For detailed mocking patterns: `.claude/skills/bun-testing/references/mocking-patterns.md`
+For detailed mocking patterns: `../../.claude/skills/api-testing/references/mocking-patterns.md`
 
 ### Security Considerations
 

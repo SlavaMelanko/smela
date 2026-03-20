@@ -26,12 +26,12 @@ The email service demonstrates an advanced implementation of the Modular Service
 - Singleton facade for application-wide usage
 - Development vs production behavior
 
-**Location:** `/src/services/email/`
+**Location:** `apps/api/apps/api/src/services/email/`
 
 ## Complete File Structure
 
 ```text
-src/services/email/
+apps/api/src/services/email/
 ├── index.ts                          # Public exports
 ├── email-agent.ts                    # Singleton facade
 ├── service.ts                        # Core email service

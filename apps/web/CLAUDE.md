@@ -55,7 +55,7 @@ All pnpm scripts are defined in `package.json`. Key workflows:
 
 ### Component Structure
 
-See `.claude/skills/react-project-structure/SKILL.md` for detailed conventions
+See `../../.claude/skills/react-project-structure/SKILL.md` for detailed conventions
 on file organization, naming, barrel exports, and folder structure.
 
 ### State Management
@@ -106,11 +106,11 @@ custom backend API:
 
 1. **Path aliases**: Use `@/` for `src/` (e.g., `@/components`, `@/hooks`)
 2. **Component imports**: Always import from component folders, not files
-3. **React patterns**: See `.claude/skills/react-artisan/SKILL.md` for React
+3. **React patterns**: See `../../.claude/skills/react-artisan/SKILL.md` for React
    coding conventions, component design, and hooks
-4. **Styling**: See `.claude/skills/tailwind-shadcn/SKILL.md` for Tailwind CSS
+4. **Styling**: See `../../.claude/skills/tailwind-shadcn/SKILL.md` for Tailwind CSS
    and shadcn/ui conventions
-5. **i18n**: See `.claude/skills/i18n-localization/SKILL.md` for translation
+5. **i18n**: See `../../.claude/skills/i18n-localization/SKILL.md` for translation
    patterns, locale file structure, and best practices
 6. **Control flow formatting**: Always use curly braces with `if` statements on
    new lines (no single-line `if (ok) return`)

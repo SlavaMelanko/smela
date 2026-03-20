@@ -1,11 +1,11 @@
 ---
 name: review
-description: <!-- mode: act -->
+description: <!-- mode: act --> Review apps/web code against project conventions.
 ---
 
-# Code Review
+# Code Review (apps/web)
 
-Review code against project conventions using all skill guidelines.
+Review apps/web code against project conventions using all skill guidelines.
 
 ## Usage
 
@@ -13,8 +13,8 @@ Review code against project conventions using all skill guidelines.
 /review <path>
 ```
 
-- **File**: `/review src/components/Header/Header.jsx`
-- **Folder**: `/review src/components/form/` (recursive)
+- **File**: `/review apps/web/src/components/Header/Header.jsx`
+- **Folder**: `/review apps/web/src/components/form/` (recursive)
 
 ## Review Process
 
@@ -25,7 +25,7 @@ Review code against project conventions using all skill guidelines.
 
 ## Skills to Apply
 
-### React Artisan (`.claude/skills/react-artisan/SKILL.md`)
+### React Artisan (`../../.claude/skills/react-artisan/SKILL.md`)
 
 - [ ] Arrow function components (not `function Component()`)
 - [ ] Inline exports (`export const` not bottom exports)
@@ -36,7 +36,7 @@ Review code against project conventions using all skill guidelines.
 - [ ] Ref as prop (React 19+)
 - [ ] No unnecessary Effects
 
-### File Structure (`.claude/skills/react-files-and-folders-manager/SKILL.md`)
+### File Structure (`../../.claude/skills/react-files-and-folders-manager/SKILL.md`)
 
 - [ ] Folder naming: `lowercase` = grouping, `PascalCase` = component
 - [ ] File naming: `ComponentName.jsx` not `index.jsx`
@@ -45,7 +45,7 @@ Review code against project conventions using all skill guidelines.
 - [ ] Tests in `__tests__/` folder
 - [ ] Stories as `ComponentName.stories.jsx`
 
-### Tailwind + shadcn (`.claude/skills/tailwind-shadcn/SKILL.md`)
+### Tailwind + shadcn (`../../.claude/skills/tailwind-shadcn/SKILL.md`)
 
 - [ ] ui/ primitives used correctly
 - [ ] Wrappers only for behavior, not just styling
@@ -53,7 +53,7 @@ Review code against project conventions using all skill guidelines.
 - [ ] Consistent spacing scale (2, 4, 6, 8-12)
 - [ ] No repeated compositions (extract to wrapper)
 
-### i18n (`.claude/skills/i18n-localization/SKILL.md`)
+### i18n (`../../.claude/skills/i18n-localization/SKILL.md`)
 
 - [ ] No hardcoded user-facing strings
 - [ ] Using `t()` for translations
@@ -83,7 +83,7 @@ Review code against project conventions using all skill guidelines.
 
 ## Skip
 
-- `src/components/ui/` — shadcn primitives, different conventions
+- `apps/web/src/components/ui/` — shadcn primitives, different conventions
 - `node_modules/`, `dist/`, `build/`
 - Test files (only review if explicitly requested)
 - Story files (only review if explicitly requested)

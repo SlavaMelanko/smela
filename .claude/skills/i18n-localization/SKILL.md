@@ -55,14 +55,14 @@ How it works:
 ## File Structure
 
 ```txt
-public/
+apps/web/public/
 └── locales/
     ├── en.json    # English translations
     └── uk.json    # Ukrainian translations
 ```
 
-Locale files are in `public/` because i18next's `HttpBackend` fetches them at
-startup (see `src/i18n.js`). This keeps translations out of the JS bundle and
+Locale files are in `apps/web/public/` because i18next's `HttpBackend` fetches them at
+startup (see `apps/web/src/i18n.js`). This keeps translations out of the JS bundle and
 allows loading only the needed language.
 
 ### Translation File Organization
@@ -122,7 +122,7 @@ to ensure graceful fallback.
 Run the checker script to detect untranslated text:
 
 ```bash
-python .claude/skills/i18n-localization/scripts/i18n_checker.py
+python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src
 ```
 
 ### Date/Number Formatting
@@ -158,9 +158,9 @@ Detects hardcoded strings and missing translations.
 **Usage**:
 
 ```bash
-# Check current directory
-python .claude/skills/i18n-localization/scripts/i18n_checker.py
+# Check apps/web/src (default target)
+python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src
 
 # Check specific path
-python .claude/skills/i18n-localization/scripts/i18n_checker.py /path/to/project
+python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src/components
 ```
