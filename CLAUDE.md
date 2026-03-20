@@ -18,7 +18,7 @@
 ### apps/api
 
 - **api-testing** — Bun/TypeScript test writing with bun:test and mocking patterns
-- **service-architecture-patterns** — Modular design pattern for external service integrations
+- **service-integration** — Modular design pattern for external service integrations
 
 ### Common
 

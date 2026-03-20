@@ -187,7 +187,7 @@ For detailed mocking patterns: `../../.claude/skills/api-testing/references/mock
 
 For external service integrations (CAPTCHA, payment, SMS, file storage, analytics), use the **Modular Service Design Pattern**. This pattern provides feature isolation, interface abstraction, and factory-based instantiation.
 
-**See:** `.claude/skills/service-architecture-patterns/SKILL.md` for complete pattern guide with real examples from the codebase.
+**See:** `.claude/skills/service-integration/SKILL.md` for complete pattern guide with real examples from the codebase.
 
 **Real implementations:**
 

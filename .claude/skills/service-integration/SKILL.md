@@ -1,5 +1,5 @@
 ---
-name: service-architecture-patterns
+name: service-integration
 description: Modular design pattern for external service integrations in apps/api (CAPTCHA, payment, SMS, file storage, analytics). Use when implementing third-party services, designing service abstractions, or reviewing service architecture. Triggers on apps/api/src/services/* files, integration questions, and provider implementations.
 ---
 
