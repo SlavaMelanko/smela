@@ -4,12 +4,12 @@ set -e
 while read local_ref local_sha remote_ref remote_sha; do
   CHANGED=$(git diff --name-only "$remote_sha" "$local_sha")
 
-  if echo "$CHANGED" | grep -q "^apps/api/"; then
+  if echo "$CHANGED" | grep -qE "^apps/api/.*\.(ts|js)$"; then
     echo "Running api tests..."
     bun run --cwd apps/api test
   fi
 
-  if echo "$CHANGED" | grep -q "^apps/web/"; then
+  if echo "$CHANGED" | grep -qE "^apps/web/.*\.(js|jsx)$"; then
     echo "Running web tests..."
     pnpm --filter @smela/web test
   fi
