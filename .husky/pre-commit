@@ -8,48 +8,31 @@ WEB_STAGED=$(echo "$STAGED_FILES" | grep "^apps/web/" || true)
 
 # API pre-commit checks
 if [ -n "$API_STAGED" ]; then
+  echo "Running api type check..."
   bun run --cwd apps/api tsc
+
+  echo "Running api linter..."
   bun run --cwd apps/api lint:fix
+  git add $API_STAGED
 
   API_STAGED_TS=$(echo "$API_STAGED" | grep -E '\.(ts|js)$' || true)
   if [ -n "$API_STAGED_TS" ]; then
+    echo "Running api tests..."
     bun run --cwd apps/api test
   fi
-
-  for file in $API_STAGED; do
-    if [ -f "$file" ] && ! git diff --quiet "$file"; then
-      git add "$file"
-    fi
-    if [ ! -f "$file" ] && git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
-      git rm --cached "$file"
-    fi
-    if [ -L "$file" ] && ! git diff --quiet "$file"; then
-      git add "$file"
-    fi
-  done
 fi
 
 # Web pre-commit checks
 if [ -n "$WEB_STAGED" ]; then
+  echo "Sorting web locale files..."
   pnpm --filter @smela/web exec sort-json apps/web/public/locales/*.json
+
+  echo "Running web linter..."
   pnpm --filter @smela/web exec lint-staged
 
   WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.js$|\.jsx$' || true)
   if [ -n "$WEB_STAGED_JS" ]; then
-    if pnpm --filter @smela/web exec jest --version > /dev/null 2>&1; then
-      pnpm --filter @smela/web exec jest --findRelatedTests $WEB_STAGED_JS --passWithNoTests
-    fi
+    echo "Running web tests..."
+    pnpm --filter @smela/web exec jest --findRelatedTests $WEB_STAGED_JS --passWithNoTests
   fi
-
-  for file in $WEB_STAGED; do
-    if [ -f "$file" ] && ! git diff --quiet "$file"; then
-      git add "$file"
-    fi
-    if [ ! -f "$file" ] && git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
-      git rm --cached "$file"
-    fi
-    if [ -L "$file" ] && ! git diff --quiet "$file"; then
-      git add "$file"
-    fi
-  done
 fi
