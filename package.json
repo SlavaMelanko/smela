@@ -12,6 +12,7 @@
   "scripts": {
     "prepare": "husky",
     "install:all": "pnpm install && cd apps/api && bun install",
+    "dev": "pnpm run dev:api & pnpm run dev:web",
     "dev:web": "pnpm --filter @smela/web dev",
     "dev:api": "bun --cwd apps/api run dev",
     "build:web": "pnpm --filter @smela/web build",
@@ -21,8 +22,8 @@
     "test:web": "pnpm --filter @smela/web test",
     "test:api": "bun run --cwd apps/api test",
     "test": "pnpm run test:api && pnpm run test:web",
-    "db:dev:up": "docker compose -f docker-compose-dev.yml --env-file apps/api/.env.development up -d --wait",
-    "db:dev:down": "docker compose -f docker-compose-dev.yml --env-file apps/api/.env.development down -v",
-    "db:dev:reset": "pnpm run db:dev:down && pnpm run db:dev:up && bun --cwd apps/api run db:init"
+    "db:dev:up": "bun --cwd apps/api run db:dev:up",
+    "db:dev:down": "bun --cwd apps/api run db:dev:down",
+    "db:dev:reset": "bun --cwd apps/api run db:dev:reset"
   }
 }
