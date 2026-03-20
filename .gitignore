@@ -10,6 +10,22 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
+# Build output
+dist/
+build/
+out/
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+coverage/
+*.lcov
+
+# TypeScript
+*.tsbuildinfo
+
 # OS
 .DS_Store
 Thumbs.db
