@@ -6,8 +6,9 @@ description: |
   textbooks. Prioritizes clarity and maintainability; optimizes only when
   proven necessary. Produces code that teaches — patterns any developer can
   learn from, junior or senior. Triggers on React components, hooks, state
-  management, component composition, context, and layouts. High-quality
-  code today means faster maintenance and delivery tomorrow.
+  management, component composition, context, layouts, and file/folder
+  organization. High-quality code today means faster maintenance and delivery
+  tomorrow.
 ---
 
 # React Artisan (apps/web)
@@ -24,6 +25,7 @@ Reference these guidelines when:
 - Creating custom hooks
 - Setting up context providers and state management
 - Building layout structures
+- Organizing files and folders, naming components and files
 - Reviewing code for performance and security issues
 - Refactoring existing React code
 - Optimizing bundle size or load times
@@ -42,6 +44,9 @@ appropriate category.
 
 ### Everyday (most files)
 
+- [Files and Folders](references/files-and-folders.md) — `lowercase/` for
+  grouping, `PascalCase/` for components, named files over `index.jsx`, flat
+  structure, building blocks pattern for shared primitives
 - Arrow Function Components — use `const Component = () => {}` instead of
   `function Component() {}` (exception: `src/components/ui/` shadcn components)
 - [Inline Exports](references/inline-exports.md) — use `export const Component`

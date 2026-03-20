@@ -36,7 +36,7 @@ Review apps/web code against project conventions using all skill guidelines.
 - [ ] Ref as prop (React 19+)
 - [ ] No unnecessary Effects
 
-### File Structure (`../../.claude/skills/react-files-and-folders-manager/SKILL.md`)
+### File Structure (`../../.claude/skills/react-artisan/references/files-and-folders.md`)
 
 - [ ] Folder naming: `lowercase` = grouping, `PascalCase` = component
 - [ ] File naming: `ComponentName.jsx` not `index.jsx`
@@ -53,7 +53,7 @@ Review apps/web code against project conventions using all skill guidelines.
 - [ ] Consistent spacing scale (2, 4, 6, 8-12)
 - [ ] No repeated compositions (extract to wrapper)
 
-### i18n (`../../.claude/skills/i18n-localization/SKILL.md`)
+### i18n (`../../.claude/skills/i18n/SKILL.md`)
 
 - [ ] No hardcoded user-facing strings
 - [ ] Using `t()` for translations

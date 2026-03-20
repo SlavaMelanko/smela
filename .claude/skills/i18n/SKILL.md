@@ -1,5 +1,5 @@
 ---
-name: i18n-localization
+name: i18n
 description: |
   Internationalization and localization patterns. Detecting hardcoded strings,
   managing translations, locale files, RTL support.
@@ -122,7 +122,7 @@ to ensure graceful fallback.
 Run the checker script to detect untranslated text:
 
 ```bash
-python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src
+python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src
 ```
 
 ### Date/Number Formatting
@@ -153,14 +153,14 @@ new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(
 
 Detects hardcoded strings and missing translations.
 
-**Location**: `.claude/skills/i18n-localization/scripts/i18n_checker.py`
+**Location**: `.claude/skills/i18n/scripts/i18n_checker.py`
 
 **Usage**:
 
 ```bash
 # Check apps/web/src (default target)
-python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src
+python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src
 
 # Check specific path
-python .claude/skills/i18n-localization/scripts/i18n_checker.py apps/web/src/components
+python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src/components
 ```

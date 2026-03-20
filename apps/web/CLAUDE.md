@@ -110,7 +110,7 @@ custom backend API:
    coding conventions, component design, and hooks
 4. **Styling**: See `../../.claude/skills/tailwind-shadcn/SKILL.md` for Tailwind CSS
    and shadcn/ui conventions
-5. **i18n**: See `../../.claude/skills/i18n-localization/SKILL.md` for translation
+5. **i18n**: See `../../.claude/skills/i18n/SKILL.md` for translation
    patterns, locale file structure, and best practices
 6. **Control flow formatting**: Always use curly braces with `if` statements on
    new lines (no single-line `if (ok) return`)
