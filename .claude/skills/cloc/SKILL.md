@@ -41,11 +41,13 @@ Any language below 1000 lines goes into the **Others** bucket.
 
 **web** (`apps/web/src` + `apps/web/e2e`):
 
-For JSX and JavaScript, split source vs test files using `--by-file`:
+For JSX and JavaScript, split source vs test vs stories files using `--by-file`:
 
-- Test files match the pattern `.test.` (e.g. `*.test.jsx`, `*.test.js`)
+- Test files match the pattern `\.test\.` (e.g. `*.test.jsx`, `*.test.js`)
+- Story files match the pattern `\.stories\.` (e.g. `*.stories.jsx`)
+- Source files are everything else
 - Run `cloc apps/web/src --include-lang=JSX --by-file` and `cloc apps/web/src --include-lang=JavaScript --by-file`
-- Separate rows matching `\.test\.` from those that do not
+- Separate rows into three groups: source, test, stories
 - Sum files, blank, comment, and code for each group
 - Run `cloc apps/web/e2e --include-lang=JavaScript` to get the `JavaScript (e2e)` row
 
@@ -68,7 +70,7 @@ cloc apps/api/src --match-f='\.(json|md|sql)$'
 
 **web** rows (in order):
 
-1. `JSX (sources)`, `JSX (tests)` — from JSX by-file split
+1. `JSX (sources)`, `JSX (tests)`, `JSX (stories)` — from JSX by-file split
 2. `JavaScript (sources)`, `JavaScript (tests)` — from JavaScript by-file split
 3. `JavaScript (e2e)` — from e2e dir
 4. `Others (<Lang1>, <Lang2>, ...)` — languages with < 1000 lines, collapsed, listed alphabetically
@@ -92,13 +94,14 @@ Output two fenced Markdown code blocks — one per app — so the user can copy 
 ```md
 | Language                    | Files   | Blank     | Comment | Code       | %      |
 |-----------------------------|---------|-----------|---------|------------|--------|
-| JSX (sources)               | 207     | 1,235     | 94      | 9,719      | 55.1%  |
-| JSX (tests)                 | 27      | 558       | 45      | 1,722      | 9.8%   |
+| JSX (sources)               | 195     | 1,165     | 92      | 9,114      | 51.6%  |
+| JSX (tests)                 | 27      | 558       | 45      | 1,722      | 9.7%   |
+| JSX (stories)               | 12      | 70        | 2       | 605        | 3.4%   |
 | JavaScript (sources)        | 173     | 546       | 114     | 2,901      | 16.4%  |
-| JavaScript (tests)          | 23      | 509       | 21      | 1,740      | 9.9%   |
+| JavaScript (tests)          | 23      | 509       | 21      | 1,740      | 9.8%   |
 | JavaScript (e2e)            | 17      | 421       | 111     | 1,380      | 7.8%   |
-| Others (CSS, Markdown, SVG) | 5       | 23        | 0       | 183        | 1.0%   |
-| **Total**                   | **452** | **3,292** | **385** | **17,645** | **100%** |
+| Others (CSS, Markdown, SVG) | 6       | 36        | 0       | 204        | 1.2%   |
+| **Total**                   | **453** | **3,305** | **385** | **17,666** | **100%** |
 ```
 
 ### api
