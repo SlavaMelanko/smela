@@ -11,6 +11,7 @@
   },
   "scripts": {
     "prepare": "husky",
+    "install:all": "pnpm install && cd apps/api && bun install",
     "dev:web": "pnpm --filter @smela/web dev",
     "dev:api": "bun --cwd apps/api run dev",
     "build:web": "pnpm --filter @smela/web build",
