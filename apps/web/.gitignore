@@ -1,4 +1,4 @@
-# Lock files (only pnpm-lock.yaml is used)
+# Lock files
 package-lock.json
 yarn.lock
 
@@ -14,5 +14,4 @@ storybook-static
 /e2e/artifacts/
 /e2e/html-report/
 /blob-report/
-/playwright/.cache/
 .playwright-mcp/

@@ -12,7 +12,6 @@ node_modules
 
 # OS
 .DS_Store
-Thumbs.db
 
 # Editors
 .vscode
@@ -42,5 +41,4 @@ coverage
 e2e/artifacts
 e2e/html-report
 blob-report
-playwright/.cache
 .playwright-mcp

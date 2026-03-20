@@ -7,11 +7,12 @@ build/
 
 # Test coverage
 coverage/
-.nyc_output/
 
 # Playwright
-test-results/
-playwright-report/
+e2e/artifacts/
+e2e/html-report/
+blob-report/
+.playwright-mcp/
 
 # Storybook
 storybook-static/
@@ -20,8 +21,6 @@ storybook-static/
 .env*
 
 # Lock files
-package-lock.json
-yarn.lock
 pnpm-lock.yaml
 
 # Generated files
@@ -34,7 +33,6 @@ pnpm-lock.yaml
 
 # OS files
 .DS_Store
-Thumbs.db
 
 # Temporary files
 *.log
