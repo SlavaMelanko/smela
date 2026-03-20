@@ -1,5 +1,16 @@
 #!/bin/sh
 set -e
 
-bun run --cwd apps/api test
-pnpm --filter @smela/web test
+while read local_ref local_sha remote_ref remote_sha; do
+  CHANGED=$(git diff --name-only "$remote_sha" "$local_sha")
+
+  if echo "$CHANGED" | grep -q "^apps/api/"; then
+    echo "Running api tests..."
+    bun run --cwd apps/api test
+  fi
+
+  if echo "$CHANGED" | grep -q "^apps/web/"; then
+    echo "Running web tests..."
+    pnpm --filter @smela/web test
+  fi
+done

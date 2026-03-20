@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Auto-runs install after branch switch if the lockfile changed between branches,
+# so node_modules stays in sync without manual intervention.
+
 PREV_HEAD=$1
 NEW_HEAD=$2
 BRANCH_CHECKOUT=$3

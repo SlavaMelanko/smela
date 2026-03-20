@@ -18,7 +18,8 @@
     "lint:web": "pnpm --filter @smela/web lint",
     "lint:api": "bun --cwd apps/api run lint",
     "test:web": "pnpm --filter @smela/web test",
-    "test:api": "bun --cwd apps/api run test",
+    "test:api": "bun run --cwd apps/api test",
+    "test": "pnpm run test:api && pnpm run test:web",
     "db:dev:up": "docker compose -f docker-compose-dev.yml --env-file apps/api/.env.development up -d --wait",
     "db:dev:down": "docker compose -f docker-compose-dev.yml --env-file apps/api/.env.development down -v",
     "db:dev:reset": "pnpm run db:dev:down && pnpm run db:dev:up && bun --cwd apps/api run db:init"
