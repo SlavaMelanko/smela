@@ -41,8 +41,8 @@ const Input = ({
   const state = error ? 'error' : 'default'
 
   return (
-    <div className='relative'>
-      <IconWrapper position='left'>{leftIcon}</IconWrapper>
+    <div className="relative">
+      <IconWrapper position="left">{leftIcon}</IconWrapper>
       <InputPrimitive
         ref={ref}
         type={type}
@@ -50,7 +50,7 @@ const Input = ({
         className={cn(inputVariants({ state }), className)}
         {...props}
       />
-      <IconWrapper position='right'>{rightIcon}</IconWrapper>
+      <IconWrapper position="right">{rightIcon}</IconWrapper>
     </div>
   )
 }
@@ -71,7 +71,7 @@ const InvisibleReCaptcha = forwardRef((props, ref) => {
     executeAsync: async () => {
       /* ... */
     },
-    reset: () => recaptchaRef.current?.reset()
+    reset: () => recaptchaRef.current?.reset(),
   }))
 
   return <ReCAPTCHA ref={recaptchaRef} {...props} />
@@ -96,7 +96,7 @@ export const InvisibleReCaptcha = ({ ref, ...props }) => {
       recaptcha.reset()
       return await withTimeout(() => recaptcha.executeAsync())
     },
-    reset: () => recaptchaRef.current?.reset()
+    reset: () => recaptchaRef.current?.reset(),
   }))
 
   return <ReCAPTCHA ref={recaptchaRef} {...props} />
@@ -112,8 +112,8 @@ const Form = () => {
 
   return (
     <form>
-      <Input ref={inputRef} placeholder='Enter name' />
-      <button type='button' onClick={() => inputRef.current?.focus()}>
+      <Input ref={inputRef} placeholder="Enter name" />
+      <button type="button" onClick={() => inputRef.current?.focus()}>
         Focus
       </button>
     </form>
@@ -132,7 +132,7 @@ const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <InvisibleReCaptcha ref={captchaRef} />
-      <button type='submit'>Login</button>
+      <button type="submit">Login</button>
     </form>
   )
 }

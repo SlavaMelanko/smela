@@ -71,7 +71,7 @@ const SubmitButton = () => {
 ```jsx
 // Disable when invalid OR submitting
 <Button
-  type='submit'
+  type="submit"
   disabled={!isValid || isSubmitting}
   isLoading={isSubmitting}
 >

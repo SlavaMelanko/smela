@@ -9,8 +9,8 @@
 // ❌ Avoid: handle* prefix on every callback
 const handleClick = () => navigate('/')
 const handleToggle = () => setVisible(!visible)
-const handlePageChange = page => setParams({ page })
-const handleSubmit = data => updateTeam(data)
+const handlePageChange = (page) => setParams({ page })
+const handleSubmit = (data) => updateTeam(data)
 ```
 
 **Why this fails:**
@@ -28,8 +28,8 @@ Name functions by the action they perform.
 // ✅ Prefer: action-based names
 const navigateHome = () => navigate('/')
 const toggleVisibility = () => setVisible(!visible)
-const changePage = page => setParams({ page })
-const submit = data => updateTeam(data)
+const changePage = (page) => setParams({ page })
+const submit = (data) => updateTeam(data)
 ```
 
 ### Exception: TanStack Query Mutation Wrappers
@@ -42,14 +42,14 @@ Keep `handle*` for callbacks that wrap TanStack Query mutations with
 const handleLogOut = () => {
   logOut(undefined, {
     onSuccess: () => navigate('/login'),
-    onError: error => showErrorToast(te(error))
+    onError: (error) => showErrorToast(te(error)),
   })
 }
 
-const handleResendInvitation = admin => {
+const handleResendInvitation = (admin) => {
   resendInvitation(admin.id, {
     onSuccess: () => showSuccessToast(t('invitation.resend.success')),
-    onError: error => showErrorToast(te(error))
+    onError: (error) => showErrorToast(te(error)),
   })
 }
 ```
@@ -59,15 +59,15 @@ This exception exists because mutation wrappers orchestrate side effects and the
 
 ## Naming Guide
 
-| Pattern | Name Style | Example |
-| --- | --- | --- |
-| Navigation | `navigateTo*` | `navigateHome`, `navigateToTeam` |
-| Toggle state | `toggle*` | `toggleVisibility`, `toggleFilters` |
-| Open dialog/modal | `open*` | `openUserProfile`, `openInviteDialog` |
-| Form submission | `submit` | `submit` |
-| Change value | `change*` | `changePage`, `changeLimit`, `changeStatus` |
-| Retry action | `retry` | `retry` |
-| Mutation wrapper | `handle*` | `handleLogOut`, `handleResendInvitation` |
+| Pattern           | Name Style    | Example                                     |
+| ----------------- | ------------- | ------------------------------------------- |
+| Navigation        | `navigateTo*` | `navigateHome`, `navigateToTeam`            |
+| Toggle state      | `toggle*`     | `toggleVisibility`, `toggleFilters`         |
+| Open dialog/modal | `open*`       | `openUserProfile`, `openInviteDialog`       |
+| Form submission   | `submit`      | `submit`                                    |
+| Change value      | `change*`     | `changePage`, `changeLimit`, `changeStatus` |
+| Retry action      | `retry`       | `retry`                                     |
+| Mutation wrapper  | `handle*`     | `handleLogOut`, `handleResendInvitation`    |
 
 ## Scope
 
@@ -76,11 +76,11 @@ This rule applies to all React components **except** `src/components/ui/`
 
 ## Why This Works
 
-| Principle | How it's satisfied |
-| --- | --- |
-| **Clarity** | Function names describe the action, not that something is handled |
-| **Consistency** | Clear pattern: actions get verbs, mutation wrappers get `handle*` |
-| **Scannability** | Easier to find specific functionality when names are descriptive |
+| Principle        | How it's satisfied                                                |
+| ---------------- | ----------------------------------------------------------------- |
+| **Clarity**      | Function names describe the action, not that something is handled |
+| **Consistency**  | Clear pattern: actions get verbs, mutation wrappers get `handle*` |
+| **Scannability** | Easier to find specific functionality when names are descriptive  |
 
 **Rule of thumb:** If you can replace `handle` with a verb that describes the
 action, do it.

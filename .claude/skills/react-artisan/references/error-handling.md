@@ -13,14 +13,14 @@ const UserProfile = () => {
 
   if (error) {
     // Full page takeover for a recoverable error
-    return <Navigate to='/errors/general' />
+    return <Navigate to="/errors/general" />
   }
 
   return <ProfileForm data={data} />
 }
 
 // ❌ Avoid: toast for validation errors
-const onSubmit = async data => {
+const onSubmit = async (data) => {
   const result = await saveUser(data)
   if (result.errors?.email) {
     toast.error('Invalid email address') // user loses form context
@@ -75,7 +75,7 @@ const { mutate } = useMutation({
   },
   onError: () => {
     toast.error(t('profile.updateFailed'))
-  }
+  },
 })
 ```
 
@@ -87,7 +87,7 @@ const { mutate } = useMutation({
 const UserDashboard = () => {
   const { data, error, refetch } = useQuery({
     queryKey: ['dashboard'],
-    queryFn: fetchDashboard
+    queryFn: fetchDashboard,
   })
 
   if (error) {

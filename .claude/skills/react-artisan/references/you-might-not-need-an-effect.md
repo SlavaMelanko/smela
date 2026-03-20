@@ -50,12 +50,12 @@ const ProductList = ({ products, filter }) => {
   const [filtered, setFiltered] = useState([])
 
   useEffect(() => {
-    setFiltered(products.filter(p => p.category === filter))
+    setFiltered(products.filter((p) => p.category === filter))
   }, [products, filter])
 
   return (
     <ul>
-      {filtered.map(p => (
+      {filtered.map((p) => (
         <li key={p.id}>{p.name}</li>
       ))}
     </ul>
@@ -64,11 +64,11 @@ const ProductList = ({ products, filter }) => {
 
 // ✅ Prefer: calculate inline (use useMemo if expensive)
 const ProductList = ({ products, filter }) => {
-  const filtered = products.filter(p => p.category === filter)
+  const filtered = products.filter((p) => p.category === filter)
 
   return (
     <ul>
-      {filtered.map(p => (
+      {filtered.map((p) => (
         <li key={p.id}>{p.name}</li>
       ))}
     </ul>
@@ -87,7 +87,7 @@ const ProfileEditor = ({ userId }) => {
     setName('')
   }, [userId])
 
-  return <input value={name} onChange={e => setName(e.target.value)} />
+  return <input value={name} onChange={(e) => setName(e.target.value)} />
 }
 
 // ✅ Prefer: key prop forces remount with fresh state
@@ -98,7 +98,7 @@ const ProfilePage = ({ userId }) => (
 const ProfileEditor = ({ userId }) => {
   const [name, setName] = useState('')
 
-  return <input value={name} onChange={e => setName(e.target.value)} />
+  return <input value={name} onChange={(e) => setName(e.target.value)} />
 }
 ```
 
@@ -119,7 +119,7 @@ const SearchForm = () => {
 
   return (
     <form onSubmit={() => setSubmitted(true)}>
-      <input value={query} onChange={e => setQuery(e.target.value)} />
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
     </form>
   )
 }
@@ -128,14 +128,14 @@ const SearchForm = () => {
 const SearchForm = () => {
   const [query, setQuery] = useState('')
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     search(query)
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <input value={query} onChange={e => setQuery(e.target.value)} />
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
     </form>
   )
 }
@@ -162,7 +162,7 @@ const Profile = ({ userId }) => {
   useEffect(() => {
     let ignore = false
 
-    fetchUser(userId).then(data => {
+    fetchUser(userId).then((data) => {
       if (!ignore) {
         setUser(data)
       }
@@ -180,7 +180,7 @@ const Profile = ({ userId }) => {
 const Profile = ({ userId }) => {
   const { data: user, isLoading } = useQuery({
     queryKey: ['user', userId],
-    queryFn: () => fetchUser(userId)
+    queryFn: () => fetchUser(userId),
   })
 
   return isLoading ? <p>Loading...</p> : <p>{user.name}</p>

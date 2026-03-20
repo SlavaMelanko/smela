@@ -77,7 +77,7 @@ const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light')
 
   const toggle = useCallback(() => {
-    setTheme(t => (t === 'light' ? 'dark' : 'light'))
+    setTheme((t) => (t === 'light' ? 'dark' : 'light'))
   }, [])
 
   const value = useMemo(() => ({ theme, toggle }), [theme, toggle])

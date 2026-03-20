@@ -60,7 +60,7 @@ return (
       open,
       setOpen,
       selectedValues,
-      toggleValue
+      toggleValue,
     }}
   >
     {children}

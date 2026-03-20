@@ -12,21 +12,21 @@ export const TeamPageHeader = ({
   website,
   description,
   email,
-  avatar
+  avatar,
 }) => (
-  <div className='flex items-center gap-3'>
-    <div className='flex size-10 items-center justify-center'>
-      <Users className='size-8 text-primary' />
+  <div className="flex items-center gap-3">
+    <div className="flex size-10 items-center justify-center">
+      <Users className="size-8 text-primary" />
     </div>
     <div>
-      <p className='text-2xl font-semibold'>{name}</p>
+      <p className="text-2xl font-semibold">{name}</p>
       {website && (
-        <a href={website} className='text-sm'>
+        <a href={website} className="text-sm">
           {website}
         </a>
       )}
       {description && (
-        <p className='text-sm text-muted-foreground'>{description}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       )}
       {email && <a href={`mailto:${email}`}>{email}</a>}
       {avatar && <img src={avatar} alt={name} />}
@@ -49,23 +49,23 @@ Create small, single-responsibility primitives. Let consumers compose them.
 ```jsx
 // ✅ Prefer: composable building blocks (shadcn pattern)
 export const PageHeader = ({ children }) => (
-  <div className='flex items-center gap-3'>{children}</div>
+  <div className="flex items-center gap-3">{children}</div>
 )
 
 export const PageHeaderIcon = ({ icon: Icon }) => (
-  <div className='flex size-10 items-center justify-center'>
-    <Icon className='size-8 text-primary' />
+  <div className="flex size-10 items-center justify-center">
+    <Icon className="size-8 text-primary" />
   </div>
 )
 
 export const PageHeaderContent = ({ children }) => <div>{children}</div>
 
 export const PageHeaderTitle = ({ children }) => (
-  <p className='text-2xl font-semibold'>{children}</p>
+  <p className="text-2xl font-semibold">{children}</p>
 )
 
 export const PageHeaderDescription = ({ children }) => (
-  <p className='text-sm text-muted-foreground'>{children}</p>
+  <p className="text-sm text-muted-foreground">{children}</p>
 )
 
 export const PageHeaderWebsite = ({ url }) => {
@@ -76,12 +76,12 @@ export const PageHeaderWebsite = ({ url }) => {
   return (
     <Link
       to={url}
-      size='sm'
-      underline='none'
+      size="sm"
+      underline="none"
       openInNewTab
-      className='inline-flex items-center gap-1'
+      className="inline-flex items-center gap-1"
     >
-      <Globe className='size-3.5' />
+      <Globe className="size-3.5" />
       <span>{url}</span>
     </Link>
   )
@@ -92,7 +92,7 @@ export const PageHeaderEmail = ({ email }) => {
     return null
   }
 
-  return <EmailLink email={email} size='sm' underline='none' />
+  return <EmailLink email={email} size="sm" underline="none" />
 }
 ```
 

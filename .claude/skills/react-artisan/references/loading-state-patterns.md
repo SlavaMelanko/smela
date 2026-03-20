@@ -10,7 +10,7 @@ UI flashes during background refetches when cached data is already available.
 const UsersPage = () => {
   const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: ['users'],
-    queryFn: fetchUsers
+    queryFn: fetchUsers,
   })
 
   if (isError) {
@@ -44,7 +44,7 @@ indicator.
 const UsersPage = () => {
   const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: ['users'],
-    queryFn: fetchUsers
+    queryFn: fetchUsers,
   })
 
   if (isError) {
@@ -91,10 +91,10 @@ const TeamPage = () => {
     isPending,
     isError,
     error,
-    refetch
+    refetch,
   } = useQuery({
     queryKey: ['team', teamId],
-    queryFn: () => fetchTeam(teamId)
+    queryFn: () => fetchTeam(teamId),
   })
 
   if (isError) {

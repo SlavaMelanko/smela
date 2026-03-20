@@ -1,9 +1,56 @@
 # Files and Folders
 
-**Consistent naming and structure keeps the codebase navigable.** These
-conventions apply to all files under `apps/web/src/`.
+**Structure files around components, not around file types.** Flat, intentional
+organization makes the codebase navigable without a map.
 
-## Naming
+## The Problem
+
+```txt
+# ❌ Avoid: type-based grouping and flat dumping
+src/
+├── components/
+│   ├── Header.jsx
+│   ├── HeaderDropdown.jsx      # Unclear ownership
+│   ├── index.jsx               # Unnamed component file
+│   ├── UserSettings.jsx
+│   └── UserSettingsForm.jsx    # Belongs with UserSettings
+├── hooks/
+│   ├── useHeader.js
+│   └── useUserSettings.js      # No co-location with component
+└── index.js                    # All exports, no grouping
+```
+
+**Why this fails:**
+
+- **No co-location** — component and its hooks/tests live in different folders,
+  so related files drift apart
+- **`index.jsx` as component** — impossible to tell what the file contains
+  without opening it; editor tabs all show `index.jsx`
+- **Unclear ownership** — `HeaderDropdown.jsx` looks like a top-level component,
+  not a detail of `Header`
+
+## The Solution
+
+Group by component, not by file type. Use folder naming to signal intent.
+
+```txt
+# ✅ Prefer: component-centric, co-located
+src/
+├── components/
+│   ├── Header/                 # PascalCase = owns a component
+│   │   ├── index.js            # Barrel: re-exports only
+│   │   ├── Header.jsx
+│   │   ├── HeaderDropdown.jsx
+│   │   └── useHeader.js        # Co-located hook
+│   └── settings/               # lowercase = grouping folder
+│       ├── index.js
+│       ├── Settings.jsx        # Building blocks (see below)
+│       └── UserSettings/
+│           ├── UserSettings.jsx
+│           └── UserSettingsForm.jsx
+```
+
+### Naming Rules
 
 | Item             | Convention                                                 |
 | ---------------- | ---------------------------------------------------------- |
@@ -14,35 +61,18 @@ conventions apply to all files under `apps/web/src/`.
 | Test folder      | `__tests__/` inside the component or grouping folder       |
 | Story file       | `ComponentName.stories.jsx` or `foldername.stories.jsx`    |
 
-## Flat Structure
+### When to Create a Folder
 
-Keep nesting shallow. Use the smallest structure that fits the content.
-
-```txt
-# ✅ Single component → flat in grouping folder
-prompts/
-└── LoginPrompt.jsx
-
-# ✅ 2+ related files → folder-per-component
-DataTable/
-├── index.js
-├── DataTable.jsx
-└── useDataTable.js
-
-# ✅ Tests → __tests__/ in component or grouping folder
-Header/
-├── Header.jsx
-└── __tests__/
-    └── Header.test.jsx
-```
+- **Single file** → flat in grouping folder: `prompts/LoginPrompt.jsx`
+- **2+ related files** → folder-per-component: `DataTable/` with its hook/tests
 
 ## Building Blocks Pattern
 
-When a grouping folder needs shared primitives, create a `FolderName.jsx`
-file that exports them. Order components top-to-bottom: containers → primitives.
+When a grouping folder needs shared primitives across its components, create a
+`FolderName.jsx` file. Order components top-to-bottom: containers → primitives.
 
 ```jsx
-// form/Form.jsx
+// ✅ form/Form.jsx — shared primitives for the form/ grouping folder
 export const FormRoot = ({ children, className, ...props }) => (
   <form className={cn('flex flex-col gap-8', className)} {...props}>
     {children}
@@ -63,37 +93,26 @@ export const FormLabel = ({ htmlFor, children, optional }) => (
 | `settings/`     | `Settings.jsx`       | SettingsSection, SettingsLabel, SettingsOption |
 | `pages/errors/` | `Error.jsx`          | Shared primitives for sibling error pages      |
 
-## Directory Overview
+## `components/ui/` Exception
 
-```txt
-apps/web/src/
-├── components/
-│   ├── Header/              # PascalCase = standalone component
-│   │   ├── index.js
-│   │   ├── Header.jsx
-│   │   └── ProfileDropdown.jsx
-│   ├── settings/            # lowercase = grouping folder
-│   │   ├── index.js
-│   │   ├── Settings.jsx     # Building blocks
-│   │   └── DateTimeSettings/
-│   ├── LanguageDropdown/
-│   │   ├── LanguageDropdown.jsx
-│   │   └── flags/           # Domain-specific assets
-│   └── ui/                  # shadcn/ui ONLY — see below
-├── layouts/
-├── pages/
-│   ├── errors/
-│   │   ├── General/
-│   │   ├── NotFound/
-│   │   └── Error.jsx        # Building blocks for sibling pages
-│   └── admin/Users/
-└── hooks/
+Reserved exclusively for shadcn/ui primitives — do not add custom components here.
+
+```bash
+# Install shadcn components from apps/web/
+npx shadcn@latest add <component>
 ```
 
-## `components/ui/` Rules
-
-Reserved exclusively for shadcn/ui primitives.
-
-- Install via `npx shadcn@latest add <component>` from `apps/web/`
-- Uses regular `function` declarations + default exports (shadcn convention)
+- Uses `function` declarations + default exports (shadcn convention)
 - Custom wrappers go in `components/`, **not** `ui/`
+
+## Why This Works
+
+| Principle           | How it's satisfied                                          |
+| ------------------- | ----------------------------------------------------------- |
+| **Co-location**     | Component, hooks, and tests live together; easy to move     |
+| **Scannability**    | `PascalCase/` vs `lowercase/` signals component vs grouping |
+| **Discoverability** | Named files instead of `index.jsx` — readable in tabs/grep  |
+| **Low coupling**    | Barrel `index.js` controls the public API of each folder    |
+
+**Rule of thumb:** If you can't tell what a file contains from its name alone,
+rename it.
