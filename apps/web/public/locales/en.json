@@ -1,0 +1,444 @@
+{
+  "add": "Add",
+  "alreadyHaveAccount": "Already have an account?",
+  "back": "Back",
+  "backend": {
+    "auth/already-verified": "Invalid request. Please try logging in.",
+    "auth/email-already-in-use": "Email is already taken.",
+    "auth/forbidden": "Access denied.",
+    "auth/invalid-credentials": "Invalid email or password.",
+    "auth/invalid-password": "Current password is incorrect.",
+    "auth/unauthorized": "Access denied. Please try logging in again.",
+    "captcha/invalid-token": "Security verification failed. Please try again.",
+    "captcha/validation-failed": "Security verification failed. Please try again.",
+    "refresh-token/expired": "Session expired. Please log in again.",
+    "refresh-token/invalid": "Session expired. Please log in again.",
+    "refresh-token/missing": "Session expired. Please log in again.",
+    "refresh-token/revoked": "Session expired. Please log in again.",
+    "request/bad": "Invalid request.",
+    "request/content-length-mismatch": "Invalid request.",
+    "request/invalid-content-length": "Invalid request.",
+    "request/too-large": "Request is too large.",
+    "resource/conflict": "This resource already exists.",
+    "resource/not-found": "Resource not found.",
+    "system/internal-error": "Something went wrong. Please try again later.",
+    "token/already-used": "Invalid or expired link.",
+    "token/cancelled": "This invitation has been cancelled.",
+    "token/deprecated": "Invalid or expired link.",
+    "token/expired": "Invalid or expired link.",
+    "token/not-found": "Invalid or expired link.",
+    "token/type-mismatch": "Invalid or expired link.",
+    "validation/error": "Invalid request."
+  },
+  "cancel": "Cancel",
+  "captcha": {
+    "error": "Security verification failed. Please try again."
+  },
+  "changesSaved": "Changes saved successfully.",
+  "contextMenu": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "invite": "Invitation",
+    "open": "Open",
+    "resend": "Resend"
+  },
+  "continueWithGoogle": "Continue with Google",
+  "copyright": "© {{year}} {{companyName}}",
+  "createdAt": "Created at",
+  "doNotHaveAccount": "Don't have an account?",
+  "email": {
+    "confirmation": {
+      "cta": "Send again",
+      "description": {
+        "end": "Check your inbox to finish signing up.",
+        "start": "We've sent a confirmation link to"
+      },
+      "success": "Confirmation email sent again.",
+      "title": "Confirmation email sent",
+      "yourEmail": "your email"
+    },
+    "error": {
+      "format": "Enter a valid email.",
+      "required": "Email is required."
+    },
+    "label": "Email",
+    "verification": {
+      "error": {
+        "general": "Email verification failed.",
+        "invalidToken": "Invalid token."
+      },
+      "loading": "Verifying email...",
+      "success": "Welcome! Your account is ready."
+    }
+  },
+  "error": {
+    "general": {
+      "cta": "Go home",
+      "message": "This is unexpected for us too. We'll take a closer look and handle it according to our current priorities. Thanks for your patience.",
+      "title": "Oops! Something went wrong"
+    },
+    "network": {
+      "cta": "Try again",
+      "message": {
+        "connectionInterrupted": "Your internet connection was interrupted. Please check your connection and try again.",
+        "connectionRefused": "Unable to connect to the server. The server may be down or unreachable.",
+        "nameNotResolved": "Unable to reach the server. Please check your internet connection.",
+        "offline": "You are currently offline. Please check your internet connection.",
+        "serverUnavailable": "The server is temporarily unavailable. Please try again later.",
+        "sslError": "There was a security issue connecting to the server.",
+        "timeout": "The connection timed out. Please check your internet connection and try again.",
+        "unknown": "A network error occurred. Please check your connection and try again later."
+      },
+      "title": "Network connection issue"
+    },
+    "notFound": {
+      "cta": "Go home",
+      "message": "The page you're looking for doesn't exist or has been moved.",
+      "title": "Page not found"
+    },
+    "unknown": "Something went wrong. Please try again later."
+  },
+  "firstName": {
+    "error": {
+      "max": "First name can't be longer than 50 characters.",
+      "min": "First name must be at least 2 characters.",
+      "required": "First name is required."
+    },
+    "label": "First name"
+  },
+  "forgotYourPassword": "Forgot your password?",
+  "format": {
+    "date": {
+      "name": "Date format",
+      "values": {
+        "full": "Full",
+        "numeric": "Numeric",
+        "short": "Short"
+      }
+    },
+    "time": {
+      "name": "Time format",
+      "values": {
+        "12": "12-hour",
+        "24": "24-hour"
+      }
+    }
+  },
+  "general": "General",
+  "invite": {
+    "accept": {
+      "cta": "Join",
+      "description": "Set your password to join the team.",
+      "error": "Failed to accept invitation. The link may have expired.",
+      "success": "Welcome! Your account is ready.",
+      "title": "You're invited to",
+      "validating": "Validating invitation..."
+    },
+    "cancel": {
+      "success": "Invitation cancelled."
+    },
+    "cta": "Invite",
+    "resend": {
+      "success": "Invitation resent."
+    },
+    "send": {
+      "cta": "Send invitation",
+      "success": "Invitation sent.",
+      "title": {
+        "admin": "Invite admin",
+        "member": "Invite member"
+      }
+    }
+  },
+  "invitedAt": "Invited at",
+  "invitedBy": "Invited by",
+  "joinedAt": "Joined at",
+  "lastActive": {
+    "day_one": "{{count}} day ago",
+    "day_other": "{{count}} days ago",
+    "hour_one": "{{count}} hour ago",
+    "hour_other": "{{count}} hours ago",
+    "justNow": "Just now",
+    "label": "Last active",
+    "minute_one": "{{count}} minute ago",
+    "minute_other": "{{count}} minutes ago"
+  },
+  "lastName": {
+    "error": {
+      "max": "Last name can't be longer than 50 characters.",
+      "min": "Last name must be at least 2 characters.",
+      "required": "Last name is required."
+    },
+    "label": "Last name"
+  },
+  "loading": "Loading...",
+  "login": {
+    "noun": "Login",
+    "verb": "Log in"
+  },
+  "logout": {
+    "noun": "Logout",
+    "verb": "Log out"
+  },
+  "membership": "Membership",
+  "noNewNotifications": "No new notifications.",
+  "notifications": "Notifications",
+  "or": "or",
+  "pagination": {
+    "limit": "Limit:",
+    "of": "of"
+  },
+  "password": {
+    "error": {
+      "min": "Password must be at least 8 characters.",
+      "required": "Password is required.",
+      "same": "Must differ from current password.",
+      "strong": "Use at least: 1 uppercase letter, 1 number, 1 symbol."
+    },
+    "label": {
+      "current": "Current password",
+      "default": "Password",
+      "new": "New password"
+    },
+    "reset": {
+      "rememberYourPassword": "Remember your password?",
+      "request": {
+        "cta": "Send instructions",
+        "description": "Enter your email to receive password reset instructions.",
+        "success": "Password reset instructions sent."
+      },
+      "set": {
+        "cta": "Set new password",
+        "description": "Only one step left — create a new password.",
+        "error": "Failed to reset password. Please try again.",
+        "success": "Password reset complete."
+      },
+      "title": "Reset password"
+    },
+    "update": {
+      "cta": "Update password",
+      "hint": "Updating your password will sign you out of all other devices except this one."
+    }
+  },
+  "permissions": {
+    "actions": {
+      "name": "Actions",
+      "values": {
+        "manage": "Manage",
+        "view": "View"
+      }
+    },
+    "name": "Permissions",
+    "resources": {
+      "name": "Resources",
+      "values": {
+        "teams": "Teams",
+        "users": "Users"
+      }
+    }
+  },
+  "personalDetails": "Personal details",
+  "position": {
+    "default": "Team member",
+    "error": {
+      "max": "Position can't be longer than 50 characters.",
+      "min": "Position must be at least 2 characters."
+    },
+    "label": "Position"
+  },
+  "pricing": {
+    "cta": "Sign up now",
+    "custom": {
+      "cta": "Create plan",
+      "note": "Build your perfect plan. The more you use, the less you pay.",
+      "title": "Your plan"
+    },
+    "discount": {
+      "label": "-{{percent}}% Off"
+    },
+    "enterprise": {
+      "cta": "Contact us",
+      "msg": "Haven't found a plan that meets your needs? We can help."
+    },
+    "faq": {
+      "items": [
+        {
+          "answer": "Yes, you can cancel or change your plan anytime. Changes take effect in the next billing period.",
+          "question": "Can I cancel or change my plan?"
+        }
+      ],
+      "title": "FAQ"
+    },
+    "features": {
+      "cancelAnytime": "Cancel your subscription at any time",
+      "dedicatedManager": "Dedicated account manager for fast issue resolution",
+      "emailSupport": "Support via email",
+      "premiumSupport": "24/7 premium support",
+      "rollover": "Unused bandwidth rolls over to the next month"
+    },
+    "plans": {
+      "custom": "Custom",
+      "free": "Free",
+      "max": "Max",
+      "pro": "Pro"
+    },
+    "subtitle": "Whether standard, custom, or enterprise — you decide.",
+    "summary": {
+      "includedFeatures": "Included features",
+      "price": "Price",
+      "selected": "Selected",
+      "total": "Total price"
+    },
+    "title": "Find your best plan",
+    "type": {
+      "enterprise": "Enterprise",
+      "standard": "Standard"
+    }
+  },
+  "processing": "Processing...",
+  "profile": {
+    "description": "Your profile settings",
+    "title": "Profile"
+  },
+  "save": "Save",
+  "searchBy": {
+    "teams": "Search by ID, name, website...",
+    "users": "Search by ID, name, email..."
+  },
+  "security": "Security",
+  "settings": {
+    "description": "Your app-wide preferences",
+    "title": "Settings"
+  },
+  "sidebar": {
+    "admins": "Admins",
+    "dashboard": "Dashboard",
+    "documentation": "Documentation",
+    "home": "Home",
+    "isp": "ISP",
+    "proxies": "Proxies",
+    "residential": "Residential",
+    "serpApi": "SERP API",
+    "settings": "Settings",
+    "teams": "Teams",
+    "users": "Users"
+  },
+  "signUp": "Sign up",
+  "status": {
+    "error": {
+      "invalid": "Select a valid status.",
+      "required": "Status is required."
+    },
+    "name": "Status",
+    "placeholder": "Select statuses",
+    "values": {
+      "active": "Active",
+      "archived": "Archived",
+      "new": "New",
+      "pending": "Pending",
+      "suspended": "Suspended",
+      "trial": "Trial",
+      "verified": "Verified"
+    }
+  },
+  "support": "Support",
+  "table": {
+    "column": "Column",
+    "column_plural": "Columns",
+    "filter": "Filter",
+    "filter_plural": "Filters",
+    "members": {
+      "email": "Email",
+      "id": "ID",
+      "invitedBy": "$t(invitedBy)",
+      "joinedAt": "$t(joinedAt)",
+      "lastActive": "$t(lastActive.label)",
+      "name": "Name",
+      "position": "Position",
+      "status": "$t(status.name)"
+    },
+    "teams": {
+      "createdAt": "$t(createdAt)",
+      "id": "ID",
+      "name": "Name",
+      "updatedAt": "$t(updatedAt)",
+      "website": "Website"
+    },
+    "users": {
+      "createdAt": "$t(createdAt)",
+      "email": "Email",
+      "id": "ID",
+      "invitedAt": "$t(invitedAt)",
+      "invitedBy": "$t(invitedBy)",
+      "lastActive": "$t(lastActive.label)",
+      "name": "Name",
+      "status": "$t(status.name)",
+      "team": "Team",
+      "updatedAt": "$t(updatedAt)"
+    }
+  },
+  "team": {
+    "add": {
+      "cta": "Create",
+      "success": "Team created.",
+      "title": "Add team"
+    },
+    "description": {
+      "error": {
+        "max": "Description can't exceed 500 characters."
+      },
+      "label": "Description"
+    },
+    "members": {
+      "empty": "No team members yet.",
+      "remove": {
+        "cta": "Remove",
+        "description": "Are you sure you want to remove {{name}} from the team?",
+        "success": "Member removed from the team.",
+        "title": "Remove team member from team"
+      }
+    },
+    "name": {
+      "error": {
+        "max": "Team name can't exceed 100 characters.",
+        "min": "Team name must be at least 2 characters.",
+        "required": "Team name is required."
+      },
+      "label": "Name",
+      "label2": "Team"
+    },
+    "tabs": {
+      "general": "General",
+      "members": {
+        "label": "Members",
+        "withCount": "Members ({{count}})"
+      }
+    },
+    "website": {
+      "error": {
+        "format": "Enter a valid URL."
+      },
+      "label": "Website"
+    }
+  },
+  "termsAndPrivacy": {
+    "and": "and",
+    "error": {
+      "required": "You must accept the terms to continue."
+    },
+    "prefix": "By creating an account, you agree with our",
+    "privacy": "Privacy Policy",
+    "terms": "Terms"
+  },
+  "tryAgain": "Try again",
+  "unit": {
+    "traffic": {
+      "gb": "GB",
+      "kb": "KB",
+      "mb": "MB",
+      "tb": "TB"
+    }
+  },
+  "updatedAt": "Updated at",
+  "you": "You"
+}

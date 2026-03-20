@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.json'
+      - 'LICENSE'
+      - '.gitignore'
+  push:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.json'
+      - 'LICENSE'
+      - '.gitignore'
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    container: oven/bun:latest
+    environment: test
+
+    env:
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COOKIE_REFRESH_TOKEN_NAME: ${{ vars.COOKIE_REFRESH_TOKEN_NAME }}
+      COOKIE_REFRESH_TOKEN_EXPIRATION: ${{ vars.COOKIE_REFRESH_TOKEN_EXPIRATION }}
+      BE_BASE_URL: ${{ vars.BE_BASE_URL }}
+      FE_BASE_URL: ${{ vars.FE_BASE_URL }}
+      EMAIL_RESEND_API_KEY: ${{ secrets.EMAIL_RESEND_API_KEY }}
+      EMAIL_SENDER_PROFILES: ${{ vars.EMAIL_SENDER_PROFILES }}
+      COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      COMPANY_SOCIAL_LINKS: ${{ vars.COMPANY_SOCIAL_LINKS }}
+      CAPTCHA_SECRET_KEY: ${{ secrets.CAPTCHA_SECRET_KEY }}
+
+    steps:
+      - name: Install dependencies for Codecov
+        run: apt-get update && apt-get install -y git curl gpg
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run linting
+        run: bun run lint
+
+      - name: Run type checking
+        run: bun run tsc
+
+      - name: Run tests with coverage
+        run: bun run coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
+  # build:
+  #   runs-on: ubuntu-latest
+  #   container: oven/bun:latest
+  #   needs: tests
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Install dependencies
+  #       run: bun install
+
+  #     - name: Build project
+  #       run: bun run build

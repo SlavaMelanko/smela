@@ -1,0 +1,1 @@
+export { GeneralErrorPage } from './GeneralErrorPage'

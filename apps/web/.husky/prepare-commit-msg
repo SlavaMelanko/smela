@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Adds 📦 emoji to commit messages when environment files change.
+# This is a visual indicator that a new Docker image will be built
+# (via .github/workflows/docker-ci.yml) with pre-installed packages
+# to speed up CI/CD builds.
+
+set -e
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+
+# Skip for merge commits and template sources
+if [ "$COMMIT_SOURCE" = "merge" ] || [ "$COMMIT_SOURCE" = "template" ]; then
+  exit 0
+fi
+
+# Get list of staged files
+STAGED_FILES=$(git diff --name-only --cached)
+
+# If no staged files (shouldn't happen), exit
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+# Check for Docker CI-related changes
+HAS_DOCKER_CI_CHANGES=$(echo "$STAGED_FILES" | grep -E "^(Dockerfile\.ci|pnpm-lock\.yaml|\.npmrc|\.github/workflows/docker-ci\.yml)$" || true)
+
+# Add package emoji if any Docker CI files changed
+if [ -n "$HAS_DOCKER_CI_CHANGES" ]; then
+  CURRENT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+  # Check if emoji already exists at start
+  if ! echo "$CURRENT_MSG" | grep -qE "^📦 "; then
+    echo "📦 ${CURRENT_MSG}" > "$COMMIT_MSG_FILE"
+  fi
+fi

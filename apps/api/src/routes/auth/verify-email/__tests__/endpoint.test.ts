@@ -1,0 +1,133 @@
+import type { Hono } from 'hono'
+
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+
+import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
+import { HttpStatus } from '@/net/http'
+import { Role, Status } from '@/types'
+
+import { verifyEmailRoute } from '../index'
+
+describe('Verify Email Endpoint', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  const VERIFY_EMAIL_URL = '/api/v1/auth/verify-email'
+
+  let app: Hono
+  let mockVerifyEmail: any
+
+  beforeEach(async () => {
+    mockVerifyEmail = mock(async () => ({
+      data: {
+        user: {
+          id: testUuids.USER_1,
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          role: Role.User,
+          status: Status.Verified,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+        },
+        accessToken: 'verify-jwt-token',
+      },
+      refreshToken: 'verify-refresh-token',
+    }))
+
+    await moduleMocker.mock('@/use-cases/auth/verify-email', () => ({
+      verifyEmail: mockVerifyEmail,
+    }))
+
+    app = createTestApp('/api/v1/auth', verifyEmailRoute)
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  describe('POST /auth/verify-email', () => {
+    it('should return user and token on successful email verification', async () => {
+      const validToken = 'a'.repeat(64)
+
+      const res = await post(app, VERIFY_EMAIL_URL, { token: validToken })
+
+      expect(res.status).toBe(HttpStatus.OK)
+
+      const data = await res.json()
+      expect(data).toEqual({
+        user: {
+          id: testUuids.USER_1,
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          role: Role.User,
+          status: Status.Verified,
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z',
+        },
+        accessToken: 'verify-jwt-token',
+      })
+
+      expect(mockVerifyEmail).toHaveBeenCalledTimes(1)
+      expect(mockVerifyEmail).toHaveBeenCalledWith(
+        { token: validToken },
+        { ipAddress: null, userAgent: null },
+      )
+    })
+
+    it('should require token parameter', async () => {
+      const res = await post(app, VERIFY_EMAIL_URL, {})
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      const json = await res.json()
+      expect(json).toHaveProperty('error')
+    })
+
+    it('should validate token requirements', async () => {
+      const invalidTokens = [
+        '', // empty token
+        'a'.repeat(32), // token too short
+        'a'.repeat(63), // token too short by 1
+        'a'.repeat(65), // token too long by 1
+        'a'.repeat(128), // token too long
+      ]
+
+      for (const token of invalidTokens) {
+        const res = await post(app, VERIFY_EMAIL_URL, { token })
+
+        expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+        const json = await res.json()
+        expect(json).toHaveProperty('error')
+      }
+    })
+
+    it('should handle malformed requests', async () => {
+      const validToken = 'a'.repeat(64)
+
+      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
+        { name: 'missing Content-Type', headers: {}, body: { token: validToken } },
+        { name: 'malformed JSON', headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
+        { name: 'missing request body', headers: { 'Content-Type': 'application/json' }, body: '' },
+      ]
+
+      for (const { headers, body } of scenarios) {
+        const res = await post(app, VERIFY_EMAIL_URL, body, headers)
+
+        expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      }
+    })
+
+    it('should handle verification errors', async () => {
+      mockVerifyEmail.mockImplementationOnce(() => {
+        throw new Error('Token verification failed')
+      })
+
+      const validToken = 'c'.repeat(64)
+
+      const res = await post(app, VERIFY_EMAIL_URL, { token: validToken })
+
+      expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
+      expect(mockVerifyEmail).toHaveBeenCalledTimes(1)
+    })
+  })
+})

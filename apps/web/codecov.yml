@@ -1,0 +1,26 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 50%
+        informational: true
+    patch: off
+
+  range: 50..75
+  round: down
+  precision: 0
+
+ignore:
+  - 'src/**/*.stories.{js,jsx}'
+  - 'src/**/*.test.{js,jsx}'
+  - 'src/**/*.spec.{js,jsx}'
+  - 'src/tests/**'
+  - 'src/index.{js,jsx}'
+  - 'src/App.{js,jsx}'
+  - 'src/i18n.{js,jsx}'
+  - 'src/main.{js,jsx}'
+
+comment:
+  layout: 'reach,diff,flags,tree,footer'
+  behavior: default
+  require_changes: false

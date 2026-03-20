@@ -1,0 +1,1 @@
+export { ownerAdminsRoute } from './admins'

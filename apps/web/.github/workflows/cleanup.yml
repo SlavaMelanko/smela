@@ -1,0 +1,53 @@
+name: Cleanup Workflows and Caches
+
+on:
+  schedule:
+    - cron: '0 3 * * 0' # Run weekly on Sunday at 3 AM UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup-workflows:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 30
+          keep_minimum_runs: 10
+
+  cleanup-caches:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cleanup PR caches
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          echo "Fetching list of cache keys for refs/pull..."
+          cacheKeys=$(gh actions-cache list -R $REPO --key refs/pull | cut -f 1)
+
+          if [ -z "$cacheKeys" ]; then
+            echo "No PR caches found"
+            exit 0
+          fi
+
+          echo "Deleting PR caches..."
+          for cacheKey in $cacheKeys; do
+            echo "Deleting cache: $cacheKey"
+            gh actions-cache delete $cacheKey -R $REPO --confirm
+          done
+
+          echo "PR caches cleanup completed"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}

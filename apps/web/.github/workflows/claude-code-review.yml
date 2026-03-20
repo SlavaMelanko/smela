@@ -1,0 +1,95 @@
+name: Code Quality
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+jobs:
+  claude-code-review:
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
+    # Skip review for certain conditions
+    if: |
+      !contains(github.event.pull_request.title, '[skip-review]') &&
+      !contains(github.event.pull_request.title, '[WIP]')
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-code-review
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4.1)
+          # model: "claude-opus-4-1-20250805"
+
+          # Direct prompt for automated review (no @claude mention needed)
+          direct_prompt: |
+            Please review this pull request for a Vite + React (JavaScript) frontend application.
+
+            Review areas:
+            1. Code quality and best practices
+            2. Potential bugs or issues
+            3. Performance considerations (only flag obvious issues, not speculative optimizations)
+            4. Security concerns
+            5. Test coverage: We aim for 60-80% coverage, not 100%. In real development with limited team size (might be solo dev), we focus on minimum testable solution. Prefer a few tests covering normal flow plus a few edge cases. When issues arise, we add unit tests to prevent regression. We can focus on comprehensive testing later if needed.
+
+            Format your feedback:
+              - Group issues by priority:
+                * **Critical**: Bugs, security vulnerabilities, breaking changes — must fix
+                * **Medium**: Important improvements to address
+                * Skip low-priority nitpicks
+              - Include code examples for each suggestion
+              - Do NOT include a "Review Summary" section (summaries are in PR descriptions)
+
+              DO NOT suggest:
+              - JSDoc comments (only comment genuinely complex logic)
+              - PropTypes (we intentionally don't use them)
+              - Component.defaultProps (use inline defaults: `{ prop = default }`)
+              - Missing prop type definitions or default values
+              - Converting to TypeScript
+              - Barrel files or index.ts re-exports
+
+          # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
+          # use_sticky_comment: true
+
+          # Optional: Customize review based on file types
+          # direct_prompt: |
+          #   Review this PR focusing on:
+          #   - For TypeScript files: Type safety and proper interface usage
+          #   - For API endpoints: Security, input validation, and error handling
+          #   - For React components: Performance, accessibility, and best practices
+          #   - For tests: Coverage, edge cases, and test quality
+
+          # Optional: Different prompts for different authors
+          # direct_prompt: |
+          #   ${{ github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' &&
+          #   'Welcome! Please review this PR from a first-time contributor. Be encouraging and provide detailed explanations for any suggestions.' ||
+          #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
+
+          # Optional: Add specific tools for running tests or linting
+          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+
+          # Optional: Skip review for certain conditions moved to job level

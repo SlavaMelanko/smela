@@ -1,0 +1,6 @@
+export { DashboardPage } from './Dashboard'
+export { SettingsPage } from './Settings'
+export { TeamPage } from './Team'
+export { TeamsPage } from './Teams'
+export { UserPage } from './User'
+export { UsersPage } from './Users'
