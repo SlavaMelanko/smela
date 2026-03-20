@@ -4,7 +4,6 @@
   "version": "2026.03.20",
   "type": "module",
   "scripts": {
-    "prepare": "husky",
     "clean": "pnpm store prune && rm -rf node_modules pnpm-lock.yaml",
     "reinstall": "pnpm run clean && pnpm install",
     "dev": "vite --mode development",
@@ -84,7 +83,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-storybook": "^10.2.10",
     "globals": "^17.0.0",
-    "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",

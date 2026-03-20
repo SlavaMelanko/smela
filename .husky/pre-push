@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+bun run --cwd apps/api test
+pnpm --filter @smela/web test
