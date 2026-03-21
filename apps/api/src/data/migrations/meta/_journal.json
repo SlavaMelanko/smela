@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1772698858916,
-      "tag": "0000_premium_thundra",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1773664962219,
-      "tag": "0001_flowery_nebula",
+      "when": 1774093897053,
+      "tag": "0000_chemical_dexter_bennett",
       "breakpoints": true
     }
   ]
