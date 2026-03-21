@@ -2,7 +2,10 @@
   "name": "smela",
   "private": true,
   "version": "2026.03.20",
-  "workspaces": ["apps/web", "apps/api"],
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
   "engines": {
     "bun": ">=1"
   },
@@ -10,20 +13,22 @@
     "husky": "^9.1.7"
   },
   "scripts": {
+    "clean": "bun run --filter @smela/api clean & bun run --filter @smela/web clean & rm -rf node_modules & wait",
+    "reinstall": "bun run clean && bun install",
     "prepare": "husky",
-    "dev:web": "bun run --filter @smela/web run dev",
-    "dev:api": "bun run --filter @smela/api run dev",
+    "dev:web": "bun run --filter @smela/web dev",
+    "dev:api": "bun run --filter @smela/api dev",
     "dev": "bun run dev:api & bun run dev:web",
-    "build:web": "bun run --filter @smela/web run build",
-    "build:api": "bun run --filter @smela/api run build",
-    "lint:web": "bun run --filter @smela/web run lint",
-    "lint:api": "bun run --filter @smela/api run lint",
+    "build:web": "bun run --filter @smela/web build",
+    "build:api": "bun run --filter @smela/api build",
+    "lint:web": "bun run --filter @smela/web lint",
+    "lint:api": "bun run --filter @smela/api lint",
     "lint": "bun run lint:api && bun run lint:web",
-    "test:web": "bun run --filter @smela/web run test",
-    "test:api": "bun run --filter @smela/api run test",
+    "test:web": "bun run --filter @smela/web test",
+    "test:api": "bun run --filter @smela/api test",
     "test": "bun run test:api && bun run test:web",
-    "db:dev:up": "bun run --filter @smela/api run db:dev:up",
-    "db:dev:down": "bun run --filter @smela/api run db:dev:down",
-    "db:dev:reset": "bun run --filter @smela/api run db:dev:reset"
+    "db:dev:up": "bun run --filter @smela/api db:dev:up",
+    "db:dev:down": "bun run --filter @smela/api db:dev:down",
+    "db:dev:reset": "bun run --filter @smela/api db:dev:reset"
   }
 }

@@ -4,7 +4,7 @@
   "version": "2026.03.20",
   "type": "module",
   "scripts": {
-    "clean": "bun pm cache rm && rm -rf node_modules bun.lock",
+    "clean": "bun pm cache rm && rm -rf node_modules",
     "reinstall": "bun run clean && bun install",
     "dev": "vite --mode development",
     "preview": "vite preview --mode production",
