@@ -1,86 +1,92 @@
-name: CI
+name: Web CI
 
 on:
   pull_request:
     branches: [dev, main]
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.gitattributes'
-      - '.prettierignore'
+    paths:
+      - 'apps/web/**'
   push:
     branches: [dev, main]
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.gitattributes'
-      - '.prettierignore'
+    paths:
+      - 'apps/web/**'
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: web-ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   HUSKY: 0
 
 jobs:
-  ut:
-    name: Unit Tests (Jest)
+  check-code-and-coverage:
+    name: Lint, Format & Tests (Jest)
     runs-on: ubuntu-latest
-    container:
-      image:
-        ghcr.io/slavamelanko/smela-front-ci:${{ (github.event_name ==
-        'pull_request' && github.base_ref) || github.ref_name }}
-    environment: test
+    environment: web-test
+    defaults:
+      run:
+        working-directory: apps/web
     env:
       VITE_CAPTCHA_SITE_KEY: ${{ secrets.VITE_CAPTCHA_SITE_KEY }}
+
     steps:
+      - name: Install dependencies for Codecov
+        run: apt-get update && apt-get install -y git curl gpg
+
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Check formatting
-        run: pnpm run format
+        run: bun run format
 
       - name: Check linting
-        run: pnpm run lint
+        run: bun run lint
 
       - name: Run tests with coverage
-        run: pnpm run coverage
+        run: bun run coverage
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          name: web-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/web/coverage/lcov.info
+          flags: web
+          fail_ci_if_error: true
+          verbose: true
 
-  bundle-stats:
+  analyze-bundle:
     name: Bundle Analysis (RelativeCI)
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-    environment: test
-    container:
-      image: ghcr.io/slavamelanko/smela-front-ci:dev
+    environment: web-test
+    defaults:
+      run:
+        working-directory: apps/web
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build and generate bundle stats
-        run: pnpm run bundle:analyze
+        run: bun run bundle:analyze
 
       - name: Upload bundle visualizer as artifact
         uses: actions/upload-artifact@v4
         with:
           name: bundle-visualizer
-          path: dist/bundle-visualizer.html
+          path: apps/web/dist/bundle-visualizer.html
           retention-days: 30
 
       - name: Upload bundle stats to RelativeCI
@@ -88,4 +94,4 @@ jobs:
         with:
           key: ${{ secrets.RELATIVE_CI_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          webpackStatsFile: ./dist/webpack-stats.json
+          webpackStatsFile: apps/web/dist/webpack-stats.json
