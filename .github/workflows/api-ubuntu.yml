@@ -1,28 +1,23 @@
-name: CI
+name: API CI
 
 on:
   pull_request:
     branches: [main, dev]
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '**.json'
-      - 'LICENSE'
-      - '.gitignore'
+    paths:
+      - 'apps/api/**'
   push:
     branches: [main, dev]
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '**.json'
-      - 'LICENSE'
-      - '.gitignore'
+    paths:
+      - 'apps/api/**'
 
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
     container: oven/bun:latest
     environment: test
+    defaults:
+      run:
+        working-directory: apps/api
 
     env:
       LOG_LEVEL: ${{ vars.LOG_LEVEL }}
@@ -63,20 +58,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          name: api-coverage
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/api/coverage/lcov.info
+          flags: api
           fail_ci_if_error: true
-
-  # build:
-  #   runs-on: ubuntu-latest
-  #   container: oven/bun:latest
-  #   needs: tests
-
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Install dependencies
-  #       run: bun install
-
-  #     - name: Build project
-  #       run: bun run build
+          verbose: true
