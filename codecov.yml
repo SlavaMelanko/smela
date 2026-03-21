@@ -1,0 +1,47 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 50%
+        threshold: 2%
+        informational: true
+      api:
+        flags: [api]
+        target: 60%
+        threshold: 2%
+        informational: true
+      web:
+        flags: [web]
+        target: 40%
+        threshold: 2%
+        informational: true
+    patch: off
+
+  range: 40..60
+  round: down
+  precision: 0
+
+flags:
+  api:
+    paths:
+      - apps/api/
+    ignore:
+      - 'apps/api/src/data/migrations/**'
+      - 'apps/api/node_modules/**'
+      - 'apps/api/coverage/**'
+      - 'apps/api/dist/**'
+      - 'apps/api/build/**'
+    carryforward: true
+  web:
+    paths:
+      - apps/web/
+    ignore:
+      - 'apps/web/src/**/*.stories.{js,jsx}'
+      - 'apps/web/node_modules/**'
+      - 'apps/web/coverage/**'
+    carryforward: true
+
+comment:
+  layout: 'reach,diff,flags,tree,footer'
+  behavior: default
+  require_changes: false
