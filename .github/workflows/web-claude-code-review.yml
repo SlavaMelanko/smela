@@ -51,7 +51,7 @@ jobs:
             2. Potential bugs or issues
             3. Performance considerations (only flag obvious issues, not speculative optimizations)
             4. Security concerns
-            5. Test coverage: We aim for 60-80% coverage, not 100%. In real development with limited team size (might be solo dev), we focus on minimum testable solution. Prefer a few tests covering normal flow plus a few edge cases. When issues arise, we add unit tests to prevent regression. We can focus on comprehensive testing later if needed.
+            5. Test coverage: We aim for 40-60% coverage, not 100%. In real development with limited team size (might be solo dev), we focus on minimum testable solution. Prefer a few tests covering normal flow plus a few edge cases. When issues arise, we add unit tests to prevent regression. We can focus on comprehensive testing later if needed.
 
             Format your feedback:
               - Group issues by priority:
