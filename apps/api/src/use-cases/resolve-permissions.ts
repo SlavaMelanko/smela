@@ -9,7 +9,9 @@ export const resolvePermissionList = async (
 
   // Maps DB rows to "action:resource" strings, e.g.
   // "view:users", "manage:teams" for frontend consumption
-  const permissions = rows.map(row => `${row.action}:${row.resource}` as Permission)
+  const permissions = rows.map(
+    row => `${row.action}:${row.resource}` as Permission,
+  )
 
   return permissions.length > 0 ? permissions : undefined
 }

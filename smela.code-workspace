@@ -1,0 +1,7 @@
+{
+  "folders": [
+    { "path": ".", "name": "smela" },
+    { "path": "apps/api", "name": "api" },
+    { "path": "apps/web", "name": "web" },
+  ],
+}

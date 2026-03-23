@@ -20,14 +20,6 @@
     "lint:fix": "bun run --filter @smela/api lint:fix & bun run --filter @smela/web lint:fix & wait $(jobs -p)",
     "dev:web": "bun run --filter @smela/web dev",
     "dev:api": "bun run --filter @smela/api dev",
-    "dev": "bun run dev:api & bun run dev:web",
-    "build:web": "bun run --filter @smela/web build",
-    "build:api": "bun run --filter @smela/api build",
-    "test:web": "bun run --filter @smela/web test",
-    "test:api": "bun run --filter @smela/api test",
-    "test": "bun run test:api && bun run test:web",
-    "db:dev:up": "bun run --filter @smela/api db:dev:up",
-    "db:dev:down": "bun run --filter @smela/api db:dev:down",
-    "db:dev:reset": "bun run --filter @smela/api db:dev:reset"
+    "dev": "bun run dev:api & bun run dev:web"
   }
 }
