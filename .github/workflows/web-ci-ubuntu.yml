@@ -62,7 +62,7 @@ jobs:
           files: apps/web/coverage/lcov.info
           flags: web
           fail_ci_if_error: true
-          verbose: true
+          verbose: false
 
   analyze-bundle:
     name: Bundle Analysis (RelativeCI)
