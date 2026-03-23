@@ -1,5 +1,4 @@
-/** @type {import('jest').Config} */
-module.exports = {
+export default {
   testEnvironment: 'jsdom',
 
   // Transform configuration
@@ -49,6 +48,7 @@ module.exports = {
 
   // Mock settings
   clearMocks: true,
+  resetMocks: true,
   restoreMocks: true,
 
   // Transform ignore patterns for ESM modules
