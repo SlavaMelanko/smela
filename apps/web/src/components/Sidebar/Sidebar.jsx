@@ -31,7 +31,7 @@ import { ActiveIndicator } from './ActiveIndicator'
 const formatBadge = count => {
   const num = Number(count)
 
-  return isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
+  return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
 }
 
 export const Sidebar = ({ items, team }) => {

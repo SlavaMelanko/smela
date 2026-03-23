@@ -1,5 +1,7 @@
 import type { Hono } from 'hono'
 
+const DEFAULT_HEADERS = { 'Content-Type': 'application/json' }
+
 export const doRequest = async (
   app: Hono,
   url: string,
@@ -17,7 +19,7 @@ export const post = async (
   app: Hono,
   url: string,
   body?: any,
-  headers: Record<string, string> = { 'Content-Type': 'application/json' },
+  headers: Record<string, string> = DEFAULT_HEADERS,
 ) =>
   doRequest(app, url, 'POST', body, headers)
 
@@ -32,6 +34,6 @@ export const patch = async (
   app: Hono,
   url: string,
   body?: any,
-  headers: Record<string, string> = { 'Content-Type': 'application/json' },
+  headers: Record<string, string> = DEFAULT_HEADERS,
 ) =>
   doRequest(app, url, 'PATCH', body, headers)
