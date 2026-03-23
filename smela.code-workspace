@@ -1,0 +1,12 @@
+{
+  "folders": [
+    { "path": ".", "name": "smela" },
+    { "path": "apps/api", "name": "api" },
+    { "path": "apps/web", "name": "web" },
+  ],
+  "settings": {
+    "editor.rulers": [100],
+    "editor.tabSize": 2,
+    "cSpell.words": ["anthropics"],
+  },
+}
