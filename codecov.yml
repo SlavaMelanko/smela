@@ -2,9 +2,7 @@ coverage:
   status:
     project:
       default:
-        target: 50%
-        threshold: 2%
-        informational: true
+        enabled: false
       api:
         flags: [api]
         target: 60%

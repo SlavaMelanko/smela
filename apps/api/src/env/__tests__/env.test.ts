@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  mock,
+  spyOn,
+  test,
+} from 'bun:test'
 
 import { validateEnvVars } from '../env'
 
@@ -16,7 +24,8 @@ describe('Environment Configuration', () => {
     POSTGRES_PORT: '5432',
     POSTGRES_DB: 'test_db',
     JWT_SECRET: 'test-jwt-secret-key-min-10-chars',
-    EMAIL_SENDER_PROFILES: '{"system":{"email":"test@example.com","name":"Test System"}}',
+    EMAIL_SENDER_PROFILES:
+      '{"system":{"email":"test@example.com","name":"Test System"}}',
     CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890',
   })
 
@@ -60,7 +69,9 @@ describe('Environment Configuration', () => {
     expect(devEnv.COMPANY_SOCIAL_LINKS).toEqual({})
 
     // POSTGRES_URL construction
-    expect(devEnv.POSTGRES_URL).toBe('postgresql://testuser:TestPass123!@localhost:5432/test_db')
+    expect(devEnv.POSTGRES_URL).toBe(
+      'postgresql://testuser:TestPass123!@localhost:5432/test_db',
+    )
   })
 
   test('should override defaults with custom values', () => {
@@ -118,7 +129,9 @@ describe('Environment Configuration', () => {
     const validProduction = validateEnvVars(prodEnv)
 
     expect(validStaging.ALLOWED_ORIGINS).toBe('https://staging.example.com')
-    expect(validProduction.ALLOWED_ORIGINS).toBe('https://example.com,https://www.example.com')
+    expect(validProduction.ALLOWED_ORIGINS).toBe(
+      'https://example.com,https://www.example.com',
+    )
 
     // Invalid cases - missing ALLOWED_ORIGINS
     validateEnvVars(createBaseEnv('staging'))
@@ -148,12 +161,18 @@ describe('Environment Configuration', () => {
 
     // Should fail without EMAIL_RESEND_API_KEY in staging
     processExitMock.mockClear()
-    validateEnvVars({ ...createBaseEnv('staging'), ALLOWED_ORIGINS: 'https://staging.example.com' })
+    validateEnvVars({
+      ...createBaseEnv('staging'),
+      ALLOWED_ORIGINS: 'https://staging.example.com',
+    })
     expect(processExitMock).toHaveBeenCalledWith(1)
 
     // Should fail without EMAIL_RESEND_API_KEY in production
     processExitMock.mockClear()
-    validateEnvVars({ ...createBaseEnv('production'), ALLOWED_ORIGINS: 'https://example.com' })
+    validateEnvVars({
+      ...createBaseEnv('production'),
+      ALLOWED_ORIGINS: 'https://example.com',
+    })
     expect(processExitMock).toHaveBeenCalledWith(1)
 
     // Should work with EMAIL_RESEND_API_KEY in staging
@@ -181,10 +200,18 @@ describe('Environment Configuration', () => {
     const testCases = [
       { field: 'POSTGRES_USER', value: undefined, desc: 'missing user' },
       { field: 'POSTGRES_USER', value: 'usr', desc: 'user too short' },
-      { field: 'POSTGRES_PASSWORD', value: undefined, desc: 'missing password' },
+      {
+        field: 'POSTGRES_PASSWORD',
+        value: undefined,
+        desc: 'missing password',
+      },
       { field: 'POSTGRES_DB', value: undefined, desc: 'missing database' },
       { field: 'POSTGRES_HOST', value: 'host', desc: 'host too short' },
-      { field: 'POSTGRES_MAX_CONNECTIONS', value: '15', desc: 'max connections exceeded' },
+      {
+        field: 'POSTGRES_MAX_CONNECTIONS',
+        value: '15',
+        desc: 'max connections exceeded',
+      },
     ]
 
     testCases.forEach(({ field, value }) => {
@@ -224,9 +251,21 @@ describe('Environment Configuration', () => {
       { field: 'JWT_SECRET', value: 'short', desc: 'JWT secret too short' },
       { field: 'NODE_ENV', value: 'invalid-env', desc: 'invalid NODE_ENV' },
       { field: 'LOG_LEVEL', value: 'invalid-level', desc: 'invalid LOG_LEVEL' },
-      { field: 'EMAIL_SENDER_PROFILES', value: 'invalid-json', desc: 'invalid EMAIL_SENDER_PROFILES JSON' },
-      { field: 'EMAIL_SENDER_PROFILES', value: '{"system":{"email":"not-an-email","name":"Test"}}', desc: 'invalid email in profiles' },
-      { field: 'CAPTCHA_SECRET_KEY', value: 'invalid-format', desc: 'invalid CAPTCHA format' },
+      {
+        field: 'EMAIL_SENDER_PROFILES',
+        value: 'invalid-json',
+        desc: 'invalid EMAIL_SENDER_PROFILES JSON',
+      },
+      {
+        field: 'EMAIL_SENDER_PROFILES',
+        value: '{"system":{"email":"not-an-email","name":"Test"}}',
+        desc: 'invalid email in profiles',
+      },
+      {
+        field: 'CAPTCHA_SECRET_KEY',
+        value: 'invalid-format',
+        desc: 'invalid CAPTCHA format',
+      },
     ]
 
     testCases.forEach(({ field, value }) => {
@@ -255,7 +294,9 @@ describe('Environment Configuration', () => {
       ...createBaseEnv(),
       JWT_SECRET_PREVIOUS: 'previous-secret-key-min-10-chars',
     })
-    expect(envWithPrevious.JWT_SECRET_PREVIOUS).toBe('previous-secret-key-min-10-chars')
+    expect(envWithPrevious.JWT_SECRET_PREVIOUS).toBe(
+      'previous-secret-key-min-10-chars',
+    )
     expect(processExitMock).not.toHaveBeenCalled()
 
     // Should fail with too short JWT_SECRET_PREVIOUS
