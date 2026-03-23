@@ -5,14 +5,14 @@ import { Bandwidth, PricePerUnit, TotalPrice } from '../Pricing'
 const getPricePerGB = bandwidth => {
   const price = 4 - ((bandwidth - 1) / 998) * 2
 
-  return parseFloat(price.toFixed(2))
+  return Number.parseFloat(price.toFixed(2))
 }
 
 const getPricePerGbWithDiscount = (bandwidth, discount) => {
   const price = 4 - ((bandwidth - 1) / 998) * 2
   const priceWithDiscount = price * (1 - discount / 100)
 
-  return parseFloat(priceWithDiscount.toFixed(2))
+  return Number.parseFloat(priceWithDiscount.toFixed(2))
 }
 
 const SummaryItem = ({ label, value }) => (
