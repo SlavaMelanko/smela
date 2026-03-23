@@ -19,7 +19,7 @@ env:
 
 jobs:
   check-code-and-coverage:
-    name: Lint, Format & Tests (Jest)
+    name: Format, Lint & Tests
     runs-on: ubuntu-latest
     environment: web-test
     defaults:
