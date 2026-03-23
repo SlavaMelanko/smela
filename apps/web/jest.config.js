@@ -48,7 +48,6 @@ export default {
 
   // Mock settings
   clearMocks: true,
-  resetMocks: true,
   restoreMocks: true,
 
   // Transform ignore patterns for ESM modules
