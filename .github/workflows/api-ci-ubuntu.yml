@@ -11,7 +11,7 @@ on:
       - 'apps/api/**'
 
 jobs:
-  ubuntu:
+  ci:
     runs-on: ubuntu-latest
     container: oven/bun:latest
     environment: test
