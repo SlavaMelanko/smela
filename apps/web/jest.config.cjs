@@ -1,4 +1,5 @@
-export default {
+/** @type {import('jest').Config} */
+module.exports = {
   testEnvironment: 'jsdom',
 
   // Transform configuration
