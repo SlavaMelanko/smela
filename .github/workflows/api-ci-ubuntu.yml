@@ -15,7 +15,7 @@ jobs:
     name: Lint, Type Check & Tests
     runs-on: ubuntu-latest
     container: oven/bun:latest
-    environment: test
+    environment: api-test
     defaults:
       run:
         working-directory: apps/api
@@ -24,13 +24,10 @@ jobs:
       LOG_LEVEL: ${{ vars.LOG_LEVEL }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_HOST: postgres
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       COOKIE_REFRESH_TOKEN_NAME: ${{ vars.COOKIE_REFRESH_TOKEN_NAME }}
       COOKIE_REFRESH_TOKEN_EXPIRATION: ${{ vars.COOKIE_REFRESH_TOKEN_EXPIRATION }}
-      BE_BASE_URL: ${{ vars.BE_BASE_URL }}
-      FE_BASE_URL: ${{ vars.FE_BASE_URL }}
       EMAIL_RESEND_API_KEY: ${{ secrets.EMAIL_RESEND_API_KEY }}
       EMAIL_SENDER_PROFILES: ${{ vars.EMAIL_SENDER_PROFILES }}
       COMPANY_NAME: ${{ vars.COMPANY_NAME }}
@@ -65,4 +62,4 @@ jobs:
           files: apps/api/coverage/lcov.info
           flags: api
           fail_ci_if_error: true
-          verbose: true
+          verbose: false
