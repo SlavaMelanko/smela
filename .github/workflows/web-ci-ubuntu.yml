@@ -52,7 +52,7 @@ jobs:
         run: bun run lint
 
       - name: Run tests with coverage
-        run: NODE_ENV=test node node_modules/.bin/jest --coverage
+        run: NODE_ENV=test npx jest --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
