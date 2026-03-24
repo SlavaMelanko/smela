@@ -14,10 +14,10 @@ done
 
 if echo "$CHANGED" | grep -qE "^apps/api/.*\.(ts|js)$"; then
   echo "Running api tests..."
-  bun run --filter @smela/api run test
+  bun run --filter @smela/api test
 fi
 
 if echo "$CHANGED" | grep -qE "^apps/web/.*\.(js|jsx|ts|tsx)$"; then
   echo "Running web tests..."
-  bun run --filter @smela/web run test
+  bun run --filter @smela/web test
 fi
