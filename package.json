@@ -21,6 +21,7 @@
     "dev:web": "bun run --filter @smela/web dev",
     "dev:api": "bun run --filter @smela/api dev",
     "dev": "bun run dev:api & bun run dev:web",
+    "dev:tmux": "bash scripts/dev.sh",
     "check:web": "bun run --filter @smela/web check",
     "check:api": "bun run --filter @smela/api check",
     "check": "bun run check:api & bun run check:web & wait $(jobs -p)"
