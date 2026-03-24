@@ -31,6 +31,7 @@ WORKDIR /app
 COPY --from=build-staging /app/dist ./dist
 COPY --from=build-staging /app/node_modules ./node_modules
 ENV NODE_ENV=staging
+USER bun
 CMD ["bun", "dist/app.js"]
 
 # Build production bundle (minified, no source maps)
@@ -45,4 +46,5 @@ WORKDIR /app
 COPY --from=build-production /app/dist ./dist
 COPY --from=build-production /app/node_modules ./node_modules
 ENV NODE_ENV=production
+USER bun
 CMD ["bun", "dist/app.js"]
