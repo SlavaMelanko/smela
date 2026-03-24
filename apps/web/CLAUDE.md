@@ -26,7 +26,7 @@ architecture, easy maintenance, and simple UX.
 
 ## Essential Commands
 
-All pnpm scripts are defined in `package.json`. Key workflows:
+All script commands are defined in [package.json](package.json). Key workflows:
 
 ### Development
 
@@ -37,7 +37,7 @@ All pnpm scripts are defined in `package.json`. Key workflows:
 
 - Unit tests: `test` (all tests), `coverage` (with coverage)
 - E2E tests: `e2e` (headless), `e2e:ui` (interactive mode)
-- Run single test: `pnpm run test -- path/to/test.spec.js`
+- Run single test: `bun run test -- path/to/test.spec.js`
 - E2E tests require running backend, database, and pre-registered admin/user
   accounts
 

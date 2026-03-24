@@ -9,17 +9,17 @@
 
 ### apps/web
 
-- **react-artisan** — React component patterns, hooks, composition, code quality, and file/folder organization
-- **tailwind-shadcn** — Tailwind CSS and shadcn/ui styling conventions
-- **i18n** — Internationalization and translation patterns
-- **e2e-testing** — Playwright E2E test writing and infrastructure
-- **review** — Code review against all web conventions
+- [react-artisan](.claude/skills/react-artisan/SKILL.md) — React component patterns, hooks, composition, code quality, and file/folder organization
+- [tailwind-shadcn](.claude/skills/tailwind-shadcn/SKILL.md) — Tailwind CSS and shadcn/ui styling conventions
+- [i18n](.claude/skills/i18n/SKILL.md) — Internationalization and translation patterns
+- [e2e-testing](.claude/skills/e2e-testing/SKILL.md) — Playwright E2E test writing and infrastructure
+- [review](.claude/skills/review/SKILL.md) — Code review against all web conventions
 
 ### apps/api
 
-- **api-testing** — Bun/TypeScript test writing with bun:test and mocking patterns
-- **service-integration** — Modular design pattern for external service integrations
+- [api-testing](.claude/skills/api-testing/SKILL.md) — Bun/TypeScript test writing with bun:test and mocking patterns
+- [service-integration](.claude/skills/service-integration/SKILL.md) — Modular design pattern for external service integrations
 
 ### Common
 
-- **cloc** — Count lines of code across all apps
+- [cloc](.claude/skills/cloc/SKILL.md) — Count lines of code across all apps
