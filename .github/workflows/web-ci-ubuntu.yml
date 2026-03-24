@@ -21,7 +21,7 @@ jobs:
   check-code-and-coverage:
     name: Format, Lint & Tests
     runs-on: ubuntu-latest
-    container: oven/bun:latest
+    container: oven/bun:1.3.0
     environment: web-test
     defaults:
       run:
@@ -68,7 +68,7 @@ jobs:
     name: Bundle Analysis (RelativeCI)
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-    container: oven/bun:latest
+    container: oven/bun:1.3.0
     environment: web-test
     defaults:
       run:

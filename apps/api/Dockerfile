@@ -1,6 +1,6 @@
 # Use the official Bun image
 # https://bun.com/guides/ecosystem/docker
-FROM oven/bun:1.2.16 AS base
+FROM oven/bun:1.3.0 AS base
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ COPY . .
 RUN bun run build:staging
 
 # Staging image — includes source maps
-FROM oven/bun:1.2.16-slim AS staging
+FROM oven/bun:1.3.0-slim AS staging
 WORKDIR /app
 COPY --from=build-staging /app/dist ./dist
 COPY --from=build-staging /app/node_modules ./node_modules
@@ -41,7 +41,7 @@ COPY . .
 RUN bun run build
 
 # Production image — minimal, no source or devDeps
-FROM oven/bun:1.2.16-slim AS production
+FROM oven/bun:1.3.0-slim AS production
 WORKDIR /app
 COPY --from=build-production /app/dist ./dist
 COPY --from=build-production /app/node_modules ./node_modules
