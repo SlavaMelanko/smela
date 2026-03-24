@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { renderWithProviders } from '@/tests'
 
 // Mock PointerEvent for JSDOM
-global.PointerEvent = global.Event
+globalThis.PointerEvent = globalThis.Event
 
 import { PermissionsMatrix } from '../PermissionsMatrix'
 
