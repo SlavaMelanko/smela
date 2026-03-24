@@ -1,0 +1,45 @@
+# Exclude web app sources but keep package.json for workspace resolution
+apps/web
+!apps/web/package.json
+
+# Dependencies (reinstalled inside Docker)
+node_modules
+apps/api/node_modules
+
+# Git
+.git
+
+# Environment files (except test)
+apps/api/.env*
+!apps/api/.env.test
+
+# Documentation
+*.md
+CLAUDE.md
+apps/api/CLAUDE.md
+apps/api/postman.json
+
+# OS
+.DS_Store
+
+# Editors
+.vscode
+.idea
+apps/api/.vscode
+
+# Logs
+*.log
+
+# Build output
+apps/api/dist
+apps/api/.cache
+
+# Test coverage
+apps/api/coverage
+apps/api/.nyc_output
+
+# CI/CD
+.github
+
+# Scripts
+*.sh

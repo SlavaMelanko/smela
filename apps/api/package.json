@@ -23,9 +23,9 @@
     "tsc": "bunx tsc --noEmit",
     "check": "bun run lint:fix && bun run tsc && bun run test",
     "emails": "email dev --dir src/emails --port 3001",
-    "docker:build": "docker build -t smela-back --target production .",
-    "docker:build:staging": "docker build -t smela-back-staging --target staging .",
-    "docker:test": "docker build -t smela-back-test --target test . && docker run --rm smela-back-test"
+    "docker:build": "docker build -f $(pwd)/Dockerfile -t smela-api --target production ../..",
+    "docker:build:staging": "docker build -f $(pwd)/Dockerfile -t smela-api-staging --target staging ../..",
+    "docker:test": "docker build -f $(pwd)/Dockerfile -t smela-api-test --target test ../.. && docker run --rm smela-api-test"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
