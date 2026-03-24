@@ -1,11 +1,9 @@
 import { cn } from '@/lib/utils'
 
 export const ColumnResizeHandle = ({ header }) => (
-  <div
-    role='separator'
-    tabIndex={0}
+  <button
+    type='button'
     aria-label='Resize column'
-    aria-orientation='vertical'
     onDoubleClick={e => {
       e.stopPropagation()
       header.column.resetSize()

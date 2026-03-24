@@ -33,4 +33,4 @@ See [`.env.example`](.env.example) to configure required variables.
 bun run dev
 ```
 
-Open your browser and navigate to <http://localhost:5173> by default.
+Open your browser and navigate to <http://localhost:5173>.
