@@ -4,11 +4,11 @@ import { cleanup } from '@testing-library/react'
 import { TextDecoder, TextEncoder } from 'util'
 
 // Ensure text encoding/decoding works in JSDOM
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+globalThis.TextEncoder = TextEncoder
+globalThis.TextDecoder = TextDecoder
 
 // Mock fetch globally
-global.fetch = jest.fn()
+globalThis.fetch = jest.fn()
 
 jest.mock('@/lib/env', () => ({
   default: {
@@ -22,8 +22,8 @@ jest.mock('@/lib/env', () => ({
 const mockExecuteReCaptcha = jest.fn()
 const mockResetReCaptcha = jest.fn()
 
-global.mockExecuteReCaptcha = mockExecuteReCaptcha
-global.mockResetReCaptcha = mockResetReCaptcha
+globalThis.mockExecuteReCaptcha = mockExecuteReCaptcha
+globalThis.mockResetReCaptcha = mockResetReCaptcha
 
 jest.mock('@/components/InvisibleReCaptcha', () => {
   const { useImperativeHandle } = jest.requireActual('react')
@@ -43,7 +43,7 @@ jest.mock('@/components/InvisibleReCaptcha', () => {
 
 const mockNavigate = jest.fn()
 
-global.mockNavigate = mockNavigate
+globalThis.mockNavigate = mockNavigate
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

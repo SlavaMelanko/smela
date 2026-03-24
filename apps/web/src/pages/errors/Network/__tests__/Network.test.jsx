@@ -12,7 +12,7 @@ jest.mock('@/hooks/useUrlParams')
 
 describe('NetworkErrorPage', () => {
   beforeEach(() => {
-    global.mockNavigate.mockClear()
+    globalThis.mockNavigate.mockClear()
     useUrlParams.mockClear()
     useUrlParams.mockReturnValue({ errorType: null })
   })
@@ -50,7 +50,7 @@ describe('NetworkErrorPage', () => {
 
     await user.click(screen.getByRole('button', { name: en.error.network.cta }))
 
-    expect(global.mockNavigate).toHaveBeenCalledWith(-1)
-    expect(global.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(globalThis.mockNavigate).toHaveBeenCalledWith(-1)
+    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
   })
 })

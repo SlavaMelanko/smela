@@ -8,7 +8,7 @@ import { GeneralErrorPage } from '../index'
 
 describe('GeneralErrorPage', () => {
   beforeEach(() => {
-    global.mockNavigate.mockClear()
+    globalThis.mockNavigate.mockClear()
   })
 
   it('renders error icon, title, message, and button', () => {
@@ -34,7 +34,7 @@ describe('GeneralErrorPage', () => {
 
     await user.click(screen.getByRole('button', { name: en.error.general.cta }))
 
-    expect(global.mockNavigate).toHaveBeenCalledWith('/')
-    expect(global.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/')
+    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
   })
 })
