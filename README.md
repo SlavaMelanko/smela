@@ -1,6 +1,6 @@
 # smela
 
-Full-stack monorepo with a REST API backend and React SPA frontend.
+Starter kit for building full-stack web applications.
 
 ## Apps
 
