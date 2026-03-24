@@ -6,7 +6,8 @@ import {
   TableHeader as TableHeaderRoot,
   TableRow
 } from '@/components/ui'
-import { cn } from '@/lib/utils'
+
+import { ColumnResizeHandle } from './ColumnResizeHandle'
 
 export const TableHeader = ({ config }) => (
   <TableHeaderRoot>
@@ -32,15 +33,7 @@ export const TableHeader = ({ config }) => (
                 {isSorted === 'asc' && <ChevronUp className='size-4' />}
                 {isSorted === 'desc' && <ChevronDown className='size-4' />}
               </span>
-              <div
-                onDoubleClick={() => header.column.resetSize()}
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                className={cn(
-                  'absolute right-0 top-0 h-full w-1 cursor-col-resize touch-none select-none rounded-full opacity-0 transition-opacity hover:bg-border hover:opacity-100',
-                  header.column.getIsResizing() && 'bg-primary opacity-100'
-                )}
-              />
+              <ColumnResizeHandle header={header} />
             </TableHead>
           )
         })}
