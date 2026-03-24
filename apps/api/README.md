@@ -14,6 +14,8 @@ Layered monolithic REST API with authentication and RBAC, focused on security an
 - [Bun](https://bun.sh/) runtime (latest version)
 - Email service account ([Resend](https://resend.com/) for production, [Ethereal](https://ethereal.email/) for development)
 
+See [CI workflow](../../.github/workflows/api-ci-ubuntu.yml) for more details.
+
 ## 🛠️ Build and Run
 
 ### 1. Install dependencies
