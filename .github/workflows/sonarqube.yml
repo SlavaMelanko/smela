@@ -1,0 +1,66 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  sonar:
+    name: Coverage & SonarQube Scan
+    runs-on: ubuntu-latest
+    container: oven/bun:latest
+    environment: api-test
+
+    env:
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COOKIE_REFRESH_TOKEN_NAME: ${{ vars.COOKIE_REFRESH_TOKEN_NAME }}
+      COOKIE_REFRESH_TOKEN_EXPIRATION: ${{ vars.COOKIE_REFRESH_TOKEN_EXPIRATION }}
+      EMAIL_RESEND_API_KEY: ${{ secrets.EMAIL_RESEND_API_KEY }}
+      EMAIL_SENDER_PROFILES: ${{ vars.EMAIL_SENDER_PROFILES }}
+      COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+      COMPANY_SOCIAL_LINKS: ${{ vars.COMPANY_SOCIAL_LINKS }}
+      CAPTCHA_SECRET_KEY: ${{ secrets.CAPTCHA_SECRET_KEY }}
+      VITE_CAPTCHA_SITE_KEY: ${{ secrets.VITE_CAPTCHA_SITE_KEY }}
+
+    steps:
+      - name: Install system dependencies
+        working-directory: /
+        run: apt-get update && apt-get install -y git curl gpg nodejs npm
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: bun install --frozen-lockfile
+
+      - name: Run API coverage
+        working-directory: apps/api
+        run: bun run coverage
+
+      - name: Install Web dependencies
+        working-directory: apps/web
+        run: bun install --frozen-lockfile
+
+      - name: Run Web coverage
+        working-directory: apps/web
+        run: NODE_ENV=test npx jest --coverage
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
