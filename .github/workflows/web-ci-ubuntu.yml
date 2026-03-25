@@ -50,22 +50,13 @@ jobs:
       - name: Run tests with coverage
         run: NODE_ENV=test npx jest --coverage
 
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          name: web-coverage-${{ github.sha }}
-          path: apps/web/coverage/lcov.info
-          retention-days: 1
-
-  coverage:
-    name: Coverage
-    needs: ci
-    uses: ./.github/workflows/coverage.yml
-    with:
-      app_name: web
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/web/coverage/lcov.info
+          flags: web
+          fail_ci_if_error: true
 
   analyze-bundle:
     name: Bundle Analysis (RelativeCI)
