@@ -35,10 +35,6 @@ jobs:
       CAPTCHA_SECRET_KEY: ${{ secrets.CAPTCHA_SECRET_KEY }}
 
     steps:
-      - name: Install dependencies for Codecov
-        working-directory: /
-        run: apt-get update && apt-get install -y git curl gpg
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -54,12 +50,19 @@ jobs:
       - name: Run tests with coverage
         run: bun run coverage
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: api-coverage
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: apps/api/coverage/lcov.info
-          flags: api
-          fail_ci_if_error: true
-          verbose: false
+          name: api-coverage-${{ github.sha }}
+          path: apps/api/coverage/lcov.info
+          retention-days: 1
+
+  coverage:
+    name: Coverage
+    needs: ci
+    uses: ./.github/workflows/coverage.yml
+    with:
+      app_name: api
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -138,7 +138,7 @@ import { EmailService } from './service'
 
 export class EmailAgent {
   private static instance: EmailAgent | null = null
-  private service: EmailService
+  private readonly service: EmailService
 
   private constructor() {
     const provider = createEmailProvider()
@@ -163,10 +163,15 @@ export class EmailAgent {
   ) {
     const verificationUrl = `${env.FE_BASE_URL}/verify-email?token=${token}`
 
-    await this.service.send(EmailType.EMAIL_VERIFICATION, email, {
-      firstName,
-      verificationUrl,
-    }, preferences)
+    await this.service.send(
+      EmailType.EMAIL_VERIFICATION,
+      email,
+      {
+        firstName,
+        verificationUrl,
+      },
+      preferences,
+    )
   }
 
   async sendResetPasswordEmail(
@@ -177,10 +182,15 @@ export class EmailAgent {
   ) {
     const resetUrl = `${env.FE_BASE_URL}/reset-password?token=${token}`
 
-    await this.service.send(EmailType.PASSWORD_RESET, email, {
-      firstName,
-      resetUrl,
-    }, preferences)
+    await this.service.send(
+      EmailType.PASSWORD_RESET,
+      email,
+      {
+        firstName,
+        resetUrl,
+      },
+      preferences,
+    )
   }
 }
 
@@ -205,7 +215,7 @@ import { emailAgent } from '@/services/email'
 await emailAgent.sendEmailVerificationEmail(
   user.firstName,
   user.email,
-  verificationToken
+  verificationToken,
 )
 ```
 
@@ -266,7 +276,9 @@ const getProviderType = (type?: EmailProviderType): EmailProviderType => {
   return env.EMAIL_RESEND_API_KEY ? 'resend' : 'ethereal'
 }
 
-export const createEmailProvider = (type?: EmailProviderType): EmailProvider => {
+export const createEmailProvider = (
+  type?: EmailProviderType,
+): EmailProvider => {
   const providerType = getProviderType(type)
 
   logger.info(`📧 Email provider: ${providerType}`)
@@ -314,14 +326,14 @@ export const createEmailProvider = (type?: EmailProviderType): EmailProvider => 
 
 ### Differences (Advanced Patterns)
 
-| Aspect | Captcha | Email |
-|--------|---------|-------|
-| **Providers** | Single (reCAPTCHA) | Multiple (Ethereal, Resend) |
-| **Factory Logic** | Simple instantiation | Environment-based selection |
-| **Usage Pattern** | Closure singleton in middleware | Singleton facade (EmailAgent) |
-| **Additional Patterns** | None | Registry + Singleton Facade |
-| **Configuration** | Single config object | Registry + multiple configs |
-| **Complexity** | ~127 lines | ~500+ lines |
+| Aspect                  | Captcha                         | Email                         |
+| ----------------------- | ------------------------------- | ----------------------------- |
+| **Providers**           | Single (reCAPTCHA)              | Multiple (Ethereal, Resend)   |
+| **Factory Logic**       | Simple instantiation            | Environment-based selection   |
+| **Usage Pattern**       | Closure singleton in middleware | Singleton facade (EmailAgent) |
+| **Additional Patterns** | None                            | Registry + Singleton Facade   |
+| **Configuration**       | Single config object            | Registry + multiple configs   |
+| **Complexity**          | ~127 lines                      | ~500+ lines                   |
 
 ## When to Add Complexity
 

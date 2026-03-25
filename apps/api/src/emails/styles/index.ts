@@ -12,10 +12,8 @@ const styles = {
   get,
 } as const
 
-export const getThemeStyles = (theme?: Theme) => {
-  const t = theme || 'light'
-
-  return { ...styles, ...styles.get(t), color: styles.color[t] }
+export const getThemeStyles = (theme: Theme = 'light') => {
+  return { ...styles, ...styles.get(theme), color: styles.color[theme] }
 }
 
 export type ThemeStyles = ReturnType<typeof getThemeStyles>
