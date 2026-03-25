@@ -60,30 +60,9 @@ jobs:
   coverage:
     name: Coverage Reports
     needs: ci
-    runs-on: ubuntu-latest
-    environment: api-test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download coverage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: api-coverage-${{ github.sha }}
-          path: apps/api/coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: apps/api/coverage/lcov.info
-          flags: api
-          fail_ci_if_error: true
-
-      - name: Upload coverage to SonarCloud
-        uses: sonarsource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    uses: ./.github/workflows/coverage.yml
+    with:
+      app_name: api
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
