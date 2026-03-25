@@ -14,11 +14,9 @@ const content: Record<SupportedLocale, LocaleContent> = {
   uk,
 }
 
-export const getContent = (locale?: SupportedLocale): LocaleContent => {
-  const l = locale || 'en'
-
-  if (l in content) {
-    return content[l]
+export const getContent = (locale: SupportedLocale = 'en'): LocaleContent => {
+  if (locale in content) {
+    return content[locale]
   }
 
   return content.en
