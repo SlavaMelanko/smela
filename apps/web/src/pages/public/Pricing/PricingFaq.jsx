@@ -17,8 +17,8 @@ export const PricingFaq = () => {
       </h2>
 
       <Accordion className='mx-auto max-w-2xl'>
-        {items.map((item, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
+        {items.map(item => (
+          <AccordionItem key={item.question} value={item.question}>
             <AccordionTrigger>{item.question}</AccordionTrigger>
             <AccordionContent>{item.answer}</AccordionContent>
           </AccordionItem>

@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 
+import { TextDecoder, TextEncoder } from 'node:util'
+
 import { cleanup } from '@testing-library/react'
-import { TextDecoder, TextEncoder } from 'util'
 
 // Ensure text encoding/decoding works in JSDOM
 globalThis.TextEncoder = TextEncoder
