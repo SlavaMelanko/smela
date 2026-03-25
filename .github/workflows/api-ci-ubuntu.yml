@@ -58,7 +58,7 @@ jobs:
           retention-days: 1
 
   coverage:
-    name: Coverage Reports
+    name: Coverage
     needs: ci
     uses: ./.github/workflows/coverage.yml
     with:
