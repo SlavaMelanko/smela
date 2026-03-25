@@ -86,7 +86,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     userRepo.findById(inviterId),
   ])
 
-  if (!admin || admin.role !== Role.Admin) {
+  if (admin?.role !== Role.Admin) {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 
@@ -119,7 +119,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
 export const cancelAdminInvite = async (adminId: string) => {
   const admin = await userRepo.findById(adminId)
 
-  if (!admin || admin.role !== Role.Admin) {
+  if (admin?.role !== Role.Admin) {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 

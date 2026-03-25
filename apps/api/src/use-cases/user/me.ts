@@ -37,7 +37,7 @@ export const changePassword = async (
 ) => {
   const auth = await authRepo.findById(userId)
 
-  if (!auth || !auth.passwordHash) {
+  if (!auth?.passwordHash) {
     throw new AppError(ErrorCode.InvalidCredentials)
   }
 

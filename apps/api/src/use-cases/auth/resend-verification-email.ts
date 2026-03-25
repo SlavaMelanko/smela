@@ -28,7 +28,7 @@ export const resendVerificationEmail = async (
 
   // Always return success to prevent email enumeration
   // Only send email if user exists and is unverified
-  if (user && user.status === Status.New) {
+  if (user?.status === Status.New) {
     const token = await createEmailVerificationToken(user.id)
 
     emailAgent.sendEmailVerificationEmail(

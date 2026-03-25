@@ -72,7 +72,7 @@ export const isNetworkError = error => {
   }
 
   // Check response status for fetch API responses
-  if (error.response && error.response.status !== undefined) {
+  if (error.response?.status !== undefined) {
     if (NETWORK_ERROR_STATUS_CODES.includes(error.response.status)) {
       return true
     }
