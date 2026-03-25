@@ -78,13 +78,6 @@ jobs:
       - name: Build and generate bundle stats
         run: bun run bundle:analyze
 
-      - name: Upload bundle visualizer as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: bundle-visualizer
-          path: apps/web/dist/bundle-visualizer.html
-          retention-days: 30
-
       - name: Upload bundle stats to RelativeCI
         uses: relative-ci/agent-action@v3
         with:
