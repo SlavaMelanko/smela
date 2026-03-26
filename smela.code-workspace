@@ -4,4 +4,9 @@
     { "path": "apps/api", "name": "api" },
     { "path": "apps/web", "name": "web" },
   ],
+  "settings": {
+    "files.exclude": {
+      "apps": true
+    }
+  }
 }
