@@ -18,11 +18,12 @@ import {
   createOpenItem
 } from '@/components/table/contextMenuItems'
 import { useCurrentUser } from '@/hooks/useAuth'
+import { useColumnVisibility } from '@/hooks/useColumnVisibility'
 import { useLocale } from '@/hooks/useLocale'
 import { useAdmins } from '@/hooks/useOwner'
 import { useTableState } from '@/hooks/useTableState'
 
-import { defaultHiddenColumns, getColumns } from './columns'
+import { getColumns } from './columns'
 import { useInvite } from './useInvite'
 
 const coreRowModel = getCoreRowModel()
@@ -49,7 +50,10 @@ export const AdminsPage = () => {
   } = useInvite()
 
   const columns = getColumns(t, formatDate, me?.id)
-  const [columnVisibility, setColumnVisibility] = useState(defaultHiddenColumns)
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
+    'admins',
+    columns
+  )
   const [sorting, setSorting] = useState([])
 
   const openAdminProfile = admin => navigate(`/owner/admins/${admin.id}`)

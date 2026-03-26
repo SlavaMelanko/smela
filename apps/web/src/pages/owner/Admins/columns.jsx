@@ -8,7 +8,8 @@ export const getColumns = (t, formatDate, meId) => {
   return [
     {
       accessorKey: 'id',
-      header: label('id')
+      header: label('id'),
+      hidden: true
     },
     {
       accessorKey: 'name',
@@ -35,7 +36,8 @@ export const getColumns = (t, formatDate, meId) => {
       accessorKey: 'invitedBy',
       header: label('invitedBy'),
       accessorFn: row => getFullName(row?.inviter),
-      cell: info => info.getValue() ?? ''
+      cell: info => info.getValue() ?? '',
+      hidden: true
     },
     {
       accessorKey: 'invitedAt',
@@ -46,19 +48,14 @@ export const getColumns = (t, formatDate, meId) => {
     {
       accessorKey: 'updatedAt',
       header: label('updatedAt'),
-      cell: info => formatDate(info.getValue())
+      cell: info => formatDate(info.getValue()),
+      hidden: true
     },
     {
       accessorKey: 'lastActive',
       header: label('lastActive'),
-      cell: info => <LastActiveBadge date={info.getValue()} />
+      cell: info => <LastActiveBadge date={info.getValue()} />,
+      hidden: true
     }
   ]
-}
-
-export const defaultHiddenColumns = {
-  id: false,
-  invitedBy: false,
-  updatedAt: false,
-  lastActive: false
 }
