@@ -50,6 +50,9 @@ jobs:
       - name: Run tests with coverage
         run: NODE_ENV=test npx jest --coverage
 
+      - name: Install dependencies for Codecov
+        run: apt-get update && apt-get install -y git curl gpg
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
