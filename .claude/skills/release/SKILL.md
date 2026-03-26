@@ -59,11 +59,11 @@ Read `version` from `apps/<app>/package.json`.
 
 Compute today's date as `YYYY.MM.DD`.
 
-| Current version | Today | Next version |
-|---|---|---|
-| `2026.03.25` | `2026.03.26` | `2026.03.26` |
-| `2026.03.26` | `2026.03.26` | `2026.03.26.1` |
-| `2026.03.26.1` | `2026.03.26` | `2026.03.26.2` |
+| Current version | Today        | Next version   |
+| --------------- | ------------ | -------------- |
+| `2026.03.25`    | `2026.03.26` | `2026.03.26`   |
+| `2026.03.26`    | `2026.03.26` | `2026.03.26.1` |
+| `2026.03.26.1`  | `2026.03.26` | `2026.03.26.2` |
 
 The tag for each app is `<app>/<next-version>` (e.g. `api/2026.03.26`, `web/2026.03.26`).
 
@@ -96,6 +96,7 @@ Extract the `#NNN` number from the subject `Merge pull request #NNN from ...`.
 If no PR is found for a commit, use the short hash as the reference (e.g. `3eac0f4`).
 
 Filter out:
+
 - Subjects starting with `chore: release`
 - Subjects starting with `Merge pull request`
 
@@ -110,6 +111,7 @@ GitHub-style changelogs group related commits into one line. Apply this grouping
 5. The author is always `@SlavaMelanko`.
 
 Format each entry as:
+
 ```
 <Label> by @SlavaMelanko in <#PR1>, <#PR2>, ...
 ```
@@ -154,7 +156,41 @@ Create the `.releases/` directory if it does not exist.
 
 ## ✅ Quality Gate
 
-<!-- TODO: fill in manually -->
+<div align="center">
+  <!-- TODO: ci image -->
+</div>
+
+<br/>
+
+where Quality Gate:
+
+<div align="center">
+  <!-- TODO: sonar image -->
+</div>
+
+<br/>
+
+<!-- Example table — replace with actual SonarCloud values: -->
+
+| Project | Security | Reliability | Maintainability | Security Hotspots | Lines of Code | Duplications |
+| :-----: | :------: | :---------: | :-------------: | :---------------: | :-----------: | :----------: |
+|  apps   |    0     |      0      |       88        |         0         |    37,028     |     4.0%     |
+|   api   |    0     |      0      |       31        |         0         |    18,838     |     6.3%     |
+|   web   |    0     |      0      |       57        |         0         |    18,190     |     1.4%     |
+
+<!-- End example -->
+
+## 📦 Bundle Size
+
+<!-- web only — omit this section for api releases -->
+
+<div align="center">
+  <!-- TODO: relativeci image -->
+</div>
+
+<br/>
+
+For detailed bundle stats, please check out RelativeCI dashboard.
 
 ## 📏 Lines of Code
 
