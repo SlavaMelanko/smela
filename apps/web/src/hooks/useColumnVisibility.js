@@ -28,15 +28,14 @@ const loadVisibility = (tableId, defaults) => {
 
 export const useColumnVisibility = (tableId, columns) => {
   const defaults = toDefaults(columns)
-
-  const [columnVisibility, setColumnVisibilityState] = useState(() =>
+  const [columnVisibility, setColumnVisibility] = useState(() =>
     loadVisibility(tableId, defaults)
   )
 
-  const setColumnVisibility = next => {
+  const updateVisibility = next => {
     const resolved = typeof next === 'function' ? next(columnVisibility) : next
 
-    setColumnVisibilityState(resolved)
+    setColumnVisibility(resolved)
 
     const diff = diffFromDefaults(resolved, defaults)
 
@@ -47,5 +46,5 @@ export const useColumnVisibility = (tableId, columns) => {
     }
   }
 
-  return [columnVisibility, setColumnVisibility]
+  return [columnVisibility, updateVisibility]
 }
