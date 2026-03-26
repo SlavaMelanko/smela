@@ -23,3 +23,4 @@
 ### Common
 
 - [cloc](.claude/skills/cloc/SKILL.md) — Count lines of code across all apps
+- [release](.claude/skills/release/SKILL.md) — Release advisor: analyses changes, suggests next version, outputs a ready-to-follow release checklist
