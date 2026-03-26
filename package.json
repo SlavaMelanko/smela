@@ -1,7 +1,6 @@
 {
   "name": "smela",
   "private": true,
-  "version": "2026.03.20",
   "workspaces": [
     "apps/web",
     "apps/api"
