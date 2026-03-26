@@ -1,6 +1,6 @@
 # smela
 
-Starter kit for building full-stack web applications.
+Starter kit for full-stack web apps
 
 ## Apps
 
