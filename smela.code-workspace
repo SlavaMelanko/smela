@@ -6,7 +6,7 @@
   ],
   "settings": {
     "files.exclude": {
-      "apps": true
-    }
-  }
+      "apps": true,
+    },
+  },
 }
