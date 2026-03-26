@@ -22,7 +22,7 @@ export const useUrlParams = (keys = [], options = {}) => {
     keys.map(key => {
       let value = params.get(key) || undefined
 
-      if (value && parseNumbers && !isNaN(value)) {
+      if (value && parseNumbers && !Number.isNaN(value)) {
         value = stringToNumber(value)
       } else if (value && parseBooleans) {
         value = stringToBoolean(value)

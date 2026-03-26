@@ -11,8 +11,8 @@ import type { Result } from './result'
  * Implements the Captcha interface for Google's reCAPTCHA service.
  */
 export class Recaptcha implements Captcha {
-  private httpClient: HttpClient
-  private config: Config
+  private readonly httpClient: HttpClient
+  private readonly config: Config
 
   constructor(config: Config) {
     this.config = config

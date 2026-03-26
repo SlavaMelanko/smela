@@ -35,3 +35,6 @@ Thumbs.db
 .vscode/*.code-workspace
 *.swp
 *.suo
+
+# Release drafts
+.releases/

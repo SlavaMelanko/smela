@@ -10,7 +10,8 @@ node_modules
 
 # Documentation
 *.md
-!CLAUDE.md
+CLAUDE.md
+postman.json
 
 # OS
 .DS_Store
@@ -26,6 +27,16 @@ node_modules
 dist
 .cache
 
+# Tests
+**/*.test.ts
+**/*.spec.ts
+
 # Test coverage
 coverage
 .nyc_output
+
+# CI/CD
+.github
+
+# Scripts
+*.sh

@@ -151,9 +151,9 @@ interface EmailProvider {
  * reCAPTCHA API validation result structure.
  */
 export interface Result {
-  'success': boolean
-  'challenge_ts'?: string
-  'hostname'?: string
+  success: boolean
+  challenge_ts?: string
+  hostname?: string
   'error-codes'?: string[]
 }
 ```
@@ -197,7 +197,7 @@ export class Recaptcha implements Captcha {
       const errorCodes = result['error-codes'] || []
       throw new AppError(
         ErrorCode.CaptchaValidationFailed,
-        `reCAPTCHA validation failed: ${errorCodes.join(', ')}`
+        `reCAPTCHA validation failed: ${errorCodes.join(', ')}`,
       )
     }
   }
@@ -363,7 +363,7 @@ export default captchaMiddleware
 // services/email/email-agent.ts
 export class EmailAgent {
   private static instance: EmailAgent | null = null
-  private service: EmailService
+  private readonly service: EmailService
 
   private constructor() {
     const provider = createEmailProvider()
@@ -416,7 +416,7 @@ const mockCaptcha: Captcha = {
     if (token === 'invalid') {
       throw new AppError(ErrorCode.CaptchaValidationFailed)
     }
-  })
+  }),
 }
 ```
 

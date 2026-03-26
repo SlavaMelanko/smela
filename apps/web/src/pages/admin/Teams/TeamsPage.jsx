@@ -15,11 +15,12 @@ import { Spinner } from '@/components/Spinner'
 import { ErrorState } from '@/components/states'
 import { ColumnVisibilityDropdown, Table } from '@/components/table'
 import { createOpenItem } from '@/components/table/contextMenuItems'
+import { useColumnVisibility } from '@/hooks/useColumnVisibility'
 import { useLocale } from '@/hooks/useLocale'
 import { useTableState } from '@/hooks/useTableState'
 import { useTeams } from '@/hooks/useTeam'
 
-import { defaultHiddenColumns, getColumns } from './columns'
+import { getColumns } from './columns'
 import { useManageTeams } from './useManageTeams'
 
 const coreRowModel = getCoreRowModel()
@@ -39,7 +40,10 @@ export const TeamsPage = () => {
   const { openCreateTeamDialog } = useManageTeams()
 
   const columns = getColumns(t, formatDate)
-  const [columnVisibility, setColumnVisibility] = useState(defaultHiddenColumns)
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
+    'teams',
+    columns
+  )
   const [sorting, setSorting] = useState([])
 
   const viewTeam = team => navigate(`/admin/teams/${team.id}`)

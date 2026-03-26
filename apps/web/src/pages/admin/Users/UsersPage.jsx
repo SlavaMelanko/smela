@@ -14,10 +14,11 @@ import { ErrorState } from '@/components/states'
 import { Table } from '@/components/table'
 import { createOpenItem } from '@/components/table/contextMenuItems'
 import { useUsers } from '@/hooks/useAdmin'
+import { useColumnVisibility } from '@/hooks/useColumnVisibility'
 import { useLocale } from '@/hooks/useLocale'
 import { useTableState } from '@/hooks/useTableState'
 
-import { defaultHiddenColumns, getColumns } from './columns'
+import { getColumns } from './columns'
 import { Filters } from './Filters'
 import { Toolbar } from './Toolbar'
 
@@ -35,7 +36,10 @@ export const UsersPage = () => {
     useUsers(apiParams)
 
   const columns = getColumns(t, formatDate)
-  const [columnVisibility, setColumnVisibility] = useState(defaultHiddenColumns)
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
+    'users',
+    columns
+  )
   const [sorting, setSorting] = useState([])
   const [showFilters, setShowFilters] = useState(false)
 

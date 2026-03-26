@@ -1,19 +1,26 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "baseUrl": ".",
+    "outDir": "dist",
+
     "module": "esnext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+
     "strict": true,
-    "noImplicitAny": true,
     "noUnusedLocals": true,
-    "outDir": "dist",
-    "allowSyntheticDefaultImports": true,
+    "noUnusedParameters": true,
+    "noUncheckedSideEffectImports": true,
+    "noFallthroughCasesInSwitch": false,
+    "allowUnreachableCode": false,
+    "noPropertyAccessFromIndexSignature": true,
+
     "esModuleInterop": true,
     "skipLibCheck": true
   },

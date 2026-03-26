@@ -4,7 +4,8 @@ export const getColumns = (t, formatDate) => {
   return [
     {
       accessorKey: 'id',
-      header: label('id')
+      header: label('id'),
+      hidden: true
     },
     {
       accessorKey: 'name',
@@ -23,12 +24,8 @@ export const getColumns = (t, formatDate) => {
     {
       accessorKey: 'updatedAt',
       header: label('updatedAt'),
-      cell: info => formatDate(info.getValue())
+      cell: info => formatDate(info.getValue()),
+      hidden: true
     }
   ]
-}
-
-export const defaultHiddenColumns = {
-  id: false,
-  updatedAt: false
 }

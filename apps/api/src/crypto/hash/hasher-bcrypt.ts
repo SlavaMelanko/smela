@@ -1,5 +1,3 @@
-import { compare as bcryptCompare, hash as bcryptHash } from 'bcrypt'
-
 import type Hasher from './hasher'
 
 class BcryptHasher implements Hasher {
@@ -10,11 +8,11 @@ class BcryptHasher implements Hasher {
   }
 
   async hash(plain: string): Promise<string> {
-    return bcryptHash(plain, this.saltRounds)
+    return Bun.password.hash(plain, { algorithm: 'bcrypt', cost: this.saltRounds })
   }
 
   async compare(plain: string, hashed: string): Promise<boolean> {
-    return bcryptCompare(plain, hashed)
+    return Bun.password.verify(plain, hashed)
   }
 }
 

@@ -9,7 +9,7 @@ import { EmailService } from './service'
 
 export class EmailAgent {
   private static instance: EmailAgent | null = null
-  private service: EmailService
+  private readonly service: EmailService
 
   private constructor() {
     const provider = createEmailProvider()
@@ -19,9 +19,7 @@ export class EmailAgent {
   }
 
   static getInstance(): EmailAgent {
-    if (!EmailAgent.instance) {
-      EmailAgent.instance = new EmailAgent()
-    }
+    EmailAgent.instance ??= new EmailAgent()
 
     return EmailAgent.instance
   }

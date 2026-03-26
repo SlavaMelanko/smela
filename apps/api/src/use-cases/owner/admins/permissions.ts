@@ -9,7 +9,7 @@ import { resolvePermissionMap } from '@/use-cases/resolve-permissions'
 export const getAdminPermissions = async (adminId: string) => {
   const admin = await userRepo.findById(adminId)
 
-  if (!admin || admin.role !== Role.Admin) {
+  if (admin?.role !== Role.Admin) {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 
@@ -21,7 +21,7 @@ export const getAdminPermissions = async (adminId: string) => {
 export const updateAdminPermissions = async (adminId: string, permissions: PermissionsInput) => {
   const admin = await userRepo.findById(adminId)
 
-  if (!admin || admin.role !== Role.Admin) {
+  if (admin?.role !== Role.Admin) {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 

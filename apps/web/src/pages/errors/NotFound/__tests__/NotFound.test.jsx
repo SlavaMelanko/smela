@@ -9,7 +9,7 @@ import { NotFoundErrorPage } from '../index'
 
 describe('NotFoundErrorPage', () => {
   beforeEach(() => {
-    global.mockNavigate.mockClear()
+    globalThis.mockNavigate.mockClear()
     captureMessage.mockClear()
   })
 
@@ -38,8 +38,8 @@ describe('NotFoundErrorPage', () => {
       screen.getByRole('button', { name: en.error.notFound.cta })
     )
 
-    expect(global.mockNavigate).toHaveBeenCalledWith('/')
-    expect(global.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/')
+    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
   })
 
   it('reports 404 to error tracker on mount', () => {

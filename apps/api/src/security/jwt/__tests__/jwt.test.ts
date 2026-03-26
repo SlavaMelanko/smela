@@ -125,7 +125,7 @@ describe('JWT Unit Tests', () => {
           exp: nowInSeconds() + 3600,
         }
 
-        mockVerify.mockImplementation(async (token: string, secret: string) => {
+        mockVerify.mockImplementation(async (_token: string, secret: string) => {
           if (secret === 'current-secret-key') {
             return mockPayload
           }
