@@ -1,5 +1,4 @@
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { useState } from 'react'
 
 import { InviteButton } from '@/components/buttons'
 import { Spinner } from '@/components/Spinner'
@@ -11,11 +10,12 @@ import {
   createOpenItem
 } from '@/components/table/contextMenuItems'
 import { useCurrentUser } from '@/hooks/useAuth'
+import { useColumnVisibility } from '@/hooks/useColumnVisibility'
 import { useDeleteTeamMember } from '@/hooks/useDeleteTeamMember'
 import { useLocale } from '@/hooks/useLocale'
 import { useTeamMembers } from '@/hooks/useTeam'
 
-import { defaultHiddenColumns, getColumns } from './columns'
+import { getColumns } from './columns'
 import { useInvite } from './useTeamMembersInvite'
 
 const coreRowModel = getCoreRowModel()
@@ -65,7 +65,10 @@ export const TeamMembersSection = ({
   ]
 
   const columns = getColumns(t, formatDate, me?.id)
-  const [columnVisibility, setColumnVisibility] = useState(defaultHiddenColumns)
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
+    'team-members',
+    columns
+  )
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const config = useReactTable({
