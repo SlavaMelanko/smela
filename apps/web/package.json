@@ -9,7 +9,6 @@
     "dev": "vite --mode development",
     "preview": "vite preview --mode production",
     "build": "vite build --mode production",
-    "build:staging": "vite build --mode staging",
     "test": "NODE_ENV=test jest",
     "coverage": "NODE_ENV=test jest --coverage",
     "e2e": "NODE_ENV=test bunx playwright test -x",
