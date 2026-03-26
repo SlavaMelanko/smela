@@ -7,8 +7,12 @@ export interface MockResult {
 }
 
 /**
- * Due to an issue with Bun (https://github.com/oven-sh/bun/issues/7823 and https://github.com/oven-sh/bun/issues/12823), we need to manually restore mocked modules
- * after we're done. We do this by setting the mocked value to the original module.
+ * Due to a Bun bug, mock.module() operates on a global module registry with no per-file or
+ * per-test scoping, so mocks leak across test files and mock.restore() does not reset them.
+ * Issues: https://github.com/oven-sh/bun/issues/7823, https://github.com/oven-sh/bun/issues/12823
+ * Fix in progress (not yet merged): https://github.com/oven-sh/bun/pull/25844
+ *
+ * This class works around the issue by re-applying the original module after each test.
  *
  * When setting up a test that will mock a module, the block should add this:
  * const moduleMocker = new ModuleMocker(import.meta.url)
