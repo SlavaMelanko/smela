@@ -1,6 +1,6 @@
 import { db, teamRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
@@ -68,7 +68,7 @@ export const removeTeamMember = async (teamId: string, memberId: string) => {
 
   await db.transaction(async (tx) => {
     await teamRepo.deleteMember(memberId, teamId, tx)
-    await userRepo.update(memberId, { status: Status.Archived }, tx)
+    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }

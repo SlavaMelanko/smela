@@ -4,5 +4,5 @@ export { getAdminBasePermissions, getAdminDefaultPermissions, getMemberDefaultPe
 export type { AdminPermissionMap, PermissionMap, PermissionsInput } from './permission'
 export { default as Resource } from './resource'
 export { isAdmin, isOwner, isUser, isUserOrAdmin, default as Role } from './role'
-export { isActive, isActiveOnly, isNewOrActive, default as Status } from './status'
 export type { SupportedLocale, Theme, UserPreferences } from './user-preferences'
+export { isActive, isActiveOnly, isNewOrActive, default as UserStatus } from './user-status'

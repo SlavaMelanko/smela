@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { createAuthMiddleware } from '../factory'
 
@@ -20,7 +20,7 @@ describe('Auth Middleware Factory', () => {
     id: testUuids.USER_1,
     email: 'test@example.com',
     role: Role.User,
-    status: Status.Verified,
+    status: UserStatus.Verified,
   }
 
   beforeEach(() => {
@@ -108,7 +108,7 @@ describe('Auth Middleware Factory', () => {
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()
       expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Status validation failure')
+      expect(json.error).toBe('UserStatus validation failure')
     })
 
     it('should re-throw AppError from role validator', async () => {

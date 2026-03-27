@@ -3,7 +3,7 @@ import { ZodError } from 'zod'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 import { nowInSeconds } from '@/utils/chrono'
 
 describe('JWT Unit Tests', () => {
@@ -38,7 +38,7 @@ describe('JWT Unit Tests', () => {
           id: testUuids.USER_1,
           email: 'test@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         },
         { secret: 'test-secret' },
       )
@@ -52,7 +52,7 @@ describe('JWT Unit Tests', () => {
         id: testUuids.USER_1,
         email: 'test@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
       })
       expect(payload.iat).toBeGreaterThanOrEqual(now - 1)
       expect(payload.nbf).toBeGreaterThanOrEqual(now - 1)
@@ -68,7 +68,7 @@ describe('JWT Unit Tests', () => {
         id: testUuids.USER_1,
         email: 'test@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
         exp: nowInSeconds() + 3600,
       }))
 
@@ -121,7 +121,7 @@ describe('JWT Unit Tests', () => {
           id: testUuids.USER_1,
           email: 'test@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           exp: nowInSeconds() + 3600,
         }
 
@@ -151,7 +151,7 @@ describe('JWT Unit Tests', () => {
           id: testUuids.USER_1,
           email: 'test@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           exp: nowInSeconds() + 3600,
         }
 

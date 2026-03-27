@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getUsersHandler } from '../handler'
 
@@ -27,7 +27,7 @@ describe('getUsersHandler', () => {
         lastName: 'Doe',
         email: 'john@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
       },

@@ -8,7 +8,7 @@ import type { UserClaims } from '@/security/jwt'
 import { createTestApp, ModuleMocker, patch, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { meRoute } from '../index'
 
@@ -32,7 +32,7 @@ describe('Me Endpoint', () => {
       lastName: 'Doe',
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }
@@ -43,7 +43,7 @@ describe('Me Endpoint', () => {
       lastName: 'Smith',
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-02'),
     }
@@ -58,7 +58,7 @@ describe('Me Endpoint', () => {
       id: testUuids.USER_1,
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
     }
 
     const userMiddleware: any = async (c: any, next: any) => {
@@ -87,7 +87,7 @@ describe('Me Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
         },

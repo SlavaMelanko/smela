@@ -7,7 +7,7 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
 import Role from '@/types/role'
-import Status from '@/types/status'
+import UserStatus from '@/types/user-status'
 import { hour, nowPlus } from '@/utils/chrono'
 
 import { acceptInvite } from '../accept-invite'
@@ -63,14 +63,14 @@ describe('Accept Invite', () => {
       firstName: 'Admin',
       lastName: 'User',
       role: Role.Admin,
-      status: Status.Pending,
+      status: UserStatus.Pending,
       createdAt: new Date(),
       updatedAt: new Date(),
     } as User
 
     mockActivatedUser = {
       ...mockUser,
-      status: Status.Active,
+      status: UserStatus.Active,
     } as User
 
     mockAccessToken = 'mock-access-token'
@@ -169,7 +169,7 @@ describe('Accept Invite', () => {
       expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
 
       expect(mockUserRepo.update).toHaveBeenCalledWith(mockTokenRecord.userId, {
-        status: Status.Active,
+        status: UserStatus.Active,
       }, {})
       expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
 

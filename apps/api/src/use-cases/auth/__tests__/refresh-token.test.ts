@@ -4,7 +4,7 @@ import type { RefreshToken, User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { refreshAuthTokens } from '../refresh-token'
 
@@ -40,7 +40,7 @@ describe('Refresh Auth Tokens', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'test@example.com',
-      status: Status.Verified,
+      status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -302,19 +302,19 @@ describe('Refresh Auth Tokens', () => {
     })
 
     it('should handle suspended user status', async () => {
-      const suspendedUser = { ...mockUser, status: Status.Suspended }
+      const suspendedUser = { ...mockUser, status: UserStatus.Suspended }
       mockUserRepo.findById.mockImplementation(async () => suspendedUser)
 
       const result = await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
-      expect(result.data.user.status).toBe(Status.Suspended)
+      expect(result.data.user.status).toBe(UserStatus.Suspended)
     })
 
     it('should handle new user status', async () => {
-      const newUser = { ...mockUser, status: Status.New }
+      const newUser = { ...mockUser, status: UserStatus.New }
       mockUserRepo.findById.mockImplementation(async () => newUser)
 
       const result = await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
-      expect(result.data.user.status).toBe(Status.New)
+      expect(result.data.user.status).toBe(UserStatus.New)
     })
   })
 

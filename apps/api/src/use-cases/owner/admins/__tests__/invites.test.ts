@@ -5,7 +5,7 @@ import type { User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { cancelAdminInvite, inviteAdmin, resendAdminInvite } from '../invites'
 
@@ -41,7 +41,7 @@ describe('inviteAdmin', () => {
       lastName: 'Admin',
       email: 'newadmin@example.com',
       role: Role.Admin,
-      status: Status.Pending,
+      status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }
@@ -124,7 +124,7 @@ describe('inviteAdmin', () => {
         firstName: 'New',
         lastName: 'Admin',
         email: 'newadmin@example.com',
-        status: Status.Pending,
+        status: UserStatus.Pending,
       },
       expect.anything(),
     )
@@ -169,7 +169,7 @@ describe('resendAdminInvite', () => {
       lastName: 'User',
       email: 'admin@example.com',
       role: Role.Admin,
-      status: Status.Pending,
+      status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }
@@ -180,7 +180,7 @@ describe('resendAdminInvite', () => {
       lastName: 'User',
       email: 'owner@example.com',
       role: Role.Owner,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }
@@ -275,7 +275,7 @@ describe('resendAdminInvite', () => {
   it('should throw BadRequest when admin has already accepted invitation', async () => {
     mockFindById.mockImplementation(async (id: string) => {
       if (id === testUuids.ADMIN_1) {
-        return { ...mockAdmin, status: Status.Active }
+        return { ...mockAdmin, status: UserStatus.Active }
       }
       if (id === testUuids.OWNER_1) {
         return mockInviter
@@ -353,14 +353,14 @@ describe('cancelAdminInvite', () => {
       lastName: 'User',
       email: 'admin@example.com',
       role: Role.Admin,
-      status: Status.Pending,
+      status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }
 
     mockFindById = mock(async () => mockAdmin)
     mockTokenDeprecate = mock(async () => {})
-    mockUserUpdate = mock(async () => ({ ...mockAdmin, status: Status.Archived }))
+    mockUserUpdate = mock(async () => ({ ...mockAdmin, status: UserStatus.Archived }))
 
     // eslint-disable-next-line ts/no-unsafe-return
     mockTransaction = mock(async (callback: any) => callback({}))
@@ -401,7 +401,7 @@ describe('cancelAdminInvite', () => {
   })
 
   it('should throw BadRequest when admin has already accepted invitation', async () => {
-    mockFindById.mockImplementation(async () => ({ ...mockAdmin, status: Status.Active }))
+    mockFindById.mockImplementation(async () => ({ ...mockAdmin, status: UserStatus.Active }))
 
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toThrow(AppError)
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toMatchObject({
@@ -416,7 +416,7 @@ describe('cancelAdminInvite', () => {
     expect(mockTokenDeprecate).toHaveBeenCalledWith(testUuids.ADMIN_1, 'user_invite', expect.anything())
     expect(mockUserUpdate).toHaveBeenCalledWith(
       testUuids.ADMIN_1,
-      { status: Status.Archived },
+      { status: UserStatus.Archived },
       expect.anything(),
     )
     expect(result).toEqual({ success: true })

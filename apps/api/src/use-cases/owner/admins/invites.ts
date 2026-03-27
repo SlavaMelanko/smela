@@ -6,7 +6,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services/email'
-import { AuthProvider, Role, Status } from '@/types'
+import { AuthProvider, Role, UserStatus } from '@/types'
 
 export interface InviteAdminInput {
   firstName: string
@@ -36,7 +36,7 @@ export const inviteAdmin = async (admin: InviteAdminInput, inviterId: string) =>
       firstName: admin.firstName,
       lastName: admin.lastName,
       email: admin.email,
-      status: Status.Pending,
+      status: UserStatus.Pending,
     }, tx)
 
     // Use random password and admin sets real password when accepting invitation
@@ -90,7 +90,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 
-  if (admin.status !== Status.Pending) {
+  if (admin.status !== UserStatus.Pending) {
     throw new AppError(ErrorCode.BadRequest, 'Admin has already accepted invitation')
   }
 
@@ -123,13 +123,13 @@ export const cancelAdminInvite = async (adminId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 
-  if (admin.status !== Status.Pending) {
+  if (admin.status !== UserStatus.Pending) {
     throw new AppError(ErrorCode.BadRequest, 'Admin has already accepted invitation')
   }
 
   await db.transaction(async (tx) => {
     await tokenRepo.deprecate(adminId, TokenType.UserInvite, tx)
-    await userRepo.update(adminId, { status: Status.Archived }, tx)
+    await userRepo.update(adminId, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }

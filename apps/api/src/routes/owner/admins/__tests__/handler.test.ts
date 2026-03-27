@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Resource, Role, Status } from '@/types'
+import { Resource, Role, UserStatus } from '@/types'
 
 import {
   createAdminHandler,
@@ -55,7 +55,7 @@ describe('getAdminsHandler', () => {
         lastName: 'User',
         email: 'admin@example.com',
         role: Role.Admin,
-        status: Status.Active,
+        status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
       },

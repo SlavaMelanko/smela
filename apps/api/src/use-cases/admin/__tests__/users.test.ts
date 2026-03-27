@@ -5,7 +5,7 @@ import type { SearchResult, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getUser, searchUsers } from '../users'
 
@@ -26,7 +26,7 @@ describe('searchUsers', () => {
           lastName: 'Doe',
           email: 'john@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
         },
@@ -74,12 +74,12 @@ describe('searchUsers', () => {
 
   it('should preserve statuses in search params', async () => {
     await searchUsers(
-      { roles: [Role.User], statuses: [Status.Active, Status.Active] },
+      { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
       DEFAULT_PAGINATION,
     )
 
     expect(mockUserRepoSearch).toHaveBeenCalledWith(
-      { roles: [Role.User], statuses: [Status.Active, Status.Active] },
+      { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
       DEFAULT_PAGINATION,
     )
   })
@@ -98,7 +98,7 @@ describe('getUser', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }

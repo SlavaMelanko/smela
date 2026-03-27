@@ -7,7 +7,7 @@ import { testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { teamAccessMiddleware } from '../team-access'
 
@@ -43,7 +43,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -67,7 +67,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -91,7 +91,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -112,7 +112,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -134,7 +134,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -155,7 +155,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -177,7 +177,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -198,7 +198,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -216,7 +216,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -239,7 +239,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -262,7 +262,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })
@@ -288,7 +288,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
         })
         await next()
       })

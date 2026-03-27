@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { userRelaxedAuthMiddleware } from '../index'
 
@@ -30,7 +30,7 @@ describe('User Relaxed Authentication Middleware', () => {
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_1, email: 'test@example.com', role, status: Status.Active },
+          { id: testUuids.USER_1, email: 'test@example.com', role, status: UserStatus.Active },
           { secret: env.JWT_SECRET },
         )
 
@@ -50,9 +50,14 @@ describe('User Relaxed Authentication Middleware', () => {
     })
   })
 
-  describe('Status Validation', () => {
+  describe('UserStatus Validation', () => {
     it('should allow all New or Active statuses', async () => {
-      const allowedStatuses = [Status.New, Status.Verified, Status.Trial, Status.Active]
+      const allowedStatuses = [
+        UserStatus.New,
+        UserStatus.Verified,
+        UserStatus.Trial,
+        UserStatus.Active,
+      ]
 
       for (const status of allowedStatuses) {
         const testApp = new Hono<AppContext>()
@@ -79,7 +84,7 @@ describe('User Relaxed Authentication Middleware', () => {
     })
 
     it('should reject invalid statuses', async () => {
-      const invalidStatuses = [Status.Suspended, Status.Archived, Status.Pending]
+      const invalidStatuses = [UserStatus.Suspended, UserStatus.Archived, UserStatus.Pending]
 
       for (const status of invalidStatuses) {
         const testApp = new Hono<AppContext>()
@@ -102,7 +107,7 @@ describe('User Relaxed Authentication Middleware', () => {
         expect(res.status).toBe(HttpStatus.FORBIDDEN)
         const json = await res.json()
         expect(json.code).toBe(ErrorCode.Forbidden)
-        expect(json.error).toBe('Status validation failure')
+        expect(json.error).toBe('UserStatus validation failure')
       }
     })
   })

@@ -6,7 +6,7 @@ import type { DeviceInfo } from '@/net/http/device'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 import { days, hour, hours, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { verifyEmail } from '../verify-email'
@@ -59,7 +59,7 @@ describe('Verify Email', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Verified,
+      status: UserStatus.Verified,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -128,7 +128,7 @@ describe('Verify Email', () => {
       expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
 
       expect(mockUserRepo.update).toHaveBeenCalledWith(mockTokenRecord.userId, {
-        status: Status.Verified,
+        status: UserStatus.Verified,
       }, {})
       expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
 
@@ -374,7 +374,7 @@ describe('Verify Email', () => {
       expect(result.data).toHaveProperty('accessToken')
       expect(result.data.user.email).toBe(mockUser.email)
       expect(mockUserRepo.update).toHaveBeenCalledWith(testUuids.NON_EXISTENT, {
-        status: Status.Verified,
+        status: UserStatus.Verified,
       }, {})
     })
 
