@@ -10,7 +10,6 @@ React SPA with a solid, well-designed architecture for a smooth user experience.
 ## 📋 Prerequisites
 
 - [Git](https://git-scm.com/) version control
-- [Node.js](https://nodejs.org) (v22 or higher)
 - [Bun](https://bun.sh/) runtime (latest version)
 
 See [CI workflow](../../.github/workflows/web-ci-ubuntu.yml) for more details.
