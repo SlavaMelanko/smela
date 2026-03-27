@@ -2,10 +2,10 @@ import { act, renderHook } from '@testing-library/react'
 
 import { useHashTab } from '../useHashTab'
 
-const mockNavigate = jest.fn()
+const mockNavigate = vi.fn()
 let mockLocation = { pathname: '/test', search: '', hash: '' }
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   useLocation: () => mockLocation,
   useNavigate: () => mockNavigate
 }))

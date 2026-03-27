@@ -2,23 +2,23 @@ import { withTimeout } from '../async'
 
 describe('withTimeout', () => {
   beforeEach(() => {
-    jest.clearAllTimers()
-    jest.useFakeTimers()
+    vi.clearAllTimers()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   describe('successful execution', () => {
     it('should return result when async function completes within timeout', async () => {
       const mockResult = 'success'
-      const mockAsyncFn = jest.fn(() => Promise.resolve(mockResult))
+      const mockAsyncFn = vi.fn(() => Promise.resolve(mockResult))
 
       const resultPromise = withTimeout(mockAsyncFn, 5000)
 
       // Fast-forward a small amount of time
-      jest.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
 
       const result = await resultPromise
 
@@ -29,12 +29,12 @@ describe('withTimeout', () => {
 
     it('should use default timeout of 10 seconds when not specified', async () => {
       const mockResult = 'success'
-      const mockAsyncFn = jest.fn(() => Promise.resolve(mockResult))
+      const mockAsyncFn = vi.fn(() => Promise.resolve(mockResult))
 
       const resultPromise = withTimeout(mockAsyncFn)
 
       // Fast-forward 9 seconds (should still work)
-      jest.advanceTimersByTime(9000)
+      vi.advanceTimersByTime(9000)
 
       const result = await resultPromise
 
@@ -43,7 +43,7 @@ describe('withTimeout', () => {
 
     it('should handle functions that return promises', async () => {
       const mockResult = { data: 'test' }
-      const mockAsyncFn = jest.fn(() => Promise.resolve(mockResult))
+      const mockAsyncFn = vi.fn(() => Promise.resolve(mockResult))
 
       const result = await withTimeout(mockAsyncFn, 1000)
 
@@ -55,32 +55,32 @@ describe('withTimeout', () => {
   describe('timeout behavior', () => {
     it('should timeout and reject with abort error after specified time', async () => {
       // Create a function that never resolves
-      const mockAsyncFn = jest.fn(() => new Promise(() => {}))
+      const mockAsyncFn = vi.fn(() => new Promise(() => {}))
 
       const resultPromise = withTimeout(mockAsyncFn, 1000)
 
       // Fast-forward past the timeout
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
 
       await expect(resultPromise).rejects.toThrow()
       expect(mockAsyncFn).toHaveBeenCalledTimes(1)
     })
 
     it('should timeout with default 10 seconds', async () => {
-      const mockAsyncFn = jest.fn(() => new Promise(() => {}))
+      const mockAsyncFn = vi.fn(() => new Promise(() => {}))
 
       const resultPromise = withTimeout(mockAsyncFn)
 
       // Fast-forward to the full timeout
-      jest.advanceTimersByTime(10000)
+      vi.advanceTimersByTime(10000)
 
       await expect(resultPromise).rejects.toThrow()
       expect(mockAsyncFn).toHaveBeenCalledTimes(1)
     })
 
     it('should clean up timeout when operation completes successfully', async () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
-      const mockAsyncFn = jest.fn(() => Promise.resolve('success'))
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
+      const mockAsyncFn = vi.fn(() => Promise.resolve('success'))
 
       await withTimeout(mockAsyncFn, 1000)
 
@@ -89,12 +89,12 @@ describe('withTimeout', () => {
     })
 
     it('should clean up timeout when operation times out', async () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
-      const mockAsyncFn = jest.fn(() => new Promise(() => {}))
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
+      const mockAsyncFn = vi.fn(() => new Promise(() => {}))
 
       const resultPromise = withTimeout(mockAsyncFn, 100)
 
-      jest.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
 
       await expect(resultPromise).rejects.toThrow()
       expect(clearTimeoutSpy).toHaveBeenCalled()
@@ -105,7 +105,7 @@ describe('withTimeout', () => {
   describe('error handling', () => {
     it('should propagate errors from the async function', async () => {
       const mockError = new Error('Function failed')
-      const mockAsyncFn = jest.fn(() => Promise.reject(mockError))
+      const mockAsyncFn = vi.fn(() => Promise.reject(mockError))
 
       await expect(withTimeout(mockAsyncFn, 1000)).rejects.toThrow(
         'Function failed'
@@ -115,9 +115,9 @@ describe('withTimeout', () => {
     })
 
     it('should clean up timeout when async function throws error', async () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
       const mockError = new Error('Function failed')
-      const mockAsyncFn = jest.fn(() => Promise.reject(mockError))
+      const mockAsyncFn = vi.fn(() => Promise.reject(mockError))
 
       await expect(withTimeout(mockAsyncFn, 1000)).rejects.toThrow(
         'Function failed'
@@ -129,15 +129,15 @@ describe('withTimeout', () => {
 
     it('should distinguish between timeout errors and function errors', async () => {
       // Test timeout error
-      const hangingFn = jest.fn(() => new Promise(() => {}))
+      const hangingFn = vi.fn(() => new Promise(() => {}))
       const timeoutPromise = withTimeout(hangingFn, 100)
 
-      jest.advanceTimersByTime(100)
+      vi.advanceTimersByTime(100)
 
       await expect(timeoutPromise).rejects.toThrow()
 
       // Test function error
-      const failingFn = jest.fn(() => Promise.reject(new Error('Custom error')))
+      const failingFn = vi.fn(() => Promise.reject(new Error('Custom error')))
 
       await expect(withTimeout(failingFn, 1000)).rejects.toThrow('Custom error')
     })
@@ -145,18 +145,18 @@ describe('withTimeout', () => {
 
   describe('edge cases', () => {
     it('should handle zero timeout', async () => {
-      const mockAsyncFn = jest.fn(() => new Promise(() => {}))
+      const mockAsyncFn = vi.fn(() => new Promise(() => {}))
 
       const resultPromise = withTimeout(mockAsyncFn, 0)
 
-      jest.advanceTimersByTime(0)
+      vi.advanceTimersByTime(0)
 
       await expect(resultPromise).rejects.toThrow()
     })
 
     it('should handle very large timeout values', async () => {
       const mockResult = 'success'
-      const mockAsyncFn = jest.fn(() => Promise.resolve(mockResult))
+      const mockAsyncFn = vi.fn(() => Promise.resolve(mockResult))
 
       const result = await withTimeout(mockAsyncFn, 999999999)
 
@@ -166,7 +166,7 @@ describe('withTimeout', () => {
     it('should handle functions that return non-promise values', async () => {
       // This tests that the function properly handles sync functions
       const mockResult = 'immediate result'
-      const mockSyncFn = jest.fn(() => mockResult)
+      const mockSyncFn = vi.fn(() => mockResult)
 
       const result = await withTimeout(mockSyncFn, 1000)
 
@@ -175,7 +175,7 @@ describe('withTimeout', () => {
 
     it('should handle functions that throw synchronously', async () => {
       const mockError = new Error('Sync error')
-      const mockSyncFn = jest.fn(() => {
+      const mockSyncFn = vi.fn(() => {
         throw mockError
       })
 
@@ -189,7 +189,7 @@ describe('withTimeout', () => {
         ok: true,
         json: () => Promise.resolve({ data: 'test' })
       }
-      const mockFetch = jest.fn(() => Promise.resolve(mockResponse))
+      const mockFetch = vi.fn(() => Promise.resolve(mockResponse))
 
       const result = await withTimeout(
         signal => mockFetch('/api/test', { signal }),
@@ -204,7 +204,7 @@ describe('withTimeout', () => {
 
     it('should work with file upload scenarios', async () => {
       const mockUploadResult = { uploaded: true, id: '123' }
-      const mockUpload = jest.fn(() => Promise.resolve(mockUploadResult))
+      const mockUpload = vi.fn(() => Promise.resolve(mockUploadResult))
       const mockFile = { name: 'test.jpg' }
 
       const result = await withTimeout(
@@ -217,9 +217,9 @@ describe('withTimeout', () => {
     })
 
     it('should handle multiple concurrent withTimeout calls', async () => {
-      const mockFn1 = jest.fn(() => Promise.resolve('result1'))
-      const mockFn2 = jest.fn(() => Promise.resolve('result2'))
-      const mockFn3 = jest.fn(() => new Promise(() => {})) // hangs
+      const mockFn1 = vi.fn(() => Promise.resolve('result1'))
+      const mockFn2 = vi.fn(() => Promise.resolve('result2'))
+      const mockFn3 = vi.fn(() => new Promise(() => {})) // hangs
 
       const promises = [
         withTimeout(mockFn1, 1000),
@@ -228,7 +228,7 @@ describe('withTimeout', () => {
       ]
 
       // Fast-forward to trigger timeout for fn3
-      jest.advanceTimersByTime(500)
+      vi.advanceTimersByTime(500)
 
       const results = await Promise.allSettled(promises)
 

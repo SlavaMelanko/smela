@@ -2,11 +2,11 @@ import { setUser as sentrySetUser } from '@sentry/react'
 
 import { clearUser, setUser } from '../context'
 
-jest.mock('@sentry/react')
+vi.mock('@sentry/react')
 
 describe('setUser', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should set user with id only', () => {
@@ -18,7 +18,7 @@ describe('setUser', () => {
 
 describe('clearUser', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should clear user by setting null', () => {

@@ -98,17 +98,14 @@ export default [
     }
   },
   {
-    // Jest
-    files: [
-      '**/*.test.{js,jsx}',
-      '**/*.spec.{js,jsx}',
-      'src/tests/jest.setup.js'
-    ],
+    // Vitest
+    files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}', 'src/tests/setup.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        ...globals.jest,
+        ...globals.vitest,
+        ...globals.node,
         global: true
       }
     }

@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { SignupForm } from '..'
 
-const renderForm = (onSubmit = jest.fn()) => {
+const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(<SignupForm onSubmit={onSubmit} />)
 
   return {
@@ -63,7 +63,7 @@ describe('Signup Form', () => {
   })
 
   it('submits form with valid data', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const {
       firstNameInput,
       lastNameInput,
@@ -89,7 +89,7 @@ describe('Signup Form', () => {
   })
 
   it('submits without optional lastName', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const { firstNameInput, emailInput, passwordInput, submitButton } =
       renderForm(onSubmitMock)
 

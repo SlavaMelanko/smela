@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { UpdatePasswordForm } from '..'
 
-const renderForm = ({ isSubmitting = false, onSubmit = jest.fn() } = {}) => {
+const renderForm = ({ isSubmitting = false, onSubmit = vi.fn() } = {}) => {
   renderWithProviders(
     <UpdatePasswordForm isSubmitting={isSubmitting} onSubmit={onSubmit} />
   )
@@ -33,7 +33,7 @@ describe('UpdatePasswordForm', () => {
   it('resets fields after successful submission', async () => {
     let capturedReset
 
-    const onSubmit = jest.fn((_, reset) => {
+    const onSubmit = vi.fn((_, reset) => {
       capturedReset = reset
     })
 

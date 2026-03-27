@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { ResetPasswordForm } from '..'
 
-const renderForm = (onSubmit = jest.fn(), isLoading = false) => {
+const renderForm = (onSubmit = vi.fn(), isLoading = false) => {
   renderWithProviders(
     <ResetPasswordForm onSubmit={onSubmit} isLoading={isLoading} />
   )
@@ -60,7 +60,7 @@ describe('Set New Password Form', () => {
   })
 
   it('submits with valid password', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const { passwordInput, submitButton } = renderForm(onSubmitMock)
 
     await user.type(passwordInput, auth.password.strong)
@@ -75,7 +75,7 @@ describe('Set New Password Form', () => {
 
   it('shows loading state', () => {
     renderWithProviders(
-      <ResetPasswordForm onSubmit={jest.fn()} isLoading={true} />
+      <ResetPasswordForm onSubmit={vi.fn()} isLoading={true} />
     )
 
     const submitButton = screen.getByRole('button', { name: en.processing })

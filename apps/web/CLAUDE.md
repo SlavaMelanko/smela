@@ -21,7 +21,7 @@ architecture, easy maintenance, and simple UX.
 - **Tailwind CSS v4** - Utility-first CSS framework with shadcn/ui components
 - **Storybook** - Component development and documentation
 - **i18n** - Internationalization (English/Ukrainian)
-- **Jest** - Unit testing framework
+- **Vitest** - Unit testing framework
 - **Playwright** - E2E testing framework
 
 ## Essential Commands

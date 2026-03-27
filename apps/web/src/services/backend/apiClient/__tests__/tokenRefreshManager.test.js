@@ -8,8 +8,8 @@ describe('TokenRefreshManager', () => {
   })
 
   it('should retry request after successful token refresh', async () => {
-    const requestFn = jest.fn().mockResolvedValue({ data: 'success' })
-    const refreshFn = jest.fn().mockResolvedValue({ accessToken: 'new-token' })
+    const requestFn = vi.fn().mockResolvedValue({ data: 'success' })
+    const refreshFn = vi.fn().mockResolvedValue({ accessToken: 'new-token' })
 
     const result = await manager.refreshAndRetry(requestFn, refreshFn)
 
@@ -19,9 +19,9 @@ describe('TokenRefreshManager', () => {
   })
 
   it('should call onSuccess with access token after refresh', async () => {
-    const requestFn = jest.fn().mockResolvedValue({})
-    const refreshFn = jest.fn().mockResolvedValue({ accessToken: 'new-token' })
-    const onSuccess = jest.fn()
+    const requestFn = vi.fn().mockResolvedValue({})
+    const refreshFn = vi.fn().mockResolvedValue({ accessToken: 'new-token' })
+    const onSuccess = vi.fn()
 
     await manager.refreshAndRetry(requestFn, refreshFn, onSuccess)
 
@@ -29,9 +29,9 @@ describe('TokenRefreshManager', () => {
   })
 
   it('should reject request when refresh fails', async () => {
-    const requestFn = jest.fn()
-    const refreshFn = jest.fn().mockRejectedValue(new Error('Refresh failed'))
-    const onFailure = jest.fn()
+    const requestFn = vi.fn()
+    const refreshFn = vi.fn().mockRejectedValue(new Error('Refresh failed'))
+    const onFailure = vi.fn()
 
     await expect(
       manager.refreshAndRetry(requestFn, refreshFn, null, onFailure)
@@ -42,8 +42,8 @@ describe('TokenRefreshManager', () => {
   })
 
   it('should reject when refresh returns no access token', async () => {
-    const requestFn = jest.fn()
-    const refreshFn = jest.fn().mockResolvedValue({})
+    const requestFn = vi.fn()
+    const refreshFn = vi.fn().mockResolvedValue({})
 
     await expect(manager.refreshAndRetry(requestFn, refreshFn)).rejects.toThrow(
       'No access token'
@@ -51,9 +51,9 @@ describe('TokenRefreshManager', () => {
   })
 
   it('should queue multiple requests and resolve all after single refresh', async () => {
-    const requestFn1 = jest.fn().mockResolvedValue({ data: 'first' })
-    const requestFn2 = jest.fn().mockResolvedValue({ data: 'second' })
-    const refreshFn = jest.fn().mockResolvedValue({ accessToken: 'token' })
+    const requestFn1 = vi.fn().mockResolvedValue({ data: 'first' })
+    const requestFn2 = vi.fn().mockResolvedValue({ data: 'second' })
+    const refreshFn = vi.fn().mockResolvedValue({ accessToken: 'token' })
 
     const [result1, result2] = await Promise.all([
       manager.refreshAndRetry(requestFn1, refreshFn),

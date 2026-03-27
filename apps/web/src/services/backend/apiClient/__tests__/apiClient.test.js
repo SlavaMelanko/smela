@@ -1,5 +1,9 @@
 import { HttpStatus } from '@/lib/net'
 
+// Hoisted to module level by Vitest — ensures @/lib/env is not mocked when
+// other test files run in the same worker
+vi.unmock('@/lib/env')
+
 describe('ApiClient', () => {
   let createApiClient
   let mockFetch
@@ -7,7 +11,7 @@ describe('ApiClient', () => {
 
   beforeAll(async () => {
     // Local mock - scoped only to this test file
-    jest.doMock('@/lib/env', () => ({
+    vi.doMock('@/lib/env', () => ({
       default: {
         BE_BASE_URL: 'https://api.example.com'
       }
@@ -19,12 +23,8 @@ describe('ApiClient', () => {
     createApiClient = factory.createApiClient
   })
 
-  afterAll(() => {
-    jest.unmock('@/lib/env')
-  })
-
   beforeEach(() => {
-    mockFetch = jest.fn()
+    mockFetch = vi.fn()
     apiClient = createApiClient({
       baseUrl: 'https://api.test.com',
       httpClient: mockFetch
@@ -38,7 +38,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValueOnce(mockData)
+        json: vi.fn().mockResolvedValueOnce(mockData)
       })
 
       const result = await apiClient.get('/test')
@@ -77,7 +77,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
-        json: jest.fn().mockResolvedValueOnce(mockData)
+        json: vi.fn().mockResolvedValueOnce(mockData)
       })
 
       const result = await apiClient.post('/test', requestData)
@@ -106,7 +106,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValueOnce(mockData)
+        json: vi.fn().mockResolvedValueOnce(mockData)
       })
 
       const result = await apiClient.put('/test/1', requestData)
@@ -154,7 +154,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
-        json: jest.fn().mockResolvedValueOnce(errorResponse)
+        json: vi.fn().mockResolvedValueOnce(errorResponse)
       })
 
       await expect(apiClient.get('/test')).rejects.toThrow('Not found')
@@ -164,7 +164,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
-        json: jest.fn().mockRejectedValueOnce(new Error('Invalid JSON'))
+        json: vi.fn().mockRejectedValueOnce(new Error('Invalid JSON'))
       })
 
       await expect(apiClient.get('/test')).rejects.toThrow(
@@ -182,7 +182,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: jest.fn().mockResolvedValueOnce(errorResponse)
+        json: vi.fn().mockResolvedValueOnce(errorResponse)
       })
 
       try {
@@ -201,7 +201,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValueOnce({})
+        json: vi.fn().mockResolvedValueOnce({})
       })
 
       await apiClient.get('/test', {
@@ -225,7 +225,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValueOnce({})
+        json: vi.fn().mockResolvedValueOnce({})
       })
 
       await apiClient.get('/test')
@@ -251,17 +251,17 @@ describe('ApiClient', () => {
         .mockResolvedValueOnce({
           ok: false,
           status: HttpStatus.UNAUTHORIZED,
-          json: jest.fn().mockResolvedValueOnce(unauthorizedError)
+          json: vi.fn().mockResolvedValueOnce(unauthorizedError)
         })
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
-          json: jest.fn().mockResolvedValueOnce({ accessToken: 'new-token' })
+          json: vi.fn().mockResolvedValueOnce({ accessToken: 'new-token' })
         })
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
-          json: jest.fn().mockResolvedValueOnce({ data: 'success' })
+          json: vi.fn().mockResolvedValueOnce({ data: 'success' })
         })
 
       const result = await apiClient.get('/protected')
@@ -280,7 +280,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: HttpStatus.UNAUTHORIZED,
-        json: jest.fn().mockResolvedValueOnce(invalidCredsError)
+        json: vi.fn().mockResolvedValueOnce(invalidCredsError)
       })
 
       await expect(apiClient.post('/login', {})).rejects.toMatchObject({
@@ -302,7 +302,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: HttpStatus.UNAUTHORIZED,
-        json: jest.fn().mockResolvedValueOnce(expiredRefreshToken)
+        json: vi.fn().mockResolvedValueOnce(expiredRefreshToken)
       })
 
       await expect(apiClient.get('/protected')).rejects.toMatchObject({
@@ -322,7 +322,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: HttpStatus.UNAUTHORIZED,
-        json: jest.fn().mockResolvedValueOnce(genericError)
+        json: vi.fn().mockResolvedValueOnce(genericError)
       })
 
       await expect(apiClient.get('/protected')).rejects.toMatchObject({
@@ -337,11 +337,11 @@ describe('ApiClient', () => {
 
   describe('Timeout handling', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('should abort request after timeout expires', async () => {
@@ -360,7 +360,7 @@ describe('ApiClient', () => {
 
       const requestPromise = apiClient.get('/test')
 
-      jest.advanceTimersByTime(15000)
+      vi.advanceTimersByTime(15000)
 
       await expect(requestPromise).rejects.toThrow(
         'Operation timed out after 15000ms'
@@ -368,12 +368,12 @@ describe('ApiClient', () => {
     })
 
     it('should clear timeout after successful request', async () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValueOnce({ data: 'test' })
+        json: vi.fn().mockResolvedValueOnce({ data: 'test' })
       })
 
       await apiClient.get('/test')
@@ -384,12 +384,12 @@ describe('ApiClient', () => {
     })
 
     it('should clear timeout after failed request', async () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
 
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
-        json: jest.fn().mockResolvedValueOnce({
+        json: vi.fn().mockResolvedValueOnce({
           error: 'Server error'
         })
       })
@@ -423,7 +423,7 @@ describe('ApiClient', () => {
 
       const requestPromise = customClient.get('/test')
 
-      jest.advanceTimersByTime(5000)
+      vi.advanceTimersByTime(5000)
 
       await expect(requestPromise).rejects.toThrow(
         'Operation timed out after 5000ms'

@@ -1,14 +1,14 @@
 import { render } from '@testing-library/react'
 import { createRef } from 'react'
 
-const mockExecuteAsync = jest.fn()
-const mockReset = jest.fn()
+const mockExecuteAsync = vi.fn()
+const mockReset = vi.fn()
 
-// Must unmock the component since jest.setup.js mocks it globally
-jest.unmock('@/components/InvisibleReCaptcha')
+// Must unmock the component since setup.js mocks it globally
+vi.unmock('@/components/InvisibleReCaptcha')
 
-jest.mock('react-google-recaptcha', () => {
-  const React = jest.requireActual('react')
+vi.mock('react-google-recaptcha', async () => {
+  const React = await vi.importActual('react')
 
   function MockReCAPTCHA({ ref }) {
     React.useImperativeHandle(ref, () => ({
@@ -22,17 +22,17 @@ jest.mock('react-google-recaptcha', () => {
   return { __esModule: true, default: MockReCAPTCHA }
 })
 
-const mockWithTimeout = jest.fn()
+const mockWithTimeout = vi.fn()
 
-jest.mock('@/lib/async', () => ({
+vi.mock('@/lib/async', () => ({
   withTimeout: (...args) => mockWithTimeout(...args)
 }))
 
-jest.mock('@/hooks/useTheme', () => ({
+vi.mock('@/hooks/useTheme', () => ({
   useTheme: () => ({ theme: 'dark' })
 }))
 
-jest.mock('@/hooks/useLocale', () => ({
+vi.mock('@/hooks/useLocale', () => ({
   useLocale: () => ({ locale: 'uk' })
 }))
 
@@ -43,7 +43,7 @@ describe('InvisibleReCaptcha', () => {
 
   beforeEach(() => {
     recaptchaRef = createRef()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('imperative handle', () => {
@@ -70,7 +70,7 @@ describe('InvisibleReCaptcha', () => {
     })
 
     it('returns empty string on timeout error', async () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation()
+      const consoleError = vi.spyOn(console, 'error').mockImplementation()
 
       mockWithTimeout.mockRejectedValue(new Error('Operation timed out'))
 
@@ -89,7 +89,7 @@ describe('InvisibleReCaptcha', () => {
     })
 
     it('handles error without message gracefully', async () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation()
+      const consoleError = vi.spyOn(console, 'error').mockImplementation()
 
       mockWithTimeout.mockRejectedValue({})
 

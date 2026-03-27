@@ -18,7 +18,7 @@ const mockUser = {
 const renderForm = ({
   user,
   isSubmitting = false,
-  onSubmit = jest.fn()
+  onSubmit = vi.fn()
 } = {}) => {
   renderWithProviders(
     <UserInfoForm user={user} isSubmitting={isSubmitting} onSubmit={onSubmit} />
@@ -86,7 +86,7 @@ describe('UserInfoForm', () => {
   })
 
   it('blocks submission without selecting status', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const { firstNameInput, saveButton } = renderForm({ onSubmit })
 
     await user.type(firstNameInput, 'John')
@@ -99,7 +99,7 @@ describe('UserInfoForm', () => {
   })
 
   it('calls onSubmit with correct data after filling fields and selecting status', async () => {
-    const onSubmit = jest.fn()
+    const onSubmit = vi.fn()
     const { firstNameInput, saveButton } = renderForm({ onSubmit })
 
     await user.type(firstNameInput, 'Jane')
@@ -135,11 +135,7 @@ describe('UserInfoForm', () => {
   describe('field visibility', () => {
     it('shows all fields by default', () => {
       renderWithProviders(
-        <UserInfoForm
-          user={mockUser}
-          isSubmitting={false}
-          onSubmit={jest.fn()}
-        />
+        <UserInfoForm user={mockUser} isSubmitting={false} onSubmit={vi.fn()} />
       )
 
       expect(
@@ -158,7 +154,7 @@ describe('UserInfoForm', () => {
         <UserInfoForm
           user={mockUser}
           isSubmitting={false}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
           fieldsConfig={{ [FieldName.STATUS]: false }}
         />
       )
@@ -170,7 +166,7 @@ describe('UserInfoForm', () => {
     })
 
     it('excludes hidden fields from submission', async () => {
-      const onSubmit = jest.fn()
+      const onSubmit = vi.fn()
       const user = userEvent.setup()
 
       // Provide a user with a valid status so RHF validation passes, then hide the field
@@ -207,7 +203,7 @@ describe('UserInfoForm', () => {
   it('disables save button when isSubmitting is true', () => {
     // With isSubmitting=true the button renders as "Processing..." and is disabled
     renderWithProviders(
-      <UserInfoForm user={mockUser} isSubmitting={true} onSubmit={jest.fn()} />
+      <UserInfoForm user={mockUser} isSubmitting={true} onSubmit={vi.fn()} />
     )
 
     const submitButton = screen.getByRole('button', { name: en.processing })

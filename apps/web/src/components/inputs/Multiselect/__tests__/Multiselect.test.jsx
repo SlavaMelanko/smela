@@ -11,7 +11,7 @@ beforeAll(() => {
     disconnect() {}
   }
 
-  Element.prototype.scrollIntoView = jest.fn()
+  Element.prototype.scrollIntoView = vi.fn()
 })
 
 const defaultOptions = [
@@ -74,7 +74,7 @@ describe('Multiselect', () => {
   describe('Interaction', () => {
     it('calls onChange when selecting an option', async () => {
       const user = userEvent.setup()
-      const handleChange = jest.fn()
+      const handleChange = vi.fn()
 
       render(
         <Multiselect

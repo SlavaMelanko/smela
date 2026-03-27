@@ -7,10 +7,10 @@ import { SettingsPageHeader } from '../SettingsPageHeader'
 import { TeamPageHeader } from '../TeamPageHeader'
 import { UserPageHeader } from '../UserPageHeader'
 
-const mockUseCurrentUser = jest.fn()
+const mockUseCurrentUser = vi.fn()
 
-jest.mock('@/hooks/useAuth', () => ({
-  ...jest.requireActual('@/hooks/useAuth'),
+vi.mock('@/hooks/useAuth', async () => ({
+  ...(await vi.importActual('@/hooks/useAuth')),
   useCurrentUser: () => mockUseCurrentUser()
 }))
 

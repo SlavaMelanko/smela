@@ -8,7 +8,7 @@ import en from '$/locales/en.json'
 
 import { NetworkErrorPage } from '../index'
 
-jest.mock('@/hooks/useUrlParams')
+vi.mock('@/hooks/useUrlParams')
 
 describe('NetworkErrorPage', () => {
   beforeEach(() => {

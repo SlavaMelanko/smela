@@ -45,7 +45,7 @@ describe('localStorage', () => {
     it('should return custom fallback when localStorage throws error', () => {
       const originalGetItem = window.localStorage.getItem
 
-      window.localStorage.getItem = jest.fn(() => {
+      window.localStorage.getItem = vi.fn(() => {
         throw new Error('localStorage error')
       })
 
@@ -65,7 +65,7 @@ describe('localStorage', () => {
     it('should handle localStorage errors silently', () => {
       const originalSetItem = window.localStorage.setItem
 
-      window.localStorage.setItem = jest.fn(() => {
+      window.localStorage.setItem = vi.fn(() => {
         throw new Error('Quota exceeded')
       })
 
@@ -87,7 +87,7 @@ describe('localStorage', () => {
     it('should handle localStorage errors silently', () => {
       const originalRemoveItem = window.localStorage.removeItem
 
-      window.localStorage.removeItem = jest.fn(() => {
+      window.localStorage.removeItem = vi.fn(() => {
         throw new Error('localStorage error')
       })
 
@@ -113,7 +113,7 @@ describe('localStorage', () => {
     it('should handle localStorage errors silently', () => {
       const originalClear = window.localStorage.clear
 
-      window.localStorage.clear = jest.fn(() => {
+      window.localStorage.clear = vi.fn(() => {
         throw new Error('localStorage error')
       })
 

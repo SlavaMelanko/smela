@@ -15,7 +15,7 @@ describe('createError', () => {
     const mockResponse = {
       ok: false,
       status: HttpStatus.BAD_REQUEST,
-      json: jest.fn().mockResolvedValueOnce(backendErrorResponse)
+      json: vi.fn().mockResolvedValueOnce(backendErrorResponse)
     }
 
     const error = await createError(mockResponse)
@@ -31,7 +31,7 @@ describe('createError', () => {
     const mockResponse = {
       ok: false,
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      json: jest.fn().mockRejectedValueOnce(new Error('Invalid JSON'))
+      json: vi.fn().mockRejectedValueOnce(new Error('Invalid JSON'))
     }
 
     const error = await createError(mockResponse)
@@ -47,7 +47,7 @@ describe('createError', () => {
     const mockResponse = {
       ok: false,
       status: HttpStatus.NOT_FOUND,
-      json: jest.fn().mockResolvedValueOnce({})
+      json: vi.fn().mockResolvedValueOnce({})
     }
 
     const error = await createError(mockResponse)
@@ -63,7 +63,7 @@ describe('createError', () => {
     const mockResponse = {
       ok: false,
       status: HttpStatus.UNAUTHORIZED,
-      json: jest.fn().mockResolvedValueOnce({
+      json: vi.fn().mockResolvedValueOnce({
         error: 'Unauthorized access'
       })
     }

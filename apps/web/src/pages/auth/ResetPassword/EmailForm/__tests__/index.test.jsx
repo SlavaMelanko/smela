@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { EmailForm } from '..'
 
-const renderForm = (onSubmit = jest.fn()) => {
+const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(<EmailForm onSubmit={onSubmit} />)
 
   return {
@@ -42,7 +42,7 @@ describe('Reset Password Email Form', () => {
   })
 
   it('submits with valid email', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const { emailInput, submitButton } = renderForm(onSubmitMock)
 
     await user.type(emailInput, auth.email.ok)
