@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom/vitest'
 
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { TextDecoder, TextEncoder } from 'node:util'
 
 import { cleanup } from '@testing-library/react'
-import { readFileSync } from 'fs'
 import i18next from 'i18next'
-import { resolve } from 'path'
 import { initReactI18next } from 'react-i18next'
 
 // Ensure text encoding/decoding works in JSDOM

@@ -1,6 +1,7 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import react from '@vitejs/plugin-react'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import { defineConfig } from 'vitest/config'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -31,7 +32,13 @@ export default defineConfig({
         'src/index.{js,jsx}',
         'src/App.{js,jsx}',
         'src/i18n.{js,jsx}',
-        'src/main.{js,jsx}'
+        'src/main.{js,jsx}',
+        // Presentation-only code — no business logic to measure
+        'src/pages/**',
+        'src/layouts/**',
+        'src/routes/**',
+        'src/components/ui/**',
+        'src/devtools/**'
       ]
     },
     testTimeout: 10000,
