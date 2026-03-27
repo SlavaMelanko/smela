@@ -27,7 +27,7 @@ export const RootRedirect = () => {
 
   const status = me?.status
 
-  if (isAuthenticated && status === UserStatus.NEW) {
+  if (isAuthenticated && status === UserStatus.New) {
     return <Navigate to='/email-confirmation' replace />
   }
 

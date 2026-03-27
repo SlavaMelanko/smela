@@ -28,7 +28,7 @@ export default {
   },
   args: {
     role: Role.User,
-    status: UserStatus.ACTIVE
+    status: UserStatus.Active
   }
 }
 

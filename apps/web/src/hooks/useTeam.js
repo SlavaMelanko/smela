@@ -177,7 +177,7 @@ export const useInviteMember = teamId => {
         const optimisticMember = {
           ...newMember,
           id: `...`,
-          status: UserStatus.PENDING
+          status: UserStatus.Pending
         }
 
         const currentMembers = old?.members ?? []

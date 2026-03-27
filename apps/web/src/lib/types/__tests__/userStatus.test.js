@@ -9,16 +9,16 @@ import {
 
 describe('userActiveStatuses', () => {
   it('contains expected statuses', () => {
-    expect(userActiveStatuses).toContain(UserStatus.VERIFIED)
-    expect(userActiveStatuses).toContain(UserStatus.TRIAL)
-    expect(userActiveStatuses).toContain(UserStatus.ACTIVE)
+    expect(userActiveStatuses).toContain(UserStatus.Verified)
+    expect(userActiveStatuses).toContain(UserStatus.Trial)
+    expect(userActiveStatuses).toContain(UserStatus.Active)
     expect(userActiveStatuses).toHaveLength(3)
   })
 })
 
 describe('adminActiveStatuses', () => {
   it('contains only ACTIVE', () => {
-    expect(adminActiveStatuses).toEqual([UserStatus.ACTIVE])
+    expect(adminActiveStatuses).toEqual([UserStatus.Active])
     expect(adminActiveStatuses).toHaveLength(1)
   })
 })

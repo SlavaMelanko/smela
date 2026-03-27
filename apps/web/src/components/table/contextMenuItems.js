@@ -14,7 +14,7 @@ export const createInviteItem = (
 ) => ({
   icon: MailIcon,
   label: t('contextMenu.invite'),
-  isVisible: row => row.status === UserStatus.PENDING,
+  isVisible: row => row.status === UserStatus.Pending,
   items: [
     {
       icon: Send,

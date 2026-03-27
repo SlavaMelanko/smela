@@ -81,7 +81,7 @@ export const useCreateAdmin = () => {
         const optimisticAdmin = {
           ...newAdmin,
           id: '...',
-          status: UserStatus.PENDING,
+          status: UserStatus.Pending,
           createdAt: now,
           updatedAt: now
         }
