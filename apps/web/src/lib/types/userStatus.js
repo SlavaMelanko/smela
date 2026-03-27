@@ -17,4 +17,7 @@ export const userActiveStatuses = [
   UserStatus.Active
 ]
 
+export const isActive = status =>
+  userActiveStatuses.includes(status) || adminActiveStatuses.includes(status)
+
 export const adminActiveStatuses = [UserStatus.Active]
