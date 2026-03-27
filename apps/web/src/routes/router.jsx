@@ -86,7 +86,7 @@ export const router = sentryCreateBrowserRouter([
     element: (
       <PrivateRoute
         requireStatuses={userActiveStatuses}
-        requireRoles={[Role.USER]}
+        requireRoles={[Role.User]}
       >
         <UserLayout />
       </PrivateRoute>
@@ -113,7 +113,7 @@ export const router = sentryCreateBrowserRouter([
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
-        requireRoles={[Role.ADMIN, Role.OWNER]}
+        requireRoles={[Role.Admin, Role.Owner]}
       >
         <UserLayout />
       </PrivateRoute>
@@ -134,7 +134,7 @@ export const router = sentryCreateBrowserRouter([
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
-        requireRoles={[Role.OWNER]}
+        requireRoles={[Role.Owner]}
       >
         <UserLayout />
       </PrivateRoute>

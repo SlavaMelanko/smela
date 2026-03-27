@@ -2,18 +2,16 @@ import { LogOut, MessageCircleQuestion, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { useLogout } from '@/hooks/useAuth'
-import { Role } from '@/lib/types'
+import { isAdmin } from '@/lib/types'
 
 import { ProfileDropdown } from './ProfileDropdown'
 
 const getProfilePath = role => {
-  switch (role) {
-    case Role.ADMIN:
-    case Role.OWNER:
-      return '/admin/profile'
-    default:
-      return '/profile'
+  if (isAdmin(role)) {
+    return '/admin/profile'
   }
+
+  return '/profile'
 }
 
 export const UserProfileDropdown = ({ user }) => {
