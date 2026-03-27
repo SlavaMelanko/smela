@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 
 import { testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { signJwt, verifyJwt } from '../jwt'
 
@@ -11,7 +11,7 @@ describe('JWT Integration Tests', () => {
     id: testUuids.USER_1,
     email: 'test@example.com',
     role: Role.User,
-    status: Status.Active,
+    status: UserStatus.Active,
   }
 
   describe('signJwt + verifyJwt round-trip', () => {
@@ -55,12 +55,12 @@ describe('JWT Integration Tests', () => {
 
     it('should handle different user statuses', async () => {
       const secret = 'test-secret-key'
-      const newUserClaims = { ...testUserClaims, status: Status.New }
+      const newUserClaims = { ...testUserClaims, status: UserStatus.New }
 
       const token = await signJwt(newUserClaims, { secret })
       const resultUserClaims = await verifyJwt(token, { secret })
 
-      expect(resultUserClaims.status).toBe(Status.New)
+      expect(resultUserClaims.status).toBe(UserStatus.New)
     })
   })
 

@@ -5,7 +5,7 @@ import type { Team, TeamMember, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { cancelMemberInvite, inviteMember, resendMemberInvite } from '../invites'
 
@@ -54,7 +54,7 @@ describe('inviteMember', () => {
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
-      status: Status.Active,
+      status: UserStatus.Active,
       role: Role.Admin,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -68,7 +68,7 @@ describe('inviteMember', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Pending,
+      status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }))
@@ -151,7 +151,7 @@ describe('inviteMember', () => {
         firstName: 'John',
         lastName: 'Doe',
         email: 'john@example.com',
-        status: Status.Pending,
+        status: UserStatus.Pending,
       },
       expect.anything(),
     )
@@ -191,7 +191,7 @@ describe('inviteMember', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Pending,
+      status: UserStatus.Pending,
       position: 'Developer',
       invitedBy: USER_2,
       joinedAt: expect.any(Date),
@@ -228,7 +228,7 @@ describe('resendMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Pending,
+      status: UserStatus.Pending,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -239,7 +239,7 @@ describe('resendMemberInvite', () => {
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
-      status: Status.Active,
+      status: UserStatus.Active,
       role: Role.Admin,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -341,7 +341,7 @@ describe('resendMemberInvite', () => {
   it('should throw BadRequest when member already accepted invitation', async () => {
     mockUserRepoFindById.mockImplementation(async (id: string) => {
       if (id === USER_1) {
-        return { ...mockMember, status: Status.Active }
+        return { ...mockMember, status: UserStatus.Active }
       }
       if (id === USER_2) {
         return mockInviter
@@ -424,7 +424,7 @@ describe('cancelMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Pending,
+      status: UserStatus.Pending,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -442,7 +442,7 @@ describe('cancelMemberInvite', () => {
     mockUserRepoFindById = mock(async () => mockMember)
     mockTeamRepoFindMember = mock(async () => mockMembership)
     mockTokenDeprecate = mock(async () => {})
-    mockUserUpdate = mock(async () => ({ ...mockMember, status: Status.Archived }))
+    mockUserUpdate = mock(async () => ({ ...mockMember, status: UserStatus.Archived }))
 
     mockTransaction = mock(async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
       return callback({})
@@ -485,7 +485,9 @@ describe('cancelMemberInvite', () => {
   })
 
   it('should throw BadRequest when member has already accepted invitation', async () => {
-    mockUserRepoFindById.mockImplementation(async () => ({ ...mockMember, status: Status.Active }))
+    mockUserRepoFindById.mockImplementation(
+      async () => ({ ...mockMember, status: UserStatus.Active }),
+    )
 
     expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toThrow(AppError)
     expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toMatchObject({
@@ -500,7 +502,7 @@ describe('cancelMemberInvite', () => {
     expect(mockTokenDeprecate).toHaveBeenCalledWith(USER_1, 'user_invite', expect.anything())
     expect(mockUserUpdate).toHaveBeenCalledWith(
       USER_1,
-      { status: Status.Archived },
+      { status: UserStatus.Archived },
       expect.anything(),
     )
     expect(result).toEqual({ success: true })

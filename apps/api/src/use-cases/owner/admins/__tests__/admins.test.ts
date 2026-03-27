@@ -5,7 +5,7 @@ import type { SearchResult, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getAdmin, getAdmins } from '..'
 
@@ -27,7 +27,7 @@ describe('getAdmins', () => {
           lastName: 'User',
           email: 'admin@example.com',
           role: Role.Admin,
-          status: Status.Active,
+          status: UserStatus.Active,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
         },
@@ -70,12 +70,12 @@ describe('getAdmins', () => {
 
   it('should preserve statuses in search params', async () => {
     await getAdmins(
-      { roles: [], statuses: [Status.Active] },
+      { roles: [], statuses: [UserStatus.Active] },
       DEFAULT_PAGINATION,
     )
 
     expect(mockUserRepoSearch).toHaveBeenCalledWith(
-      { roles: [Role.Admin], statuses: [Status.Active] },
+      { roles: [Role.Admin], statuses: [UserStatus.Active] },
       DEFAULT_PAGINATION,
     )
   })
@@ -111,7 +111,7 @@ describe('getAdmin', () => {
       lastName: 'User',
       email: 'admin@example.com',
       role: Role.Admin,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }

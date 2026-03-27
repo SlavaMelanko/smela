@@ -1,12 +1,12 @@
 import { z } from 'zod'
 
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 export const userClaimsSchema = z.object({
   id: z.uuid(),
   email: z.email(),
   role: z.enum(Role),
-  status: z.enum(Status),
+  status: z.enum(UserStatus),
   permissions: z.array(z.string()).optional(),
 })
 

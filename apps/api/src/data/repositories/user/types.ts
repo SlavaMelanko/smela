@@ -1,4 +1,4 @@
-import type { Role, Status } from '@/types'
+import type { Role, UserStatus } from '@/types'
 
 import type { usersTable } from '../../schema'
 import type { PaginatedResult } from '../pagination'
@@ -25,7 +25,7 @@ export type User = UserRecord & {
 export interface SearchParams {
   search?: string
   roles: Role[]
-  statuses?: Status[]
+  statuses?: UserStatus[]
 }
 
 export interface SearchResult {

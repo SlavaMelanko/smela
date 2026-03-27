@@ -10,7 +10,7 @@ import { FieldName, UserInfoForm } from '..'
 const mockUser = {
   firstName: 'John',
   lastName: 'Doe',
-  status: UserStatus.ACTIVE,
+  status: UserStatus.Active,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-06-01T00:00:00Z'
 }
@@ -125,7 +125,7 @@ describe('UserInfoForm', () => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
           firstName: 'Jane',
-          status: UserStatus.ACTIVE
+          status: UserStatus.Active
         }),
         expect.anything()
       )

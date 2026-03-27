@@ -1,5 +1,5 @@
 import type { PaginationParams, SearchParams } from '@/data'
-import type { Status } from '@/types'
+import type { UserStatus } from '@/types'
 
 import { userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
@@ -37,7 +37,7 @@ export const getUser = async (userId: string) => {
 export interface UpdateUserInput {
   firstName?: string
   lastName?: string
-  status?: Status
+  status?: UserStatus
 }
 
 export const updateUser = async (userId: string, updates: UpdateUserInput) => {

@@ -1,5 +1,5 @@
 import type { PaginationParams, SearchParams } from '@/data'
-import type { Status } from '@/types'
+import type { UserStatus } from '@/types'
 
 import { rbacRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
@@ -47,7 +47,7 @@ export const getAdmin = async (adminId: string) => {
 export interface UpdateAdminInput {
   firstName?: string
   lastName?: string
-  status?: Status
+  status?: UserStatus
 }
 
 export const updateAdmin = async (adminId: string, updates: UpdateAdminInput) => {

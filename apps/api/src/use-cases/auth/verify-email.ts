@@ -2,7 +2,7 @@ import type { DeviceInfo } from '@/net/http/device'
 
 import { db, tokenRepo, userRepo } from '@/data'
 import { TokenStatus, TokenType } from '@/security/token'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
 
@@ -21,7 +21,7 @@ export const verifyEmail = async ({ token }: VerifyEmailInput, deviceInfo: Devic
     }, tx)
 
     // Update user status
-    return userRepo.update(validatedToken.userId, { status: Status.Verified }, tx)
+    return userRepo.update(validatedToken.userId, { status: UserStatus.Verified }, tx)
   })
 
   const [accessToken, refreshToken] = await createAuthTokens(updatedUser, deviceInfo)

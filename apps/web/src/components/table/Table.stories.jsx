@@ -27,36 +27,36 @@ const sampleUsers = [
     id: 1,
     name: 'John Doe',
     email: 'john.doe@example.com',
-    role: Role.ADMIN,
-    status: UserStatus.ACTIVE
+    role: Role.Admin,
+    status: UserStatus.Active
   },
   {
     id: 2,
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
-    role: Role.USER,
-    status: UserStatus.ACTIVE
+    role: Role.User,
+    status: UserStatus.Active
   },
   {
     id: 3,
     name: 'Bob Johnson',
     email: 'bob.johnson@example.com',
-    role: Role.USER,
-    status: UserStatus.SUSPENDED
+    role: Role.User,
+    status: UserStatus.Suspended
   },
   {
     id: 4,
     name: 'Alice Brown',
     email: 'alice.brown@example.com',
-    role: Role.USER,
-    status: UserStatus.TRIAL
+    role: Role.User,
+    status: UserStatus.Trial
   },
   {
     id: 5,
     name: 'Charlie Wilson',
     email: 'charlie.wilson@example.com',
-    role: Role.USER,
-    status: UserStatus.PENDING
+    role: Role.User,
+    status: UserStatus.Pending
   }
 ]
 

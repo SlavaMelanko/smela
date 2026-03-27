@@ -4,7 +4,7 @@ import type { UpdateUserInput, User, UserTeamInfo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { changePassword, getUser, updateUser } from '../me'
 
@@ -24,7 +24,7 @@ describe('User Me Use Cases', () => {
       lastName: 'Doe',
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     }

@@ -1,4 +1,4 @@
-export { Role } from './role'
+export { isAdmin, isUser, Role } from './role'
 export {
   adminActiveStatuses,
   allUserStatuses,

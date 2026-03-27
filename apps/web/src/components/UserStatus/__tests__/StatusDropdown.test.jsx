@@ -15,7 +15,7 @@ describe('StatusDropdown', () => {
 
   it('renders trigger with the current status', () => {
     renderWithProviders(
-      <StatusDropdown value={UserStatus.ACTIVE} onChange={onChange} />
+      <StatusDropdown value={UserStatus.Active} onChange={onChange} />
     )
 
     expect(screen.getByText('Active')).toBeInTheDocument()
@@ -25,7 +25,7 @@ describe('StatusDropdown', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <StatusDropdown value={UserStatus.ACTIVE} onChange={onChange} />
+      <StatusDropdown value={UserStatus.Active} onChange={onChange} />
     )
 
     await user.click(screen.getByRole('button'))
@@ -49,7 +49,7 @@ describe('StatusDropdown', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <StatusDropdown value={UserStatus.ACTIVE} onChange={onChange} />
+      <StatusDropdown value={UserStatus.Active} onChange={onChange} />
     )
 
     await user.click(screen.getByRole('button'))
@@ -61,7 +61,7 @@ describe('StatusDropdown', () => {
     await user.click(screen.getByRole('menuitemradio', { name: /suspended/i }))
 
     expect(onChange).toHaveBeenCalledWith(
-      UserStatus.SUSPENDED,
+      UserStatus.Suspended,
       expect.anything()
     )
   })

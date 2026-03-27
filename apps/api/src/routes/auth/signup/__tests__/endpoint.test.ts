@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
 import { mockCaptchaSuccess, VALID_CAPTCHA_TOKEN } from '@/middleware/captcha/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { signupRoute } from '../index'
 
@@ -28,7 +28,7 @@ describe('Signup Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.New,
+          status: UserStatus.New,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
         },
@@ -90,7 +90,7 @@ describe('Signup Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.New,
+          status: UserStatus.New,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
         },

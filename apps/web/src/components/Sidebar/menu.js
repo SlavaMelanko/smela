@@ -91,7 +91,7 @@ export const ownerMenuItems = [
 ]
 
 export const menuByRole = {
-  [Role.USER]: userMenuItems,
-  [Role.ADMIN]: adminMenuItems,
-  [Role.OWNER]: ownerMenuItems
+  [Role.User]: userMenuItems,
+  [Role.Admin]: adminMenuItems,
+  [Role.Owner]: ownerMenuItems
 }

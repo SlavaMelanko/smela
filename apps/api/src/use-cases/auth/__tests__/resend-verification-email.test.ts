@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 import { hours, nowPlus } from '@/utils/chrono'
 
 import { resendVerificationEmail } from '../resend-verification-email'
@@ -29,7 +29,7 @@ describe('Resend Verification Email', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.New,
+      status: UserStatus.New,
       role: Role.User,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -122,7 +122,7 @@ describe('Resend Verification Email', () => {
     it('should return success response to prevent email enumeration', async () => {
       const verifiedUser = {
         ...mockUser,
-        status: Status.Verified,
+        status: UserStatus.Verified,
       }
 
       mockUserRepo.findByEmail.mockImplementation(async () => verifiedUser)
@@ -139,7 +139,7 @@ describe('Resend Verification Email', () => {
     it('should return success response to prevent email enumeration', async () => {
       const suspendedUser = {
         ...mockUser,
-        status: Status.Suspended,
+        status: UserStatus.Suspended,
       }
 
       mockUserRepo.findByEmail.mockImplementation(async () => suspendedUser)
@@ -182,10 +182,10 @@ describe('Resend Verification Email', () => {
 
     it('should reject users with ineligible statuses to prevent enumeration', async () => {
       const ineligibleStatuses = [
-        Status.Trial,
-        Status.Active,
-        Status.Archived,
-        Status.Pending,
+        UserStatus.Trial,
+        UserStatus.Active,
+        UserStatus.Archived,
+        UserStatus.Pending,
       ]
 
       for (const status of ineligibleStatuses) {

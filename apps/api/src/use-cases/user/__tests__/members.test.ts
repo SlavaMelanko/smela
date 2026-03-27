@@ -5,7 +5,7 @@ import type { TeamMember } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 import { removeTeamMember } from '../members'
 
@@ -46,7 +46,7 @@ describe('removeTeamMember', () => {
       db: { transaction: mockTransaction },
     }))
 
-    await moduleMocker.mock('@/types', () => ({ Status }))
+    await moduleMocker.mock('@/types', () => ({ UserStatus }))
   })
 
   afterEach(async () => {
@@ -74,7 +74,7 @@ describe('removeTeamMember', () => {
 
     expect(mockUserRepoUpdate).toHaveBeenCalledWith(
       USER_1,
-      { status: Status.Archived },
+      { status: UserStatus.Archived },
       expect.anything(),
     )
   })

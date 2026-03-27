@@ -5,7 +5,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services/email'
-import { AuthProvider, Status } from '@/types'
+import { AuthProvider, UserStatus } from '@/types'
 
 export interface InviteMemberInput {
   firstName: string
@@ -43,7 +43,7 @@ export const inviteMember = async (
       firstName: member.firstName,
       lastName: member.lastName,
       email: member.email,
-      status: Status.Pending,
+      status: UserStatus.Pending,
     }, tx)
 
     // Use random password and user sets real password when accepting invitation
@@ -128,7 +128,7 @@ export const resendMemberInvite = async (
     throw new AppError(ErrorCode.NotFound, 'Member not found in this team')
   }
 
-  if (member.status !== Status.Pending) {
+  if (member.status !== UserStatus.Pending) {
     throw new AppError(ErrorCode.BadRequest, 'Member has already accepted invitation')
   }
 
@@ -160,13 +160,13 @@ export const cancelMemberInvite = async (teamId: string, memberId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Member not found')
   }
 
-  if (member.status !== Status.Pending) {
+  if (member.status !== UserStatus.Pending) {
     throw new AppError(ErrorCode.BadRequest, 'Member has already accepted invitation')
   }
 
   await db.transaction(async (tx) => {
     await tokenRepo.deprecate(memberId, TokenType.UserInvite, tx)
-    await userRepo.update(memberId, { status: Status.Archived }, tx)
+    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }

@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { PASSWORD_REGEX } from '@/security/password'
 import { TOKEN_LENGTH } from '@/security/token'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 import Resource from '@/types/resource'
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
@@ -37,7 +37,7 @@ export const rules = {
     ),
 
     role: z.enum(Role),
-    status: z.enum(Status),
+    status: z.enum(UserStatus),
   },
 
   token: {
@@ -80,7 +80,7 @@ export const rules = {
     statuses: z
       .string()
       .transform(val => val.split(','))
-      .pipe(z.array(z.enum(Status))),
+      .pipe(z.array(z.enum(UserStatus))),
 
     roles: z
       .string()

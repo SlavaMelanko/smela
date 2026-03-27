@@ -3,7 +3,7 @@ import type { DeviceInfo } from '@/net/http/device'
 import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
 import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
-import Status from '@/types/status'
+import UserStatus from '@/types/user-status'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
@@ -31,7 +31,7 @@ export const acceptInvite = async (
     await authRepo.update(validatedToken.userId, { passwordHash }, tx)
 
     // Activate user
-    return userRepo.update(validatedToken.userId, { status: Status.Active }, tx)
+    return userRepo.update(validatedToken.userId, { status: UserStatus.Active }, tx)
   })
 
   const [team, permissions] = await Promise.all([

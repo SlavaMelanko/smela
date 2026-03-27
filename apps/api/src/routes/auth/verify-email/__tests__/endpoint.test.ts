@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { verifyEmailRoute } from '../index'
 
@@ -25,7 +25,7 @@ describe('Verify Email Endpoint', () => {
           lastName: 'Doe',
           email: 'john@example.com',
           role: Role.User,
-          status: Status.Verified,
+          status: UserStatus.Verified,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
         },
@@ -61,7 +61,7 @@ describe('Verify Email Endpoint', () => {
           lastName: 'Doe',
           email: 'john@example.com',
           role: Role.User,
-          status: Status.Verified,
+          status: UserStatus.Verified,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
         },

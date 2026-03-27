@@ -4,7 +4,7 @@ import { db, tokenRepo, userRepo } from '@/data'
 import { logger } from '@/logging'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 const createEmailVerificationToken = async (userId: string) => {
   const { type, token, expiresAt } = generateToken(TokenType.EmailVerification)
@@ -28,7 +28,7 @@ export const resendVerificationEmail = async (
 
   // Always return success to prevent email enumeration
   // Only send email if user exists and is unverified
-  if (user?.status === Status.New) {
+  if (user?.status === UserStatus.New) {
     const token = await createEmailVerificationToken(user.id)
 
     emailAgent.sendEmailVerificationEmail(

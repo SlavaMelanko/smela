@@ -5,7 +5,7 @@ import type { User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
-import { AuthProvider, Role, Status } from '@/types'
+import { AuthProvider, Role, UserStatus } from '@/types'
 import { days, hours, nowPlus } from '@/utils/chrono'
 
 import type { SignupInput } from '../signup'
@@ -59,7 +59,7 @@ describe('Signup with Email', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.New,
+      status: UserStatus.New,
       role: Role.User,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -149,7 +149,7 @@ describe('Signup with Email', () => {
           firstName: mockSignupParams.firstName,
           lastName: mockSignupParams.lastName,
           email: mockSignupParams.email,
-          status: Status.New,
+          status: UserStatus.New,
         },
         expect.anything(),
       )
@@ -277,7 +277,7 @@ describe('Signup with Email', () => {
         firstName: 'Jane',
         lastName: 'Smith',
         email: 'john@example.com',
-        status: Status.Verified,
+        status: UserStatus.Verified,
         role: Role.User,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -412,7 +412,7 @@ describe('Signup with Email', () => {
           firstName: mockSignupParams.firstName,
           lastName: mockSignupParams.lastName,
           email: uppercaseEmail,
-          status: Status.New,
+          status: UserStatus.New,
         },
         expect.anything(),
       )
@@ -437,7 +437,7 @@ describe('Signup with Email', () => {
           firstName: 'Al',
           lastName: 'Bo',
           email: mockSignupParams.email,
-          status: Status.New,
+          status: UserStatus.New,
         },
         expect.anything(),
       )
@@ -491,7 +491,7 @@ describe('Signup with Email', () => {
           firstName: longFirstName,
           lastName: longLastName,
           email: mockSignupParams.email,
-          status: Status.New,
+          status: UserStatus.New,
         },
         expect.anything(),
       )

@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getUserHandler, updateUserHandler } from '../handler'
 
@@ -21,7 +21,7 @@ describe('getUserHandler', () => {
     lastName: 'Doe',
     email: 'john@example.com',
     role: Role.User,
-    status: Status.Active,
+    status: UserStatus.Active,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   }
@@ -65,14 +65,14 @@ describe('updateUserHandler', () => {
   let mockJson: any
   let mockUpdateUser: any
 
-  const body = { firstName: 'Jane', status: Status.Active }
+  const body = { firstName: 'Jane', status: UserStatus.Active }
   const updatedUser: User = {
     id: testUuids.USER_1,
     firstName: 'Jane',
     lastName: 'Doe',
     email: 'john@example.com',
     role: Role.User,
-    status: Status.Active,
+    status: UserStatus.Active,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-02'),
   }

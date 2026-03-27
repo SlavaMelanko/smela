@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { refreshTokenHandler } from '../handler'
 
@@ -49,7 +49,7 @@ describe('Refresh Token Handler', () => {
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',
-          status: Status.Verified,
+          status: UserStatus.Verified,
           role: Role.User,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),

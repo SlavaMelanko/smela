@@ -4,7 +4,7 @@ import type { AuthRecord, User, UserTeamInfo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { AuthProvider, Role, Status } from '@/types'
+import { AuthProvider, Role, UserStatus } from '@/types'
 
 import type { LoginInput } from '../login'
 
@@ -47,7 +47,7 @@ describe('Login with Email', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'test@example.com',
-      status: Status.Verified,
+      status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
@@ -342,7 +342,7 @@ describe('Login with Email', () => {
     })
 
     it('should handle user with all possible statuses', async () => {
-      const statuses = [Status.New, Status.Verified, Status.Suspended]
+      const statuses = [UserStatus.New, UserStatus.Verified, UserStatus.Suspended]
 
       for (const status of statuses) {
         const userWithStatus = { ...mockUser, status }

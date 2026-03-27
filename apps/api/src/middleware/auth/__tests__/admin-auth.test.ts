@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { adminAuthMiddleware } from '../index'
 
@@ -24,7 +24,12 @@ describe('Admin Authentication Middleware', () => {
   describe('Role Validation', () => {
     it('should allow Owner with Active status', async () => {
       const ownerToken = await signJwt(
-        { id: testUuids.OWNER_1, email: 'owner@example.com', role: Role.Owner, status: Status.Active },
+        {
+          id: testUuids.OWNER_1,
+          email: 'owner@example.com',
+          role: Role.Owner,
+          status: UserStatus.Active,
+        },
         { secret: env.JWT_SECRET },
       )
 
@@ -44,7 +49,12 @@ describe('Admin Authentication Middleware', () => {
 
     it('should allow Admin with Active status', async () => {
       const adminToken = await signJwt(
-        { id: testUuids.ADMIN_1, email: 'admin@example.com', role: Role.Admin, status: Status.Active },
+        {
+          id: testUuids.ADMIN_1,
+          email: 'admin@example.com',
+          role: Role.Admin,
+          status: UserStatus.Active,
+        },
         { secret: env.JWT_SECRET },
       )
 
@@ -64,7 +74,12 @@ describe('Admin Authentication Middleware', () => {
 
     it('should reject User role with Active status', async () => {
       const userToken = await signJwt(
-        { id: testUuids.USER_1, email: 'user@example.com', role: Role.User, status: Status.Active },
+        {
+          id: testUuids.USER_1,
+          email: 'user@example.com',
+          role: Role.User,
+          status: UserStatus.Active,
+        },
         { secret: env.JWT_SECRET },
       )
 
@@ -84,9 +99,14 @@ describe('Admin Authentication Middleware', () => {
     })
   })
 
-  describe('Status Validation', () => {
+  describe('UserStatus Validation', () => {
     it('should reject non-Active statuses', async () => {
-      const nonActiveStatuses = [Status.New, Status.Verified, Status.Trial, Status.Suspended]
+      const nonActiveStatuses = [
+        UserStatus.New,
+        UserStatus.Verified,
+        UserStatus.Trial,
+        UserStatus.Suspended,
+      ]
 
       for (const status of nonActiveStatuses) {
         const testApp = new Hono<AppContext>()
@@ -109,7 +129,7 @@ describe('Admin Authentication Middleware', () => {
         expect(res.status).toBe(HttpStatus.FORBIDDEN)
         const json = await res.json()
         expect(json.code).toBe(ErrorCode.Forbidden)
-        expect(json.error).toBe('Status validation failure')
+        expect(json.error).toBe('UserStatus validation failure')
       }
     })
   })

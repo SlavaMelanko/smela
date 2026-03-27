@@ -4,7 +4,8 @@ import { Spinner } from '@/components/Spinner'
 import { useCurrentUser } from '@/hooks/useAuth'
 import {
   adminActiveStatuses,
-  Role,
+  isAdmin,
+  isUser,
   userActiveStatuses,
   UserStatus
 } from '@/lib/types'
@@ -26,23 +27,19 @@ export const RootRedirect = () => {
 
   const status = me?.status
 
-  if (isAuthenticated && status === UserStatus.NEW) {
+  if (isAuthenticated && status === UserStatus.New) {
     return <Navigate to='/email-confirmation' replace />
   }
 
   const role = me?.role
 
-  if (
-    isAuthenticated &&
-    role === Role.USER &&
-    userActiveStatuses.includes(status)
-  ) {
+  if (isAuthenticated && isUser(role) && userActiveStatuses.includes(status)) {
     return <Navigate to='/home' replace />
   }
 
   if (
     isAuthenticated &&
-    (role === Role.ADMIN || role === Role.OWNER) &&
+    isAdmin(role) &&
     adminActiveStatuses.includes(status)
   ) {
     return <Navigate to='/admin/dashboard' replace />

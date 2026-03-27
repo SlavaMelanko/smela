@@ -7,7 +7,7 @@ import { logger } from '@/logging'
 import { hashPassword } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services'
-import { AuthProvider, Status } from '@/types'
+import { AuthProvider, UserStatus } from '@/types'
 
 import { createAuthTokens } from '../tokens'
 
@@ -26,7 +26,7 @@ const createNewUser = async (
       firstName,
       lastName,
       email,
-      status: Status.New,
+      status: UserStatus.New,
     }, tx)
 
     await authRepo.create({

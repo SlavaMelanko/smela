@@ -3,7 +3,7 @@ import type { MiddlewareHandler } from 'hono'
 import { createMiddleware } from 'hono/factory'
 
 import type { AppContext } from '@/context'
-import type { Role, Status } from '@/types'
+import type { Role, UserStatus } from '@/types'
 
 import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
@@ -18,7 +18,7 @@ import { extractAccessToken } from './access-token'
  * @param roleValidator Function to validate if user role is acceptable.
  */
 export const createAuthMiddleware = (
-  statusValidator: (status: Status) => boolean,
+  statusValidator: (status: UserStatus) => boolean,
   roleValidator: (role: Role) => boolean,
 ): MiddlewareHandler<AppContext> => createMiddleware<AppContext>(async (c, next) => {
   const accessToken = extractAccessToken(c)
@@ -31,7 +31,7 @@ export const createAuthMiddleware = (
     const userClaims = await verifyJwt(accessToken, { secret: env.JWT_SECRET })
 
     if (!statusValidator(userClaims.status)) {
-      throw new AppError(ErrorCode.Forbidden, 'Status validation failure')
+      throw new AppError(ErrorCode.Forbidden, 'UserStatus validation failure')
     }
 
     if (!roleValidator(userClaims.role)) {

@@ -7,7 +7,7 @@ import type { UserClaims } from '@/security/jwt'
 
 import { createTestApp, ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { adminUsersRoute } from '../index'
 
@@ -32,7 +32,7 @@ describe('Admin Users Endpoint', () => {
         lastName: 'Doe',
         email: 'john@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
       },
@@ -42,7 +42,7 @@ describe('Admin Users Endpoint', () => {
         lastName: 'Smith',
         email: 'jane@example.com',
         role: Role.User,
-        status: Status.Verified,
+        status: UserStatus.Verified,
         createdAt: new Date('2024-01-02'),
         updatedAt: new Date('2024-01-02'),
       },
@@ -66,7 +66,7 @@ describe('Admin Users Endpoint', () => {
       id: testUuids.ADMIN_1,
       email: 'admin@example.com',
       role: Role.Admin,
-      status: Status.Active,
+      status: UserStatus.Active,
     }
 
     const adminMiddleware: any = async (c: any, next: any) => {
@@ -96,7 +96,7 @@ describe('Admin Users Endpoint', () => {
             lastName: 'Doe',
             email: 'john@example.com',
             role: Role.User,
-            status: Status.Active,
+            status: UserStatus.Active,
             createdAt: '2024-01-01T00:00:00.000Z',
             updatedAt: '2024-01-01T00:00:00.000Z',
           },
@@ -106,7 +106,7 @@ describe('Admin Users Endpoint', () => {
             lastName: 'Smith',
             email: 'jane@example.com',
             role: Role.User,
-            status: Status.Verified,
+            status: UserStatus.Verified,
             createdAt: '2024-01-02T00:00:00.000Z',
             updatedAt: '2024-01-02T00:00:00.000Z',
           },
@@ -162,7 +162,7 @@ describe('Admin Users Endpoint', () => {
 
     it('should pass search combined with filters', async () => {
       const res = await app.request(
-        `${USERS_URL}?search=test&roles=${Role.User}&statuses=${Status.Active}`,
+        `${USERS_URL}?search=test&roles=${Role.User}&statuses=${UserStatus.Active}`,
         { method: 'GET' },
       )
 
@@ -171,7 +171,7 @@ describe('Admin Users Endpoint', () => {
         expect.objectContaining({
           search: 'test',
           roles: [Role.User],
-          statuses: [Status.Active],
+          statuses: [UserStatus.Active],
         }),
         expect.any(Object),
       )

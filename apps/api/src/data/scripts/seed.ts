@@ -13,7 +13,7 @@ import { faker } from '@faker-js/faker'
 import { eq } from 'drizzle-orm'
 
 import { hashPassword } from '@/security/password'
-import { Action, AuthProvider, Resource, Role, Status } from '@/types'
+import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
 import { authTable, permissionsTable, teamMembersTable, teamsTable, userPermissionsTable, userRoleTable, usersTable } from '../schema'
@@ -134,7 +134,7 @@ const seedSystemUsers = async () => {
     email: string
     password: string
     role: Role
-    status: Status
+    status: UserStatus
     permissions: { action: Action, resource: Resource }[]
   }[] = [
     {
@@ -143,7 +143,7 @@ const seedSystemUsers = async () => {
       email: 'owner@smela.me',
       password: 'Passw0rd!',
       role: Role.Owner,
-      status: Status.Active,
+      status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
@@ -156,7 +156,7 @@ const seedSystemUsers = async () => {
       email: 'admin@smela.me',
       password: 'Passw0rd!',
       role: Role.Admin,
-      status: Status.Active,
+      status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
         { action: Action.Manage, resource: Resource.Teams },
@@ -213,7 +213,7 @@ const seedTestUsers = async (teamId: string) => {
       lastName: faker.person.lastName(),
       email: 'alyce96@gmail.com', // Use a consistent email for testing
       password: 'Passw0rd!',
-      status: Status.Active,
+      status: UserStatus.Active,
       position: 'Developer',
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
@@ -225,7 +225,7 @@ const seedTestUsers = async (teamId: string) => {
       lastName: faker.person.lastName(),
       email: faker.internet.email().toLowerCase(),
       password: 'Passw0rd!',
-      status: Status.Pending,
+      status: UserStatus.Pending,
       position: 'Designer',
       permissions: [
         { action: Action.View, resource: Resource.Users },

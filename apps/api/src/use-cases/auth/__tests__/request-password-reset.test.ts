@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 import { hour, nowPlus } from '@/utils/chrono'
 
 import { requestPasswordReset } from '../request-password-reset'
@@ -29,7 +29,7 @@ describe('Request Password Reset', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: Status.Verified,
+      status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -114,7 +114,7 @@ describe('Request Password Reset', () => {
   })
 
   describe('non-active user scenarios', () => {
-    const inactiveStatuses = [Status.New, Status.Suspended, Status.Archived]
+    const inactiveStatuses = [UserStatus.New, UserStatus.Suspended, UserStatus.Archived]
 
     inactiveStatuses.forEach((status) => {
       it(`should return success when user status is ${status}`, async () => {
