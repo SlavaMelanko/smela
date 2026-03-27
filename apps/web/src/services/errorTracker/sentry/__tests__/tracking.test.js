@@ -6,7 +6,11 @@ import {
 
 import { captureError, captureMessage } from '../tracking'
 
-vi.mock('@sentry/react')
+vi.mock('@sentry/react', () => ({
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
+  showReportDialog: vi.fn()
+}))
 
 describe('captureError', () => {
   beforeEach(() => {

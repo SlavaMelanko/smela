@@ -2,7 +2,9 @@ import { setUser as sentrySetUser } from '@sentry/react'
 
 import { clearUser, setUser } from '../context'
 
-vi.mock('@sentry/react')
+vi.mock('@sentry/react', () => ({
+  setUser: vi.fn()
+}))
 
 describe('setUser', () => {
   beforeEach(() => {

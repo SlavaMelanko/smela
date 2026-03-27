@@ -2,7 +2,9 @@ import { init as sentryInit } from '@sentry/react'
 
 import { init } from '../init'
 
-vi.mock('@sentry/react')
+vi.mock('@sentry/react', () => ({
+  init: vi.fn()
+}))
 
 describe('Sentry initialization', () => {
   beforeEach(() => {
