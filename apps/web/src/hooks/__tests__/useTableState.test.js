@@ -6,12 +6,12 @@ import { Limit } from '@/components/Pagination'
 import { useDebouncedSearch } from '../useDebouncedSearch'
 import { useTableState } from '../useTableState'
 
-jest.mock('react-router-dom', () => ({
-  useSearchParams: jest.fn()
+vi.mock('react-router-dom', () => ({
+  useSearchParams: vi.fn()
 }))
 
-jest.mock('../useDebouncedSearch', () => ({
-  useDebouncedSearch: jest.fn()
+vi.mock('../useDebouncedSearch', () => ({
+  useDebouncedSearch: vi.fn()
 }))
 
 describe('useTableState', () => {
@@ -21,11 +21,11 @@ describe('useTableState', () => {
   beforeEach(() => {
     useDebouncedSearch.mockReturnValue({
       searchValue: '',
-      setSearchValue: jest.fn()
+      setSearchValue: vi.fn()
     })
 
     mockSearchParams = new URLSearchParams()
-    mockSetSearchParams = jest.fn(updater => {
+    mockSetSearchParams = vi.fn(updater => {
       if (typeof updater === 'function') {
         mockSearchParams = updater(mockSearchParams)
       } else {
@@ -116,7 +116,7 @@ describe('useTableState', () => {
   })
 
   it('integrates with useDebouncedSearch correctly', () => {
-    const mockSetSearchValue = jest.fn()
+    const mockSetSearchValue = vi.fn()
 
     useDebouncedSearch.mockReturnValue({
       searchValue: 'test query',

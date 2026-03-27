@@ -7,7 +7,7 @@ import { Slider } from '../Slider'
 
 const defaultProps = {
   value: 500,
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   min: 0,
   max: 1000,
   presetValues: [100, 250, 500, 750, 1000],
@@ -16,7 +16,7 @@ const defaultProps = {
 
 describe('Slider', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders labels with min and max values by default', () => {
@@ -39,7 +39,7 @@ describe('Slider', () => {
   })
 
   it('calls onChange when preset button is clicked', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     renderWithProviders(<Slider {...defaultProps} onChange={onChange} />)
 

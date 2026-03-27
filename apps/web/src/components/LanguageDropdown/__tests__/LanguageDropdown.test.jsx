@@ -7,13 +7,13 @@ import { renderWithProviders } from '@/tests'
 import { LanguageDropdown } from '../LanguageDropdown'
 import { languages } from '../languages'
 
-const mockChangeLocale = jest.fn()
+const mockChangeLocale = vi.fn()
 
-jest.mock('@/hooks/useLocale', () => ({
-  useLocale: jest.fn()
+vi.mock('@/hooks/useLocale', () => ({
+  useLocale: vi.fn()
 }))
 
-jest.mock('../flags', () => ({
+vi.mock('../flags', () => ({
   __esModule: true,
   default: {
     us: '/mock-us-flag.svg',

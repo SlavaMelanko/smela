@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/tests'
 
 import { StatusDropdown } from '../StatusDropdown'
 
-const onChange = jest.fn()
+const onChange = vi.fn()
 
 describe('StatusDropdown', () => {
   beforeEach(() => {

@@ -6,7 +6,7 @@ import en from '$/locales/en.json'
 
 import { TeamAddForm } from '..'
 
-const renderForm = (onSubmit = jest.fn()) => {
+const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(
     <TeamAddForm
       isLoading={false}

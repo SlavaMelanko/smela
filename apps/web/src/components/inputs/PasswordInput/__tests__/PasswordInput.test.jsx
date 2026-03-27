@@ -73,7 +73,7 @@ describe('PasswordInput', () => {
   })
 
   it('toggle button does not submit the form', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(<FormWithPasswordInput onSubmit={handleSubmit} />)
 
@@ -135,7 +135,7 @@ describe('PasswordInput', () => {
   })
 
   it('handles onChange events correctly', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
 
     render(
       <PasswordInput placeholder='Enter password' onChange={handleChange} />
@@ -148,7 +148,7 @@ describe('PasswordInput', () => {
   })
 
   it('works with react-hook-form', async () => {
-    const handleSubmit = jest.fn()
+    const handleSubmit = vi.fn()
 
     render(
       <FormWithPasswordInput
@@ -246,7 +246,7 @@ describe('PasswordInput', () => {
   })
 
   it('calls onVisibilityChange callback when toggling', async () => {
-    const handleVisibilityChange = jest.fn()
+    const handleVisibilityChange = vi.fn()
 
     render(
       <PasswordInput

@@ -100,7 +100,7 @@ describe('FormController', () => {
 
   it('passes field and error to render function', () => {
     const error = { message: 'email.error.format' }
-    const renderSpy = jest.fn(({ field }) => <input {...field} />)
+    const renderSpy = vi.fn(({ field }) => <input {...field} />)
 
     renderWithProviders(
       <TestFormWrapper defaultValues={{ email: 'test@example.com' }}>

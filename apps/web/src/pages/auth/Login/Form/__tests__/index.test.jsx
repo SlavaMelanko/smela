@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { LoginForm } from '..'
 
-const renderForm = (onSubmit = jest.fn()) => {
+const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(<LoginForm onSubmit={onSubmit} />)
 
   return {
@@ -49,7 +49,7 @@ describe('Login Form', () => {
   })
 
   it('submits form with valid credentials', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const { emailInput, passwordInput, submitButton } = renderForm(onSubmitMock)
 
     await user.type(emailInput, auth.email.ok)
@@ -65,7 +65,7 @@ describe('Login Form', () => {
   })
 
   it('shows loading state during submission', async () => {
-    const onSubmitMock = jest.fn(() => new Promise(res => setTimeout(res, 100)))
+    const onSubmitMock = vi.fn(() => new Promise(res => setTimeout(res, 100)))
     const { emailInput, passwordInput, submitButton } = renderForm(onSubmitMock)
 
     await user.type(emailInput, auth.email.ok)

@@ -7,7 +7,7 @@ import en from '$/locales/en.json'
 
 import { EmailConfirmationForm } from '..'
 
-const renderForm = (onSubmit = jest.fn(), isLoading = false) => {
+const renderForm = (onSubmit = vi.fn(), isLoading = false) => {
   renderWithProviders(
     <EmailConfirmationForm
       onSubmit={onSubmit}
@@ -38,7 +38,7 @@ describe('EmailConfirmation Form', () => {
   })
 
   it('submits form with email data', async () => {
-    const onSubmitMock = jest.fn()
+    const onSubmitMock = vi.fn()
     const { submitButton } = renderForm(onSubmitMock)
 
     await user.click(submitButton)
@@ -51,7 +51,7 @@ describe('EmailConfirmation Form', () => {
   it('shows loading state', () => {
     renderWithProviders(
       <EmailConfirmationForm
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
         isLoading={true}
         email={auth.email.ok}
       />

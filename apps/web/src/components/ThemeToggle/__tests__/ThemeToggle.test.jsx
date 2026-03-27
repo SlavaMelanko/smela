@@ -6,10 +6,10 @@ import { renderWithProviders } from '@/tests'
 
 import { ThemeToggle } from '../ThemeToggle'
 
-const mockToggleTheme = jest.fn()
+const mockToggleTheme = vi.fn()
 
-jest.mock('@/hooks/useTheme', () => ({
-  useTheme: jest.fn()
+vi.mock('@/hooks/useTheme', () => ({
+  useTheme: vi.fn()
 }))
 
 describe('ThemeToggle', () => {

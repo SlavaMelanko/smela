@@ -33,6 +33,6 @@ if [ -n "$WEB_STAGED" ]; then
   WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.(js|jsx|ts|tsx)$' || true)
   if [ -n "$WEB_STAGED_JS" ]; then
     echo "Running web tests..."
-    bun run --filter @smela/web test -- --findRelatedTests $WEB_STAGED_JS --passWithNoTests
+    bun run --filter @smela/web test -- $WEB_STAGED_JS --passWithNoTests
   fi
 fi

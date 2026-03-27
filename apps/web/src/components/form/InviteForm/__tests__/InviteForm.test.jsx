@@ -11,7 +11,7 @@ const defaultPermissions = {
   teams: { view: true, manage: false }
 }
 
-const renderForm = ({ onSubmit = jest.fn(), fieldsConfig } = {}) => {
+const renderForm = ({ onSubmit = vi.fn(), fieldsConfig } = {}) => {
   renderWithProviders(
     <InviteForm
       onSubmit={onSubmit}
@@ -69,7 +69,7 @@ describe('InviteForm', () => {
 
   describe('form submission', () => {
     it('sends all fields by default', async () => {
-      const onSubmit = jest.fn()
+      const onSubmit = vi.fn()
       const { firstNameInput, emailInput, positionInput, submitButton } =
         renderForm({ onSubmit })
 
@@ -97,7 +97,7 @@ describe('InviteForm', () => {
     })
 
     it('excludes hidden fields from submission', async () => {
-      const onSubmit = jest.fn()
+      const onSubmit = vi.fn()
       const { firstNameInput, emailInput, submitButton } = renderForm({
         onSubmit,
         fieldsConfig: { position: false }
@@ -144,7 +144,7 @@ describe('InviteForm', () => {
     })
 
     it('includes permissions data in form submission', async () => {
-      const onSubmit = jest.fn()
+      const onSubmit = vi.fn()
       const { firstNameInput, emailInput, submitButton } = renderForm({
         onSubmit
       })

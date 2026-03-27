@@ -6,11 +6,15 @@ import {
 
 import { captureError, captureMessage } from '../tracking'
 
-jest.mock('@sentry/react')
+vi.mock('@sentry/react', () => ({
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
+  showReportDialog: vi.fn()
+}))
 
 describe('captureError', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should capture exception', () => {
@@ -36,7 +40,7 @@ describe('captureError', () => {
 
 describe('captureMessage', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should capture message with default warning level', () => {
