@@ -7,19 +7,13 @@ import { defineConfig } from 'vitest/config'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: ['babel-plugin-react-compiler']
-      }
-    })
-  ],
+  plugins: [react()],
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/tests/setup.js'],
     include: ['**/__tests__/**/*.{js,jsx}', '**/*.{spec,test}.{js,jsx}'],
-    exclude: ['node_modules', 'e2e', 'tests-examples'],
+    exclude: ['node_modules', 'e2e'],
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
@@ -48,7 +42,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@components': path.resolve(__dirname, 'src/components'),
       $: path.resolve(__dirname, 'public')
     }
   }
