@@ -200,12 +200,12 @@ For detailed bundle stats, please check out RelativeCI dashboard.
 
 ## Release checklist
 
-- [ ] Update `version` in `apps/<app>/package.json` → `"<next-version>"`
-- [ ] `git add apps/<app>/package.json`
-- [ ] `git commit -m "chore: release <app>/<next-version>"`
-- [ ] `git tag <app>/<next-version>`
-- [ ] `git push && git push origin <app>/<next-version>`
-- [ ] `gh release create <app>/<next-version> --title "<app>/<next-version>" --notes-file .releases/<app>_<next-version>.md`
+- [ ] Bump `version` in `apps/<app>/package.json` to `<next-version>`
+- [ ] Stage and commit: `git add apps/<app>/package.json && git commit -m "chore: release <app>/<next-version>"`
+- [ ] Tag the release: `git tag <app>/<next-version>`
+- [ ] Push the commit and tag: `git push && git push origin <app>/<next-version>`
+- [ ] Create the GitHub release: `gh release create <app>/<next-version> --title "<app>/<next-version>" --notes-file .releases/<app>_<next-version>.md`
+- [ ] Merge `dev` into `main` and return to `dev`: `git checkout main && git merge dev && git push origin main && git checkout dev`
 ```
 
 The `--notes-file` flag reads the release notes directly from the file, so no inline escaping is needed.
