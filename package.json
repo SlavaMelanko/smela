@@ -15,8 +15,6 @@
     "clean": "bun run --filter @smela/api clean & bun run --filter @smela/web clean & rm -rf node_modules & wait",
     "reinstall": "bun run clean && bun install",
     "prepare": "husky",
-    "lint": "bun run --filter @smela/api lint & bun run --filter @smela/web lint & wait $(jobs -p)",
-    "lint:fix": "bun run --filter @smela/api lint:fix & bun run --filter @smela/web lint:fix & wait $(jobs -p)",
     "dev:web": "bun run --filter @smela/web dev",
     "dev:api": "bun run --filter @smela/api dev",
     "dev": "bun run dev:api & bun run dev:web",
@@ -25,6 +23,7 @@
     "check:web": "bun run --filter @smela/web check",
     "check:api": "bun run --filter @smela/api check",
     "check": "bun run check:api & bun run check:web & wait $(jobs -p)",
-    "e2e": "bun run --filter @smela/api e2e & bun run --filter @smela/web e2e & wait $(jobs -p)"
+    "e2e:web": "bun run --filter @smela/api dev & bun run --filter @smela/web e2e & wait $(jobs -p)",
+    "e2e:web:ui": "bun run --filter @smela/api dev & bun run --filter @smela/web e2e:ui & wait $(jobs -p)"
   }
 }
