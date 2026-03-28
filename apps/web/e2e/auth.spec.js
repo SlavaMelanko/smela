@@ -89,8 +89,8 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             fn === user.firstName &&
             ln === user.lastName &&
             email === user.email &&
-            status === UserStatus.NEW &&
-            role === Role.USER
+            status === UserStatus.New &&
+            role === Role.User
           )
         }
       },
@@ -108,8 +108,8 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             fn === user.firstName &&
             ln === user.lastName &&
             email === user.email &&
-            status === UserStatus.VERIFIED &&
-            role === Role.USER
+            status === UserStatus.Verified &&
+            role === Role.User
           )
         }
       }
@@ -287,8 +287,8 @@ test.describe('Authentication: General', () => {
           fn === firstName &&
           ln === lastName &&
           email === testEmail &&
-          status === UserStatus.NEW &&
-          role === Role.USER
+          status === UserStatus.New &&
+          role === Role.User
         )
       }
     })
