@@ -1,6 +1,7 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { test as base } from '@playwright/test'
-import fs from 'fs'
-import path from 'path'
 
 import { HttpStatus } from '../../src/lib/net'
 import { LOGIN_PATH } from '../../src/services/backend/paths'
