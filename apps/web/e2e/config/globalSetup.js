@@ -23,8 +23,10 @@ const globalSetup = () => {
   const missing = requiredVars.filter(v => !process.env[v])
 
   if (missing.length > 0) {
+    const list = missing.map(v => `  - ${v}`).join('\n')
+
     throw new Error(
-      `Missing required environment variables:\n${missing.map(v => `  - ${v}`).join('\n')}\n\nCheck your .env.test file.`
+      `Missing required environment variables:\n${list}\n\nCheck your .env.test file.`
     )
   }
 }
