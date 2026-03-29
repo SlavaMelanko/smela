@@ -23,6 +23,9 @@ logs/
 coverage/
 *.lcov
 
+# Playwright
+*.playwright*/
+
 # TypeScript
 *.tsbuildinfo
 
