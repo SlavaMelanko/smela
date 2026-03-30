@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { EmailConfirmationForm } from '..'
@@ -12,7 +12,7 @@ const renderForm = (onSubmit = vi.fn(), isLoading = false) => {
     <EmailConfirmationForm
       onSubmit={onSubmit}
       isLoading={isLoading}
-      email={auth.email.ok}
+      email={td.email.ok}
     />
   )
 
@@ -44,7 +44,7 @@ describe('EmailConfirmation Form', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(onSubmitMock).toHaveBeenCalledWith({ email: auth.email.ok })
+      expect(onSubmitMock).toHaveBeenCalledWith({ email: td.email.ok })
     })
   })
 
@@ -53,7 +53,7 @@ describe('EmailConfirmation Form', () => {
       <EmailConfirmationForm
         onSubmit={vi.fn()}
         isLoading={true}
-        email={auth.email.ok}
+        email={td.email.ok}
       />
     )
 

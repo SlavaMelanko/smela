@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { LoginForm } from '..'
@@ -38,8 +38,8 @@ describe('Login Form', () => {
   it('shows validation errors for invalid input', async () => {
     const { emailInput, passwordInput, submitButton } = renderForm()
 
-    await user.type(emailInput, auth.email.invalid)
-    await user.type(passwordInput, auth.password.short)
+    await user.type(emailInput, td.email.invalid)
+    await user.type(passwordInput, td.password.short)
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -52,14 +52,14 @@ describe('Login Form', () => {
     const onSubmitMock = vi.fn()
     const { emailInput, passwordInput, submitButton } = renderForm(onSubmitMock)
 
-    await user.type(emailInput, auth.email.ok)
-    await user.type(passwordInput, auth.password.strong)
+    await user.type(emailInput, td.email.ok)
+    await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
-        email: auth.email.ok,
-        password: auth.password.strong
+        email: td.email.ok,
+        password: td.password.strong
       })
     })
   })
@@ -68,8 +68,8 @@ describe('Login Form', () => {
     const onSubmitMock = vi.fn(() => new Promise(res => setTimeout(res, 100)))
     const { emailInput, passwordInput, submitButton } = renderForm(onSubmitMock)
 
-    await user.type(emailInput, auth.email.ok)
-    await user.type(passwordInput, auth.password.strong)
+    await user.type(emailInput, td.email.ok)
+    await user.type(passwordInput, td.password.strong)
     user.click(submitButton)
 
     await waitFor(() => {

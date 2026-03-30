@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { SignupForm } from '..'
@@ -50,9 +50,9 @@ describe('Signup Form', () => {
     const { firstNameInput, emailInput, passwordInput, submitButton } =
       renderForm()
 
-    await user.type(firstNameInput, auth.firstName.short)
-    await user.type(emailInput, auth.email.invalid)
-    await user.type(passwordInput, auth.password.short)
+    await user.type(firstNameInput, td.firstName.short)
+    await user.type(emailInput, td.email.invalid)
+    await user.type(passwordInput, td.password.short)
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -72,18 +72,18 @@ describe('Signup Form', () => {
       submitButton
     } = renderForm(onSubmitMock)
 
-    await user.type(firstNameInput, auth.firstName.ok)
-    await user.type(lastNameInput, auth.lastName.ok)
-    await user.type(emailInput, auth.email.ok)
-    await user.type(passwordInput, auth.password.strong)
+    await user.type(firstNameInput, td.firstName.ok)
+    await user.type(lastNameInput, td.lastName.ok)
+    await user.type(emailInput, td.email.ok)
+    await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
-        firstName: auth.firstName.ok,
-        lastName: auth.lastName.ok,
-        email: auth.email.ok,
-        password: auth.password.strong
+        firstName: td.firstName.ok,
+        lastName: td.lastName.ok,
+        email: td.email.ok,
+        password: td.password.strong
       })
     })
   })
@@ -93,16 +93,16 @@ describe('Signup Form', () => {
     const { firstNameInput, emailInput, passwordInput, submitButton } =
       renderForm(onSubmitMock)
 
-    await user.type(firstNameInput, auth.firstName.ok)
-    await user.type(emailInput, auth.email.ok)
-    await user.type(passwordInput, auth.password.strong)
+    await user.type(firstNameInput, td.firstName.ok)
+    await user.type(emailInput, td.email.ok)
+    await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
-        firstName: auth.firstName.ok,
-        email: auth.email.ok,
-        password: auth.password.strong
+        firstName: td.firstName.ok,
+        email: td.email.ok,
+        password: td.password.strong
       })
     })
   })

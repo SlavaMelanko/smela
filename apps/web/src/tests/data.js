@@ -1,4 +1,4 @@
-export const auth = {
+export const testData = {
   firstName: {
     ok: 'John',
     short: 'J',
@@ -18,12 +18,6 @@ export const auth = {
     withSpaces: '  Doe  ',
     empty: '',
     twoChars: 'Do'
-  },
-  captcha: {
-    valid: 'valid-captcha-token',
-    alternative: 'test-captcha-token',
-    first: 'first-captcha-token',
-    second: 'second-captcha-token'
   },
   email: {
     ok: 'example@example.com',

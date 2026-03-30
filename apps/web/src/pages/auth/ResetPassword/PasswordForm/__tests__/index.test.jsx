@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { ResetPasswordForm } from '..'
@@ -40,7 +40,7 @@ describe('Set New Password Form', () => {
   it('shows validation error for short password', async () => {
     const { passwordInput, submitButton } = renderForm()
 
-    await user.type(passwordInput, auth.password.short)
+    await user.type(passwordInput, td.password.short)
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -51,7 +51,7 @@ describe('Set New Password Form', () => {
   it('shows validation error for weak password', async () => {
     const { passwordInput, submitButton } = renderForm()
 
-    await user.type(passwordInput, auth.password.onlyLowercase)
+    await user.type(passwordInput, td.password.onlyLowercase)
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -63,12 +63,12 @@ describe('Set New Password Form', () => {
     const onSubmitMock = vi.fn()
     const { passwordInput, submitButton } = renderForm(onSubmitMock)
 
-    await user.type(passwordInput, auth.password.strong)
+    await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
-        newPassword: auth.password.strong
+        newPassword: td.password.strong
       })
     })
   })
