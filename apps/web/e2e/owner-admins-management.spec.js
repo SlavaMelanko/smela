@@ -6,7 +6,6 @@ import {
   OWNER_ADMINS_PATH,
   UPDATE_PASSWORD_PATH
 } from '../src/services/backend/paths'
-import { auth } from '../src/tests/data'
 import { expect, test } from './config/fixtures'
 import {
   fillAcceptInviteFormAndSubmit,
@@ -105,7 +104,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
     firstName,
     lastName,
     email: generateEmail({ prefix: firstName }),
-    password: auth.password.strong
+    password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
   test('owner invites admin via modal form', async ({ page, t, login }) => {

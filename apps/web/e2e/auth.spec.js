@@ -11,7 +11,6 @@ import {
   SIGNUP_PATH,
   VERIFY_EMAIL_PATH
 } from '../src/services/backend/paths'
-import { auth } from '../src/tests/data'
 import { expect, test } from './config/fixtures'
 import {
   fillLoginFormAndSubmit,
@@ -37,8 +36,8 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     firstName,
     lastName,
     email: generateEmail({ prefix: firstName }),
-    initialPassword: auth.password.strong,
-    newPassword: auth.password.withSpecialChars
+    initialPassword: process.env.VITE_E2E_DEFAULT_PASSWORD,
+    newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
 
   test('signup: creates account and verifies email', async ({
@@ -199,7 +198,7 @@ test.describe('Authentication: General', () => {
   // Pre-seeded user credentials from environment variables
   const seededUser = {
     email: process.env.VITE_E2E_USER_EMAIL,
-    password: process.env.VITE_E2E_USER_PASSWORD
+    password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
   test('signup: validates required fields', async ({ page, t }) => {
@@ -239,7 +238,7 @@ test.describe('Authentication: General', () => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: process.env.VITE_E2E_ADMIN_EMAIL,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -299,7 +298,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -393,7 +392,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -460,11 +459,11 @@ test.describe('Authentication: General', () => {
     const testCases = [
       {
         email: seededUser.email,
-        password: auth.password.mismatch
+        password: 'Mismatch1!'
       },
       {
         email: 'nonexistent@example.com',
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       }
     ]
 

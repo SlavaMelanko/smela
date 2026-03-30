@@ -2,7 +2,7 @@ import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { UpdatePasswordForm } from '..'
@@ -41,8 +41,8 @@ describe('UpdatePasswordForm', () => {
       { onSubmit }
     )
 
-    await user.type(currentPasswordInput, auth.password.strong)
-    await user.type(newPasswordInput, auth.password.withSpecialChars)
+    await user.type(currentPasswordInput, td.password.strong)
+    await user.type(newPasswordInput, td.password.withSpecialChars)
 
     await user.click(submitButton)
 
@@ -64,8 +64,8 @@ describe('UpdatePasswordForm', () => {
     const { currentPasswordInput, newPasswordInput, submitButton } =
       renderForm()
 
-    await user.type(currentPasswordInput, auth.password.strong)
-    await user.type(newPasswordInput, auth.password.strong)
+    await user.type(currentPasswordInput, td.password.strong)
+    await user.type(newPasswordInput, td.password.strong)
 
     await user.click(submitButton)
 

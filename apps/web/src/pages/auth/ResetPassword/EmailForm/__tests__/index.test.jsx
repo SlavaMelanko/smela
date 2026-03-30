@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/tests'
-import { auth } from '@/tests/data'
+import { testData as td } from '@/tests/data'
 import en from '$/locales/en.json'
 
 import { EmailForm } from '..'
@@ -35,7 +35,7 @@ describe('Reset Password Email Form', () => {
   it('shows validation error for invalid email', async () => {
     const { emailInput, submitButton } = renderForm()
 
-    await user.type(emailInput, auth.email.invalid)
+    await user.type(emailInput, td.email.invalid)
     await user.click(submitButton)
 
     expect(screen.getByText(en.email.error.format)).toBeInTheDocument()
@@ -45,11 +45,11 @@ describe('Reset Password Email Form', () => {
     const onSubmitMock = vi.fn()
     const { emailInput, submitButton } = renderForm(onSubmitMock)
 
-    await user.type(emailInput, auth.email.ok)
+    await user.type(emailInput, td.email.ok)
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(onSubmitMock).toHaveBeenCalledWith({ email: auth.email.ok })
+      expect(onSubmitMock).toHaveBeenCalledWith({ email: td.email.ok })
     })
   })
 })
