@@ -9,10 +9,10 @@ Before running the tests:
 
 ## 📦 Setup
 
-Install Playwright and browser dependencies:
+Install Playwright and browser dependencies (run from the app folder):
 
 ```bash
-pnpm exec playwright install
+bunx playwright install
 ```
 
 ## 🚀 Running Tests
@@ -20,13 +20,13 @@ pnpm exec playwright install
 Run all tests headlessly:
 
 ```bash
-pnpm run e2e
+bun run e2e
 ```
 
-Or run tests in interactive UI mode:
+or run tests in interactive UI mode:
 
 ```bash
-pnpm run e2e:ui
+bun run e2e:web
 ```
 
 ## 📚 References

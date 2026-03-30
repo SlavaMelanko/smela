@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
-
-import { HttpStatus } from '../src/lib/net'
-import { ADMIN_TEAMS_PATH, TEAMS_PATH } from '../src/services/backend/paths'
-import { expect, test } from './config/fixtures'
 import {
   fillTeamAddFormAndSubmit,
   logOut,
   updateTeamNameAndSubmit
-} from './scenarios'
-import { waitForApiCall, waitForApiCalls } from './utils'
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+
+import { HttpStatus } from '../src/lib/net'
+import { ADMIN_TEAMS_PATH, TEAMS_PATH } from '../src/services/backend/paths'
+import { expect, test } from './config/fixtures'
 
 test.describe.serial('Admin: Teams Management', () => {
   const adminCredentials = {

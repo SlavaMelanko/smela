@@ -1,4 +1,13 @@
 import { faker } from '@faker-js/faker'
+import {
+  fillLoginFormAndSubmit,
+  fillNewPasswordFormAndSubmit,
+  fillRequestPasswordResetFormAndSubmit,
+  fillSignupFormAndSubmit,
+  logOut
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmail } from '@smela/e2e/es'
 
 import { HttpStatus } from '../src/lib/net'
 import { Role, UserStatus } from '../src/lib/types'
@@ -12,14 +21,6 @@ import {
   VERIFY_EMAIL_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import {
-  fillLoginFormAndSubmit,
-  fillNewPasswordFormAndSubmit,
-  fillRequestPasswordResetFormAndSubmit,
-  fillSignupFormAndSubmit,
-  logOut
-} from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 /**
  * Serial tests - User lifecycle flow

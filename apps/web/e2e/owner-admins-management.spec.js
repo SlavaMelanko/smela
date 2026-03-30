@@ -1,4 +1,12 @@
 import { faker } from '@faker-js/faker'
+import {
+  fillAcceptInviteFormAndSubmit,
+  fillAdminInviteFormAndSubmit,
+  fillUpdatePasswordFormAndSubmit,
+  logOut
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmail } from '@smela/e2e/es'
 
 import { HttpStatus } from '../src/lib/net'
 import {
@@ -7,13 +15,6 @@ import {
   UPDATE_PASSWORD_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import {
-  fillAcceptInviteFormAndSubmit,
-  fillAdminInviteFormAndSubmit,
-  fillUpdatePasswordFormAndSubmit,
-  logOut
-} from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const ownerCredentials = {
   email: process.env.VITE_E2E_OWNER_EMAIL,

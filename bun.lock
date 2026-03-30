@@ -81,6 +81,7 @@
         "@hookform/devtools": "^4.4.0",
         "@playwright/test": "^1.58.2",
         "@sentry/vite-plugin": "^4.9.1",
+        "@smela/e2e": "workspace:*",
         "@storybook/addon-onboarding": "^10.2.10",
         "@storybook/react-vite": "^10.2.10",
         "@tanstack/eslint-plugin-query": "^5.91.2",
@@ -102,7 +103,6 @@
         "eslint-plugin-storybook": "^10.2.10",
         "globals": "^17.0.0",
         "lint-staged": "^16.2.6",
-        "mailisk": "^2.2.2",
         "prettier": "^3.6.2",
         "prop-types": "^15.8.1",
         "rollup-plugin-visualizer": "^6.0.5",
@@ -113,6 +113,16 @@
         "tw-animate-css": "^1.4.0",
         "vite": "^7.3.1",
         "vitest": "^4.1.2",
+      },
+    },
+    "packages/e2e": {
+      "name": "@smela/e2e",
+      "version": "0.0.1",
+      "dependencies": {
+        "mailisk": "^2.2.2",
+      },
+      "peerDependencies": {
+        "@playwright/test": ">=1.0.0",
       },
     },
   },
@@ -780,6 +790,8 @@
     "@sindresorhus/merge-streams": ["@sindresorhus/merge-streams@4.0.0", "", {}, "sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ=="],
 
     "@smela/api": ["@smela/api@workspace:apps/api"],
+
+    "@smela/e2e": ["@smela/e2e@workspace:packages/e2e"],
 
     "@smela/web": ["@smela/web@workspace:apps/web"],
 

@@ -1,4 +1,7 @@
 import { faker } from '@faker-js/faker'
+import { fillMemberInviteFormAndSubmit, logOut } from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmail } from '@smela/e2e/es'
 
 import { HttpStatus } from '../src/lib/net'
 import {
@@ -9,8 +12,6 @@ import {
   TEAMS_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import { fillMemberInviteFormAndSubmit, logOut } from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,

@@ -1,12 +1,12 @@
 import { MailiskClient } from 'mailisk'
 
-const BASE_TIMEOUT = 30000
-const POLL_INTERVAL = 1500
+const BASE_TIMEOUT = 30_000
+const POLL_INTERVAL = 1_500
 
 export const emailConfig = {
   apiKey: process.env.VITE_MAILISK_API_KEY,
   namespace: process.env.VITE_MAILISK_NAMESPACE,
-  domain: `${process.env.VITE_MAILISK_NAMESPACE}.mailisk.net`
+  domain: `${process.env.VITE_MAILISK_NAMESPACE}.mailisk.net`,
 }
 
 export const generateEmail = ({ prefix, suffix = Date.now() } = {}) => {
@@ -19,16 +19,16 @@ const extractLink = (text, regex) => {
   return match ? match[0] : null
 }
 
-const extractVerificationLink = text =>
+const extractVerificationLink = (text) =>
   extractLink(text, /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i)
 
-const extractResetPasswordLink = text =>
+const extractResetPasswordLink = (text) =>
   extractLink(text, /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i)
 
-const extractAcceptInviteLink = text =>
+const extractAcceptInviteLink = (text) =>
   extractLink(text, /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i)
 
-export const hashEmail = email => {
+export const hashEmail = (email) => {
   // Use HTML content as the unique identifier.
   // HTML is more likely to contain unique timestamps or IDs.
   return email.html || email.text // fallback to text if no html
@@ -85,11 +85,13 @@ export class EmailService {
     while (Date.now() - start < this.#timeout) {
       const { data: emails } = await this.#client.searchInbox(this.#namespace, {
         to_addr_prefix: emailAddress,
-        subject_includes: subject
+        subject_includes: subject,
       })
 
       // Find first email that we haven't seen before
-      const newEmail = emails.find(email => profile.isNewEmail(email, subject))
+      const newEmail = emails.find((email) =>
+        profile.isNewEmail(email, subject),
+      )
 
       if (newEmail) {
         profile.markAsSeen(newEmail, subject)
@@ -97,7 +99,7 @@ export class EmailService {
         return newEmail
       }
 
-      await new Promise(res => setTimeout(res, POLL_INTERVAL))
+      await new Promise((res) => setTimeout(res, POLL_INTERVAL))
     }
 
     throw new Error(`The email "${subject}" hasn't been received.`)
@@ -115,13 +117,13 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject
+      subject: email.subject,
     }
   }
 
   async waitForResetPasswordEmail(
     emailAddress,
-    subject = 'Reset your password'
+    subject = 'Reset your password',
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
     const link = extractResetPasswordLink(email.text)
@@ -134,7 +136,7 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject
+      subject: email.subject,
     }
   }
 
@@ -142,7 +144,7 @@ export class EmailService {
     emailAddress,
     // subject parameter does a substring match, so it will match any email
     // with a subject like "You're invited to ACME Corp".
-    subject = "You're invited to"
+    subject = "You're invited to",
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
     const link = extractAcceptInviteLink(email.text)
@@ -155,7 +157,7 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject
+      subject: email.subject,
     }
   }
 }
