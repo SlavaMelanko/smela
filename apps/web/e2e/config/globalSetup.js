@@ -17,7 +17,8 @@ const globalSetup = () => {
     'VITE_E2E_ADMIN_EMAIL',
     'VITE_E2E_ADMIN_PASSWORD',
     'VITE_E2E_USER_EMAIL',
-    'VITE_E2E_USER_PASSWORD'
+    'VITE_E2E_DEFAULT_PASSWORD',
+    'VITE_E2E_STRONG_PASSWORD'
   ]
 
   const missing = requiredVars.filter(v => !process.env[v])

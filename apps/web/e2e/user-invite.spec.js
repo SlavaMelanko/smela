@@ -8,14 +8,13 @@ import {
   TEAM_MEMBERS_PATH,
   TEAMS_PATH
 } from '../src/services/backend/paths'
-import { auth } from '../src/tests/data'
 import { expect, test } from './config/fixtures'
 import { fillMemberInviteFormAndSubmit, logOut } from './scenarios'
 import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,
-  password: process.env.VITE_E2E_USER_PASSWORD
+  password: process.env.VITE_E2E_DEFAULT_PASSWORD
 }
 
 test.describe.serial('User: Team Members', () => {
@@ -30,7 +29,7 @@ test.describe.serial('User: Team Members', () => {
     firstName,
     lastName,
     email: generateEmail({ prefix: firstName }),
-    password: auth.password.strong,
+    password: process.env.VITE_E2E_DEFAULT_PASSWORD,
     position: faker.person.jobTitle()
   }
 
