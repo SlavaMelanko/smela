@@ -82,6 +82,7 @@
         "@playwright/test": "^1.58.2",
         "@sentry/vite-plugin": "^4.9.1",
         "@smela/e2e": "workspace:*",
+        "@smela/i18n": "workspace:*",
         "@storybook/addon-onboarding": "^10.2.10",
         "@storybook/react-vite": "^10.2.10",
         "@tanstack/eslint-plugin-query": "^5.91.2",
@@ -119,10 +120,18 @@
       "name": "@smela/e2e",
       "version": "0.0.1",
       "dependencies": {
+        "@smela/i18n": "workspace:*",
         "mailisk": "^2.2.2",
       },
       "peerDependencies": {
-        "@playwright/test": ">=1.0.0",
+        "@playwright/test": "^1.58.2",
+      },
+    },
+    "packages/i18n": {
+      "name": "@smela/i18n",
+      "version": "0.0.1",
+      "peerDependencies": {
+        "i18next": ">=25",
       },
     },
   },
@@ -792,6 +801,8 @@
     "@smela/api": ["@smela/api@workspace:apps/api"],
 
     "@smela/e2e": ["@smela/e2e@workspace:packages/e2e"],
+
+    "@smela/i18n": ["@smela/i18n@workspace:packages/i18n"],
 
     "@smela/web": ["@smela/web@workspace:apps/web"],
 

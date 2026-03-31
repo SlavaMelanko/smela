@@ -1,24 +1,14 @@
-import fs from 'node:fs'
-import path from 'node:path'
-
 import { test as base } from '@playwright/test'
 import { fillLoginFormAndSubmit } from '@smela/e2e/actions'
 import { waitForApiCall } from '@smela/e2e/api'
 import { EmailService } from '@smela/e2e/email'
+import { resources } from '@smela/i18n/resources'
 
 import { HttpStatus } from '../../src/lib/net'
 import { LOGIN_PATH } from '../../src/services/backend/paths'
 
-const LOCALES_PATH = './public/locales'
-
-const loadTranslations = (locale = 'en') => {
-  const filePath = path.join(LOCALES_PATH, `${locale}.json`)
-
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-}
-
 export const test = base.extend({
-  t: [loadTranslations(), { scope: 'worker' }],
+  t: [resources.en.translation, { scope: 'worker' }],
 
   emailService: [new EmailService(), { scope: 'worker' }],
 

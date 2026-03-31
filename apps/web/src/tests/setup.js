@@ -1,9 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { TextDecoder, TextEncoder } from 'node:util'
 
+import { resources } from '@smela/i18n/resources'
 import { cleanup } from '@testing-library/react'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
@@ -17,11 +16,8 @@ globalThis.fetch = vi.fn()
 
 // Initialize i18n with static English translations so components render
 // translated text instead of raw keys (HttpBackend won't work in jsdom)
-const enPath = resolve(process.cwd(), 'public/locales/en.json')
-const en = JSON.parse(readFileSync(enPath, 'utf-8'))
-
 i18next.use(initReactI18next).init({
-  resources: { en: { translation: en } },
+  resources,
   lng: 'en',
   fallbackLng: 'en',
   interpolation: { escapeValue: false }

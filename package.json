@@ -4,7 +4,8 @@
   "workspaces": [
     "apps/web",
     "apps/api",
-    "packages/e2e"
+    "packages/e2e",
+    "packages/i18n"
   ],
   "engines": {
     "bun": ">=1"
