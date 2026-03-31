@@ -19,16 +19,7 @@ const extractLink = (text, regex) => {
   return match ? match[0] : null
 }
 
-const extractVerificationLink = (text) =>
-  extractLink(text, /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i)
-
-const extractResetPasswordLink = (text) =>
-  extractLink(text, /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i)
-
-const extractAcceptInviteLink = (text) =>
-  extractLink(text, /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i)
-
-export const hashEmail = (email) => {
+const hashEmail = (email) => {
   // Use HTML content as the unique identifier.
   // HTML is more likely to contain unique timestamps or IDs.
   return email.html || email.text // fallback to text if no html
@@ -107,7 +98,7 @@ export class EmailService {
 
   async waitForVerificationEmail(emailAddress, subject = 'Verify your email') {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractVerificationLink(email.text)
+    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i)
 
     if (!link) {
       throw new Error('Verification link not found in email')
@@ -126,7 +117,7 @@ export class EmailService {
     subject = 'Reset your password',
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractResetPasswordLink(email.text)
+    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i)
 
     if (!link) {
       throw new Error('Reset password link not found in email.')
@@ -147,7 +138,7 @@ export class EmailService {
     subject = "You're invited to",
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractAcceptInviteLink(email.text)
+    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i)
 
     if (!link) {
       throw new Error('Accept invitation link not found in email.')
