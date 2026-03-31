@@ -1,4 +1,7 @@
 import { faker } from '@faker-js/faker'
+import { fillMemberInviteFormAndSubmit, logOut } from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmailAddress } from '@smela/e2e/email'
 
 import { HttpStatus } from '../src/lib/net'
 import {
@@ -9,8 +12,6 @@ import {
   TEAMS_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import { fillMemberInviteFormAndSubmit, logOut } from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,
@@ -28,7 +29,7 @@ test.describe.serial('User: Team Members', () => {
   const newMember = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
+    email: generateEmailAddress({ prefix: firstName }),
     password: process.env.VITE_E2E_DEFAULT_PASSWORD,
     position: faker.person.jobTitle()
   }

@@ -1,0 +1,18 @@
+{
+  "name": "@smela/e2e",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./config": "./src/config.js",
+    "./api": "./src/api.js",
+    "./email": "./src/email/index.js",
+    "./actions": "./src/actions/index.js"
+  },
+  "dependencies": {
+    "mailisk": "^2.2.2"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

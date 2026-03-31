@@ -3,10 +3,12 @@
     { "path": ".", "name": "smela" },
     { "path": "apps/api", "name": "api" },
     { "path": "apps/web", "name": "web" },
+    { "path": "packages/e2e", "name": "e2e" },
   ],
   "settings": {
     "files.exclude": {
       "apps": true,
+      "packages": true,
     },
   },
 }

@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "apps/web",
-    "apps/api"
+    "apps/api",
+    "packages/e2e"
   ],
   "engines": {
     "bun": ">=1"

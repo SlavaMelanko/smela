@@ -2,11 +2,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { test as base } from '@playwright/test'
+import { fillLoginFormAndSubmit } from '@smela/e2e/actions'
+import { waitForApiCall } from '@smela/e2e/api'
+import { EmailService } from '@smela/e2e/email'
 
 import { HttpStatus } from '../../src/lib/net'
 import { LOGIN_PATH } from '../../src/services/backend/paths'
-import { fillLoginFormAndSubmit } from '../scenarios'
-import { EmailService, waitForApiCall } from '../utils'
 
 const LOCALES_PATH = './public/locales'
 

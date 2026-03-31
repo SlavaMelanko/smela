@@ -1,4 +1,13 @@
 import { faker } from '@faker-js/faker'
+import {
+  fillLoginFormAndSubmit,
+  fillNewPasswordFormAndSubmit,
+  fillRequestPasswordResetFormAndSubmit,
+  fillSignupFormAndSubmit,
+  logOut
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmailAddress } from '@smela/e2e/email'
 
 import { HttpStatus } from '../src/lib/net'
 import { Role, UserStatus } from '../src/lib/types'
@@ -12,14 +21,6 @@ import {
   VERIFY_EMAIL_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import {
-  fillLoginFormAndSubmit,
-  fillNewPasswordFormAndSubmit,
-  fillRequestPasswordResetFormAndSubmit,
-  fillSignupFormAndSubmit,
-  logOut
-} from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 /**
  * Serial tests - User lifecycle flow
@@ -35,7 +36,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
   const user = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
+    email: generateEmailAddress({ prefix: firstName }),
     initialPassword: process.env.VITE_E2E_DEFAULT_PASSWORD,
     newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
@@ -259,7 +260,7 @@ test.describe('Authentication: General', () => {
 
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
-    const testEmail = generateEmail({ prefix: firstName })
+    const testEmail = generateEmailAddress({ prefix: firstName })
 
     let signupCaptchaToken = null
 
@@ -379,7 +380,7 @@ test.describe('Authentication: General', () => {
 
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
-    const testEmail = generateEmail({ prefix: firstName })
+    const testEmail = generateEmailAddress({ prefix: firstName })
 
     const apiPromise = waitForApiCall(page, {
       path: SIGNUP_PATH,

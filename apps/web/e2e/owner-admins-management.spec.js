@@ -1,4 +1,12 @@
 import { faker } from '@faker-js/faker'
+import {
+  fillAcceptInviteFormAndSubmit,
+  fillAdminInviteFormAndSubmit,
+  fillUpdatePasswordFormAndSubmit,
+  logOut
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmailAddress } from '@smela/e2e/email'
 
 import { HttpStatus } from '../src/lib/net'
 import {
@@ -7,13 +15,6 @@ import {
   UPDATE_PASSWORD_PATH
 } from '../src/services/backend/paths'
 import { expect, test } from './config/fixtures'
-import {
-  fillAcceptInviteFormAndSubmit,
-  fillAdminInviteFormAndSubmit,
-  fillUpdatePasswordFormAndSubmit,
-  logOut
-} from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const ownerCredentials = {
   email: process.env.VITE_E2E_OWNER_EMAIL,
@@ -103,7 +104,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
   const newAdmin = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
+    email: generateEmailAddress({ prefix: firstName }),
     password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
