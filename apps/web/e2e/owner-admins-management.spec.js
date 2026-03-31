@@ -6,7 +6,7 @@ import {
   logOut
 } from '@smela/e2e/actions'
 import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
-import { generateEmail } from '@smela/e2e/es'
+import { generateEmailAddress } from '@smela/e2e/email'
 
 import { HttpStatus } from '../src/lib/net'
 import {
@@ -104,7 +104,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
   const newAdmin = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
+    email: generateEmailAddress({ prefix: firstName }),
     password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 

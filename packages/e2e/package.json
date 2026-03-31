@@ -6,7 +6,7 @@
   "exports": {
     "./config": "./src/config.js",
     "./api": "./src/api.js",
-    "./es": "./src/emailService.js",
+    "./email": "./src/email/index.js",
     "./actions": "./src/actions/index.js"
   },
   "dependencies": {

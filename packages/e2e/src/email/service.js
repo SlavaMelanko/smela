@@ -1,52 +1,15 @@
 import { MailiskClient } from 'mailisk'
 
+import { emailConfig } from './config'
+import { EmailProfile } from './profile'
+
 const BASE_TIMEOUT = 30_000
 const POLL_INTERVAL = 1_500
-
-export const emailConfig = {
-  apiKey: process.env.VITE_MAILISK_API_KEY,
-  namespace: process.env.VITE_MAILISK_NAMESPACE,
-  domain: `${process.env.VITE_MAILISK_NAMESPACE}.mailisk.net`,
-}
-
-export const generateEmail = ({ prefix, suffix = Date.now() } = {}) => {
-  return `${prefix}.${suffix}@${emailConfig.domain}`.toLowerCase()
-}
 
 const extractLink = (text, regex) => {
   const match = text.match(regex)
 
   return match ? match[0] : null
-}
-
-const hashEmail = (email) => {
-  // Use HTML content as the unique identifier.
-  // HTML is more likely to contain unique timestamps or IDs.
-  return email.html || email.text // fallback to text if no html
-}
-
-class EmailProfile {
-  #seenHashes = new Map() // track seen hashes per subject
-
-  isNewEmail(email, subject) {
-    const hash = hashEmail(email)
-
-    if (!this.#seenHashes.has(subject)) {
-      this.#seenHashes.set(subject, new Set())
-    }
-
-    return !this.#seenHashes.get(subject).has(hash)
-  }
-
-  markAsSeen(email, subject) {
-    const hash = hashEmail(email)
-
-    if (!this.#seenHashes.has(subject)) {
-      this.#seenHashes.set(subject, new Set())
-    }
-
-    this.#seenHashes.get(subject).add(hash)
-  }
 }
 
 export class EmailService {
@@ -80,12 +43,10 @@ export class EmailService {
       })
 
       // Find first email that we haven't seen before
-      const newEmail = emails.find((email) =>
-        profile.isNewEmail(email, subject),
-      )
+      const newEmail = emails.find((email) => profile.isNew(email))
 
       if (newEmail) {
-        profile.markAsSeen(newEmail, subject)
+        profile.markSeen(newEmail)
 
         return newEmail
       }
@@ -98,10 +59,13 @@ export class EmailService {
 
   async waitForVerificationEmail(emailAddress, subject = 'Verify your email') {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i)
+    const link = extractLink(
+      email.text,
+      /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i,
+    )
 
     if (!link) {
-      throw new Error('Verification link not found in email')
+      throw new Error('Email verification link not found.')
     }
 
     return {
@@ -117,10 +81,13 @@ export class EmailService {
     subject = 'Reset your password',
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i)
+    const link = extractLink(
+      email.text,
+      /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i,
+    )
 
     if (!link) {
-      throw new Error('Reset password link not found in email.')
+      throw new Error('Reset password link not found.')
     }
 
     return {
@@ -138,10 +105,13 @@ export class EmailService {
     subject = "You're invited to",
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
-    const link = extractLink(email.text, /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i)
+    const link = extractLink(
+      email.text,
+      /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i,
+    )
 
     if (!link) {
-      throw new Error('Accept invitation link not found in email.')
+      throw new Error('Invite link not found.')
     }
 
     return {

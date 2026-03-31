@@ -4,7 +4,7 @@ import path from 'node:path'
 import { test as base } from '@playwright/test'
 import { fillLoginFormAndSubmit } from '@smela/e2e/actions'
 import { waitForApiCall } from '@smela/e2e/api'
-import { EmailService } from '@smela/e2e/es'
+import { EmailService } from '@smela/e2e/email'
 
 import { HttpStatus } from '../../src/lib/net'
 import { LOGIN_PATH } from '../../src/services/backend/paths'
