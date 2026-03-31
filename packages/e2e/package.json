@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./config": "./src/config.js",
     "./api": "./src/api.js",
     "./es": "./src/emailService.js",
     "./actions": "./src/actions/index.js"
