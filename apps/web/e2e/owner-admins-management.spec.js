@@ -48,10 +48,13 @@ test.describe('Owner: Admins Page', () => {
       page.getByRole('columnheader', { name: t.table.users.id })
     ).not.toBeVisible()
 
+    const menu = page.getByRole('menu', { name: t.table.column_plural })
+
     // Show the ID column
     await columnsButton.click()
     await page.getByRole('menuitemcheckbox', { name: t.table.users.id }).click()
-    await columnsButton.click()
+    await page.keyboard.press('Escape')
+    await expect(menu).not.toBeVisible()
 
     // Header and first data cell in same column position must align
     await expect(
@@ -67,7 +70,8 @@ test.describe('Owner: Admins Page', () => {
     // Hide the ID column again
     await columnsButton.click()
     await page.getByRole('menuitemcheckbox', { name: t.table.users.id }).click()
-    await columnsButton.click()
+    await page.keyboard.press('Escape')
+    await expect(menu).not.toBeVisible()
 
     await expect(
       page.getByRole('columnheader', { name: t.table.users.id })

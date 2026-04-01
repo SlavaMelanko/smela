@@ -26,7 +26,8 @@
     "check:web": "bun run --filter @smela/web check",
     "check:api": "bun run --filter @smela/api check",
     "check": "bun run check:api & bun run check:web & wait $(jobs -p)",
-    "e2e:web": "bun run --filter @smela/api dev & bun run --filter @smela/web e2e & wait $(jobs -p)",
-    "e2e:web:ui": "bun run --filter @smela/api dev & bun run --filter @smela/web e2e:ui & wait $(jobs -p)"
+    "e2e:web": "bash scripts/e2e.sh",
+    "e2e:web:ui": "bash scripts/e2e.sh --ui",
+    "e2e:web:kill": "bash scripts/e2e.sh --kill"
   }
 }
