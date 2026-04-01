@@ -1,7 +1,7 @@
 export const fillTeamAddFormAndSubmit = async (
   page,
   { name, website, description },
-  t,
+  t
 ) => {
   await page.getByLabel(t.team.name.label).fill(name)
 

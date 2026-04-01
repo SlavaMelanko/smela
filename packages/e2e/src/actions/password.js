@@ -15,7 +15,7 @@ export const fillNewPasswordFormAndSubmit = async (page, newPassword, t) => {
 export const fillUpdatePasswordFormAndSubmit = async (
   page,
   { currentPassword, newPassword },
-  t,
+  t
 ) => {
   await page.getByLabel(t.password.label.current).fill(currentPassword)
   await page.getByLabel(t.password.label.new).fill(newPassword)

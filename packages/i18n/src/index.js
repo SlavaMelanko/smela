@@ -5,7 +5,7 @@ export const createI18n = async ({
   fallbackLng = 'en',
   resources,
   backend,
-  plugins = [],
+  plugins = []
 } = {}) => {
   const instance = i18n.createInstance()
 
@@ -19,8 +19,8 @@ export const createI18n = async ({
     resources,
     backend,
     interpolation: {
-      escapeValue: false,
-    },
+      escapeValue: false
+    }
   })
 
   return instance

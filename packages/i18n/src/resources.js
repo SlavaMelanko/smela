@@ -3,5 +3,5 @@ import uk from './resources/uk.json' with { type: 'json' }
 
 export const resources = {
   en: { translation: en },
-  uk: { translation: uk },
+  uk: { translation: uk }
 }

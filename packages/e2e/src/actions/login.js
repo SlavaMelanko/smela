@@ -1,7 +1,7 @@
 export const fillLoginFormAndSubmit = async (page, { email, password }, t) => {
   const emailInput = page.getByLabel(t.email.label)
   const passwordInput = page.getByRole('textbox', {
-    name: t.password.label.default,
+    name: t.password.label.default
   })
   const loginButton = page.getByRole('button', { name: t.login.verb })
 

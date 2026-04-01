@@ -1,7 +1,7 @@
 export const fillAdminInviteFormAndSubmit = async (
   page,
   { firstName, lastName, email },
-  t,
+  t
 ) => {
   await page.getByLabel(t.firstName.label).fill(firstName)
   await page.getByLabel(t.lastName.label).fill(lastName)
@@ -12,7 +12,7 @@ export const fillAdminInviteFormAndSubmit = async (
 export const fillMemberInviteFormAndSubmit = async (
   page,
   { firstName, lastName, email, position },
-  t,
+  t
 ) => {
   await page.getByLabel(t.firstName.label).fill(firstName)
   await page.getByLabel(t.lastName.label).fill(lastName)
@@ -23,7 +23,7 @@ export const fillMemberInviteFormAndSubmit = async (
 
 export const fillAcceptInviteFormAndSubmit = async (page, password, t) => {
   const passwordInput = page.getByRole('textbox', {
-    name: t.password.label.default,
+    name: t.password.label.default
   })
 
   await passwordInput.fill(password)

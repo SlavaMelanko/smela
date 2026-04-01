@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": "rm -rf node_modules",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "check": "bun run format:fix",
     "sync": "bun scripts/sync.js",
     "sync:watch": "bun scripts/sync.js --watch"
   },
