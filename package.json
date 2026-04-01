@@ -4,7 +4,8 @@
   "workspaces": [
     "apps/web",
     "apps/api",
-    "packages/e2e"
+    "packages/e2e",
+    "packages/i18n"
   ],
   "engines": {
     "bun": ">=1"
@@ -16,7 +17,7 @@
     "clean": "bun run --filter @smela/api clean & bun run --filter @smela/web clean & rm -rf node_modules & wait",
     "reinstall": "bun run clean && bun install",
     "prepare": "husky",
-    "dev:web": "bun run --filter @smela/web dev",
+    "dev:web": "bun run --filter @smela/i18n sync:watch & bun run --filter @smela/web dev",
     "dev:api": "bun run --filter @smela/api dev",
     "dev": "bun run dev:api & bun run dev:web",
     "dev:tmux": "bash scripts/dev.sh",

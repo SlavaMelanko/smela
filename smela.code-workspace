@@ -4,6 +4,7 @@
     { "path": "apps/api", "name": "api" },
     { "path": "apps/web", "name": "web" },
     { "path": "packages/e2e", "name": "e2e" },
+    { "path": "packages/i18n", "name": "i18n" },
   ],
   "settings": {
     "files.exclude": {

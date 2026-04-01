@@ -5,10 +5,12 @@ on:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'packages/i18n/**'
   push:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'packages/i18n/**'
 
 concurrency:
   group: web-ci-${{ github.ref }}
@@ -35,6 +37,10 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Sync locale files
+        run: bun run sync
+        working-directory: packages/i18n
 
       - name: Check formatting
         run: bun run format
