@@ -12,11 +12,18 @@ const copyAll = ({ from, to }) => {
   const src = resolve(root, from)
   const dest = resolve(root, to)
 
-  mkdirSync(dest, { recursive: true })
+  try {
+    mkdirSync(dest, { recursive: true })
 
-  for (const file of readdirSync(src).filter((f) => f.endsWith('.json'))) {
-    copyFileSync(join(src, file), join(dest, file))
-    console.log(`${timestamp()}: synced ${file} → ${to}`)
+    for (const file of readdirSync(src).filter((f) => f.endsWith('.json'))) {
+      copyFileSync(join(src, file), join(dest, file))
+      console.log(`${timestamp()}: synced ${file} → ${to}`)
+    }
+  } catch (err) {
+    console.error(
+      `${timestamp()}: sync failed (${from} → ${to}): ${err.message}`,
+    )
+    process.exit(1)
   }
 }
 

@@ -10,7 +10,6 @@
     "./actions": "./src/actions/index.js"
   },
   "dependencies": {
-    "@smela/i18n": "workspace:*",
     "mailisk": "^2.2.2"
   },
   "peerDependencies": {
