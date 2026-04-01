@@ -3,9 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "scripts": {
+    "sync": "bun scripts/sync.js",
+    "sync:watch": "bun scripts/sync.js --watch"
+  },
   "exports": {
     ".": "./src/index.js",
     "./resources": "./src/resources.js"
+  },
+  "devDependencies": {
+    "chokidar": "^5.0.0"
   },
   "peerDependencies": {
     "i18next": "^25.8.11"

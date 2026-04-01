@@ -10,6 +10,9 @@ dist-ssr
 storybook-static
 *storybook.log
 
+# Generated — synced from packages/i18n
+/public/locales/
+
 # Playwright
 /e2e/artifacts/
 /e2e/html-report/

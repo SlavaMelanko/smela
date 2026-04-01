@@ -8,7 +8,7 @@
     "reinstall": "bun run clean && bun install",
     "dev": "vite --mode development",
     "preview": "vite preview --mode production",
-    "build": "vite build --mode production",
+    "build": "bun run --filter @smela/i18n sync && vite build --mode production",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
