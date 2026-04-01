@@ -6,6 +6,8 @@ import config from '../sync.config.js'
 const root = resolve(import.meta.dirname, '..')
 const watch = process.argv.includes('--watch')
 
+const timestamp = () => new Date().toTimeString().slice(0, 8)
+
 const copyAll = ({ from, to }) => {
   const src = resolve(root, from)
   const dest = resolve(root, to)
@@ -14,7 +16,7 @@ const copyAll = ({ from, to }) => {
 
   for (const file of readdirSync(src).filter((f) => f.endsWith('.json'))) {
     copyFileSync(join(src, file), join(dest, file))
-    console.log(`synced ${file} → ${to}`)
+    console.log(`${timestamp()}: synced ${file} → ${to}`)
   }
 }
 
@@ -36,9 +38,9 @@ if (watch) {
 
       mkdirSync(dest, { recursive: true })
       copyFileSync(filePath, join(dest, file))
-      console.log(`synced ${file} → ${entry.to}`)
+      console.log(`${timestamp()}: synced ${file} → ${entry.to}`)
     })
   }
 
-  console.log('watching for locale changes...')
+  console.log(`watching for locale changes...`)
 }
