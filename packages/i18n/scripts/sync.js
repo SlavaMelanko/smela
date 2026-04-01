@@ -14,12 +14,14 @@ const copyAll = ({ from, to }) => {
   try {
     mkdirSync(to, { recursive: true })
 
-    for (const file of readdirSync(src).filter((f) => f.endsWith('.json'))) {
+    for (const file of readdirSync(src).filter(f => f.endsWith('.json'))) {
       copyFileSync(join(src, file), join(to, file))
       console.log(`${timestamp()}: synced ${file} → ${to}`)
     }
   } catch (err) {
-    console.error(`${timestamp()}: sync failed (${from} → ${to}): ${err.message}`)
+    console.error(
+      `${timestamp()}: sync failed (${from} → ${to}): ${err.message}`
+    )
     process.exit(1)
   }
 }
@@ -34,7 +36,7 @@ if (watch) {
   for (const entry of config) {
     const src = resolve(root, entry.from)
 
-    chokidarWatch(src, { ignoreInitial: true }).on('change', (filePath) => {
+    chokidarWatch(src, { ignoreInitial: true }).on('change', filePath => {
       if (!filePath.endsWith('.json')) return
 
       const file = filePath.split('/').pop()
@@ -44,7 +46,9 @@ if (watch) {
         copyFileSync(filePath, join(entry.to, file))
         console.log(`${timestamp()}: synced ${file} → ${entry.to}`)
       } catch (err) {
-        console.error(`${timestamp()}: sync failed (${file} → ${entry.to}): ${err.message}`)
+        console.error(
+          `${timestamp()}: sync failed (${file} → ${entry.to}): ${err.message}`
+        )
       }
     })
   }

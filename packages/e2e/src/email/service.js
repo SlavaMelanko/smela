@@ -39,11 +39,11 @@ export class EmailService {
     while (Date.now() - start < this.#timeout) {
       const { data: emails } = await this.#client.searchInbox(this.#namespace, {
         to_addr_prefix: emailAddress,
-        subject_includes: subject,
+        subject_includes: subject
       })
 
       // Find first email that we haven't seen before
-      const newEmail = emails.find((email) => profile.isNew(email))
+      const newEmail = emails.find(email => profile.isNew(email))
 
       if (newEmail) {
         profile.markSeen(newEmail)
@@ -51,7 +51,7 @@ export class EmailService {
         return newEmail
       }
 
-      await new Promise((res) => setTimeout(res, POLL_INTERVAL))
+      await new Promise(res => setTimeout(res, POLL_INTERVAL))
     }
 
     throw new Error(`The email "${subject}" hasn't been received.`)
@@ -61,7 +61,7 @@ export class EmailService {
     const email = await this.#waitForEmail(emailAddress, subject)
     const link = extractLink(
       email.text,
-      /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i,
+      /https?:\/\/[^ \n]+\/verify-email\?token=[^ \n]+/i
     )
 
     if (!link) {
@@ -72,18 +72,18 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject,
+      subject: email.subject
     }
   }
 
   async waitForResetPasswordEmail(
     emailAddress,
-    subject = 'Reset your password',
+    subject = 'Reset your password'
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
     const link = extractLink(
       email.text,
-      /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i,
+      /https?:\/\/[^ \n]+\/reset-password\?token=[^ \n]+/i
     )
 
     if (!link) {
@@ -94,7 +94,7 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject,
+      subject: email.subject
     }
   }
 
@@ -102,12 +102,12 @@ export class EmailService {
     emailAddress,
     // subject parameter does a substring match, so it will match any email
     // with a subject like "You're invited to ACME Corp".
-    subject = "You're invited to",
+    subject = "You're invited to"
   ) {
     const email = await this.#waitForEmail(emailAddress, subject)
     const link = extractLink(
       email.text,
-      /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i,
+      /https?:\/\/[^ \n]+\/accept-invite\?token=[^ \n]+/i
     )
 
     if (!link) {
@@ -118,7 +118,7 @@ export class EmailService {
       link,
       text: email.text,
       html: email.html,
-      subject: email.subject,
+      subject: email.subject
     }
   }
 }
