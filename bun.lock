@@ -5,6 +5,7 @@
       "name": "smela",
       "devDependencies": {
         "husky": "^9.1.7",
+        "prettier": "^3.8.1",
       },
     },
     "apps/api": {

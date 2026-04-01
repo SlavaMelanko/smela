@@ -5,7 +5,7 @@ export const waitForApiCall = async (page, options, timeout = 30000) => {
 
   return test.step(`Waiting for ${method} ${path}`, async () => {
     const response = await page.waitForResponse(
-      async (response) => {
+      async response => {
         let matches = response.url().includes(path)
 
         if (status !== undefined) {
@@ -41,7 +41,7 @@ export const waitForApiCall = async (page, options, timeout = 30000) => {
 
         return matches
       },
-      { timeout },
+      { timeout }
     )
 
     // Return both response and parsed body for further use
@@ -57,6 +57,6 @@ export const waitForApiCall = async (page, options, timeout = 30000) => {
 
 export const waitForApiCalls = async (page, optionsArray, timeout = 30000) => {
   return Promise.all(
-    optionsArray.map((options) => waitForApiCall(page, options, timeout)),
+    optionsArray.map(options => waitForApiCall(page, options, timeout))
   )
 }
