@@ -10,19 +10,16 @@ const timestamp = () => new Date().toTimeString().slice(0, 8)
 
 const copyAll = ({ from, to }) => {
   const src = resolve(root, from)
-  const dest = resolve(root, to)
 
   try {
-    mkdirSync(dest, { recursive: true })
+    mkdirSync(to, { recursive: true })
 
     for (const file of readdirSync(src).filter((f) => f.endsWith('.json'))) {
-      copyFileSync(join(src, file), join(dest, file))
+      copyFileSync(join(src, file), join(to, file))
       console.log(`${timestamp()}: synced ${file} → ${to}`)
     }
   } catch (err) {
-    console.error(
-      `${timestamp()}: sync failed (${from} → ${to}): ${err.message}`,
-    )
+    console.error(`${timestamp()}: sync failed (${from} → ${to}): ${err.message}`)
     process.exit(1)
   }
 }
@@ -41,13 +38,16 @@ if (watch) {
       if (!filePath.endsWith('.json')) return
 
       const file = filePath.split('/').pop()
-      const dest = resolve(root, entry.to)
 
-      mkdirSync(dest, { recursive: true })
-      copyFileSync(filePath, join(dest, file))
-      console.log(`${timestamp()}: synced ${file} → ${entry.to}`)
+      try {
+        mkdirSync(entry.to, { recursive: true })
+        copyFileSync(filePath, join(entry.to, file))
+        console.log(`${timestamp()}: synced ${file} → ${entry.to}`)
+      } catch (err) {
+        console.error(`${timestamp()}: sync failed (${file} → ${entry.to}): ${err.message}`)
+      }
     })
   }
 
-  console.log(`watching for locale changes...`)
+  console.log(`${timestamp()}: watching for locale changes...`)
 }
