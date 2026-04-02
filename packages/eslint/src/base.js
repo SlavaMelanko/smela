@@ -42,7 +42,6 @@ export const basePlugins = {
   'simple-import-sort': simpleImportSort
 }
 
-/** Shared flat-config for plain JS/ESM Node packages. */
 export const baseConfig = [
   {
     files: ['**/*.js'],

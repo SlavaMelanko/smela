@@ -6,7 +6,6 @@ import globals from 'globals'
 
 import { basePlugins, baseRules } from './base.js'
 
-/** Shared flat-config for React/Vite apps. */
 export const reactConfig = [
   {
     files: ['**/*.{js,jsx}'],

@@ -1,6 +1,5 @@
 import globals from 'globals'
 
-/** Shared Vitest globals override — covers standard test file patterns and test utilities. */
 export const vitestConfig = [
   {
     files: [
