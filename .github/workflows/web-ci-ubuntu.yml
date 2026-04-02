@@ -6,11 +6,13 @@ on:
     paths:
       - 'apps/web/**'
       - 'packages/i18n/**'
+      - 'packages/eslint/**'
   push:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
       - 'packages/i18n/**'
+      - 'packages/eslint/**'
 
 concurrency:
   group: web-ci-${{ github.ref }}

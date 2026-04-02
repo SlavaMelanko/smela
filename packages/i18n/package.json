@@ -7,7 +7,9 @@
     "clean": "rm -rf node_modules",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "check": "bun run format:fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "check": "bun run format:fix && bun run lint:fix",
     "sync": "bun scripts/sync.js",
     "sync:watch": "bun scripts/sync.js --watch"
   },
@@ -16,7 +18,9 @@
     "./resources": "./src/resources.js"
   },
   "devDependencies": {
-    "chokidar": "^5.0.0"
+    "@smela/eslint": "workspace:*",
+    "chokidar": "^5.0.0",
+    "eslint": "^9.39.2"
   },
   "peerDependencies": {
     "i18next": "^25.8.11"
