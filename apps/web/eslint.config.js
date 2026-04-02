@@ -99,7 +99,7 @@ export default [
   },
   {
     // Vitest
-    files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}', 'src/tests/setup.js'],
+    files: ['**/*.test.{js,jsx}', 'src/tests/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -115,14 +115,13 @@ export default [
     files: ['e2e/**/*.{js,jsx}', 'playwright.config.js'],
     languageOptions: {
       globals: {
-        ...globals.node,
-        ...globals.browser
+        ...globals.node
       }
     }
   },
   {
     // Build and config files
-    files: ['vite.config.js', '*.config.js', '*.config.mjs'],
+    files: ['*.config.js'],
     languageOptions: {
       globals: {
         ...globals.node
