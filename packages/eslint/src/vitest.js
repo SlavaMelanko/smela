@@ -6,7 +6,7 @@ export const vitestConfig = [
     files: [
       '**/*.test.{js,jsx}',
       'src/tests/**/*.{js,jsx}',
-      'vitest.config.js'
+      '**/vitest.config.js'
     ],
     languageOptions: {
       ecmaVersion: 'latest',
