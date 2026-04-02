@@ -1,3 +1,3 @@
-import { baseConfig } from '@smela/eslint/base'
+import { baseConfig } from '@smela/eslint'
 
 export default [...baseConfig]

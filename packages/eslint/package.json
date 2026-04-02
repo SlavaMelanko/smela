@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "exports": {
+    ".": "./src/index.js",
     "./base": "./src/base.js",
-    "./react": "./src/react.js"
+    "./react": "./src/react.js",
+    "./vitest": "./src/vitest.js",
+    "./playwright": "./src/playwright.js",
+    "./shadcn": "./src/shadcn.js"
   },
   "dependencies": {
     "@eslint/js": "^9.39.2",
