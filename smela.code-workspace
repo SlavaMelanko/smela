@@ -5,11 +5,12 @@
     { "path": "apps/web", "name": "web" },
     { "path": "packages/e2e", "name": "e2e" },
     { "path": "packages/i18n", "name": "i18n" },
+    { "path": "packages/eslint", "name": "eslint" }
   ],
   "settings": {
     "files.exclude": {
       "apps": true,
-      "packages": true,
-    },
-  },
+      "packages": true
+    }
+  }
 }
