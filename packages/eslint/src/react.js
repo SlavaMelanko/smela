@@ -51,7 +51,7 @@ export const reactConfig = [
         },
         alias: {
           map: [['@', './src']],
-          extensions: ['.js', '.jsx', '.ts', '.tsx']
+          extensions: ['.js', '.jsx']
         }
       }
     }
