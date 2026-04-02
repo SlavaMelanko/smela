@@ -44,15 +44,6 @@ export const reactConfig = [
     settings: {
       react: {
         version: 'detect'
-      },
-      'import/resolver': {
-        node: {
-          paths: ['src']
-        },
-        alias: {
-          map: [['@', './src']],
-          extensions: ['.js', '.jsx']
-        }
       }
     }
   }
