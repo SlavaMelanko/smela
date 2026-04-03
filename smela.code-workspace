@@ -5,7 +5,8 @@
     { "path": "apps/web", "name": "web" },
     { "path": "packages/e2e", "name": "e2e" },
     { "path": "packages/i18n", "name": "i18n" },
-    { "path": "packages/eslint", "name": "eslint" }
+    { "path": "packages/eslint", "name": "eslint" },
+    { "path": "packages/ui", "name": "ui" }
   ],
   "settings": {
     "files.exclude": {

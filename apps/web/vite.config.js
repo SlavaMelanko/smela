@@ -87,5 +87,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src')
     }
+  },
+  // Ensure Vite processes JSX from the @smela/ui workspace package
+  optimizeDeps: {
+    include: ['@smela/ui']
   }
 })

@@ -5,6 +5,7 @@ STAGED_FILES=$(git diff --name-only --cached)
 
 API_STAGED=$(echo "$STAGED_FILES" | grep "^apps/api/" || true)
 WEB_STAGED=$(echo "$STAGED_FILES" | grep "^apps/web/" || true)
+UI_STAGED=$(echo "$STAGED_FILES" | grep "^packages/ui/" || true)
 
 # API pre-commit checks
 if [ -n "$API_STAGED" ]; then
@@ -29,10 +30,17 @@ if [ -n "$WEB_STAGED" ]; then
 
   echo "Running web linter..."
   bun run --filter @smela/web lint:staged
+fi
 
-  WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.(js|jsx|ts|tsx)$' || true)
-  if [ -n "$WEB_STAGED_JS" ]; then
-    echo "Running web tests..."
-    bun run --filter @smela/web test -- $WEB_STAGED_JS --passWithNoTests
+# UI pre-commit checks
+if [ -n "$UI_STAGED" ]; then
+  echo "Running ui linter..."
+  bun run --filter @smela/ui lint:fix
+  git add -u packages/ui/
+
+  UI_STAGED_JS=$(echo "$UI_STAGED" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+  if [ -n "$UI_STAGED_JS" ]; then
+    echo "Running ui tests..."
+    bun run --filter @smela/ui test -- $UI_STAGED_JS --passWithNoTests
   fi
 fi

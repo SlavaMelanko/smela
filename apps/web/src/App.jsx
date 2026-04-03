@@ -1,13 +1,15 @@
+import {
+  LocaleProvider,
+  ModalProvider,
+  ThemeProvider,
+  ToastProvider
+} from '@smela/ui/contexts'
+import { TanStackQueryDevTools } from '@smela/ui/devtools'
+import { queryClient } from '@smela/ui/lib/queryClient'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from 'react-router-dom'
 
-import { LocaleProvider } from '@/contexts/LocaleContext'
-import { ModalProvider } from '@/contexts/ModalContext'
-import { ThemeProvider } from '@/contexts/ThemeContext'
-import { ToastProvider } from '@/contexts/ToastContext'
-import { TanStackQueryDevTools } from '@/devtools'
-import { queryClient } from '@/lib/queryClient'
-import { router } from '@/routes'
+import { router } from './router'
 
 const App = () => {
   return (
