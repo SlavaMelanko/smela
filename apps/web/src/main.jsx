@@ -6,7 +6,10 @@ import { createRoot } from 'react-dom/client'
 
 import packageJson from '../package.json' with { type: 'json' }
 
-initErrorTracker({ name: packageJson.name, version: packageJson.version })
+initErrorTracker({
+  name: packageJson.name,
+  version: packageJson.version
+})
 
 import './i18n'
 
