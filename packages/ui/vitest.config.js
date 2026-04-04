@@ -13,7 +13,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.js'],
     include: ['**/__tests__/**/*.{js,jsx}', '**/*.{spec,test}.{js,jsx}'],
-    exclude: ['node_modules', 'e2e'],
+    exclude: ['node_modules'],
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
@@ -22,30 +22,16 @@ export default defineConfig({
       exclude: [
         'src/**/*.stories.{js,jsx}',
         'src/**/*.{test,spec}.{js,jsx}',
-        'src/tests/**',
-        'src/index.{js,jsx}',
-        'src/App.{js,jsx}',
-        'src/i18n.{js,jsx}',
-        'src/main.{js,jsx}',
-        // Presentation-only code — no business logic to measure
-        'src/pages/**',
-        'src/layouts/**',
-        'src/routes/**',
-        'src/components/ui/**',
-        'src/devtools/**'
+        'src/index.js'
       ]
     },
-    testTimeout: 10000,
     clearMocks: true,
-    restoreMocks: true
+    restoreMocks: true,
+    passWithNoTests: true
   },
   resolve: {
-    // Deduplicate React across symlinked workspace packages to prevent
-    // "Cannot read properties of undefined (reading '$$typeof')" errors.
-    dedupe: ['react', 'react-dom', 'react-i18next'],
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-      $: path.resolve(__dirname, 'public')
+      '#': path.resolve(__dirname, 'src')
     }
   }
 })

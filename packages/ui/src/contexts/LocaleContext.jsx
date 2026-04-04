@@ -1,22 +1,21 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
-import i18n from '@/i18n'
 import {
   datePreset,
   formatDate,
   formatNumber,
   formatPrice,
   formatTime
-} from '@/lib/format'
+} from '#/lib/format'
 import {
   loadFormatPreferences,
   storeFormatPreferences,
   storeLocale
-} from '@/lib/userPreferences'
+} from '#/lib/userPreferences'
 
 const LocaleContext = createContext()
 
-export const LocaleProvider = ({ children }) => {
+export const LocaleProvider = ({ i18n, children }) => {
   // At this point, i18n is already initialized with the correct locale,
   // so we trust i18n.language as the single source of truth
   const [locale, setLocale] = useState(i18n.language)
@@ -28,11 +27,14 @@ export const LocaleProvider = ({ children }) => {
     document.documentElement.lang = locale
   }, [locale])
 
-  const changeLocale = useCallback(newLocale => {
-    setLocale(newLocale)
-    i18n.changeLanguage(newLocale)
-    storeLocale(newLocale)
-  }, [])
+  const changeLocale = useCallback(
+    newLocale => {
+      setLocale(newLocale)
+      i18n.changeLanguage(newLocale)
+      storeLocale(newLocale)
+    },
+    [i18n]
+  )
 
   const changeFormatPreference = useCallback((key, value) => {
     setFormatPreferences(prev => {

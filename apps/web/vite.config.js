@@ -84,6 +84,9 @@ export default defineConfig({
       })
   ].filter(Boolean),
   resolve: {
+    // Deduplicate React across symlinked workspace packages to prevent
+    // "Cannot read properties of undefined (reading '$$typeof')" errors.
+    dedupe: ['react', 'react-dom', 'react-i18next'],
     alias: {
       '@': path.resolve(__dirname, 'src')
     }

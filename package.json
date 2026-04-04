@@ -6,7 +6,8 @@
     "apps/api",
     "packages/e2e",
     "packages/i18n",
-    "packages/eslint"
+    "packages/eslint",
+    "packages/ui"
   ],
   "engines": {
     "bun": ">=1"
@@ -16,7 +17,7 @@
     "prettier": "^3.8.1"
   },
   "scripts": {
-    "clean": "bun run --filter @smela/api clean & bun run --filter @smela/web clean & bun run --filter @smela/i18n clean & bun run --filter @smela/e2e clean & rm -rf node_modules & wait",
+    "clean": "bun run --filter @smela/api clean & bun run --filter @smela/web clean & bun run --filter @smela/i18n clean & bun run --filter @smela/e2e clean & bun run --filter @smela/ui clean & rm -rf node_modules & wait",
     "reinstall": "bun run clean && bun install",
     "prepare": "husky",
     "postinstall": "bun run --filter @smela/i18n sync",

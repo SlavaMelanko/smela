@@ -1,8 +1,8 @@
+import { Copyright } from '@smela/ui'
 import { ExternalLink } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { TeamBadge } from '@/components/badges'
-import { Copyright } from '@/components/Copyright'
 import { ChevronIcon, Logo } from '@/components/icons'
 import {
   Badge,

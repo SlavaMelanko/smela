@@ -1,2 +1,2 @@
 export { accessTokenStorage } from './accessTokenStorage'
-export { localStorage } from './localStorage'
+export { localStorage } from '@smela/ui'

@@ -1,4 +1,4 @@
-import { localStorage } from './localStorage'
+import { localStorage } from '@smela/ui'
 
 const ACCESS_TOKEN_KEY = 'access_token'
 

@@ -6,6 +6,7 @@ import { ModalProvider } from '@/contexts/ModalContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { TanStackQueryDevTools } from '@/devtools'
+import i18n from '@/i18n'
 import { queryClient } from '@/lib/queryClient'
 import { router } from '@/routes'
 
@@ -13,7 +14,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <LocaleProvider>
+        <LocaleProvider i18n={i18n}>
           <ToastProvider>
             <ModalProvider>
               <RouterProvider router={router} />
