@@ -23,15 +23,6 @@ i18next.use(initReactI18next).init({
   interpolation: { escapeValue: false }
 })
 
-vi.mock('@/lib/env', () => ({
-  default: {
-    MODE: 'test',
-    CAPTCHA_SITE_KEY: 'test-captcha-key',
-    BE_BASE_URL: 'https://api.test.com',
-    SENTRY_DSN: undefined
-  }
-}))
-
 const mockExecuteReCaptcha = vi.fn()
 const mockResetReCaptcha = vi.fn()
 
