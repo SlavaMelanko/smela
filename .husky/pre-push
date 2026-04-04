@@ -17,7 +17,7 @@ if echo "$CHANGED" | grep -qE "^apps/api/.*\.(ts|js)$"; then
   bun run --filter @smela/api test
 fi
 
-if echo "$CHANGED" | grep -qE "^apps/web/.*\.(js|jsx|ts|tsx)$"; then
+if echo "$CHANGED" | grep -qE "^(apps/web|packages/ui)/.*\.(js|jsx|ts|tsx)$"; then
   echo "Running web tests..."
-  bun run --filter @smela/web test
+  bun run --filter @smela/ui test
 fi
