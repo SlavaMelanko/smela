@@ -21,7 +21,7 @@ const isProdOrStage =
 // memoizes based on reference equality, so these mutations go undetected.
 // Excluding table components forces React to re-render them normally.
 const reactCompilerOptions = {
-  sources: filename => !filename.includes('src/components/table/')
+  sources: filename => !filename.includes('packages/ui/src/components/table/')
 }
 
 export default defineConfig({
