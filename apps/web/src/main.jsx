@@ -1,4 +1,4 @@
-import '@smela/ui/index.css'
+import './index.css'
 
 import { initErrorTracker } from '@smela/ui/services'
 import { StrictMode } from 'react'
