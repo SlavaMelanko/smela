@@ -1,11 +1,10 @@
 import { flexRender } from '@tanstack/react-table'
-import { ChevronDown, ChevronUp } from 'lucide-react'
-
 import {
   TableHead,
   TableHeader as TableHeaderRoot,
   TableRow
-} from '@/components/ui'
+} from '@ui/components/ui'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 import { ColumnResizeHandle } from './ColumnResizeHandle'
 

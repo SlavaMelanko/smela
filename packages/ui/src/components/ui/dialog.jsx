@@ -1,8 +1,7 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
+import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
 import { X } from 'lucide-react'
-
-import { cn } from '@/lib/utils'
 
 function Dialog({ ...props }) {
   return <DialogPrimitive.Root data-slot='dialog' {...props} />

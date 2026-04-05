@@ -1,10 +1,10 @@
-import { Logo } from '@/components/icons'
-import { LanguageDropdown } from '@/components/LanguageDropdown'
-import { NotificationToggle } from '@/components/notifications'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { SidebarTrigger } from '@/components/ui'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useNotifications } from '@/hooks/useNotifications'
+import { Logo } from '@ui/components/icons'
+import { LanguageDropdown } from '@ui/components/LanguageDropdown'
+import { NotificationToggle } from '@ui/components/notifications'
+import { ThemeToggle } from '@ui/components/ThemeToggle'
+import { SidebarTrigger } from '@ui/components/ui'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useNotifications } from '@ui/hooks/useNotifications'
 
 import { UserProfileDropdown } from './UserProfileDropdown'
 

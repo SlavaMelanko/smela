@@ -1,4 +1,4 @@
-import { getStatusBgColor, getStatusTextColor } from '@/components/UserStatus'
+import { getStatusBgColor, getStatusTextColor } from '@ui/components/UserStatus'
 
 import {
   adminActiveStatuses,

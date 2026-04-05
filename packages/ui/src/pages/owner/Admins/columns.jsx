@@ -1,6 +1,6 @@
-import { LastActiveBadge, YouBadge } from '@/components/badges'
-import { StatusBadge } from '@/components/UserStatus'
-import { getFullName } from '@/lib/format/user'
+import { LastActiveBadge, YouBadge } from '@ui/components/badges'
+import { StatusBadge } from '@ui/components/UserStatus'
+import { getFullName } from '@ui/lib/format/user'
 
 export const getColumns = (t, formatDate, meId) => {
   const label = key => t(`table.users.${key}`)

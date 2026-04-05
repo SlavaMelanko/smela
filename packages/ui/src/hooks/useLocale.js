@@ -1,8 +1,7 @@
+import LocaleContext from '@ui/contexts/LocaleContext'
+import { toTranslationKey } from '@ui/services/catch'
 import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import LocaleContext from '@/contexts/LocaleContext'
-import { toTranslationKey } from '@/services/catch'
 
 export const useLocale = (options = {}) => {
   const context = useContext(LocaleContext)

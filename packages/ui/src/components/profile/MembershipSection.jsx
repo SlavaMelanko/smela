@@ -1,7 +1,7 @@
-import { MembershipForm } from '@/components/form'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useLocale } from '@/hooks/useLocale'
-import { useToast } from '@/hooks/useToast'
+import { MembershipForm } from '@ui/components/form'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useToast } from '@ui/hooks/useToast'
 
 import { PageContent } from '../PageContent'
 import { TextSeparator } from '../Separator'

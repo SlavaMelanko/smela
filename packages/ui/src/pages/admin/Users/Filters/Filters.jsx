@@ -1,7 +1,7 @@
-import { Multiselect } from '@/components/inputs'
-import { useLocale } from '@/hooks/useLocale'
-import { allUserStatuses } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { Multiselect } from '@ui/components/inputs'
+import { useLocale } from '@ui/hooks/useLocale'
+import { allUserStatuses } from '@ui/lib/types'
+import { cn } from '@ui/lib/utils'
 
 export const Filters = ({ isShow, params, setParams }) => {
   const { t } = useLocale()

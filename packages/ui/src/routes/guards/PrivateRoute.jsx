@@ -1,9 +1,8 @@
+import { Spinner } from '@ui/components/Spinner'
+import { useHasAccess } from '@ui/hooks/useHasAccess'
+import { ErrorLayout } from '@ui/layouts'
+import { NotFoundErrorPage } from '@ui/pages/errors'
 import { Navigate } from 'react-router-dom'
-
-import { Spinner } from '@/components/Spinner'
-import { useHasAccess } from '@/hooks/useHasAccess'
-import { ErrorLayout } from '@/layouts'
-import { NotFoundErrorPage } from '@/pages/errors'
 
 export const PrivateRoute = ({
   children,

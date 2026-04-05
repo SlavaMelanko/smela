@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/lib/net'
+import { HttpStatus } from '@ui/lib/net'
 
 // Hoisted to module level by Vitest — ensures @/lib/env is not mocked when
 // other test files run in the same worker

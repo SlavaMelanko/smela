@@ -4,11 +4,10 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query'
-
-import { defaultOptions } from '@/components/Pagination'
-import { authKeys } from '@/hooks/useAuth'
-import { UserStatus } from '@/lib/types'
-import { teamApi } from '@/services/backend'
+import { defaultOptions } from '@ui/components/Pagination'
+import { authKeys } from '@ui/hooks/useAuth'
+import { UserStatus } from '@ui/lib/types'
+import { teamApi } from '@ui/services/backend'
 
 export const teamKeys = {
   all: () => ['teams'],

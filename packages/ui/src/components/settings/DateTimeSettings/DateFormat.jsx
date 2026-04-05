@@ -1,7 +1,6 @@
+import { useLocale } from '@ui/hooks/useLocale'
+import { datePreset } from '@ui/lib/format/date'
 import { Calendar } from 'lucide-react'
-
-import { useLocale } from '@/hooks/useLocale'
-import { datePreset } from '@/lib/format/date'
 
 import {
   SettingsLabel,

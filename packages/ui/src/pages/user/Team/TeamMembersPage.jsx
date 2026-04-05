@@ -1,7 +1,6 @@
+import { TeamMembersSection } from '@ui/components/team'
+import { userTeamQueryOptions } from '@ui/hooks/useTeam'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-
-import { TeamMembersSection } from '@/components/team'
-import { userTeamQueryOptions } from '@/hooks/useTeam'
 
 export const TeamMembersPage = () => {
   const { team } = useOutletContext()

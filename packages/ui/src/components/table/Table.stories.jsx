@@ -3,10 +3,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { StatusBadge } from '@ui/components/UserStatus'
+import { Role, UserStatus } from '@ui/lib/types'
 import { useState } from 'react'
-
-import { StatusBadge } from '@/components/UserStatus'
-import { Role, UserStatus } from '@/lib/types'
 
 import { Table } from '.'
 

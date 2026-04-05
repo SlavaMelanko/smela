@@ -1,8 +1,7 @@
+import { Link } from '@ui/components/links'
+import { EmailLink } from '@ui/components/links/EmailLink'
+import { cn } from '@ui/lib/utils'
 import { Globe } from 'lucide-react'
-
-import { Link } from '@/components/links'
-import { EmailLink } from '@/components/links/EmailLink'
-import { cn } from '@/lib/utils'
 
 export const PageHeader = ({ children }) => (
   <div className='flex items-end justify-between'>{children}</div>

@@ -12,7 +12,7 @@ const FormDevTools = import.meta.env.DEV
  * Usage:
  *
  * ```jsx
- * import { ReactHookFormDevTools } from '@/devtools'
+ * import { ReactHookFormDevTools } from '@ui/devtools'
  *
  * const MyForm = () => {
  *   const { control } = useForm()

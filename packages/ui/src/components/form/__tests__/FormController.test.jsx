@@ -1,8 +1,7 @@
 import { resources } from '@smela/i18n/resources'
 import { screen } from '@testing-library/react'
+import { renderWithProviders } from '@ui/tests'
 import { useForm } from 'react-hook-form'
-
-import { renderWithProviders } from '@/tests'
 const en = resources.en.translation
 
 import { FormController } from '../FormController'

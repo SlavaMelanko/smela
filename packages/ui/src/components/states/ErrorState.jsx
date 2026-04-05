@@ -1,7 +1,6 @@
+import { Button } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 import { AlertCircle, RefreshCw } from 'lucide-react'
-
-import { Button } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
 
 import { StateIcon, StateRoot, StateTitle } from './State'
 

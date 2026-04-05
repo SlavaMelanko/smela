@@ -1,15 +1,14 @@
-import { SlidersVertical } from 'lucide-react'
-
-import { ChevronIcon } from '@/components/icons'
+import { ChevronIcon } from '@ui/components/icons'
 import {
   Button,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger
-} from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
-import { cn } from '@/lib/utils'
+} from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { cn } from '@ui/lib/utils'
+import { SlidersVertical } from 'lucide-react'
 
 export const ColumnVisibilityDropdown = ({
   className,

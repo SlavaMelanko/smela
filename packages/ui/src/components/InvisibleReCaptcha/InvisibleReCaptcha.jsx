@@ -1,10 +1,9 @@
+import { useLocale } from '@ui/hooks/useLocale'
+import { useTheme } from '@ui/hooks/useTheme'
+import { withTimeout } from '@ui/lib/async'
+import env from '@ui/lib/env'
 import { useImperativeHandle, useRef } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
-
-import { useLocale } from '@/hooks/useLocale'
-import { useTheme } from '@/hooks/useTheme'
-import { withTimeout } from '@/lib/async'
-import env from '@/lib/env'
 
 export function InvisibleReCaptcha({ ref, ...props }) {
   const { theme } = useTheme()

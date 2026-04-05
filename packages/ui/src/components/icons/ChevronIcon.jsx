@@ -1,6 +1,5 @@
+import { cn } from '@ui/lib/utils'
 import { ChevronDown } from 'lucide-react'
-
-import { cn } from '@/lib/utils'
 
 export const ChevronIcon = ({ className }) => {
   return (

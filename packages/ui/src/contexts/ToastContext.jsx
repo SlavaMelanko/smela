@@ -1,7 +1,6 @@
+import { Toaster } from '@ui/components/notifications'
 import { createContext, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
-
-import { Toaster } from '@/components/notifications'
 
 const ToastContext = createContext(undefined)
 

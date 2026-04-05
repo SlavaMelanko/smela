@@ -1,6 +1,6 @@
-import { MembershipSection } from '@/components/profile'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useUpdateTeamMember } from '@/hooks/useTeam'
+import { MembershipSection } from '@ui/components/profile'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useUpdateTeamMember } from '@ui/hooks/useTeam'
 
 export const MembershipTab = ({ team, member }) => {
   const { user: me } = useCurrentUser()

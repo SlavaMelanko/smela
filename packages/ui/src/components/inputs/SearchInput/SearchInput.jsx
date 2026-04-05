@@ -1,7 +1,6 @@
+import { Input } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 import { Search } from 'lucide-react'
-
-import { Input } from '@/components/ui'
-import { cn } from '@/lib/utils'
 
 export const SearchInput = ({
   className = '',

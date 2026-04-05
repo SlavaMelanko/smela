@@ -3,8 +3,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const PricingFaq = () => {
   const { t } = useLocale({ keyPrefix: 'pricing.faq' })

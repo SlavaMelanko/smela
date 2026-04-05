@@ -1,7 +1,7 @@
-import { UpdatePasswordForm } from '@/components/form'
-import { useUpdatePassword } from '@/hooks/useAuth'
-import { useLocale } from '@/hooks/useLocale'
-import { useToast } from '@/hooks/useToast'
+import { UpdatePasswordForm } from '@ui/components/form'
+import { useUpdatePassword } from '@ui/hooks/useAuth'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useToast } from '@ui/hooks/useToast'
 
 export const UpdatePasswordSection = () => {
   const { t, te } = useLocale()

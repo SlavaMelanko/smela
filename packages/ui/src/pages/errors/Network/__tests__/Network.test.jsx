@@ -1,15 +1,14 @@
 import { resources } from '@smela/i18n/resources'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { useUrlParams } from '@/hooks/useUrlParams'
-import { NetworkErrorType } from '@/lib/net'
-import { renderWithProviders } from '@/tests'
+import { useUrlParams } from '@ui/hooks/useUrlParams'
+import { NetworkErrorType } from '@ui/lib/net'
+import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
 import { NetworkErrorPage } from '../index'
 
-vi.mock('@/hooks/useUrlParams')
+vi.mock('@ui/hooks/useUrlParams')
 
 describe('NetworkErrorPage', () => {
   beforeEach(() => {

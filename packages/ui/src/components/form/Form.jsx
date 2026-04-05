@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@ui/lib/utils'
 
 export const FormRoot = ({ children, className, ...props }) => (
   <form className={cn('flex flex-col gap-8', className)} {...props}>

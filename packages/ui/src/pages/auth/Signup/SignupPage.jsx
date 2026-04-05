@@ -1,18 +1,17 @@
-import { useNavigate } from 'react-router-dom'
-
-import { GoogleIcon } from '@/components/icons'
-import { InvisibleReCaptcha } from '@/components/InvisibleReCaptcha'
-import { LoginPrompt, TermsAndPrivacyPrompt } from '@/components/prompts'
-import { TextSeparator } from '@/components/Separator'
-import { Button } from '@/components/ui'
+import { GoogleIcon } from '@ui/components/icons'
+import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
+import { LoginPrompt, TermsAndPrivacyPrompt } from '@ui/components/prompts'
+import { TextSeparator } from '@ui/components/Separator'
+import { Button } from '@ui/components/ui'
 import {
   useUserSignupWithEmail,
   useUserSignupWithGoogle
-} from '@/hooks/useAuth'
-import { useCaptcha } from '@/hooks/useCaptcha'
-import { useLocale } from '@/hooks/useLocale'
-import { useTheme } from '@/hooks/useTheme'
-import { useToast } from '@/hooks/useToast'
+} from '@ui/hooks/useAuth'
+import { useCaptcha } from '@ui/hooks/useCaptcha'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useTheme } from '@ui/hooks/useTheme'
+import { useToast } from '@ui/hooks/useToast'
+import { useNavigate } from 'react-router-dom'
 
 import { AuthRoot } from '../Auth'
 import { SignupForm } from './Form'

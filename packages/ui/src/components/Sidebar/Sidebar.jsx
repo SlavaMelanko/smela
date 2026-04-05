@@ -1,9 +1,6 @@
-import { ExternalLink } from 'lucide-react'
-import { useLocation, useNavigate } from 'react-router-dom'
-
-import { TeamBadge } from '@/components/badges'
-import { Copyright } from '@/components/Copyright'
-import { ChevronIcon, Logo } from '@/components/icons'
+import { TeamBadge } from '@ui/components/badges'
+import { Copyright } from '@ui/components/Copyright'
+import { ChevronIcon, Logo } from '@ui/components/icons'
 import {
   Badge,
   Collapsible,
@@ -23,8 +20,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar
-} from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { ExternalLink } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ActiveIndicator } from './ActiveIndicator'
 

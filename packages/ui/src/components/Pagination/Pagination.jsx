@@ -1,4 +1,4 @@
-import { useLocale } from '@/hooks/useLocale'
+import { useLocale } from '@ui/hooks/useLocale'
 
 import { defaultOptions, limitOptions } from './options'
 import { NextButton, PrevButton } from './PaginationButtons'

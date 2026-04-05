@@ -1,7 +1,7 @@
-import { LastActiveBadge, YouBadge } from '@/components/badges'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useLocale } from '@/hooks/useLocale'
-import { getFullName } from '@/lib/format/user'
+import { LastActiveBadge, YouBadge } from '@ui/components/badges'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useLocale } from '@ui/hooks/useLocale'
+import { getFullName } from '@ui/lib/format/user'
 
 import {
   PageHeader,

@@ -29,7 +29,7 @@ const mockResetReCaptcha = vi.fn()
 globalThis.mockExecuteReCaptcha = mockExecuteReCaptcha
 globalThis.mockResetReCaptcha = mockResetReCaptcha
 
-vi.mock('@/components/InvisibleReCaptcha', async () => {
+vi.mock('@ui/components/InvisibleReCaptcha', async () => {
   const { useImperativeHandle } = await vi.importActual('react')
 
   return {
@@ -53,7 +53,7 @@ vi.mock('react-router-dom', async () => ({
   useNavigate: () => mockNavigate
 }))
 
-vi.mock('@/services/errorTracker', () => ({
+vi.mock('@ui/services/errorTracker', () => ({
   clearUser: vi.fn(),
   setUser: vi.fn(),
   initErrorTracker: vi.fn(),

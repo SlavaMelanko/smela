@@ -1,6 +1,5 @@
+import { cn } from '@ui/lib/utils'
 import { useNavigate } from 'react-router-dom'
-
-import { cn } from '@/lib/utils'
 
 const sizeMap = {
   sm: 130,

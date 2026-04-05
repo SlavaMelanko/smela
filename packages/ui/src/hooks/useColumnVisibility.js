@@ -1,6 +1,5 @@
+import { localStorage } from '@ui/lib/storage'
 import { useState } from 'react'
-
-import { localStorage } from '@/lib/storage'
 
 const buildKey = tableId => `table:columns:${tableId}`
 

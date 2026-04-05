@@ -1,7 +1,6 @@
+import { Button } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 import { UserRoundPlus } from 'lucide-react'
-
-import { Button } from '@/components/ui'
-import { cn } from '@/lib/utils'
 
 export const InviteButton = ({
   label,

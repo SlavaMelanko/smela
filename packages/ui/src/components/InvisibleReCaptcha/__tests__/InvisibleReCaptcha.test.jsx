@@ -24,15 +24,15 @@ vi.mock('react-google-recaptcha', async () => {
 
 const mockWithTimeout = vi.fn()
 
-vi.mock('@/lib/async', () => ({
+vi.mock('@ui/lib/async', () => ({
   withTimeout: (...args) => mockWithTimeout(...args)
 }))
 
-vi.mock('@/hooks/useTheme', () => ({
+vi.mock('@ui/hooks/useTheme', () => ({
   useTheme: () => ({ theme: 'dark' })
 }))
 
-vi.mock('@/hooks/useLocale', () => ({
+vi.mock('@ui/hooks/useLocale', () => ({
   useLocale: () => ({ locale: 'uk' })
 }))
 

@@ -1,7 +1,6 @@
+import { FormRoot, SubmitButton } from '@ui/components/form'
+import { useLocale } from '@ui/hooks/useLocale'
 import { useForm } from 'react-hook-form'
-
-import { FormRoot, SubmitButton } from '@/components/form'
-import { useLocale } from '@/hooks/useLocale'
 
 import { getDefaultValues, resolver } from './schema'
 

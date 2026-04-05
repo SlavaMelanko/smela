@@ -1,5 +1,5 @@
-import { FieldName, ProfileSection } from '@/components/profile'
-import { useUpdateCurrentUser } from '@/hooks/useAuth'
+import { FieldName, ProfileSection } from '@ui/components/profile'
+import { useUpdateCurrentUser } from '@ui/hooks/useAuth'
 
 export const ProfileTab = ({ user }) => {
   const { mutate, isPending } = useUpdateCurrentUser()

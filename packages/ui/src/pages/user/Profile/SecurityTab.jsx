@@ -1,6 +1,6 @@
-import { UpdatePasswordSection } from '@/components/profile'
-import { TextSeparator } from '@/components/Separator'
-import { useLocale } from '@/hooks/useLocale'
+import { UpdatePasswordSection } from '@ui/components/profile'
+import { TextSeparator } from '@ui/components/Separator'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const SecurityTab = () => {
   const { t } = useLocale()

@@ -1,20 +1,19 @@
-import { useNavigate, useParams } from 'react-router-dom'
-
-import { BackButton } from '@/components/buttons'
-import { PageContent } from '@/components/PageContent'
-import { TeamPageHeader } from '@/components/PageHeader'
-import { Spinner } from '@/components/Spinner'
-import { ErrorState } from '@/components/states'
+import { BackButton } from '@ui/components/buttons'
+import { PageContent } from '@ui/components/PageContent'
+import { TeamPageHeader } from '@ui/components/PageHeader'
+import { Spinner } from '@ui/components/Spinner'
+import { ErrorState } from '@ui/components/states'
 import {
   getTeamTabs,
   TeamGeneralSection,
   TeamMembersSection,
   TeamTab
-} from '@/components/team'
-import { Tabs, TabsContent, TabsLine } from '@/components/ui'
-import { useHashTab } from '@/hooks/useHashTab'
-import { useLocale } from '@/hooks/useLocale'
-import { useTeam } from '@/hooks/useTeam'
+} from '@ui/components/team'
+import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
+import { useHashTab } from '@ui/hooks/useHashTab'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useTeam } from '@ui/hooks/useTeam'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export const TeamPage = () => {
   const { id: teamId } = useParams()

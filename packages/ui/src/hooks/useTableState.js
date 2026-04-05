@@ -1,6 +1,5 @@
+import { isValidLimit, Limit } from '@ui/components/Pagination'
 import { useSearchParams } from 'react-router-dom'
-
-import { isValidLimit, Limit } from '@/components/Pagination'
 
 import { useDebouncedSearch } from './useDebouncedSearch'
 

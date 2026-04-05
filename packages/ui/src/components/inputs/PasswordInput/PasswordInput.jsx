@@ -1,7 +1,6 @@
+import { Input } from '@ui/components/ui'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
-
-import { Input } from '@/components/ui'
 
 export const PasswordInput = ({
   ref,

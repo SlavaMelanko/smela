@@ -1,9 +1,8 @@
+import { useLocale } from '@ui/hooks/useLocale'
+import { captureMessage } from '@ui/services/errorTracker'
 import { SearchX } from 'lucide-react'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-
-import { useLocale } from '@/hooks/useLocale'
-import { captureMessage } from '@/services/errorTracker'
 
 import {
   ErrorButton,

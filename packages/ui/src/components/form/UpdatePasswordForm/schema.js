@@ -1,4 +1,4 @@
-import { createResolver, rules } from '@/lib/validation'
+import { createResolver, rules } from '@ui/lib/validation'
 
 export const FieldName = {
   CURRENT_PASSWORD: 'currentPassword',

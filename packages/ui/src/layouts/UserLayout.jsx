@@ -1,12 +1,11 @@
+import { Header } from '@ui/components/Header'
+import { Sidebar } from '@ui/components/Sidebar'
+import { Spinner } from '@ui/components/Spinner'
+import { SidebarInset, SidebarProvider } from '@ui/components/ui'
+import { NotificationProvider } from '@ui/contexts/NotificationContext'
+import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
-
-import { Header } from '@/components/Header'
-import { Sidebar } from '@/components/Sidebar'
-import { Spinner } from '@/components/Spinner'
-import { SidebarInset, SidebarProvider } from '@/components/ui'
-import { NotificationProvider } from '@/contexts/NotificationContext'
-import { useSidebarMenu } from '@/hooks/useSidebarMenu'
 
 export const UserLayout = () => {
   const { items, team } = useSidebarMenu()

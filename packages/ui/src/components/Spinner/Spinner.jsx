@@ -1,5 +1,5 @@
-import { Spinner as ShadcnSpinner } from '@/components/ui'
-import { cn } from '@/lib/utils'
+import { Spinner as ShadcnSpinner } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 
 const sizeMap = {
   sm: { icon: 16, text: 'text-xs' },

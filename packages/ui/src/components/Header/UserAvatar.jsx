@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarStatus } from '@/components/ui'
-import { getStatusBgColor } from '@/components/UserStatus'
+import { Avatar, AvatarFallback, AvatarStatus } from '@ui/components/ui'
+import { getStatusBgColor } from '@ui/components/UserStatus'
 
 export const UserAvatar = ({ firstName, status }) => (
   <Avatar className='size-6 overflow-visible'>

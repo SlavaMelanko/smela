@@ -1,6 +1,5 @@
+import { UserStatus } from '@ui/lib/types'
 import { useState } from 'react'
-
-import { UserStatus } from '@/lib/types'
 
 import { StatusDropdown } from '.'
 

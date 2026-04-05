@@ -1,8 +1,7 @@
+import { useLogout } from '@ui/hooks/useAuth'
+import { isAdmin } from '@ui/lib/types'
 import { LogOut, MessageCircleQuestion, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
-import { useLogout } from '@/hooks/useAuth'
-import { isAdmin } from '@/lib/types'
 
 import { ProfileDropdown } from './ProfileDropdown'
 

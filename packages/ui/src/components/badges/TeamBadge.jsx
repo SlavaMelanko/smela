@@ -1,7 +1,6 @@
+import { useLocale } from '@ui/hooks/useLocale'
 import { Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
-import { useLocale } from '@/hooks/useLocale'
 
 const TeamBadgeRoot = ({ children, onClick }) => (
   <button

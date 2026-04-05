@@ -1,5 +1,5 @@
-import { Separator } from '@/components/ui'
-import { cn } from '@/lib/utils'
+import { Separator } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 
 export const TextSeparator = ({ text, align = 'center', className }) => (
   <div className={cn('flex items-center', className)}>

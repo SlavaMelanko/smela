@@ -1,6 +1,5 @@
+import { AddButton } from '@ui/components/buttons'
 import { fn } from 'storybook/test'
-
-import { AddButton } from '@/components/buttons'
 
 import { EmptyState, ErrorState } from '.'
 

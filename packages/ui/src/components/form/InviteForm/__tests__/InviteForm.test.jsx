@@ -1,8 +1,7 @@
 import { resources } from '@smela/i18n/resources'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { renderWithProviders } from '@/tests'
+import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
 import { InviteForm } from '..'

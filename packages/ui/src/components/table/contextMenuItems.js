@@ -1,6 +1,5 @@
+import { UserStatus } from '@ui/lib/types'
 import { MailIcon, Send, User, UserMinus, X } from 'lucide-react'
-
-import { UserStatus } from '@/lib/types'
 
 export const createOpenItem = (t, onClick, icon = User) => ({
   icon,

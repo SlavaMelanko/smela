@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
-
-import { renderWithProviders } from '@/tests'
+import { renderWithProviders } from '@ui/tests'
 
 import { Link } from '../Link'
 

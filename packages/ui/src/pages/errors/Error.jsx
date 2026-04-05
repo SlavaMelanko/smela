@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui'
+import { Button } from '@ui/components/ui'
 
 export const ErrorRoot = ({ children, 'data-testid': testId }) => (
   <div className='flex flex-col items-center gap-8' data-testid={testId}>

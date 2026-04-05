@@ -1,8 +1,7 @@
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog'
+import { cn } from '@ui/lib/utils'
 import { XIcon } from 'lucide-react'
 import * as React from 'react'
-
-import { cn } from '@/lib/utils'
 
 import { Button } from './button'
 

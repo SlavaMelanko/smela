@@ -4,10 +4,9 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query'
-
-import { defaultOptions } from '@/components/Pagination'
-import { UserStatus } from '@/lib/types'
-import { ownerApi } from '@/services/backend'
+import { defaultOptions } from '@ui/components/Pagination'
+import { UserStatus } from '@ui/lib/types'
+import { ownerApi } from '@ui/services/backend'
 
 export const ownerKeys = {
   all: () => ['owner'],

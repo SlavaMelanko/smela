@@ -1,11 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
-import { accessTokenStorage } from '@/lib/storage'
-import { authApi, userApi } from '@/services/backend'
+import { accessTokenStorage } from '@ui/lib/storage'
+import { authApi, userApi } from '@ui/services/backend'
 import {
   clearUser as clearErrorTrackerUser,
   setUser as setErrorTrackerUser
-} from '@/services/errorTracker'
+} from '@ui/services/errorTracker'
 
 export const authKeys = {
   all: () => ['auth'],

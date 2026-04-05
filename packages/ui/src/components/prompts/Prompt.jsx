@@ -1,6 +1,5 @@
+import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
-
-import { cn } from '@/lib/utils'
 
 const promptVariants = cva(
   'inline-flex flex-wrap items-baseline justify-center gap-x-1 text-muted-foreground',

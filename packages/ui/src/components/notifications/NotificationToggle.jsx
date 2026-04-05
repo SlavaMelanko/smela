@@ -1,6 +1,5 @@
+import { Badge, Button } from '@ui/components/ui'
 import { Bell } from 'lucide-react'
-
-import { Badge, Button } from '@/components/ui'
 
 export const NotificationToggle = ({ unreadCount = 0, onClick, ref }) => (
   <Button

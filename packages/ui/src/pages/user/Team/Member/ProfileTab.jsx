@@ -1,6 +1,6 @@
-import { FieldName, ProfileSection } from '@/components/profile'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useUpdateTeamMember } from '@/hooks/useTeam'
+import { FieldName, ProfileSection } from '@ui/components/profile'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useUpdateTeamMember } from '@ui/hooks/useTeam'
 
 export const ProfileTab = ({ team, member }) => {
   const { user: me } = useCurrentUser()

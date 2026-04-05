@@ -1,6 +1,5 @@
+import { useLocale } from '@ui/hooks/useLocale'
 import { Controller } from 'react-hook-form'
-
-import { useLocale } from '@/hooks/useLocale'
 
 import {
   FormError,

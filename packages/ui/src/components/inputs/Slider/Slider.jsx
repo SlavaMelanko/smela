@@ -1,4 +1,4 @@
-import { useLocale } from '@/hooks/useLocale'
+import { useLocale } from '@ui/hooks/useLocale'
 
 import { PresetValues } from './PresetValues'
 import { Range } from './Range'

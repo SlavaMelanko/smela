@@ -1,7 +1,6 @@
+import { Spinner, Switch } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 import { useController } from 'react-hook-form'
-
-import { Spinner, Switch } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
 
 const PermissionRoot = ({ children }) => (
   <div className='grid grid-cols-3 items-center justify-items-center gap-4'>

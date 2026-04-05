@@ -1,7 +1,6 @@
+import { captureError } from '@ui/services/errorTracker'
 import { useEffect } from 'react'
 import { useNavigate, useRouteError } from 'react-router-dom'
-
-import { captureError } from '@/services/errorTracker'
 
 export const ErrorBoundary = () => {
   const error = useRouteError()

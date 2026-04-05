@@ -1,4 +1,4 @@
-import { useLocale } from '@/hooks/useLocale'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const YouBadge = ({ className = 'text-sm' }) => {
   const { t } = useLocale()

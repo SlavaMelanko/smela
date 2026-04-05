@@ -1,6 +1,6 @@
-import { TeamAddForm } from '@/components/form'
-import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+import { TeamAddForm } from '@ui/components/form'
+import { DialogBody, DialogHeader, DialogTitle } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const CreateTeamDialog = ({ onClose, onSubmit }) => {
   const { t } = useLocale()

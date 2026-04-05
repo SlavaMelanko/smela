@@ -1,4 +1,4 @@
-import { HttpStatus } from '@/lib/net'
+import { HttpStatus } from '@ui/lib/net'
 
 import { createError } from '../error'
 

@@ -1,9 +1,6 @@
 // React Compiler breaks RHF's proxy-based isDirty subscription
 'use no memo'
 
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-
 import {
   FormActions,
   FormController,
@@ -13,11 +10,13 @@ import {
   FormRoot,
   FormRow,
   SubmitButton
-} from '@/components/form'
-import { removeHiddenFields } from '@/components/form/utils'
-import { Input } from '@/components/ui'
-import { StatusDropdown } from '@/components/UserStatus'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/form'
+import { removeHiddenFields } from '@ui/components/form/utils'
+import { Input } from '@ui/components/ui'
+import { StatusDropdown } from '@ui/components/UserStatus'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
 import {
   defaultFieldsConfig,

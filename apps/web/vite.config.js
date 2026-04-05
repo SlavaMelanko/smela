@@ -85,6 +85,7 @@ export default defineConfig({
   ].filter(Boolean),
   resolve: {
     alias: {
+      '@ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@': path.resolve(__dirname, 'src')
     }
   },

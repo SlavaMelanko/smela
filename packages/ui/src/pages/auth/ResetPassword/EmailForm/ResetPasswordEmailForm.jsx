@@ -1,13 +1,12 @@
-import { useForm } from 'react-hook-form'
-
 import {
   FormField,
   FormFields,
   FormRoot,
   SubmitButton
-} from '@/components/form'
-import { Input } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/form'
+import { Input } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, resolver } from './schema'
 

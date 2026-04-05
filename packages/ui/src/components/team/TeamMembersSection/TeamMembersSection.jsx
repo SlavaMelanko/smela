@@ -1,19 +1,18 @@
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-
-import { InviteButton } from '@/components/buttons'
-import { Spinner } from '@/components/Spinner'
-import { EmptyState, ErrorState } from '@/components/states'
-import { ColumnVisibilityDropdown, Table } from '@/components/table'
+import { InviteButton } from '@ui/components/buttons'
+import { Spinner } from '@ui/components/Spinner'
+import { EmptyState, ErrorState } from '@ui/components/states'
+import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
 import {
   createDeleteMemberItem,
   createInviteItem,
   createOpenItem
-} from '@/components/table/contextMenuItems'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useColumnVisibility } from '@/hooks/useColumnVisibility'
-import { useDeleteTeamMember } from '@/hooks/useDeleteTeamMember'
-import { useLocale } from '@/hooks/useLocale'
-import { useTeamMembers } from '@/hooks/useTeam'
+} from '@ui/components/table/contextMenuItems'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
+import { useDeleteTeamMember } from '@ui/hooks/useDeleteTeamMember'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
 import { useInvite } from './useTeamMembersInvite'

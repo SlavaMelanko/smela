@@ -1,11 +1,10 @@
+import { Copyright } from '@ui/components/Copyright'
+import { Logo } from '@ui/components/icons'
+import { LanguageDropdown } from '@ui/components/LanguageDropdown'
+import { Spinner } from '@ui/components/Spinner'
+import { ThemeToggle } from '@ui/components/ThemeToggle'
 import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
-
-import { Copyright } from '@/components/Copyright'
-import { Logo } from '@/components/icons'
-import { LanguageDropdown } from '@/components/LanguageDropdown'
-import { Spinner } from '@/components/Spinner'
-import { ThemeToggle } from '@/components/ThemeToggle'
 
 import { LayoutContent, LayoutRoot, LayoutTopRightControls } from './Layout'
 

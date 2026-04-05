@@ -1,3 +1,7 @@
+import { PricingSliderDialog } from '@ui/components/dialogs'
+import { CustomPricingCard, StandardPricingCard } from '@ui/components/pricing'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
 import {
   CalendarX,
   Mail,
@@ -6,11 +10,6 @@ import {
   UserPlus
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
-import { PricingSliderDialog } from '@/components/dialogs'
-import { CustomPricingCard, StandardPricingCard } from '@/components/pricing'
-import { useLocale } from '@/hooks/useLocale'
-import { useModal } from '@/hooks/useModal'
 
 const StandardCards = () => {
   const { t } = useLocale({ keyPrefix: 'pricing' })

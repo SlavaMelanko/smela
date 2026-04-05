@@ -1,8 +1,6 @@
 // React Compiler breaks RHF's proxy-based isDirty subscription
 'use no memo'
 
-import { useForm } from 'react-hook-form'
-
 import {
   FormActions,
   FormField,
@@ -10,9 +8,10 @@ import {
   FormRoot,
   FormRow,
   SubmitButton
-} from '@/components/form'
-import { PasswordInput } from '@/components/inputs/PasswordInput'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/form'
+import { PasswordInput } from '@ui/components/inputs/PasswordInput'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, resolver } from './schema'
 

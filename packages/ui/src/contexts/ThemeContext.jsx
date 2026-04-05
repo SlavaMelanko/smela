@@ -1,6 +1,5 @@
+import { loadTheme, storeTheme } from '@ui/lib/userPreferences'
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-
-import { loadTheme, storeTheme } from '@/lib/userPreferences'
 
 const ThemeContext = createContext()
 

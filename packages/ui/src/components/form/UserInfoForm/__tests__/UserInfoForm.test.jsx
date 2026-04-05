@@ -1,9 +1,8 @@
 import { resources } from '@smela/i18n/resources'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { UserStatus } from '@/lib/types'
-import { renderWithProviders } from '@/tests'
+import { UserStatus } from '@ui/lib/types'
+import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
 import { FieldName, UserInfoForm } from '..'

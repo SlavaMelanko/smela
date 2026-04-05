@@ -1,6 +1,5 @@
+import { cn } from '@ui/lib/utils'
 import { Link as RouterLink } from 'react-router-dom'
-
-import { cn } from '@/lib/utils'
 
 import { linkVariants } from './variants'
 

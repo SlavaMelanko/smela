@@ -1,6 +1,6 @@
-import { PricingSlider } from '@/components/pricing'
-import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+import { PricingSlider } from '@ui/components/pricing'
+import { DialogBody, DialogHeader, DialogTitle } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const PricingSliderDialog = ({ onComplete, onClose }) => {
   const { t } = useLocale()

@@ -1,14 +1,13 @@
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-
 import {
   FormActions,
   FormRoot,
   PermissionsMatrix,
   SubmitButton
-} from '@/components/form'
-import { useLocale } from '@/hooks/useLocale'
-import { useToast } from '@/hooks/useToast'
+} from '@ui/components/form'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useToast } from '@ui/hooks/useToast'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
 export const PermissionsSection = ({
   isLoading,

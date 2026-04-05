@@ -4,7 +4,7 @@ import {
   MultiSelectItem,
   MultiSelectTrigger,
   MultiSelectValue
-} from '@/components/ui'
+} from '@ui/components/ui'
 
 export const Multiselect = ({
   options,

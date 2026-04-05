@@ -1,7 +1,7 @@
-import { InviteForm } from '@/components/form'
-import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
-import { useTeamMemberDefaultPermissions } from '@/hooks/useTeam'
+import { InviteForm } from '@ui/components/form'
+import { DialogBody, DialogHeader, DialogTitle } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useTeamMemberDefaultPermissions } from '@ui/hooks/useTeam'
 
 export const CreateMemberDialog = ({ onClose, onSubmit, teamId }) => {
   const { t } = useLocale()

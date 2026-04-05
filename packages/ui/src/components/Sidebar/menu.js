@@ -1,3 +1,4 @@
+import { Role } from '@ui/lib/types'
 import {
   BookOpen,
   Home,
@@ -8,8 +9,6 @@ import {
   User,
   Users
 } from 'lucide-react'
-
-import { Role } from '@/lib/types'
 
 export const userMenuItems = [
   {

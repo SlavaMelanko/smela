@@ -1,8 +1,8 @@
-import { CreateTeamDialog } from '@/components/dialogs'
-import { useLocale } from '@/hooks/useLocale'
-import { useModal } from '@/hooks/useModal'
-import { useCreateTeam as useCreateTeamMutation } from '@/hooks/useTeam'
-import { useToast } from '@/hooks/useToast'
+import { CreateTeamDialog } from '@ui/components/dialogs'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
+import { useCreateTeam as useCreateTeamMutation } from '@ui/hooks/useTeam'
+import { useToast } from '@ui/hooks/useToast'
 
 export const useManageTeams = () => {
   const { t, te } = useLocale()

@@ -1,6 +1,5 @@
+import { Button } from '@ui/components/ui'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-import { Button } from '@/components/ui'
 
 export const PrevButton = ({ onClick, disabled }) => (
   <Button

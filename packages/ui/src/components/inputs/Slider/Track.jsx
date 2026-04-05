@@ -1,4 +1,4 @@
-import { Slider } from '@/components/ui'
+import { Slider } from '@ui/components/ui'
 
 export const Track = ({ value, onChange, min, max, step }) => (
   <div className='relative mt-2'>

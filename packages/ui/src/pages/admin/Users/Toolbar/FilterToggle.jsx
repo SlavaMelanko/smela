@@ -1,8 +1,7 @@
+import { ChevronIcon } from '@ui/components/icons'
+import { Button } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 import { Filter } from 'lucide-react'
-
-import { ChevronIcon } from '@/components/icons'
-import { Button } from '@/components/ui'
-import { cn } from '@/lib/utils'
 
 export const FilterToggle = ({ className, label, isActive, onToggle }) => {
   return (

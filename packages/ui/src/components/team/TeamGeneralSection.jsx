@@ -1,7 +1,7 @@
-import { TeamGeneralForm } from '@/components/form'
-import { useLocale } from '@/hooks/useLocale'
-import { useUpdateTeam } from '@/hooks/useTeam'
-import { useToast } from '@/hooks/useToast'
+import { TeamGeneralForm } from '@ui/components/form'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useUpdateTeam } from '@ui/hooks/useTeam'
+import { useToast } from '@ui/hooks/useToast'
 
 export const TeamGeneralSection = ({ team }) => {
   const { t, te } = useLocale()

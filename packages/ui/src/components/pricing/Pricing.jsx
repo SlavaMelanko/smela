@@ -1,7 +1,6 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 import { Globe } from 'lucide-react'
-
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui'
-import { cn } from '@/lib/utils'
 
 export const Bandwidth = ({ value, unit, className = '', showIcon = true }) => (
   <div className={cn('flex items-center justify-center gap-2', className)}>

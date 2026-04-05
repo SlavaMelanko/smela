@@ -1,5 +1,5 @@
-import { MembershipSection } from '@/components/profile'
-import { useTeamMember, useUpdateTeamMember } from '@/hooks/useTeam'
+import { MembershipSection } from '@ui/components/profile'
+import { useTeamMember, useUpdateTeamMember } from '@ui/hooks/useTeam'
 
 export const MembershipTab = ({ user, team }) => {
   const { data: member } = useTeamMember(team.id, user.id)

@@ -4,9 +4,8 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query'
-
-import { defaultOptions } from '@/components/Pagination'
-import { adminApi } from '@/services/backend'
+import { defaultOptions } from '@ui/components/Pagination'
+import { adminApi } from '@ui/services/backend'
 
 export const adminKeys = {
   all: () => ['admin'],

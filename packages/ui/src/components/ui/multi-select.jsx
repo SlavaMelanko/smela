@@ -1,3 +1,4 @@
+import { cn } from '@ui/lib/utils'
 import { CheckIcon, ChevronsUpDownIcon, XIcon } from 'lucide-react'
 import {
   createContext,
@@ -7,8 +8,6 @@ import {
   useRef,
   useState
 } from 'react'
-
-import { cn } from '@/lib/utils'
 
 import { Badge } from './badge'
 import {

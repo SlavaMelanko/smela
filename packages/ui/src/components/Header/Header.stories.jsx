@@ -1,5 +1,5 @@
-import { useCurrentUser, useLogout } from '@/hooks/useAuth'
-import { allUserStatuses, Role, UserStatus } from '@/lib/types'
+import { useCurrentUser, useLogout } from '@ui/hooks/useAuth'
+import { allUserStatuses, Role, UserStatus } from '@ui/lib/types'
 
 import { Header } from '.'
 

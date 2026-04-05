@@ -1,15 +1,14 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { useLocale } from '@/hooks/useLocale'
-import { renderWithProviders } from '@/tests'
+import { useLocale } from '@ui/hooks/useLocale'
+import { renderWithProviders } from '@ui/tests'
 
 import { LanguageDropdown } from '../LanguageDropdown'
 import { languages } from '../languages'
 
 const mockChangeLocale = vi.fn()
 
-vi.mock('@/hooks/useLocale', () => ({
+vi.mock('@ui/hooks/useLocale', () => ({
   useLocale: vi.fn()
 }))
 

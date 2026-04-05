@@ -1,6 +1,6 @@
-import { useLocale } from '@/hooks/useLocale'
-import env from '@/lib/env'
-import { cn } from '@/lib/utils'
+import { useLocale } from '@ui/hooks/useLocale'
+import env from '@ui/lib/env'
+import { cn } from '@ui/lib/utils'
 
 const currentYear = new Date().getFullYear()
 

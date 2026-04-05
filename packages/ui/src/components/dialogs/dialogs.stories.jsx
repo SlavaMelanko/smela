@@ -1,4 +1,4 @@
-import { Dialog, dialogContentVariants } from '@/components/ui/dialog'
+import { Dialog, dialogContentVariants } from '@ui/components/ui/dialog'
 
 import { PricingSliderDialog, RemoveTeamMemberDialog } from '.'
 

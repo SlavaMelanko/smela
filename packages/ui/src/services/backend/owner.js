@@ -1,4 +1,4 @@
-import { withQuery } from '@/lib/url'
+import { withQuery } from '@ui/lib/url'
 
 import apiClient from './apiClient'
 import {

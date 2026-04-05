@@ -1,6 +1,5 @@
+import { NotificationPanel } from '@ui/components/notifications'
 import { createContext, useCallback, useMemo, useState } from 'react'
-
-import { NotificationPanel } from '@/components/notifications'
 
 const NotificationContext = createContext(undefined)
 

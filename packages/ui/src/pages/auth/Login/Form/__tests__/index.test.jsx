@@ -1,9 +1,8 @@
 import { resources } from '@smela/i18n/resources'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { renderWithProviders } from '@/tests'
-import { testData as td } from '@/tests/data'
+import { renderWithProviders } from '@ui/tests'
+import { testData as td } from '@ui/tests/data'
 const en = resources.en.translation
 
 import { LoginForm } from '..'

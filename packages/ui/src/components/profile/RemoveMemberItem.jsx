@@ -4,9 +4,9 @@ import {
   ItemActions,
   ItemContent,
   ItemTitle
-} from '@/components/ui'
-import { useDeleteTeamMember } from '@/hooks/useDeleteTeamMember'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/ui'
+import { useDeleteTeamMember } from '@ui/hooks/useDeleteTeamMember'
+import { useLocale } from '@ui/hooks/useLocale'
 
 export const RemoveMemberItem = ({ member, teamId }) => {
   const { t } = useLocale()

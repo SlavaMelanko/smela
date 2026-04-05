@@ -1,5 +1,4 @@
 import { flexRender } from '@tanstack/react-table'
-
 import {
   ContextMenu,
   ContextMenuContent,
@@ -12,8 +11,8 @@ import {
   TableBody as TableBodyRoot,
   TableCell,
   TableRow
-} from '@/components/ui'
-import { cn } from '@/lib/utils'
+} from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 
 const RowCells = ({ row }) =>
   row.getVisibleCells().map(cell => (

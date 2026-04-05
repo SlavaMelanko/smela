@@ -1,6 +1,5 @@
+import { useLocale } from '@ui/hooks/useLocale'
 import { Clock } from 'lucide-react'
-
-import { useLocale } from '@/hooks/useLocale'
 
 import {
   SettingsLabel,

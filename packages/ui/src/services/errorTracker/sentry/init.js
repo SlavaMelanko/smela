@@ -1,6 +1,5 @@
 import { init as sentryInit } from '@sentry/react'
-
-import env from '@/lib/env'
+import env from '@ui/lib/env'
 
 export const init = ({ name, version }) => {
   if (!env.SENTRY_DSN) {

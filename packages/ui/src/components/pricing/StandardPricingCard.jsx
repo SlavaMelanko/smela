@@ -1,7 +1,6 @@
+import { Badge, Button } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from 'react-router-dom'
-
-import { Badge, Button } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
 
 import { Bandwidth, Feature, PricePerUnit, TotalPrice } from './Pricing'
 

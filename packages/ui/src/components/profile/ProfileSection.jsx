@@ -1,6 +1,6 @@
-import { UserInfoForm } from '@/components/form'
-import { useLocale } from '@/hooks/useLocale'
-import { useToast } from '@/hooks/useToast'
+import { UserInfoForm } from '@ui/components/form'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useToast } from '@ui/hooks/useToast'
 
 export const ProfileSection = ({ user, update, isUpdating, fieldsConfig }) => {
   const { t, te } = useLocale()

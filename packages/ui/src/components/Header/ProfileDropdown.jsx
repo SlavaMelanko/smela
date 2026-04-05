@@ -5,8 +5,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 
 import { UserAvatar } from './UserAvatar'
 

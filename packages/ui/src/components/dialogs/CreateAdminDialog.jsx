@@ -1,7 +1,7 @@
-import { FieldName, InviteForm } from '@/components/form/InviteForm'
-import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
-import { useAdminDefaultPermissions } from '@/hooks/useOwner'
+import { FieldName, InviteForm } from '@ui/components/form/InviteForm'
+import { DialogBody, DialogHeader, DialogTitle } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useAdminDefaultPermissions } from '@ui/hooks/useOwner'
 
 export const CreateAdminDialog = ({ onClose, onSubmit }) => {
   const { t } = useLocale()

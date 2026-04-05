@@ -1,5 +1,5 @@
-import { ProfileSection } from '@/components/profile'
-import { useUpdateAdmin } from '@/hooks/useOwner'
+import { ProfileSection } from '@ui/components/profile'
+import { useUpdateAdmin } from '@ui/hooks/useOwner'
 
 export const ProfileTab = ({ admin }) => {
   const { mutate, isPending } = useUpdateAdmin(admin.id)

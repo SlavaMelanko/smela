@@ -5,9 +5,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
-import { getFullName } from '@/lib/format'
+} from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { getFullName } from '@ui/lib/format'
 
 export const RemoveTeamMemberDialog = ({ onClose, onConfirm, member }) => {
   const { t } = useLocale()

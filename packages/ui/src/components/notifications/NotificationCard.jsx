@@ -1,5 +1,3 @@
-import { Bell, Calendar, Info, X } from 'lucide-react'
-
 import {
   Button,
   Card,
@@ -8,7 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from '@/components/ui'
+} from '@ui/components/ui'
+import { Bell, Calendar, Info, X } from 'lucide-react'
 
 const iconMap = {
   important: <Info className='size-5 text-blue-500' />,

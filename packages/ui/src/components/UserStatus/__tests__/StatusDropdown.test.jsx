@@ -1,8 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { allUserStatuses, UserStatus } from '@/lib/types'
-import { renderWithProviders } from '@/tests'
+import { allUserStatuses, UserStatus } from '@ui/lib/types'
+import { renderWithProviders } from '@ui/tests'
 
 import { StatusDropdown } from '../StatusDropdown'
 

@@ -1,5 +1,5 @@
-import { useLocale } from '@/hooks/useLocale'
-import { timeSince } from '@/lib/format'
+import { useLocale } from '@ui/hooks/useLocale'
+import { timeSince } from '@ui/lib/format'
 
 const getLastActiveKey = date => {
   const { seconds, minutes, hours, days } = timeSince(date)

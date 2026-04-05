@@ -1,6 +1,5 @@
+import { cn } from '@ui/lib/utils'
 import { LoaderIcon } from 'lucide-react'
-
-import { cn } from '@/lib/utils'
 
 const Spinner = ({ className, size = 24, ...props }) => (
   <LoaderIcon

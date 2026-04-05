@@ -1,12 +1,12 @@
-import { CreateMemberDialog } from '@/components/dialogs'
-import { useLocale } from '@/hooks/useLocale'
-import { useModal } from '@/hooks/useModal'
+import { CreateMemberDialog } from '@ui/components/dialogs'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
 import {
   useCancelMemberInvite,
   useInviteMember,
   useResendMemberInvite
-} from '@/hooks/useTeam'
-import { useToast } from '@/hooks/useToast'
+} from '@ui/hooks/useTeam'
+import { useToast } from '@ui/hooks/useToast'
 
 export const useInvite = teamId => {
   const { t, te } = useLocale()

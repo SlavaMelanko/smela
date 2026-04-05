@@ -1,7 +1,6 @@
 import { resources } from '@smela/i18n/resources'
 import { screen } from '@testing-library/react'
-
-import { renderWithProviders } from '@/tests'
+import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
 import { SettingsPageHeader } from '../SettingsPageHeader'
@@ -10,8 +9,8 @@ import { UserPageHeader } from '../UserPageHeader'
 
 const mockUseCurrentUser = vi.fn()
 
-vi.mock('@/hooks/useAuth', async () => ({
-  ...(await vi.importActual('@/hooks/useAuth')),
+vi.mock('@ui/hooks/useAuth', async () => ({
+  ...(await vi.importActual('@ui/hooks/useAuth')),
   useCurrentUser: () => mockUseCurrentUser()
 }))
 

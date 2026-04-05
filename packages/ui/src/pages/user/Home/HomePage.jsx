@@ -1,4 +1,4 @@
-import { PageContent } from '@/components/PageContent'
+import { PageContent } from '@ui/components/PageContent'
 
 export const HomePage = () => {
   return (

@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
-
-import { UserStatus } from '@/lib/types'
-import { renderWithProviders } from '@/tests'
+import { UserStatus } from '@ui/lib/types'
+import { renderWithProviders } from '@ui/tests'
 
 import { getStatusTextColor } from '../colors'
 import { StatusBadge } from '../StatusBadge'

@@ -1,3 +1,4 @@
+import { useLocale } from '@ui/hooks/useLocale'
 import {
   CalendarX,
   Mail,
@@ -5,8 +6,6 @@ import {
   RefreshCw,
   UserPlus
 } from 'lucide-react'
-
-import { useLocale } from '@/hooks/useLocale'
 
 import { Feature } from '../Pricing'
 

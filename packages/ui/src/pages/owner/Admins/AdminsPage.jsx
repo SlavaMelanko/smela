@@ -3,25 +3,24 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-import { InviteButton } from '@/components/buttons'
-import { SearchInput } from '@/components/inputs'
-import { PageContent } from '@/components/PageContent'
-import { Pagination } from '@/components/Pagination'
-import { Spinner } from '@/components/Spinner'
-import { ErrorState } from '@/components/states'
-import { ColumnVisibilityDropdown, Table } from '@/components/table'
+import { InviteButton } from '@ui/components/buttons'
+import { SearchInput } from '@ui/components/inputs'
+import { PageContent } from '@ui/components/PageContent'
+import { Pagination } from '@ui/components/Pagination'
+import { Spinner } from '@ui/components/Spinner'
+import { ErrorState } from '@ui/components/states'
+import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
 import {
   createInviteItem,
   createOpenItem
-} from '@/components/table/contextMenuItems'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useColumnVisibility } from '@/hooks/useColumnVisibility'
-import { useLocale } from '@/hooks/useLocale'
-import { useAdmins } from '@/hooks/useOwner'
-import { useTableState } from '@/hooks/useTableState'
+} from '@ui/components/table/contextMenuItems'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useAdmins } from '@ui/hooks/useOwner'
+import { useTableState } from '@ui/hooks/useTableState'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { getColumns } from './columns'
 import { useInvite } from './useInvite'

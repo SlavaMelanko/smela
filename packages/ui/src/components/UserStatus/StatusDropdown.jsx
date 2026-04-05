@@ -1,4 +1,4 @@
-import { ChevronIcon } from '@/components/icons'
+import { ChevronIcon } from '@ui/components/icons'
 import {
   Button,
   DropdownMenu,
@@ -6,9 +6,9 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger
-} from '@/components/ui'
-import { allUserStatuses } from '@/lib/types'
-import { cn } from '@/lib/utils'
+} from '@ui/components/ui'
+import { allUserStatuses } from '@ui/lib/types'
+import { cn } from '@ui/lib/utils'
 
 import { StatusBadge } from './StatusBadge'
 

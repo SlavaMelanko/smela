@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui'
-import { cn } from '@/lib/utils'
+import { Button } from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 
 const PresetValue = ({ value, label, isActive, onSelect }) => (
   <Button

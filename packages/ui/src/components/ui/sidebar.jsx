@@ -1,11 +1,10 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
+import { useIsMobile } from '@ui/hooks/useMediaQuery'
+import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
 import { PanelLeftIcon } from 'lucide-react'
 import * as React from 'react'
-
-import { useIsMobile } from '@/hooks/useMediaQuery'
-import { cn } from '@/lib/utils'
 
 import { Button } from './button'
 import { Input } from './input'

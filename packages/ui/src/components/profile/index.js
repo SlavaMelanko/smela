@@ -11,4 +11,4 @@ export {
   ProfileTab
 } from './tabs'
 export { UpdatePasswordSection } from './UpdatePasswordSection'
-export { FieldName } from '@/components/form/UserInfoForm'
+export { FieldName } from '@ui/components/form/UserInfoForm'

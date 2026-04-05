@@ -1,5 +1,5 @@
-import { ProfileSection } from '@/components/profile'
-import { useUpdateUser } from '@/hooks/useAdmin'
+import { ProfileSection } from '@ui/components/profile'
+import { useUpdateUser } from '@ui/hooks/useAdmin'
 
 export const ProfileTab = ({ user }) => {
   const { mutate, isPending } = useUpdateUser(user.id)

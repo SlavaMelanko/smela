@@ -1,16 +1,16 @@
-import { PageContent } from '@/components/PageContent'
-import { ProfilePageHeader } from '@/components/PageHeader'
+import { PageContent } from '@ui/components/PageContent'
+import { ProfilePageHeader } from '@ui/components/PageHeader'
 import {
   getProfileTabs,
   getProfileTabValues,
   ProfileTab as Tab
-} from '@/components/profile'
-import { Spinner } from '@/components/Spinner'
-import { ErrorState } from '@/components/states'
-import { Tabs, TabsContent, TabsLine } from '@/components/ui'
-import { useCurrentUser } from '@/hooks/useAuth'
-import { useHashTab } from '@/hooks/useHashTab'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/profile'
+import { Spinner } from '@ui/components/Spinner'
+import { ErrorState } from '@ui/components/states'
+import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
+import { useCurrentUser } from '@ui/hooks/useAuth'
+import { useHashTab } from '@ui/hooks/useHashTab'
+import { useLocale } from '@ui/hooks/useLocale'
 
 import { ProfileTab } from './ProfileTab'
 import { SecurityTab } from './SecurityTab'

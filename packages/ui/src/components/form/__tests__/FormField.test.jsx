@@ -1,7 +1,6 @@
 import { resources } from '@smela/i18n/resources'
 import { screen } from '@testing-library/react'
-
-import { renderWithProviders } from '@/tests'
+import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
 import { FormField } from '../FormField'

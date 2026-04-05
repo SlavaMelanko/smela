@@ -1,11 +1,10 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-
 import {
   Dialog,
   DialogBackdrop,
   DialogContent,
   DialogPortal
-} from '@/components/ui'
+} from '@ui/components/ui'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
 const ModalContext = createContext()
 

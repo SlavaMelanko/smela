@@ -1,6 +1,3 @@
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-
 import {
   FormField,
   FormFields,
@@ -8,10 +5,12 @@ import {
   FormRoot,
   PermissionsMatrix,
   SubmitButton
-} from '@/components/form'
-import { removeHiddenFields } from '@/components/form/utils'
-import { Input } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
+} from '@ui/components/form'
+import { removeHiddenFields } from '@ui/components/form/utils'
+import { Input } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
 import {
   defaultFieldsConfig,

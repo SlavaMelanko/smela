@@ -1,5 +1,5 @@
-import { useLocale } from '@/hooks/useLocale'
-import { getFullName } from '@/lib/format/user'
+import { useLocale } from '@ui/hooks/useLocale'
+import { getFullName } from '@ui/lib/format/user'
 
 import {
   PageHeader,

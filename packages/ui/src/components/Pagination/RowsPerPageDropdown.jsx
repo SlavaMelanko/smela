@@ -1,4 +1,4 @@
-import { ChevronIcon } from '@/components/icons'
+import { ChevronIcon } from '@ui/components/icons'
 import {
   Button,
   DropdownMenu,
@@ -6,8 +6,8 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger
-} from '@/components/ui'
-import { cn } from '@/lib/utils'
+} from '@ui/components/ui'
+import { cn } from '@ui/lib/utils'
 
 export const RowsPerPageDropdown = ({
   className,

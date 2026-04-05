@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@ui/tests'
 import { useForm } from 'react-hook-form'
-
-import { renderWithProviders } from '@/tests'
 
 // Mock PointerEvent for JSDOM
 globalThis.PointerEvent = globalThis.Event

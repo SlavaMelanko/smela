@@ -1,7 +1,6 @@
 import { Input as InputPrimitive } from '@base-ui/react/input'
+import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
-
-import { cn } from '@/lib/utils'
 
 const inputVariants = cva(
   'h-11 w-full rounded-md border border-border bg-background px-4 text-base outline-none placeholder:text-muted-foreground placeholder:font-light focus-visible:ring-[1px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50',

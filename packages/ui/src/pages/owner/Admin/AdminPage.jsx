@@ -1,19 +1,18 @@
-import { useParams } from 'react-router-dom'
-
-import { BackButton } from '@/components/buttons'
-import { PageContent } from '@/components/PageContent'
-import { UserPageHeader } from '@/components/PageHeader'
+import { BackButton } from '@ui/components/buttons'
+import { PageContent } from '@ui/components/PageContent'
+import { UserPageHeader } from '@ui/components/PageHeader'
 import {
   getAdminTabs,
   getAdminTabValues,
   ProfileTab as Tab
-} from '@/components/profile'
-import { Spinner } from '@/components/Spinner'
-import { ErrorState } from '@/components/states'
-import { Tabs, TabsContent, TabsLine } from '@/components/ui'
-import { useHashTab } from '@/hooks/useHashTab'
-import { useLocale } from '@/hooks/useLocale'
-import { useAdmin } from '@/hooks/useOwner'
+} from '@ui/components/profile'
+import { Spinner } from '@ui/components/Spinner'
+import { ErrorState } from '@ui/components/states'
+import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
+import { useHashTab } from '@ui/hooks/useHashTab'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useAdmin } from '@ui/hooks/useOwner'
+import { useParams } from 'react-router-dom'
 
 import { PermissionsTab } from './PermissionsTab'
 import { ProfileTab } from './ProfileTab'

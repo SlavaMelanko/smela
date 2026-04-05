@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@/hooks/useAuth'
+import { useCurrentUser } from '@ui/hooks/useAuth'
 
 export const useHasAccess = ({
   requireStatuses = [],

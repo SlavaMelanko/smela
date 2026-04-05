@@ -1,8 +1,8 @@
-import { PermissionsSection } from '@/components/profile'
+import { PermissionsSection } from '@ui/components/profile'
 import {
   useAdminPermissions,
   useUpdateAdminPermissions
-} from '@/hooks/useOwner'
+} from '@ui/hooks/useOwner'
 
 export const PermissionsTab = ({ adminId }) => {
   const { data: permissions, isPending: isLoading } =

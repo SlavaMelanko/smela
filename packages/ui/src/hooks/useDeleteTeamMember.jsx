@@ -1,8 +1,8 @@
-import { RemoveTeamMemberDialog } from '@/components/dialogs'
-import { useLocale } from '@/hooks/useLocale'
-import { useModal } from '@/hooks/useModal'
-import { useDeleteMember } from '@/hooks/useTeam'
-import { useToast } from '@/hooks/useToast'
+import { RemoveTeamMemberDialog } from '@ui/components/dialogs'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
+import { useDeleteMember } from '@ui/hooks/useTeam'
+import { useToast } from '@ui/hooks/useToast'
 
 export const useDeleteTeamMember = teamId => {
   const { t, te } = useLocale()

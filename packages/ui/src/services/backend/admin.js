@@ -1,4 +1,4 @@
-import { withQuery } from '@/lib/url'
+import { withQuery } from '@ui/lib/url'
 
 import apiClient from './apiClient'
 import { ADMIN_USER_PATH, ADMIN_USERS_PATH, buildPath } from './paths'

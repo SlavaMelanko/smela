@@ -1,9 +1,8 @@
+import { useLocale } from '@ui/hooks/useLocale'
+import { useUrlParams } from '@ui/hooks/useUrlParams'
+import { NetworkErrorType } from '@ui/lib/net'
 import { CloudAlert } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
-import { useLocale } from '@/hooks/useLocale'
-import { useUrlParams } from '@/hooks/useUrlParams'
-import { NetworkErrorType } from '@/lib/net'
 
 import {
   ErrorButton,

@@ -1,7 +1,6 @@
+import { cn } from '@ui/lib/utils'
 import { Check } from 'lucide-react'
 import { useId } from 'react'
-
-import { cn } from '@/lib/utils'
 
 export const SettingsSection = ({ children }) => (
   <section className='flex flex-col gap-4'>{children}</section>

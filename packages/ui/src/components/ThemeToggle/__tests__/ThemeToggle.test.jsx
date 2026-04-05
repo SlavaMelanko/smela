@@ -1,14 +1,13 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { useTheme } from '@/hooks/useTheme'
-import { renderWithProviders } from '@/tests'
+import { useTheme } from '@ui/hooks/useTheme'
+import { renderWithProviders } from '@ui/tests'
 
 import { ThemeToggle } from '../ThemeToggle'
 
 const mockToggleTheme = vi.fn()
 
-vi.mock('@/hooks/useTheme', () => ({
+vi.mock('@ui/hooks/useTheme', () => ({
   useTheme: vi.fn()
 }))
 

@@ -1,7 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
+import { Limit } from '@ui/components/Pagination'
 import { useSearchParams } from 'react-router-dom'
-
-import { Limit } from '@/components/Pagination'
 
 import { useDebouncedSearch } from '../useDebouncedSearch'
 import { useTableState } from '../useTableState'

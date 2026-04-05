@@ -1,12 +1,12 @@
-import { CreateAdminDialog } from '@/components/dialogs'
-import { useLocale } from '@/hooks/useLocale'
-import { useModal } from '@/hooks/useModal'
+import { CreateAdminDialog } from '@ui/components/dialogs'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
 import {
   useCancelAdminInvite,
   useCreateAdmin,
   useResendAdminInvite
-} from '@/hooks/useOwner'
-import { useToast } from '@/hooks/useToast'
+} from '@ui/hooks/useOwner'
+import { useToast } from '@ui/hooks/useToast'
 
 export const useInvite = () => {
   const { t, te } = useLocale()

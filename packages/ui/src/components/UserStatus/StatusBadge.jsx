@@ -1,5 +1,5 @@
-import { useLocale } from '@/hooks/useLocale'
-import { cn } from '@/lib/utils'
+import { useLocale } from '@ui/hooks/useLocale'
+import { cn } from '@ui/lib/utils'
 
 import { getStatusTextColor } from './colors'
 

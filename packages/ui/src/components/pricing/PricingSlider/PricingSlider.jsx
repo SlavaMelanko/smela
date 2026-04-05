@@ -1,8 +1,7 @@
+import { Slider } from '@ui/components/inputs'
+import { Badge, Button } from '@ui/components/ui'
+import { useLocale } from '@ui/hooks/useLocale'
 import { useState } from 'react'
-
-import { Slider } from '@/components/inputs'
-import { Badge, Button } from '@/components/ui'
-import { useLocale } from '@/hooks/useLocale'
 
 import FeatureList from './FeatureList'
 import PlanSummary from './PlanSummary'

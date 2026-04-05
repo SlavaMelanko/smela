@@ -1,4 +1,4 @@
-import { UserStatus } from '@/lib/types'
+import { UserStatus } from '@ui/lib/types'
 
 const statusToTextColor = {
   [UserStatus.New]: 'text-sky-500',

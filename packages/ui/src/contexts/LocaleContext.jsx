@@ -1,18 +1,17 @@
-import i18next from 'i18next'
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-
 import {
   datePreset,
   formatDate,
   formatNumber,
   formatPrice,
   formatTime
-} from '@/lib/format'
+} from '@ui/lib/format'
 import {
   loadFormatPreferences,
   storeFormatPreferences,
   storeLocale
-} from '@/lib/userPreferences'
+} from '@ui/lib/userPreferences'
+import i18next from 'i18next'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
 const LocaleContext = createContext()
 
