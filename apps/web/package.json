@@ -13,8 +13,8 @@
     "e2e:ui": "NODE_ENV=test bunx playwright test --ui",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint src e2e",
+    "lint:fix": "eslint src e2e --fix",
     "lint:staged": "lint-staged",
     "check": "bun run format:fix && bun run lint:fix",
     "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
