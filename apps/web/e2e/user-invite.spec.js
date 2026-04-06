@@ -2,15 +2,15 @@ import { faker } from '@faker-js/faker'
 import { fillMemberInviteFormAndSubmit, logOut } from '@smela/e2e/actions'
 import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
-
-import { HttpStatus } from '../src/lib/net'
+import { HttpStatus } from '@smela/ui/lib/net'
 import {
   TEAM_MEMBER_CANCEL_INVITE_PATH,
   TEAM_MEMBER_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
   TEAMS_PATH
-} from '../src/services/backend/paths'
+} from '@smela/ui/services/backend/paths'
+
 import { expect, test } from './config/fixtures'
 
 const userCredentials = {

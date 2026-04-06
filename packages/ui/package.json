@@ -31,6 +31,7 @@
     "./pages/user": "./src/pages/user/index.js",
     "./routes": "./src/routes/index.js",
     "./services": "./src/services/index.js",
+    "./services/backend/paths": "./src/services/backend/paths.js",
     "./tests": "./src/tests/index.js"
   },
   "scripts": {

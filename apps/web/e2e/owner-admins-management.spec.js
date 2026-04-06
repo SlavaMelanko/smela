@@ -7,13 +7,13 @@ import {
 } from '@smela/e2e/actions'
 import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
-
-import { HttpStatus } from '../src/lib/net'
+import { HttpStatus } from '@smela/ui/lib/net'
 import {
   ACCEPT_INVITE_PATH,
   OWNER_ADMINS_PATH,
   UPDATE_PASSWORD_PATH
-} from '../src/services/backend/paths'
+} from '@smela/ui/services/backend/paths'
+
 import { expect, test } from './config/fixtures'
 
 const ownerCredentials = {
