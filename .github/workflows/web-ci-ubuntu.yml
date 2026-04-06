@@ -30,7 +30,8 @@ jobs:
     container: oven/bun:1.3.11
     environment: web-test
     env:
-      VITE_APP_NAME: SMELA-CI
+      VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+      VITE_BE_BASE_URL: ${{ vars.VITE_BE_BASE_URL }}
       VITE_CAPTCHA_SITE_KEY: ${{ secrets.VITE_CAPTCHA_SITE_KEY }}
 
     steps:
