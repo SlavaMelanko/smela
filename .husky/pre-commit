@@ -26,7 +26,7 @@ fi
 # Web pre-commit checks
 if [ -n "$WEB_STAGED" ]; then
   echo "Sorting web locale files..."
-  bun run --filter @smela/web locales:sort
+  bun run --filter @smela/i18n locales:sort
 
   echo "Running web linter..."
   bun run --filter @smela/web lint:staged

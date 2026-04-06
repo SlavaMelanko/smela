@@ -16,7 +16,6 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:staged": "lint-staged",
-    "locales:sort": "sort-json public/locales/*.json",
     "check": "bun run format:fix && bun run lint:fix",
     "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
   },
@@ -52,7 +51,6 @@
     "lint-staged": "^16.2.6",
     "rollup-plugin-visualizer": "^6.0.5",
     "rollup-plugin-webpack-stats": "^2.1.11",
-    "sort-json": "^2.0.1",
     "vite": "^7.3.1"
   }
 }
