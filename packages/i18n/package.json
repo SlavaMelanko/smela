@@ -9,10 +9,20 @@
     "format:fix": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "lint:staged": "lint-staged",
     "locales:sort": "sort-json src/resources/*.json",
     "check": "bun run locales:sort && bun run format:fix && bun run lint:fix",
     "sync": "bun scripts/sync.js",
     "sync:watch": "bun scripts/sync.js --watch"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ],
+    "src/resources/*.json": [
+      "sort-json"
+    ]
   },
   "exports": {
     ".": "./src/index.js",

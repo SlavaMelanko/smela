@@ -39,11 +39,18 @@
     "format:fix": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "lint:staged": "lint-staged",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "check": "bun run format:fix && bun run lint:fix && bun run test",
     "stories": "storybook dev -p 6006"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ]
   },
   "dependencies": {
     "@smela/i18n": "workspace:*",

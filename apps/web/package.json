@@ -48,7 +48,6 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
-    "lint-staged": "^16.2.6",
     "rollup-plugin-visualizer": "^6.0.5",
     "rollup-plugin-webpack-stats": "^2.1.11",
     "vite": "^7.3.1"

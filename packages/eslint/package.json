@@ -12,7 +12,8 @@
     "./shadcn": "./src/shadcn.js"
   },
   "scripts": {
-    "clean": "rm -rf node_modules"
+    "clean": "rm -rf node_modules",
+    "lint:staged": "true"
   },
   "dependencies": {
     "@eslint/js": "^9.39.2",
