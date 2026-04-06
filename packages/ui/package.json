@@ -39,7 +39,7 @@
     "format:fix": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "lint:staged": "lint-staged",
+    "lint:staged": "lint-staged --no-stash",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
