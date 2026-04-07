@@ -15,7 +15,7 @@
     "format:fix": "prettier --write .",
     "lint": "eslint src e2e",
     "lint:fix": "eslint src e2e --fix",
-    "lint:staged": "lint-staged",
+    "lint:staged": "lint-staged --no-stash",
     "check": "bun run format:fix && bun run lint:fix",
     "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
   },

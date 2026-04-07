@@ -1,6 +1,5 @@
 // Initializes i18next before React renders to ensure translations
 // are available on first render (no flicker or re-render).
-// Kept separate from LocaleContext so it can be imported outside React.
 
 import { createI18n } from '@smela/i18n'
 import { loadLocale } from '@smela/ui/lib/userPreferences'

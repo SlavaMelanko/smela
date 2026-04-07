@@ -84,7 +84,7 @@ const preview = {
       return (
         <MemoryRouter initialEntries={[initialPath]}>
           <ThemeProvider>
-            <LocaleProvider>
+            <LocaleProvider i18n={i18next}>
               <NotificationProvider>
                 <ModalProvider>
                   <SidebarProvider>
