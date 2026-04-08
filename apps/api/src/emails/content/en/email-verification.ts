@@ -9,11 +9,12 @@ export const content: EmailVerificationContent = {
   body: 'Click the link below to verify your email address:',
   ctaText: 'Verify email address',
   expiryNotice: 'This link expires in 24 hours for security reasons.',
-  disclaimer: 'If you didn\'t create an account, you can safely ignore this email.',
+  disclaimer:
+    "If you didn't create an account, you can safely ignore this email.",
   signature: {
     thanks: 'Thanks,',
-    who: `The ${config.company.name} team`,
-  },
+    who: `The ${config.company.name} team`
+  }
 }
 
 export default content

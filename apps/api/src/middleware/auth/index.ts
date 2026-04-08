@@ -4,7 +4,7 @@ import {
   isAdmin,
   isNewOrActive,
   isOwner,
-  isUserOrAdmin,
+  isUserOrAdmin
 } from '@/types'
 
 import { createAuthMiddleware } from './factory'
@@ -15,7 +15,10 @@ import { createAuthMiddleware } from './factory'
  * - Allows users with status New, Verified, Trial, or Active.
  * - Accepts all roles: User, Admin, Owner.
  */
-export const userRelaxedAuthMiddleware = createAuthMiddleware(isNewOrActive, isUserOrAdmin)
+export const userRelaxedAuthMiddleware = createAuthMiddleware(
+  isNewOrActive,
+  isUserOrAdmin
+)
 
 /**
  * Strict user authentication middleware - requires verified users only.
@@ -23,7 +26,10 @@ export const userRelaxedAuthMiddleware = createAuthMiddleware(isNewOrActive, isU
  * - Requires user status to be Verified, Trial, or Active.
  * - Accepts all roles: User, Admin, Owner (for role inheritance).
  */
-export const userStrictAuthMiddleware = createAuthMiddleware(isActive, isUserOrAdmin)
+export const userStrictAuthMiddleware = createAuthMiddleware(
+  isActive,
+  isUserOrAdmin
+)
 
 /**
  * Admin authentication middleware - requires admin privileges.

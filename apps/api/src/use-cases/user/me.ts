@@ -9,7 +9,7 @@ import { resolvePermissionList } from '../resolve-permissions'
 
 const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
   return Object.fromEntries(
-    Object.entries(updates).filter(([_, v]) => v !== undefined),
+    Object.entries(updates).filter(([_, v]) => v !== undefined)
   ) as UpdateUserInput
 }
 
@@ -17,7 +17,7 @@ export const getUser = async (userId: string) => {
   const [user, team, permissions] = await Promise.all([
     userRepo.findById(userId),
     teamRepo.findUserTeam(userId),
-    resolvePermissionList(userId),
+    resolvePermissionList(userId)
   ])
 
   if (!user) {
@@ -33,7 +33,7 @@ export const changePassword = async (
   userId: string,
   currentPassword: string,
   newPassword: string,
-  refreshToken?: string,
+  refreshToken?: string
 ) => {
   const auth = await authRepo.findById(userId)
 
@@ -41,7 +41,10 @@ export const changePassword = async (
     throw new AppError(ErrorCode.InvalidCredentials)
   }
 
-  const isValid = await comparePasswordHashes(currentPassword, auth.passwordHash)
+  const isValid = await comparePasswordHashes(
+    currentPassword,
+    auth.passwordHash
+  )
 
   if (!isValid) {
     throw new AppError(ErrorCode.InvalidPassword)
@@ -50,7 +53,7 @@ export const changePassword = async (
   const passwordHash = await hashPassword(newPassword)
   const excludeHash = refreshToken ? await hashToken(refreshToken) : undefined
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await authRepo.update(userId, { passwordHash }, tx)
     await refreshTokenRepo.revokeByUserId(userId, excludeHash, tx)
   })
@@ -68,10 +71,10 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
   const [user, team, permissions] = await Promise.all([
     userRepo.update(userId, {
       ...validUpdates,
-      updatedAt: new Date(),
+      updatedAt: new Date()
     }),
     teamRepo.findUserTeam(userId),
-    resolvePermissionList(userId),
+    resolvePermissionList(userId)
   ])
 
   return { user, team, permissions }

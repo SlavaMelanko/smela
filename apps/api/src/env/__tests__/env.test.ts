@@ -5,7 +5,7 @@ import {
   expect,
   mock,
   spyOn,
-  test,
+  test
 } from 'bun:test'
 
 import { validateEnvVars } from '../env'
@@ -26,7 +26,7 @@ describe('Environment Configuration', () => {
     JWT_SECRET: 'test-jwt-secret-key-min-10-chars',
     EMAIL_SENDER_PROFILES:
       '{"system":{"email":"test@example.com","name":"Test System"}}',
-    CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890',
+    CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890'
   })
 
   beforeEach(() => {
@@ -70,7 +70,7 @@ describe('Environment Configuration', () => {
 
     // POSTGRES_URL construction
     expect(devEnv.POSTGRES_URL).toBe(
-      'postgresql://testuser:TestPass123!@localhost:5432/test_db',
+      'postgresql://testuser:TestPass123!@localhost:5432/test_db'
     )
   })
 
@@ -82,7 +82,7 @@ describe('Environment Configuration', () => {
       JWT_EXPIRATION: '3600',
       COOKIE_REFRESH_TOKEN_NAME: 'custom-token',
       BE_BASE_URL: 'http://localhost:8000',
-      COMPANY_NAME: 'CustomCompany',
+      COMPANY_NAME: 'CustomCompany'
     }
 
     const env = validateEnvVars(customEnv)
@@ -117,12 +117,12 @@ describe('Environment Configuration', () => {
     const stagingEnv = {
       ...createBaseEnv('staging'),
       ALLOWED_ORIGINS: 'https://staging.example.com',
-      EMAIL_RESEND_API_KEY: 'test-resend-key',
+      EMAIL_RESEND_API_KEY: 'test-resend-key'
     }
     const prodEnv = {
       ...createBaseEnv('production'),
       ALLOWED_ORIGINS: 'https://example.com,https://www.example.com',
-      EMAIL_RESEND_API_KEY: 'test-resend-key',
+      EMAIL_RESEND_API_KEY: 'test-resend-key'
     }
 
     const validStaging = validateEnvVars(stagingEnv)
@@ -130,7 +130,7 @@ describe('Environment Configuration', () => {
 
     expect(validStaging.ALLOWED_ORIGINS).toBe('https://staging.example.com')
     expect(validProduction.ALLOWED_ORIGINS).toBe(
-      'https://example.com,https://www.example.com',
+      'https://example.com,https://www.example.com'
     )
 
     // Invalid cases - missing ALLOWED_ORIGINS
@@ -163,7 +163,7 @@ describe('Environment Configuration', () => {
     processExitMock.mockClear()
     validateEnvVars({
       ...createBaseEnv('staging'),
-      ALLOWED_ORIGINS: 'https://staging.example.com',
+      ALLOWED_ORIGINS: 'https://staging.example.com'
     })
     expect(processExitMock).toHaveBeenCalledWith(1)
 
@@ -171,7 +171,7 @@ describe('Environment Configuration', () => {
     processExitMock.mockClear()
     validateEnvVars({
       ...createBaseEnv('production'),
-      ALLOWED_ORIGINS: 'https://example.com',
+      ALLOWED_ORIGINS: 'https://example.com'
     })
     expect(processExitMock).toHaveBeenCalledWith(1)
 
@@ -180,7 +180,7 @@ describe('Environment Configuration', () => {
     const validStagingEnv = validateEnvVars({
       ...createBaseEnv('staging'),
       ALLOWED_ORIGINS: 'https://staging.example.com',
-      EMAIL_RESEND_API_KEY: 'test-key',
+      EMAIL_RESEND_API_KEY: 'test-key'
     })
     expect(validStagingEnv.EMAIL_RESEND_API_KEY).toBe('test-key')
     expect(processExitMock).not.toHaveBeenCalled()
@@ -190,7 +190,7 @@ describe('Environment Configuration', () => {
     const validProdEnv = validateEnvVars({
       ...createBaseEnv('production'),
       ALLOWED_ORIGINS: 'https://example.com',
-      EMAIL_RESEND_API_KEY: 'test-key',
+      EMAIL_RESEND_API_KEY: 'test-key'
     })
     expect(validProdEnv.EMAIL_RESEND_API_KEY).toBe('test-key')
     expect(processExitMock).not.toHaveBeenCalled()
@@ -203,15 +203,15 @@ describe('Environment Configuration', () => {
       {
         field: 'POSTGRES_PASSWORD',
         value: undefined,
-        desc: 'missing password',
+        desc: 'missing password'
       },
       { field: 'POSTGRES_DB', value: undefined, desc: 'missing database' },
       { field: 'POSTGRES_HOST', value: 'host', desc: 'host too short' },
       {
         field: 'POSTGRES_MAX_CONNECTIONS',
         value: '15',
-        desc: 'max connections exceeded',
-      },
+        desc: 'max connections exceeded'
+      }
     ]
 
     testCases.forEach(({ field, value }) => {
@@ -234,7 +234,7 @@ describe('Environment Configuration', () => {
       { value: 'UPPERCASE123!', desc: 'no lowercase' },
       { value: 'lowercase123!', desc: 'no uppercase' },
       { value: 'NoNumbers!', desc: 'no numbers' },
-      { value: 'NoSymbols123', desc: 'no symbols' },
+      { value: 'NoSymbols123', desc: 'no symbols' }
     ]
 
     invalidPasswords.forEach(({ value }) => {
@@ -254,18 +254,18 @@ describe('Environment Configuration', () => {
       {
         field: 'EMAIL_SENDER_PROFILES',
         value: 'invalid-json',
-        desc: 'invalid EMAIL_SENDER_PROFILES JSON',
+        desc: 'invalid EMAIL_SENDER_PROFILES JSON'
       },
       {
         field: 'EMAIL_SENDER_PROFILES',
         value: '{"system":{"email":"not-an-email","name":"Test"}}',
-        desc: 'invalid email in profiles',
+        desc: 'invalid email in profiles'
       },
       {
         field: 'CAPTCHA_SECRET_KEY',
         value: 'invalid-format',
-        desc: 'invalid CAPTCHA format',
-      },
+        desc: 'invalid CAPTCHA format'
+      }
     ]
 
     testCases.forEach(({ field, value }) => {
@@ -292,10 +292,10 @@ describe('Environment Configuration', () => {
     processExitMock.mockClear()
     const envWithPrevious = validateEnvVars({
       ...createBaseEnv(),
-      JWT_SECRET_PREVIOUS: 'previous-secret-key-min-10-chars',
+      JWT_SECRET_PREVIOUS: 'previous-secret-key-min-10-chars'
     })
     expect(envWithPrevious.JWT_SECRET_PREVIOUS).toBe(
-      'previous-secret-key-min-10-chars',
+      'previous-secret-key-min-10-chars'
     )
     expect(processExitMock).not.toHaveBeenCalled()
 
@@ -303,7 +303,7 @@ describe('Environment Configuration', () => {
     processExitMock.mockClear()
     validateEnvVars({
       ...createBaseEnv(),
-      JWT_SECRET_PREVIOUS: 'short',
+      JWT_SECRET_PREVIOUS: 'short'
     })
     expect(processExitMock).toHaveBeenCalledWith(1)
   })
@@ -313,31 +313,31 @@ describe('Environment Configuration', () => {
       ...createBaseEnv('development'),
       COMPANY_SOCIAL_LINKS: JSON.stringify({
         twitter: 'https://twitter.com/company',
-        github: 'https://github.com/company',
+        github: 'https://github.com/company'
       }),
       EMAIL_SENDER_PROFILES: JSON.stringify({
         system: { email: 'noreply@example.com', name: 'Company' },
-        marketing: { email: 'marketing@example.com', name: 'Marketing Team' },
-      }),
+        marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
+      })
     }
 
     const env = validateEnvVars(customEnv)
 
     expect(env.COMPANY_SOCIAL_LINKS).toEqual({
       twitter: 'https://twitter.com/company',
-      github: 'https://github.com/company',
+      github: 'https://github.com/company'
     })
 
     expect(env.EMAIL_SENDER_PROFILES).toEqual({
       system: { email: 'noreply@example.com', name: 'Company' },
-      marketing: { email: 'marketing@example.com', name: 'Marketing Team' },
+      marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
     })
   })
 
   test('should handle invalid JSON gracefully', () => {
     const customEnv = {
       ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: 'invalid-json',
+      COMPANY_SOCIAL_LINKS: 'invalid-json'
     }
 
     const env = validateEnvVars(customEnv)

@@ -9,11 +9,12 @@ export const content: EmailVerificationContent = {
   body: 'Натисніть посилання нижче, щоб підтвердити вашу електронну адресу:',
   ctaText: 'Підтвердити електронну адресу',
   expiryNotice: 'З міркувань безпеки це посилання дійсне протягом 24 годин.',
-  disclaimer: 'Якщо ви не створювали обліковий запис, просто проігноруйте цей лист.',
+  disclaimer:
+    'Якщо ви не створювали обліковий запис, просто проігноруйте цей лист.',
   signature: {
     thanks: 'Дякуємо,',
-    who: `Команда ${config.company.name}`,
-  },
+    who: `Команда ${config.company.name}`
+  }
 }
 
 export default content

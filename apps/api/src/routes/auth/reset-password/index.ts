@@ -12,5 +12,5 @@ export const resetPasswordRoute = new Hono<AppContext>()
 resetPasswordRoute.post(
   '/reset-password',
   requestValidator('json', resetPasswordBodySchema),
-  resetPasswordHandler,
+  resetPasswordHandler
 )

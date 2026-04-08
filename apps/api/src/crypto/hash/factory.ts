@@ -3,7 +3,9 @@ import type Hasher from './hasher'
 import BcryptHasher from './hasher-bcrypt'
 import NodeHasher from './hasher-node'
 
-export const createHasher = (algorithm: 'bcrypt' | 'sha256' | 'sha512' = 'bcrypt'): Hasher => {
+export const createHasher = (
+  algorithm: 'bcrypt' | 'sha256' | 'sha512' = 'bcrypt'
+): Hasher => {
   switch (algorithm) {
     case 'bcrypt':
       return new BcryptHasher()

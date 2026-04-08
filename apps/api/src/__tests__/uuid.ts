@@ -14,7 +14,7 @@ const TYPE_CODES = {
   ownr: '0e', // owner
   tokn: 'f0', // token
   test: '00', // generic test
-  none: 'ff', // non-existent
+  none: 'ff' // non-existent
 } as const
 
 /**
@@ -26,7 +26,9 @@ const TYPE_CODES = {
  * @example
  * createTestUuid('user') // 00000000-0000-4000-a0a0-000000000001
  */
-export const createTestUuid = (type: keyof typeof TYPE_CODES = 'test'): string => {
+export const createTestUuid = (
+  type: keyof typeof TYPE_CODES = 'test'
+): string => {
   counter++
   const typeCode = TYPE_CODES[type]
   const paddedCounter = counter.toString(16).padStart(12, '0')
@@ -67,5 +69,5 @@ export const testUuids = {
   TEAM_2: '00000000-0000-4000-c0c0-000000000002',
 
   // Non-existent (ffff = none type)
-  NON_EXISTENT: '00000000-0000-4000-bfff-000000000000',
+  NON_EXISTENT: '00000000-0000-4000-bfff-000000000000'
 } as const

@@ -28,28 +28,38 @@ export class EmailAgent {
     firstName: string,
     email: string,
     token: string,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ) {
     const verificationUrl = `${env.FE_BASE_URL}/verify-email?token=${token}`
 
-    await this.service.send(EmailType.EMAIL_VERIFICATION, email, {
-      firstName,
-      verificationUrl,
-    }, preferences)
+    await this.service.send(
+      EmailType.EMAIL_VERIFICATION,
+      email,
+      {
+        firstName,
+        verificationUrl
+      },
+      preferences
+    )
   }
 
   async sendResetPasswordEmail(
     firstName: string,
     email: string,
     token: string,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ) {
     const resetUrl = `${env.FE_BASE_URL}/reset-password?token=${token}`
 
-    await this.service.send(EmailType.PASSWORD_RESET, email, {
-      firstName,
-      resetUrl,
-    }, preferences)
+    await this.service.send(
+      EmailType.PASSWORD_RESET,
+      email,
+      {
+        firstName,
+        resetUrl
+      },
+      preferences
+    )
   }
 
   async sendUserInvitationEmail(
@@ -58,16 +68,21 @@ export class EmailAgent {
     token: string,
     inviterName?: string,
     teamName?: string,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ) {
     const inviteUrl = `${env.FE_BASE_URL}/accept-invite?token=${token}`
 
-    await this.service.send(EmailType.USER_INVITATION, email, {
-      firstName,
-      inviteUrl,
-      inviterName,
-      teamName,
-    }, preferences)
+    await this.service.send(
+      EmailType.USER_INVITATION,
+      email,
+      {
+        firstName,
+        inviteUrl,
+        inviterName,
+        teamName
+      },
+      preferences
+    )
   }
 }
 

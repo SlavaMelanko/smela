@@ -6,6 +6,6 @@ export const fallbackCors = (): MiddlewareHandler => {
   // Deny all origins when no environment matches
   return cors({
     origin: () => undefined,
-    credentials: false,
+    credentials: false
   })
 }

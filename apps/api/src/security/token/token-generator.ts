@@ -1,6 +1,6 @@
 interface TokenGenerator {
   generate: () => string
-  generateWithExpiry: () => { token: string, expiresAt: Date }
+  generateWithExpiry: () => { token: string; expiresAt: Date }
 }
 
 export default TokenGenerator

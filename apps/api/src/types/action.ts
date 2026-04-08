@@ -1,6 +1,6 @@
 enum Action {
   View = 'view',
-  Manage = 'manage',
+  Manage = 'manage'
 }
 
 export default Action

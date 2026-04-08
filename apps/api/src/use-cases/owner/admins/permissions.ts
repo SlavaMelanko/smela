@@ -13,12 +13,18 @@ export const getAdminPermissions = async (adminId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Admin not found')
   }
 
-  const permissions = await resolvePermissionMap(adminId, getAdminBasePermissions())
+  const permissions = await resolvePermissionMap(
+    adminId,
+    getAdminBasePermissions()
+  )
 
   return { permissions }
 }
 
-export const updateAdminPermissions = async (adminId: string, permissions: PermissionsInput) => {
+export const updateAdminPermissions = async (
+  adminId: string,
+  permissions: PermissionsInput
+) => {
   const admin = await userRepo.findById(adminId)
 
   if (admin?.role !== Role.Admin) {

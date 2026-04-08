@@ -15,11 +15,9 @@ export interface RequestSizeLimiterOptions {
 }
 
 export const createRequestSizeLimiter = (
-  options: RequestSizeLimiterOptions = {},
+  options: RequestSizeLimiterOptions = {}
 ): MiddlewareHandler<AppContext> => {
-  const {
-    maxSize = DEFAULT_MAX_SIZE,
-  } = options
+  const { maxSize = DEFAULT_MAX_SIZE } = options
 
   return createMiddleware<AppContext>(async (c, next) => {
     // Skip validation for methods that typically don't have a body.
@@ -32,10 +30,18 @@ export const createRequestSizeLimiter = (
       const contentLength = validateContentLengthHeader(contentHeader, maxSize)
 
       const clonedRequest = c.req.raw.clone()
-      const bodySize = await validateBodySize(clonedRequest, maxSize, contentLength)
+      const bodySize = await validateBodySize(
+        clonedRequest,
+        maxSize,
+        contentLength
+      )
 
       // Validate that Content-Length matches actual size if header was provided.
-      if (contentHeader && contentLength !== null && contentLength !== bodySize) {
+      if (
+        contentHeader &&
+        contentLength !== null &&
+        contentLength !== bodySize
+      ) {
         throw new AppError(ErrorCode.ContentLengthMismatch)
       }
     } catch (error) {
@@ -43,7 +49,10 @@ export const createRequestSizeLimiter = (
         throw error
       }
 
-      throw new AppError(ErrorCode.ValidationError, 'Failed to validate request size')
+      throw new AppError(
+        ErrorCode.ValidationError,
+        'Failed to validate request size'
+      )
     }
 
     return next()

@@ -2,7 +2,9 @@ import type RandomBytesGenerator from './random-bytes-generator'
 
 import NodeRandomBytesGenerator from './random-bytes-generator-node'
 
-export const createRandomBytesGenerator = (impl: 'node' = 'node'): RandomBytesGenerator => {
+export const createRandomBytesGenerator = (
+  impl: 'node' = 'node'
+): RandomBytesGenerator => {
   if (impl === 'node') {
     return new NodeRandomBytesGenerator()
   }

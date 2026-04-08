@@ -10,24 +10,41 @@ export interface VerifyEmailInput {
   token: string
 }
 
-export const verifyEmail = async ({ token }: VerifyEmailInput, deviceInfo: DeviceInfo) => {
-  const validatedToken = await validateOneTimeToken(token, TokenType.EmailVerification)
+export const verifyEmail = async (
+  { token }: VerifyEmailInput,
+  deviceInfo: DeviceInfo
+) => {
+  const validatedToken = await validateOneTimeToken(
+    token,
+    TokenType.EmailVerification
+  )
 
-  const updatedUser = await db.transaction(async (tx) => {
+  const updatedUser = await db.transaction(async tx => {
     // Mark token as used
-    await tokenRepo.update(validatedToken.id, {
-      status: TokenStatus.Used,
-      usedAt: new Date(),
-    }, tx)
+    await tokenRepo.update(
+      validatedToken.id,
+      {
+        status: TokenStatus.Used,
+        usedAt: new Date()
+      },
+      tx
+    )
 
     // Update user status
-    return userRepo.update(validatedToken.userId, { status: UserStatus.Verified }, tx)
+    return userRepo.update(
+      validatedToken.userId,
+      { status: UserStatus.Verified },
+      tx
+    )
   })
 
-  const [accessToken, refreshToken] = await createAuthTokens(updatedUser, deviceInfo)
+  const [accessToken, refreshToken] = await createAuthTokens(
+    updatedUser,
+    deviceInfo
+  )
 
   return {
     data: { user: updatedUser, accessToken },
-    refreshToken,
+    refreshToken
   }
 }

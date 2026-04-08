@@ -4,7 +4,10 @@ import type { AppContext } from '@/context'
 
 import { requestValidator } from '@/middleware'
 
-import { getAdminPermissionsHandler, updateAdminPermissionsHandler } from './handler'
+import {
+  getAdminPermissionsHandler,
+  updateAdminPermissionsHandler
+} from './handler'
 import { adminIdParamsSchema, updateAdminPermissionsBodySchema } from './schema'
 
 export const ownerAdminPermissionsRoute = new Hono<AppContext>()
@@ -12,12 +15,12 @@ export const ownerAdminPermissionsRoute = new Hono<AppContext>()
 ownerAdminPermissionsRoute.get(
   '/',
   requestValidator('param', adminIdParamsSchema),
-  getAdminPermissionsHandler,
+  getAdminPermissionsHandler
 )
 
 ownerAdminPermissionsRoute.patch(
   '/',
   requestValidator('param', adminIdParamsSchema),
   requestValidator('json', updateAdminPermissionsBodySchema),
-  updateAdminPermissionsHandler,
+  updateAdminPermissionsHandler
 )

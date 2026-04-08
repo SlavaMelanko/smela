@@ -38,7 +38,9 @@ describe('Secure Headers Middleware', () => {
     it('should set Referrer-Policy header', async () => {
       const res = await app.request('/test')
 
-      expect(res.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+      expect(res.headers.get('Referrer-Policy')).toBe(
+        'strict-origin-when-cross-origin'
+      )
     })
 
     it('should apply headers to all HTTP methods', async () => {
@@ -56,7 +58,9 @@ describe('Secure Headers Middleware', () => {
         // X-XSS-Protection is deprecated and should either be absent or set to "0"
         const xssProtection = res.headers.get('X-XSS-Protection')
         expect(xssProtection === null || xssProtection === '0').toBe(true)
-        expect(res.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+        expect(res.headers.get('Referrer-Policy')).toBe(
+          'strict-origin-when-cross-origin'
+        )
       }
     })
   })
@@ -77,10 +81,10 @@ describe('Secure Headers Middleware', () => {
 
         expect(csp).toBeTruthy()
         // Test environment uses dev CSP with unsafe-eval for testing frameworks
-        expect(csp).toContain('script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'')
+        expect(csp).toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'")
         expect(csp).toContain('unsafe-eval')
         // Test environment allows http images for testing
-        expect(csp).toContain('img-src \'self\' data: https: http:')
+        expect(csp).toContain("img-src 'self' data: https: http:")
         expect(csp).toContain('http:')
       })
     })
@@ -101,13 +105,13 @@ describe('Secure Headers Middleware', () => {
         expect(csp).toBeTruthy()
 
         // Should have all the base directives
-        expect(csp).toContain('default-src \'self\'')
-        expect(csp).toContain('style-src \'self\' \'unsafe-inline\'')
-        expect(csp).toContain('font-src \'self\'')
-        expect(csp).toContain('connect-src \'self\'')
-        expect(csp).toContain('frame-ancestors \'none\'')
-        expect(csp).toContain('base-uri \'self\'')
-        expect(csp).toContain('form-action \'self\'')
+        expect(csp).toContain("default-src 'self'")
+        expect(csp).toContain("style-src 'self' 'unsafe-inline'")
+        expect(csp).toContain("font-src 'self'")
+        expect(csp).toContain("connect-src 'self'")
+        expect(csp).toContain("frame-ancestors 'none'")
+        expect(csp).toContain("base-uri 'self'")
+        expect(csp).toContain("form-action 'self'")
         // upgrade-insecure-requests is only in production/staging, not dev/test
       })
     })
@@ -121,13 +125,13 @@ describe('Secure Headers Middleware', () => {
       expect(csp).toBeTruthy()
 
       // Check for all expected directives
-      expect(csp).toContain('default-src \'self\'')
-      expect(csp).toContain('style-src \'self\' \'unsafe-inline\'')
-      expect(csp).toContain('font-src \'self\'')
-      expect(csp).toContain('connect-src \'self\'')
-      expect(csp).toContain('frame-ancestors \'none\'')
-      expect(csp).toContain('base-uri \'self\'')
-      expect(csp).toContain('form-action \'self\'')
+      expect(csp).toContain("default-src 'self'")
+      expect(csp).toContain("style-src 'self' 'unsafe-inline'")
+      expect(csp).toContain("font-src 'self'")
+      expect(csp).toContain("connect-src 'self'")
+      expect(csp).toContain("frame-ancestors 'none'")
+      expect(csp).toContain("base-uri 'self'")
+      expect(csp).toContain("form-action 'self'")
       // upgrade-insecure-requests is only in production/staging, not dev/test
     })
 
@@ -153,14 +157,14 @@ describe('Secure Headers Middleware', () => {
       const res = await app.request('/test')
       const csp = res.headers.get('Content-Security-Policy')
 
-      expect(csp).toContain('style-src \'self\' \'unsafe-inline\'')
+      expect(csp).toContain("style-src 'self' 'unsafe-inline'")
     })
 
     it('should block framing with frame-ancestors directive', async () => {
       const res = await app.request('/test')
       const csp = res.headers.get('Content-Security-Policy')
 
-      expect(csp).toContain('frame-ancestors \'none\'')
+      expect(csp).toContain("frame-ancestors 'none'")
     })
   })
 
@@ -248,7 +252,7 @@ describe('Secure Headers Middleware', () => {
     })
 
     it('should not override existing secure headers', async () => {
-      app.get('/custom', (c) => {
+      app.get('/custom', c => {
         c.header('X-Custom-Header', 'custom-value')
 
         return c.json({ success: true })

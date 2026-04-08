@@ -42,34 +42,43 @@ export class ModuleMocker {
   async mock(modulePath: string, renderMocks: () => Record<string, unknown>) {
     const resolvedPath = this.resolveModulePath(modulePath)
     const original = {
-      ...(await import(resolvedPath)),
+      ...(await import(resolvedPath))
     }
     const mocks = renderMocks()
     const result = {
       ...original,
-      ...mocks,
+      ...mocks
     }
 
     await mock.module(resolvedPath, () => result as Record<string, unknown>)
 
     this.mocks.push({
       clear: async () => {
-        await mock.module(resolvedPath, () => original as Record<string, unknown>)
-      },
+        await mock.module(
+          resolvedPath,
+          () => original as Record<string, unknown>
+        )
+      }
     })
   }
 
   async clear() {
-    await Promise.all(this.mocks.map(async (mockResult) => {
-      return mockResult.clear()
-    }))
+    await Promise.all(
+      this.mocks.map(async mockResult => {
+        return mockResult.clear()
+      })
+    )
 
     this.mocks = []
   }
 
   private resolveModulePath(modulePath: string): string {
     // If path starts with @/ or is absolute, return as-is
-    if (modulePath.startsWith('@/') || path.isAbsolute(modulePath) || !modulePath.startsWith('.')) {
+    if (
+      modulePath.startsWith('@/') ||
+      path.isAbsolute(modulePath) ||
+      !modulePath.startsWith('.')
+    ) {
       return modulePath
     }
 

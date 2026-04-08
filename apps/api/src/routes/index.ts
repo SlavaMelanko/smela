@@ -9,7 +9,7 @@ import {
   resendVerificationEmailRoute,
   resetPasswordRoute,
   signupRoute,
-  verifyEmailRoute,
+  verifyEmailRoute
 } from './auth'
 import { ownerAdminsRoute } from './owner'
 import { meRoute, teamsRoute } from './user'
@@ -24,7 +24,7 @@ export const authPublicRoutes = [
   verifyEmailRoute,
   resendVerificationEmailRoute,
   requestPasswordResetRoute,
-  resetPasswordRoute,
+  resetPasswordRoute
 ]
 
 export const userRoutesAllowNew = [meRoute]

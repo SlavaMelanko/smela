@@ -18,12 +18,16 @@ describe('Accept Invite Endpoint', () => {
 
   beforeEach(async () => {
     mockAcceptInvite = mock(async () => ({
-      data: { user: { id: testUuids.USER_1 }, team: null, accessToken: 'test-token' },
-      refreshToken: 'refresh-token',
+      data: {
+        user: { id: testUuids.USER_1 },
+        team: null,
+        accessToken: 'test-token'
+      },
+      refreshToken: 'refresh-token'
     }))
 
     await moduleMocker.mock('@/use-cases/auth/accept-invite', () => ({
-      acceptInvite: mockAcceptInvite,
+      acceptInvite: mockAcceptInvite
     }))
 
     app = createTestApp('/api/v1/auth', acceptInviteRoute)
@@ -35,7 +39,7 @@ describe('Accept Invite Endpoint', () => {
 
   const validPayload = {
     token: '1'.repeat(TOKEN_LENGTH),
-    password: 'NewSecure@123',
+    password: 'NewSecure@123'
   }
 
   describe('POST /auth/accept-invite', () => {
@@ -45,11 +49,15 @@ describe('Accept Invite Endpoint', () => {
       expect(res.status).toBe(HttpStatus.OK)
 
       const data = await res.json()
-      expect(data).toEqual({ user: { id: testUuids.USER_1 }, team: null, accessToken: 'test-token' })
+      expect(data).toEqual({
+        user: { id: testUuids.USER_1 },
+        team: null,
+        accessToken: 'test-token'
+      })
 
       expect(mockAcceptInvite).toHaveBeenCalledWith(
         { token: validPayload.token, password: validPayload.password },
-        { ipAddress: null, userAgent: null },
+        { ipAddress: null, userAgent: null }
       )
       expect(mockAcceptInvite).toHaveBeenCalledTimes(1)
 
@@ -73,7 +81,7 @@ describe('Accept Invite Endpoint', () => {
       const invalidTokens = [
         { name: 'short token', token: 'short-token' },
         { name: 'long token', token: 'a'.repeat(100) },
-        { name: 'missing token', token: null },
+        { name: 'missing token', token: null }
       ]
 
       for (const testCase of invalidTokens) {
@@ -97,7 +105,7 @@ describe('Accept Invite Endpoint', () => {
         { name: 'no special chars', password: 'NoSpecialChars123' },
         { name: 'no numbers', password: 'NoNumbers@Special' },
         { name: 'no letters', password: '12345678@#$' },
-        { name: 'missing password', password: null },
+        { name: 'missing password', password: null }
       ]
 
       for (const testCase of invalidPasswords) {
@@ -116,10 +124,22 @@ describe('Accept Invite Endpoint', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
+      const scenarios: Array<{
+        name: string
+        headers?: Record<string, string>
+        body?: any
+      }> = [
         { name: 'missing Content-Type', headers: {}, body: validPayload },
-        { name: 'malformed JSON', headers: { 'Content-Type': 'application/json' }, body: '{invalid json}' },
-        { name: 'missing request body', headers: { 'Content-Type': 'application/json' }, body: '' },
+        {
+          name: 'malformed JSON',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{invalid json}'
+        },
+        {
+          name: 'missing request body',
+          headers: { 'Content-Type': 'application/json' },
+          body: ''
+        }
       ]
 
       for (const { headers, body } of scenarios) {

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 
-import { getAdminDefaultPermissions, getMemberDefaultPermissions } from '../permission'
+import {
+  getAdminDefaultPermissions,
+  getMemberDefaultPermissions
+} from '../permission'
 import Resource from '../resource'
 
 describe('getAdminDefaultPermissions', () => {

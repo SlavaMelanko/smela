@@ -15,10 +15,13 @@ export interface InviteAdminInput {
   permissions: PermissionsInput
 }
 
-export const inviteAdmin = async (admin: InviteAdminInput, inviterId: string) => {
+export const inviteAdmin = async (
+  admin: InviteAdminInput,
+  inviterId: string
+) => {
   const [existingUser, inviter] = await Promise.all([
     userRepo.findByEmail(admin.email),
-    userRepo.findById(inviterId),
+    userRepo.findById(inviterId)
   ])
 
   if (existingUser) {
@@ -31,40 +34,53 @@ export const inviteAdmin = async (admin: InviteAdminInput, inviterId: string) =>
 
   const role = Role.Admin
 
-  const { admin: newAdmin, token } = await db.transaction(async (tx) => {
-    const newAdmin = await userRepo.create({
-      firstName: admin.firstName,
-      lastName: admin.lastName,
-      email: admin.email,
-      status: UserStatus.Pending,
-    }, tx)
+  const { admin: newAdmin, token } = await db.transaction(async tx => {
+    const newAdmin = await userRepo.create(
+      {
+        firstName: admin.firstName,
+        lastName: admin.lastName,
+        email: admin.email,
+        status: UserStatus.Pending
+      },
+      tx
+    )
 
     // Use random password and admin sets real password when accepting invitation
     const passwordHash = await generatePasswordHash()
 
-    await authRepo.create({
-      userId: newAdmin.id,
-      provider: AuthProvider.Local,
-      identifier: admin.email,
-      passwordHash,
-    }, tx)
+    await authRepo.create(
+      {
+        userId: newAdmin.id,
+        provider: AuthProvider.Local,
+        identifier: admin.email,
+        passwordHash
+      },
+      tx
+    )
 
-    await rbacRepo.assignRole({
-      userId: newAdmin.id,
-      role,
-      invitedBy: inviterId,
-    }, tx)
+    await rbacRepo.assignRole(
+      {
+        userId: newAdmin.id,
+        role,
+        invitedBy: inviterId
+      },
+      tx
+    )
 
     await rbacRepo.setUserPermissions(newAdmin.id, admin.permissions, tx)
 
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
 
-    await tokenRepo.issue(newAdmin.id, {
-      userId: newAdmin.id,
-      type,
-      token,
-      expiresAt,
-    }, tx)
+    await tokenRepo.issue(
+      newAdmin.id,
+      {
+        userId: newAdmin.id,
+        type,
+        token,
+        expiresAt
+      },
+      tx
+    )
 
     return { admin: { ...newAdmin, role }, token }
   })
@@ -74,7 +90,7 @@ export const inviteAdmin = async (admin: InviteAdminInput, inviterId: string) =>
     newAdmin.email,
     token,
     inviter.firstName,
-    env.COMPANY_NAME,
+    env.COMPANY_NAME
   )
 
   return { admin: newAdmin }
@@ -83,7 +99,7 @@ export const inviteAdmin = async (admin: InviteAdminInput, inviterId: string) =>
 export const resendAdminInvite = async (adminId: string, inviterId: string) => {
   const [admin, inviter] = await Promise.all([
     userRepo.findById(adminId),
-    userRepo.findById(inviterId),
+    userRepo.findById(inviterId)
   ])
 
   if (admin?.role !== Role.Admin) {
@@ -91,16 +107,23 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
   }
 
   if (admin.status !== UserStatus.Pending) {
-    throw new AppError(ErrorCode.BadRequest, 'Admin has already accepted invitation')
+    throw new AppError(
+      ErrorCode.BadRequest,
+      'Admin has already accepted invitation'
+    )
   }
 
   if (!inviter) {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  const token = await db.transaction(async (tx) => {
+  const token = await db.transaction(async tx => {
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
-    await tokenRepo.issue(adminId, { userId: adminId, type, token, expiresAt }, tx)
+    await tokenRepo.issue(
+      adminId,
+      { userId: adminId, type, token, expiresAt },
+      tx
+    )
 
     return token
   })
@@ -110,7 +133,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     admin.email,
     token,
     inviter.firstName,
-    env.COMPANY_NAME,
+    env.COMPANY_NAME
   )
 
   return { success: true }
@@ -124,10 +147,13 @@ export const cancelAdminInvite = async (adminId: string) => {
   }
 
   if (admin.status !== UserStatus.Pending) {
-    throw new AppError(ErrorCode.BadRequest, 'Admin has already accepted invitation')
+    throw new AppError(
+      ErrorCode.BadRequest,
+      'Admin has already accepted invitation'
+    )
   }
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await tokenRepo.deprecate(adminId, TokenType.UserInvite, tx)
     await userRepo.update(adminId, { status: UserStatus.Archived }, tx)
   })

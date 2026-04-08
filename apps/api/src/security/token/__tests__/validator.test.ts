@@ -19,7 +19,7 @@ describe('TokenValidator', () => {
     usedAt: null,
     metadata: null,
     createdAt: new Date(),
-    ...overrides,
+    ...overrides
   })
 
   describe('validate', () => {

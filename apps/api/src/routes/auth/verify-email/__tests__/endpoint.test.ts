@@ -27,15 +27,15 @@ describe('Verify Email Endpoint', () => {
           role: Role.User,
           status: UserStatus.Verified,
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         },
-        accessToken: 'verify-jwt-token',
+        accessToken: 'verify-jwt-token'
       },
-      refreshToken: 'verify-refresh-token',
+      refreshToken: 'verify-refresh-token'
     }))
 
     await moduleMocker.mock('@/use-cases/auth/verify-email', () => ({
-      verifyEmail: mockVerifyEmail,
+      verifyEmail: mockVerifyEmail
     }))
 
     app = createTestApp('/api/v1/auth', verifyEmailRoute)
@@ -63,15 +63,15 @@ describe('Verify Email Endpoint', () => {
           role: Role.User,
           status: UserStatus.Verified,
           createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z'
         },
-        accessToken: 'verify-jwt-token',
+        accessToken: 'verify-jwt-token'
       })
 
       expect(mockVerifyEmail).toHaveBeenCalledTimes(1)
       expect(mockVerifyEmail).toHaveBeenCalledWith(
         { token: validToken },
-        { ipAddress: null, userAgent: null },
+        { ipAddress: null, userAgent: null }
       )
     })
 
@@ -89,7 +89,7 @@ describe('Verify Email Endpoint', () => {
         'a'.repeat(32), // token too short
         'a'.repeat(63), // token too short by 1
         'a'.repeat(65), // token too long by 1
-        'a'.repeat(128), // token too long
+        'a'.repeat(128) // token too long
       ]
 
       for (const token of invalidTokens) {
@@ -104,10 +104,26 @@ describe('Verify Email Endpoint', () => {
     it('should handle malformed requests', async () => {
       const validToken = 'a'.repeat(64)
 
-      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
-        { name: 'missing Content-Type', headers: {}, body: { token: validToken } },
-        { name: 'malformed JSON', headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
-        { name: 'missing request body', headers: { 'Content-Type': 'application/json' }, body: '' },
+      const scenarios: Array<{
+        name: string
+        headers?: Record<string, string>
+        body?: any
+      }> = [
+        {
+          name: 'missing Content-Type',
+          headers: {},
+          body: { token: validToken }
+        },
+        {
+          name: 'malformed JSON',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{ invalid json'
+        },
+        {
+          name: 'missing request body',
+          headers: { 'Content-Type': 'application/json' },
+          body: ''
+        }
       ]
 
       for (const { headers, body } of scenarios) {

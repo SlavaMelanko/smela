@@ -9,11 +9,12 @@ export const content: PasswordResetEmailContent = {
   body: 'We received a request to reset your password. Click the link below to set a new password:',
   ctaText: 'Reset password',
   expiryNotice: 'This link expires in 1 hour for security reasons.',
-  disclaimer: 'If you didn\'t request a password reset, you can safely ignore this email.',
+  disclaimer:
+    "If you didn't request a password reset, you can safely ignore this email.",
   signature: {
     thanks: 'Thanks,',
-    who: `The ${config.company.name} team`,
-  },
+    who: `The ${config.company.name} team`
+  }
 }
 
 export default content

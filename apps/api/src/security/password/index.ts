@@ -1,6 +1,7 @@
 import { createHasher, createRandomBytesGenerator } from '@/crypto'
 
-export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Z\d@$!%*#?&]{8,}$/i
+export const PASSWORD_REGEX =
+  /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Z\d@$!%*#?&]{8,}$/i
 
 export const hashPassword = async (password: string): Promise<string> => {
   const hasher = createHasher()
@@ -15,7 +16,10 @@ export const generatePasswordHash = async (length = 32): Promise<string> => {
   return hashPassword(password)
 }
 
-export const comparePasswordHashes = async (password: string, hash: string): Promise<boolean> => {
+export const comparePasswordHashes = async (
+  password: string,
+  hash: string
+): Promise<boolean> => {
   if (!password || !hash) {
     return false
   }

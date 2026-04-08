@@ -6,5 +6,5 @@ export * from './types'
 export const authRepo = {
   create: createAuth,
   findById: findByUserId,
-  update: updateAuth,
+  update: updateAuth
 }

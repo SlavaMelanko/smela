@@ -2,15 +2,15 @@ export type { EmailRenderer, RenderedEmail } from './email-renderer'
 
 export {
   type EmailVerificationEmailData,
-  default as EmailVerificationEmailRenderer,
+  default as EmailVerificationEmailRenderer
 } from './email-renderer-email-verification'
 
 export {
   type PasswordResetEmailData,
-  default as PasswordResetEmailRenderer,
+  default as PasswordResetEmailRenderer
 } from './email-renderer-password-reset'
 
 export {
   type UserInvitationEmailData,
-  default as UserInvitationEmailRenderer,
+  default as UserInvitationEmailRenderer
 } from './email-renderer-user-invitation'

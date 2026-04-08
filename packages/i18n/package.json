@@ -28,12 +28,12 @@
     ".": "./src/index.js",
     "./resources": "./src/resources.js"
   },
+  "peerDependencies": {
+    "i18next": "^26.0.4"
+  },
   "devDependencies": {
     "@smela/eslint": "workspace:*",
     "chokidar": "^5.0.0",
     "sort-json": "^2.0.1"
-  },
-  "peerDependencies": {
-    "i18next": "^26.0.4"
   }
 }

@@ -9,14 +9,14 @@ export const createConsoleTransport = (): TransportTargetOptions => {
         level: env.LOG_LEVEL,
         options: {
           destination: 1, // stdout
-          colorize: true,
-        },
+          colorize: true
+        }
       }
     : {
         target: 'pino/file',
         level: env.LOG_LEVEL,
         options: {
-          destination: 1, // stdout (JSON format)
-        },
+          destination: 1 // stdout (JSON format)
+        }
       }
 }

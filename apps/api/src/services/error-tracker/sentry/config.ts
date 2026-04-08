@@ -7,5 +7,5 @@ import packageJson from '../../../../package.json'
 export const sentryConfig: Config = {
   dsn: env.SENTRY_DSN,
   environment: env.NODE_ENV,
-  release: `${packageJson.name}@${packageJson.version}`,
+  release: `${packageJson.name}@${packageJson.version}`
 }

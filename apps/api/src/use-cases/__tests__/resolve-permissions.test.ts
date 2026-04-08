@@ -13,12 +13,14 @@ describe('resolvePermissionList', () => {
   let mockFindUserPermissions: any
 
   beforeEach(async () => {
-    mockFindUserPermissions = mock(async (): Promise<ActivePermissionRow[]> => [])
+    mockFindUserPermissions = mock(
+      async (): Promise<ActivePermissionRow[]> => []
+    )
 
     await moduleMocker.mock('@/data', () => ({
       rbacRepo: {
-        findUserPermissions: mockFindUserPermissions,
-      },
+        findUserPermissions: mockFindUserPermissions
+      }
     }))
   })
 
@@ -36,7 +38,7 @@ describe('resolvePermissionList', () => {
   it('should map action:resource rows to typed Permission values', async () => {
     mockFindUserPermissions.mockImplementation(async () => [
       { action: Action.View, resource: Resource.Users },
-      { action: Action.Manage, resource: Resource.Teams },
+      { action: Action.Manage, resource: Resource.Teams }
     ])
 
     const result = await resolvePermissionList(testUuids.ADMIN_1)
@@ -58,7 +60,7 @@ describe('resolvePermissionList', () => {
       { action: Action.View, resource: Resource.Teams },
       { action: Action.Manage, resource: Resource.Users },
       { action: Action.Manage, resource: Resource.Admins },
-      { action: Action.Manage, resource: Resource.Teams },
+      { action: Action.Manage, resource: Resource.Teams }
     ])
 
     const result = await resolvePermissionList(testUuids.USER_1)

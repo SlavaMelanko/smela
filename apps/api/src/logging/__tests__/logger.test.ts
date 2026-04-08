@@ -26,14 +26,14 @@ describe('Logger', () => {
       await moduleMocker.mock('@/env', () => ({
         default: {
           LOG_LEVEL: 'debug',
-          NODE_ENV: 'test',
+          NODE_ENV: 'test'
         },
         isDevEnv: () => false,
         isProdEnv: () => false,
         isTestEnv: () => true,
         isStagingEnv: () => false,
         isDevOrTestEnv: () => true,
-        isStagingOrProdEnv: () => false,
+        isStagingOrProdEnv: () => false
       }))
 
       const loggerModule = await import('../logger')
@@ -47,7 +47,9 @@ describe('Logger', () => {
 
     it('should log debug messages', () => {
       logger.debug('Processing email template compilation')
-      expect(debugSpy).toHaveBeenCalledWith('Processing email template compilation')
+      expect(debugSpy).toHaveBeenCalledWith(
+        'Processing email template compilation'
+      )
     })
 
     it('should log info messages', () => {
@@ -57,7 +59,9 @@ describe('Logger', () => {
 
     it('should log warning messages', () => {
       logger.warn('Attempt 1 to send email failed, retrying')
-      expect(warnSpy).toHaveBeenCalledWith('Attempt 1 to send email failed, retrying')
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Attempt 1 to send email failed, retrying'
+      )
     })
 
     it('should log error messages', () => {
@@ -83,14 +87,14 @@ describe('Logger', () => {
       await moduleMocker.mock('@/env', () => ({
         default: {
           LOG_LEVEL: 'error',
-          NODE_ENV: 'production',
+          NODE_ENV: 'production'
         },
         isDevEnv: () => false,
         isProdEnv: () => true,
         isTestEnv: () => false,
         isStagingEnv: () => false,
         isDevOrTestEnv: () => false,
-        isStagingOrProdEnv: () => true,
+        isStagingOrProdEnv: () => true
       }))
 
       const loggerModule = await import('../logger')
@@ -107,7 +111,9 @@ describe('Logger', () => {
     it('should accept debug messages but not output them when LOG_LEVEL is error', () => {
       logger.debug('Processing email template compilation')
       expect(debugSpy).toHaveBeenCalledTimes(1)
-      expect(debugSpy).toHaveBeenCalledWith('Processing email template compilation')
+      expect(debugSpy).toHaveBeenCalledWith(
+        'Processing email template compilation'
+      )
     })
 
     it('should accept info messages but not output them when LOG_LEVEL is error', () => {
@@ -119,7 +125,9 @@ describe('Logger', () => {
     it('should accept warning messages but not output them when LOG_LEVEL is error', () => {
       logger.warn('Attempt 1 to send email failed, retrying')
       expect(warnSpy).toHaveBeenCalledTimes(1)
-      expect(warnSpy).toHaveBeenCalledWith('Attempt 1 to send email failed, retrying')
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Attempt 1 to send email failed, retrying'
+      )
     })
 
     it('should log error messages', () => {

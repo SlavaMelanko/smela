@@ -5,23 +5,17 @@ import { exponentialBackoffDelay, sleepFor, withTimeout } from '../async'
 describe('Async Utils', () => {
   describe('withTimeout', () => {
     test('should resolve when operation completes within timeout', async () => {
-      const result = await withTimeout(
-        async () => 'success',
-        1000,
-      )
+      const result = await withTimeout(async () => 'success', 1000)
 
       expect(result).toBe('success')
     })
 
     test('should reject when operation exceeds timeout', async () => {
-      const slowOperation = withTimeout(
-        async () => {
-          await sleepFor(200)
+      const slowOperation = withTimeout(async () => {
+        await sleepFor(200)
 
-          return 'too slow'
-        },
-        100,
-      )
+        return 'too slow'
+      }, 100)
 
       expect(slowOperation).rejects.toThrow('Timeout.')
     })

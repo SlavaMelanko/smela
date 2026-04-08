@@ -11,7 +11,10 @@ class NodeHasher implements Hasher {
   private readonly algorithm: HashAlgorithm
   private readonly digest: DigestEncoding
 
-  constructor(algorithm: HashAlgorithm = 'sha256', digest: DigestEncoding = 'hex') {
+  constructor(
+    algorithm: HashAlgorithm = 'sha256',
+    digest: DigestEncoding = 'hex'
+  ) {
     this.algorithm = algorithm
     this.digest = digest
   }

@@ -2,7 +2,7 @@ import { AppError, ErrorCode } from '@/errors'
 
 export const validateContentLengthHeader = (
   contentHeader: string | null | undefined,
-  maxSize: number,
+  maxSize: number
 ): number | null => {
   if (!contentHeader) {
     return null

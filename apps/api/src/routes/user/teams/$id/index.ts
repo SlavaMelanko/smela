@@ -14,7 +14,7 @@ teamByIdRoute.get(
   '/',
   requestValidator('param', teamIdParamsSchema),
   teamAccessMiddleware,
-  getTeamHandler,
+  getTeamHandler
 )
 
 teamByIdRoute.patch(
@@ -22,7 +22,7 @@ teamByIdRoute.patch(
   requestValidator('param', teamIdParamsSchema),
   requestValidator('json', updateTeamBodySchema),
   teamAccessMiddleware,
-  updateTeamHandler,
+  updateTeamHandler
 )
 
 teamByIdRoute.route('/members', teamsMembersRoute)

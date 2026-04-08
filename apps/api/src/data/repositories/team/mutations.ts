@@ -8,7 +8,7 @@ import type {
   CreateTeamMemberInput,
   Team,
   TeamMember,
-  UpdateTeamInput,
+  UpdateTeamInput
 } from './types'
 
 import { db } from '../../clients'
@@ -16,14 +16,11 @@ import { teamMembersTable, teamsTable } from '../../schema'
 
 export const createTeam = async (
   input: CreateTeamInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<Team> => {
   const executor = tx || db
 
-  const [team] = await executor
-    .insert(teamsTable)
-    .values(input)
-    .returning()
+  const [team] = await executor.insert(teamsTable).values(input).returning()
 
   if (!team) {
     throw new AppError(ErrorCode.InternalError, 'Failed to create team')
@@ -35,7 +32,7 @@ export const createTeam = async (
 export const updateTeam = async (
   teamId: string,
   updates: UpdateTeamInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<Team> => {
   const executor = tx || db
 
@@ -54,7 +51,7 @@ export const updateTeam = async (
 
 export const createTeamMember = async (
   input: CreateTeamMemberInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamMember> => {
   const executor = tx || db
 
@@ -78,7 +75,7 @@ export const updateTeamMember = async (
   userId: string,
   teamId: string,
   updates: UpdateTeamMemberInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamMember> => {
   const executor = tx || db
 
@@ -88,8 +85,8 @@ export const updateTeamMember = async (
     .where(
       and(
         eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId),
-      ),
+        eq(teamMembersTable.teamId, teamId)
+      )
     )
     .returning()
 
@@ -103,7 +100,7 @@ export const updateTeamMember = async (
 export const deleteTeamMember = async (
   userId: string,
   teamId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<void> => {
   const executor = tx || db
 
@@ -112,7 +109,7 @@ export const deleteTeamMember = async (
     .where(
       and(
         eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId),
-      ),
+        eq(teamMembersTable.teamId, teamId)
+      )
     )
 }

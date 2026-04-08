@@ -8,16 +8,14 @@ import { tokensTable } from '../../schema'
 
 export const findByToken = async (
   token: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<Token | undefined> => {
   const executor = tx || db
 
   const [foundToken] = await executor
     .select()
     .from(tokensTable)
-    .where(
-      eq(tokensTable.token, token),
-    )
+    .where(eq(tokensTable.token, token))
 
   return foundToken
 }

@@ -6,7 +6,7 @@ export const invalidCaptchaTokens = {
   tooShort: 'short',
   tooLong: 'a'.repeat(2001),
   invalidChars: 'invalid@captcha#token!',
-  empty: '',
+  empty: ''
 }
 
 /**
@@ -18,7 +18,7 @@ export const invalidCaptchaTokens = {
 export const mockCaptchaSuccess = async () => {
   await mock.module('@/services', () => ({
     createCaptchaVerifier: mock(() => ({
-      validate: mock(async () => {}),
-    })),
+      validate: mock(async () => {})
+    }))
   }))
 }

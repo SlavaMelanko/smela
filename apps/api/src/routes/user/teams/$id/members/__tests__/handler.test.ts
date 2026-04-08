@@ -7,7 +7,7 @@ import { Resource } from '@/types'
 import {
   createMemberHandler,
   getMemberDefaultPermissionsHandler,
-  getTeamMembersHandler,
+  getTeamMembersHandler
 } from '../handler'
 
 describe('getMemberDefaultPermissionsHandler', () => {
@@ -26,10 +26,10 @@ describe('getMemberDefaultPermissionsHandler', () => {
       {
         permissions: {
           [Resource.Users]: { view: true },
-          [Resource.Teams]: { view: true },
-        },
+          [Resource.Teams]: { view: true }
+        }
       },
-      HttpStatus.OK,
+      HttpStatus.OK
     )
   })
 })
@@ -47,11 +47,13 @@ describe('getTeamMembersHandler', () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: { valid: mock(() => ({ teamId: testUuids.TEAM_1 })) },
-      json: mockJson,
+      json: mockJson
     }
     mockGetTeamMembers = mock(async () => ({ members: mockMembers }))
 
-    await moduleMocker.mock('@/use-cases/user', () => ({ getTeamMembers: mockGetTeamMembers }))
+    await moduleMocker.mock('@/use-cases/user', () => ({
+      getTeamMembers: mockGetTeamMembers
+    }))
   })
 
   afterEach(async () => {
@@ -62,7 +64,10 @@ describe('getTeamMembersHandler', () => {
     const result = await getTeamMembersHandler(mockContext)
 
     expect(mockGetTeamMembers).toHaveBeenCalledWith(testUuids.TEAM_1)
-    expect(mockJson).toHaveBeenCalledWith({ members: mockMembers }, HttpStatus.OK)
+    expect(mockJson).toHaveBeenCalledWith(
+      { members: mockMembers },
+      HttpStatus.OK
+    )
     expect(result.status).toBe(HttpStatus.OK)
   })
 
@@ -85,7 +90,7 @@ describe('createMemberHandler', () => {
   const body = {
     firstName: 'Bob',
     email: 'bob@example.com',
-    permissions: {},
+    permissions: {}
   }
 
   beforeEach(async () => {
@@ -93,15 +98,19 @@ describe('createMemberHandler', () => {
     mockContext = {
       req: {
         valid: mock((type: string) =>
-          type === 'param' ? { teamId: testUuids.TEAM_1 } : body,
-        ),
+          type === 'param' ? { teamId: testUuids.TEAM_1 } : body
+        )
       },
       get: mock(() => ({ id: testUuids.USER_1 })),
-      json: mockJson,
+      json: mockJson
     }
-    mockInviteMember = mock(async () => ({ member: { id: testUuids.USER_2, ...body } }))
+    mockInviteMember = mock(async () => ({
+      member: { id: testUuids.USER_2, ...body }
+    }))
 
-    await moduleMocker.mock('@/use-cases/user', () => ({ inviteMember: mockInviteMember }))
+    await moduleMocker.mock('@/use-cases/user', () => ({
+      inviteMember: mockInviteMember
+    }))
   })
 
   afterEach(async () => {
@@ -111,10 +120,14 @@ describe('createMemberHandler', () => {
   it('should call inviteMember and return created member with CREATED status', async () => {
     const result = await createMemberHandler(mockContext)
 
-    expect(mockInviteMember).toHaveBeenCalledWith(testUuids.TEAM_1, body, testUuids.USER_1)
+    expect(mockInviteMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      body,
+      testUuids.USER_1
+    )
     expect(mockJson).toHaveBeenCalledWith(
       { member: { id: testUuids.USER_2, ...body } },
-      HttpStatus.CREATED,
+      HttpStatus.CREATED
     )
     expect(result.status).toBe(HttpStatus.CREATED)
   })
@@ -124,6 +137,8 @@ describe('createMemberHandler', () => {
       throw new Error('Email already a member')
     })
 
-    expect(createMemberHandler(mockContext)).rejects.toThrow('Email already a member')
+    expect(createMemberHandler(mockContext)).rejects.toThrow(
+      'Email already a member'
+    )
   })
 })

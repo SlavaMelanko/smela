@@ -12,11 +12,11 @@ export const adminTeamsRoute = new Hono<AppContext>()
 adminTeamsRoute.get(
   '/teams',
   requestValidator('query', getTeamsQuerySchema),
-  getTeamsHandler,
+  getTeamsHandler
 )
 
 adminTeamsRoute.post(
   '/teams',
   requestValidator('json', createTeamBodySchema),
-  createTeamHandler,
+  createTeamHandler
 )

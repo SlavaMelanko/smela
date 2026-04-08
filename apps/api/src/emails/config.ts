@@ -11,8 +11,8 @@ const createEmailConfig = (): EmailConfig => {
   return {
     company: {
       name: env.companyName,
-      socialMediaLinks: env.companySocialLinks,
-    },
+      socialMediaLinks: env.companySocialLinks
+    }
   }
 }
 

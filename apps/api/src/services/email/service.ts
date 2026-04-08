@@ -6,26 +6,30 @@ import type { EmailRegistry } from './registry'
 
 const createMetadata = (): Metadata => ({
   emailId: Bun.randomUUIDv7(),
-  sentAt: new Date().toISOString(),
+  sentAt: new Date().toISOString()
 })
 
-const mergeWithDefaultPreferences = (preferences?: UserPreferences): UserPreferences => {
+const mergeWithDefaultPreferences = (
+  preferences?: UserPreferences
+): UserPreferences => {
   const defaultPreferences: UserPreferences = { locale: 'en', theme: 'light' }
 
-  return preferences ? { ...defaultPreferences, ...preferences } : defaultPreferences
+  return preferences
+    ? { ...defaultPreferences, ...preferences }
+    : defaultPreferences
 }
 
 export class EmailService {
   constructor(
     private provider: EmailProvider,
-    private registry: EmailRegistry,
+    private registry: EmailRegistry
   ) {}
 
   async send<T>(
     emailType: EmailType,
     to: string | string[],
     data: T,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ): Promise<void> {
     const config = await this.registry.get<T>(emailType)
 
@@ -34,17 +38,21 @@ export class EmailService {
     const renderer = await config.getRenderer()
     const userPreferences = mergeWithDefaultPreferences(preferences)
     const metadata = createMetadata()
-    const { subject, html, text } = await renderer.render(data, userPreferences, metadata)
+    const { subject, html, text } = await renderer.render(
+      data,
+      userPreferences,
+      metadata
+    )
 
     const payload: EmailPayload = {
       to,
       from: {
         email,
-        name,
+        name
       },
       subject,
       html,
-      text,
+      text
     }
 
     await this.provider.send(payload)

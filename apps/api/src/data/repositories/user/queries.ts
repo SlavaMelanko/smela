@@ -7,7 +7,12 @@ import type { PaginationParams } from '../pagination'
 import type { SearchParams, SearchResult, User } from './types'
 
 import { db } from '../../clients'
-import { teamMembersTable, teamsTable, userRoleTable, usersTable } from '../../schema'
+import {
+  teamMembersTable,
+  teamsTable,
+  userRoleTable,
+  usersTable
+} from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
 import { lastActiveSubquery } from '../refresh-token/queries'
 
@@ -21,7 +26,7 @@ const selectUserBase = (executor: Database) =>
       status: usersTable.status,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
-      role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`,
+      role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`
     })
     .from(usersTable)
     .leftJoin(userRoleTable, eq(usersTable.id, userRoleTable.userId))
@@ -42,8 +47,8 @@ const selectUserExtended = (executor: Database) => {
       role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`,
       team: {
         id: teamsTable.id,
-        name: teamsTable.name,
-      },
+        name: teamsTable.name
+      }
     })
     .from(usersTable)
     .leftJoin(userRoleTable, eq(usersTable.id, userRoleTable.userId))
@@ -54,7 +59,7 @@ const selectUserExtended = (executor: Database) => {
 
 const findUserBy = async (
   condition: ReturnType<typeof eq>,
-  tx?: Database,
+  tx?: Database
 ): Promise<User | undefined> => {
   const executor = tx || db
 
@@ -68,11 +73,13 @@ export const findUserById = async (userId: string, tx?: Database) =>
 
 export const findUserByIdExtended = async (
   userId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<User | undefined> => {
   const executor = tx || db
 
-  const [row] = await selectUserExtended(executor).where(eq(usersTable.id, userId))
+  const [row] = await selectUserExtended(executor).where(
+    eq(usersTable.id, userId)
+  )
 
   if (!row) {
     return undefined
@@ -116,7 +123,7 @@ const buildWhereConditions = ({ search, roles, statuses }: SearchParams) => {
   if (search && search.length > 0) {
     // Use concatenated expression to leverage GIN index (idx_users_search_trgm)
     conditions.push(
-      sql`(${usersTable.id}::text || ' ' || ${usersTable.firstName} || ' ' || COALESCE(${usersTable.lastName}, '') || ' ' || ${usersTable.email}) ILIKE ${`%${search}%`}`,
+      sql`(${usersTable.id}::text || ' ' || ${usersTable.firstName} || ' ' || COALESCE(${usersTable.lastName}, '') || ' ' || ${usersTable.email}) ILIKE ${`%${search}%`}`
     )
   }
 
@@ -126,7 +133,7 @@ const buildWhereConditions = ({ search, roles, statuses }: SearchParams) => {
 export const search = async (
   filters: SearchParams,
   pagination: PaginationParams,
-  tx?: Database,
+  tx?: Database
 ): Promise<SearchResult> => {
   const executor = tx || db
 
@@ -145,12 +152,13 @@ export const search = async (
       .orderBy(desc(usersTable.createdAt))
       .limit(pagination.limit)
       .offset(calcOffset(pagination)),
-    countQuery
-      .where(whereClause),
+    countQuery.where(whereClause)
   ])
 
   return {
-    users: users.map(({ team, ...user }) => team?.id ? { ...user, team } : user),
-    pagination: buildPagination(pagination, countResult),
+    users: users.map(({ team, ...user }) =>
+      team?.id ? { ...user, team } : user
+    ),
+    pagination: buildPagination(pagination, countResult)
   }
 }

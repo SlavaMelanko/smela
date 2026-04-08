@@ -12,5 +12,5 @@ export const verifyEmailRoute = new Hono<AppContext>()
 verifyEmailRoute.post(
   '/verify-email',
   requestValidator('json', verifyEmailBodySchema),
-  verifyEmailHandler,
+  verifyEmailHandler
 )

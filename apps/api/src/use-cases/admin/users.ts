@@ -11,16 +11,19 @@ const normalizeRoles = (params: SearchParams): SearchParams => {
 
   return {
     ...params,
-    roles: validRoles,
+    roles: validRoles
   }
 }
 
-export const searchUsers = async (params: SearchParams, pagination: PaginationParams) => {
+export const searchUsers = async (
+  params: SearchParams,
+  pagination: PaginationParams
+) => {
   const result = await userRepo.search(normalizeRoles(params), pagination)
 
   return {
     data: { users: result.users },
-    pagination: result.pagination,
+    pagination: result.pagination
   }
 }
 

@@ -13,12 +13,12 @@ const defaultOptions: Options = {
   secret: env.JWT_SECRET,
   previousSecret: env.JWT_SECRET_PREVIOUS,
   expiresIn: env.JWT_EXPIRATION,
-  signatureAlgorithm: env.JWT_SIGNATURE_ALGORITHM,
+  signatureAlgorithm: env.JWT_SIGNATURE_ALGORITHM
 }
 
 export const mergeWithDefaults = (options?: Partial<Options>): Options => {
   return {
     ...defaultOptions,
-    ...options,
+    ...options
   }
 }

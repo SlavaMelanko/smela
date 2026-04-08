@@ -6,5 +6,5 @@ export {
   inviteAdmin,
   resendAdminInvite,
   updateAdmin,
-  updateAdminPermissions,
+  updateAdminPermissions
 } from './admins'

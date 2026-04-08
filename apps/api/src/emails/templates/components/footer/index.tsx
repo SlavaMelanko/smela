@@ -20,14 +20,15 @@ const Footer = ({
   styles,
   companyName = config.company.name,
   socialMediaLinks = config.company.socialMediaLinks,
-  metadata,
+  metadata
 }: Props): React.ReactElement => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }}
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column' as const,
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}
   >
     <SocialMediaLinks styles={styles} socialMediaLinks={socialMediaLinks} />
     <Copyright styles={styles} companyName={companyName} />
@@ -41,8 +42,8 @@ Footer.PreviewProps = {
   socialMediaLinks: {
     facebook: 'https://facebook.com/your-profile',
     github: 'https://github.com/your-profile',
-    linkedin: 'https://linkedin.com/in/your-profile',
-  },
+    linkedin: 'https://linkedin.com/in/your-profile'
+  }
 } as Props
 
 export default Footer

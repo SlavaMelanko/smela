@@ -2,7 +2,7 @@ export {
   adminAuthMiddleware,
   ownerAuthMiddleware,
   userRelaxedAuthMiddleware,
-  userStrictAuthMiddleware,
+  userStrictAuthMiddleware
 } from './auth'
 
 export { captchaMiddleware } from './captcha/captcha'
@@ -14,7 +14,7 @@ export { loggerMiddleware } from './logger'
 export {
   authRateLimiter,
   createRateLimiter,
-  generalRateLimiter,
+  generalRateLimiter
 } from './rate-limiter'
 
 export { requestValidator } from './request-validator'
@@ -25,7 +25,7 @@ export {
   authRequestSizeLimiter,
   createRequestSizeLimiter,
   fileUploadSizeLimiter,
-  generalRequestSizeLimiter,
+  generalRequestSizeLimiter
 } from './size-limiter'
 
 export { teamAccessMiddleware } from './team-access'

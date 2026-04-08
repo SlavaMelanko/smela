@@ -14,26 +14,27 @@ export interface UserInvitationEmailData {
   teamName?: string
 }
 
-export default class UserInvitationEmailRenderer
-implements EmailRenderer<UserInvitationEmailData> {
+export default class UserInvitationEmailRenderer implements EmailRenderer<UserInvitationEmailData> {
   async render(
     data: UserInvitationEmailData,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
+    metadata?: Metadata
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).userInvitation
     const styles = getThemeStyles(userPreferences?.theme)
 
     const subject = content.subject(data.teamName)
-    const { html, text } = await renderEmail(
-      UserInvitationEmail,
-      { data, content, styles, metadata },
-    )
+    const { html, text } = await renderEmail(UserInvitationEmail, {
+      data,
+      content,
+      styles,
+      metadata
+    })
 
     return {
       subject,
       html,
-      text,
+      text
     }
   }
 }

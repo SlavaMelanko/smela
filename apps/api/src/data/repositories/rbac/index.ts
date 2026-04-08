@@ -8,5 +8,5 @@ export const rbacRepo = {
   findInviters,
   findRole,
   findUserPermissions,
-  setUserPermissions,
+  setUserPermissions
 }

@@ -8,7 +8,10 @@ class BcryptHasher implements Hasher {
   }
 
   async hash(plain: string): Promise<string> {
-    return Bun.password.hash(plain, { algorithm: 'bcrypt', cost: this.saltRounds })
+    return Bun.password.hash(plain, {
+      algorithm: 'bcrypt',
+      cost: this.saltRounds
+    })
   }
 
   async compare(plain: string, hashed: string): Promise<boolean> {

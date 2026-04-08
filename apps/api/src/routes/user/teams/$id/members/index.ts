@@ -8,7 +8,7 @@ import { teamsMemberByIdRoute } from './$id'
 import {
   createMemberHandler,
   getMemberDefaultPermissionsHandler,
-  getTeamMembersHandler,
+  getTeamMembersHandler
 } from './handler'
 import { inviteMemberBodySchema, teamIdParamsSchema } from './schema'
 
@@ -18,7 +18,7 @@ teamsMembersRoute.get(
   '/',
   requestValidator('param', teamIdParamsSchema),
   teamAccessMiddleware,
-  getTeamMembersHandler,
+  getTeamMembersHandler
 )
 
 teamsMembersRoute.post(
@@ -26,14 +26,14 @@ teamsMembersRoute.post(
   requestValidator('param', teamIdParamsSchema),
   requestValidator('json', inviteMemberBodySchema),
   teamAccessMiddleware,
-  createMemberHandler,
+  createMemberHandler
 )
 
 teamsMembersRoute.get(
   '/default-permissions',
   requestValidator('param', teamIdParamsSchema),
   teamAccessMiddleware,
-  getMemberDefaultPermissionsHandler,
+  getMemberDefaultPermissionsHandler
 )
 
 teamsMembersRoute.route('/:memberId', teamsMemberByIdRoute)

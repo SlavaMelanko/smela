@@ -4,7 +4,7 @@ import { teamRepo } from '@/data'
 
 export const getTeams = async (
   params: TeamSearchParams,
-  pagination: PaginationParams,
+  pagination: PaginationParams
 ) => {
   return teamRepo.search(params, pagination)
 }

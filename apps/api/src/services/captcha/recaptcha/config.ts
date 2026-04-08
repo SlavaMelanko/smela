@@ -7,9 +7,9 @@ export const recaptchaConfig: Config = {
   path: '/recaptcha/api/siteverify',
   options: {
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
-    timeout: 5000,
+    timeout: 5000
   },
-  secret: env.CAPTCHA_SECRET_KEY,
+  secret: env.CAPTCHA_SECRET_KEY
 }

@@ -22,7 +22,7 @@ describe('Logout Handler', () => {
   beforeEach(async () => {
     mockBody = mock((body: any, status: number) => ({ body, status }))
     mockContext = {
-      body: mockBody,
+      body: mockBody
     } as any
 
     mockRefreshToken = 'refresh_token_123'
@@ -32,13 +32,13 @@ describe('Logout Handler', () => {
     await moduleMocker.mock('@/net/http', () => ({
       getRefreshCookie: mockGetRefreshCookie,
       deleteRefreshCookie: mockDeleteRefreshCookie,
-      HttpStatus,
+      HttpStatus
     }))
 
     mockLogout = mock(async () => {})
 
     await moduleMocker.mock('@/use-cases/auth/logout', () => ({
-      logout: mockLogout,
+      logout: mockLogout
     }))
   })
 
@@ -71,7 +71,9 @@ describe('Logout Handler', () => {
       throw new Error('Token revocation failed')
     })
 
-    expect(logoutHandler(mockContext)).rejects.toThrow('Token revocation failed')
+    expect(logoutHandler(mockContext)).rejects.toThrow(
+      'Token revocation failed'
+    )
     expect(mockDeleteRefreshCookie).not.toHaveBeenCalled()
   })
 

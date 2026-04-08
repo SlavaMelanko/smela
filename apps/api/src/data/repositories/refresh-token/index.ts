@@ -2,7 +2,7 @@ import {
   cleanupExpiredTokens,
   createRefreshToken,
   revokeByHash,
-  revokeByUserId,
+  revokeByUserId
 } from './mutations'
 import { findByTokenHash } from './queries'
 
@@ -13,5 +13,5 @@ export const refreshTokenRepo = {
   revokeByHash,
   revokeByUserId,
   cleanupExpired: cleanupExpiredTokens,
-  findByHash: findByTokenHash,
+  findByHash: findByTokenHash
 }

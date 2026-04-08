@@ -4,26 +4,34 @@ import type { Database } from '../../clients'
 import type { ActivePermissionRow, Inviter, UserRoleRecord } from './types'
 
 import { db } from '../../clients'
-import { permissionsTable, userPermissionsTable, userRoleTable, usersTable } from '../../schema'
+import {
+  permissionsTable,
+  userPermissionsTable,
+  userRoleTable,
+  usersTable
+} from '../../schema'
 import { expandPermissions } from './normalize'
 
 export const findAllPermissions = async (
-  tx?: Database,
+  tx?: Database
 ): Promise<(typeof permissionsTable.$inferSelect)[]> => {
   return (tx || db).select().from(permissionsTable)
 }
 
 export const findUserPermissions = async (
   userId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<ActivePermissionRow[]> => {
   const rows = await (tx || db)
     .select({
       action: permissionsTable.action,
-      resource: permissionsTable.resource,
+      resource: permissionsTable.resource
     })
     .from(userPermissionsTable)
-    .innerJoin(permissionsTable, eq(permissionsTable.id, userPermissionsTable.permissionId))
+    .innerJoin(
+      permissionsTable,
+      eq(permissionsTable.id, userPermissionsTable.permissionId)
+    )
     .where(eq(userPermissionsTable.userId, userId))
 
   return expandPermissions(rows)
@@ -31,7 +39,7 @@ export const findUserPermissions = async (
 
 export const findRole = async (
   userId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<UserRoleRecord | undefined> => {
   const executor = tx || db
 
@@ -45,7 +53,7 @@ export const findRole = async (
 
 export const findInviters = async (
   userIds: string[],
-  tx?: Database,
+  tx?: Database
 ): Promise<Map<string, Inviter>> => {
   if (userIds.length === 0) {
     return new Map()
@@ -57,15 +65,20 @@ export const findInviters = async (
       userId: userRoleTable.userId,
       inviterId: usersTable.id,
       firstName: usersTable.firstName,
-      lastName: usersTable.lastName,
+      lastName: usersTable.lastName
     })
     .from(userRoleTable)
     .innerJoin(usersTable, eq(userRoleTable.invitedBy, usersTable.id))
     .where(inArray(userRoleTable.userId, userIds))
 
-  return new Map(rows.map(r => [r.userId, {
-    id: r.inviterId,
-    firstName: r.firstName,
-    lastName: r.lastName,
-  }]))
+  return new Map(
+    rows.map(r => [
+      r.userId,
+      {
+        id: r.inviterId,
+        firstName: r.firstName,
+        lastName: r.lastName
+      }
+    ])
+  )
 }

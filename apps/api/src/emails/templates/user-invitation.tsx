@@ -1,9 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Link,
-  Text,
-} from '@react-email/components'
+import { Link, Text } from '@react-email/components'
 
 import type { UserInvitationContent } from '../content'
 import type { Metadata } from '../metadata'
@@ -30,7 +27,7 @@ const UserInvitationEmail = ({
   data,
   content: c,
   styles: s,
-  metadata,
+  metadata
 }: Props) => {
   const { firstName, inviteUrl, inviterName, teamName } = data
 
@@ -41,25 +38,17 @@ const UserInvitationEmail = ({
       styles={s}
       metadata={metadata}
     >
-      <Text style={s.text.body}>
-        {c.greeting(firstName)}
-      </Text>
+      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 
-      <Text style={s.text.body}>
-        {c.body(inviterName, teamName)}
-      </Text>
+      <Text style={s.text.body}>{c.body(inviterName, teamName)}</Text>
 
-      <Text style={s.text.body}>
-        {c.ctaInstruction}
-      </Text>
+      <Text style={s.text.body}>{c.ctaInstruction}</Text>
 
       <Link href={inviteUrl} style={s.link}>
         {c.ctaText}
       </Link>
 
-      <Text style={s.text.detail}>
-        {`• ${c.expiryNotice}`}
-      </Text>
+      <Text style={s.text.detail}>{`• ${c.expiryNotice}`}</Text>
 
       <Signature styles={s} signature={c.signature} />
     </BaseEmail>
@@ -71,10 +60,10 @@ UserInvitationEmail.PreviewProps = {
     firstName: 'Jason',
     inviteUrl: `http://localhost:5173/auth/accept-invite?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
     inviterName: 'Alice',
-    teamName: 'Acme Inc',
+    teamName: 'Acme Inc'
   },
   content: getContent('en').userInvitation,
-  styles: getThemeStyles('dark'),
+  styles: getThemeStyles('dark')
 } as Props
 
 export default UserInvitationEmail

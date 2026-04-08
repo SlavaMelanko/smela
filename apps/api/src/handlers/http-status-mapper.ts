@@ -40,7 +40,7 @@ const httpStatusMap: Record<ErrorCode, HttpStatus> = {
   [ErrorCode.RequestTooLarge]: HttpStatus.REQUEST_TOO_LONG,
   [ErrorCode.InvalidContentLength]: HttpStatus.BAD_REQUEST,
   [ErrorCode.ContentLengthMismatch]: HttpStatus.BAD_REQUEST,
-  [ErrorCode.BadRequest]: HttpStatus.BAD_REQUEST,
+  [ErrorCode.BadRequest]: HttpStatus.BAD_REQUEST
 }
 
 export const getHttpStatus = (code: ErrorCode): HttpStatus => {

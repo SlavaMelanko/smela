@@ -3,14 +3,14 @@ import {
   cancelAdminInvite,
   getAdmin,
   resendAdminInvite,
-  updateAdmin,
+  updateAdmin
 } from '@/use-cases/owner'
 
 import type {
   CancelAdminInviteCtx,
   GetAdminCtx,
   ResendAdminInviteCtx,
-  UpdateAdminCtx,
+  UpdateAdminCtx
 } from './schema'
 
 export const getAdminHandler = async (c: GetAdminCtx) => {

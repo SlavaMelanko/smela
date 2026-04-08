@@ -22,7 +22,9 @@ describe('AppError', () => {
 
     expect(error.code).toBe(ErrorCode.InvalidCredentials)
     expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(ErrorRegistry[ErrorCode.InvalidCredentials].error)
+    expect(error.message).toBe(
+      ErrorRegistry[ErrorCode.InvalidCredentials].error
+    )
   })
 
   test('should handle null custom message', () => {
@@ -31,7 +33,9 @@ describe('AppError', () => {
 
     expect(error.code).toBe(ErrorCode.InvalidCredentials)
     expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(ErrorRegistry[ErrorCode.InvalidCredentials].error)
+    expect(error.message).toBe(
+      ErrorRegistry[ErrorCode.InvalidCredentials].error
+    )
   })
 
   test('should handle empty string custom message', () => {
@@ -39,7 +43,9 @@ describe('AppError', () => {
 
     expect(error.code).toBe(ErrorCode.InvalidCredentials)
     expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(ErrorRegistry[ErrorCode.InvalidCredentials].error)
+    expect(error.message).toBe(
+      ErrorRegistry[ErrorCode.InvalidCredentials].error
+    )
   })
 
   test('should handle whitespace-only custom message', () => {
@@ -47,7 +53,9 @@ describe('AppError', () => {
 
     expect(error.code).toBe(ErrorCode.InvalidCredentials)
     expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(ErrorRegistry[ErrorCode.InvalidCredentials].error)
+    expect(error.message).toBe(
+      ErrorRegistry[ErrorCode.InvalidCredentials].error
+    )
   })
 
   test('should create AppError with custom message that overrides ErrorRegistry', () => {

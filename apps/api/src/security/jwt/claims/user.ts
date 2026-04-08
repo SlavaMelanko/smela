@@ -7,7 +7,7 @@ export const userClaimsSchema = z.object({
   email: z.email(),
   role: z.enum(Role),
   status: z.enum(UserStatus),
-  permissions: z.array(z.string()).optional(),
+  permissions: z.array(z.string()).optional()
 })
 
 export type UserClaims = z.infer<typeof userClaimsSchema>

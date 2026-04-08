@@ -18,15 +18,15 @@ describe('getDeviceInfo', () => {
           }
 
           return undefined
-        },
-      },
+        }
+      }
     } as Context
 
     const result = getDeviceInfo(mockContext)
 
     expect(result).toEqual({
       ipAddress: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 Test Browser',
+      userAgent: 'Mozilla/5.0 Test Browser'
     })
   })
 
@@ -42,30 +42,30 @@ describe('getDeviceInfo', () => {
           }
 
           return undefined
-        },
-      },
+        }
+      }
     } as Context
 
     const result = getDeviceInfo(mockContext)
 
     expect(result).toEqual({
       ipAddress: '203.0.113.1',
-      userAgent: 'Safari/537.36',
+      userAgent: 'Safari/537.36'
     })
   })
 
   test('returns null values when headers are missing', () => {
     const mockContext = {
       req: {
-        header: () => undefined,
-      },
+        header: () => undefined
+      }
     } as unknown as Context
 
     const result = getDeviceInfo(mockContext)
 
     expect(result).toEqual({
       ipAddress: null,
-      userAgent: null,
+      userAgent: null
     })
   })
 })
