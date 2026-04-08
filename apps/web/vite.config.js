@@ -1,17 +1,17 @@
+/* global process */
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import webpackStatsPlugin from 'rollup-plugin-webpack-stats'
-import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 
 import packageJson from './package.json' with { type: 'json' }
 
-// Simulate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const isProdOrStage =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
