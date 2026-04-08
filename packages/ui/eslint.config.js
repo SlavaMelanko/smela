@@ -1,10 +1,13 @@
-import { reactConfig, shadcnConfig, vitestConfig } from '@smela/eslint'
-import storybook from 'eslint-plugin-storybook'
+import {
+  reactConfig,
+  shadcnConfig,
+  storybookConfig,
+  vitestConfig
+} from '@smela/eslint'
 
 export default [
-  { ignores: ['dist'] },
   ...reactConfig,
   ...shadcnConfig,
   ...vitestConfig,
-  ...storybook.configs['flat/recommended']
+  ...storybookConfig
 ]

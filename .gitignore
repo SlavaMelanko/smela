@@ -26,6 +26,9 @@ coverage/
 # Playwright
 *.playwright*/
 
+# ESLint
+.eslintcache
+
 # TypeScript
 *.tsbuildinfo
 
