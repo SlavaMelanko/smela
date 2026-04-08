@@ -5,7 +5,7 @@ Starter kit for full-stack web apps
 ## 📋 Prerequisites
 
 - [Git](https://git-scm.com/)
-- [Bun](https://bun.sh/)
+- [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
 - [tmux](https://github.com/tmux/tmux/wiki)
 
 ## 💻 Apps
