@@ -9,7 +9,14 @@
     "format:fix": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "lint:staged": "lint-staged",
     "check": "bun run format:fix && bun run lint:fix"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ]
   },
   "exports": {
     "./config": "./src/config.js",

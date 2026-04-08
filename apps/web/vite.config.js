@@ -21,7 +21,7 @@ const isProdOrStage =
 // memoizes based on reference equality, so these mutations go undetected.
 // Excluding table components forces React to re-render them normally.
 const reactCompilerOptions = {
-  sources: filename => !filename.includes('src/components/table/')
+  sources: filename => !filename.includes('packages/ui/src/components/table/')
 }
 
 export default defineConfig({
@@ -85,7 +85,12 @@ export default defineConfig({
   ].filter(Boolean),
   resolve: {
     alias: {
+      '@ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@': path.resolve(__dirname, 'src')
     }
+  },
+  // Ensure Vite processes JSX from the @smela/ui workspace package
+  optimizeDeps: {
+    include: ['@smela/ui']
   }
 })

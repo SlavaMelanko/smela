@@ -8,9 +8,8 @@ import {
 } from '@smela/e2e/actions'
 import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
-
-import { HttpStatus } from '../src/lib/net'
-import { Role, UserStatus } from '../src/lib/types'
+import { HttpStatus } from '@smela/ui/lib/net'
+import { Role, UserStatus } from '@smela/ui/lib/types'
 import {
   LOGIN_PATH,
   ME_PATH,
@@ -19,7 +18,8 @@ import {
   RESET_PASSWORD_PATH,
   SIGNUP_PATH,
   VERIFY_EMAIL_PATH
-} from '../src/services/backend/paths'
+} from '@smela/ui/services/backend/paths'
+
 import { expect, test } from './config/fixtures'
 
 /**

@@ -1,38 +1,5 @@
 #!/bin/sh
+
 set -e
 
-STAGED_FILES=$(git diff --name-only --cached)
-
-API_STAGED=$(echo "$STAGED_FILES" | grep "^apps/api/" || true)
-WEB_STAGED=$(echo "$STAGED_FILES" | grep "^apps/web/" || true)
-
-# API pre-commit checks
-if [ -n "$API_STAGED" ]; then
-  echo "Running api type check..."
-  bun run --filter @smela/api tsc
-
-  echo "Running api linter..."
-  bun run --filter @smela/api lint:fix
-  git add -u apps/api/
-
-  API_STAGED_TS=$(echo "$API_STAGED" | grep -E '\.(ts|js)$' || true)
-  if [ -n "$API_STAGED_TS" ]; then
-    echo "Running api tests..."
-    bun run --filter @smela/api test
-  fi
-fi
-
-# Web pre-commit checks
-if [ -n "$WEB_STAGED" ]; then
-  echo "Sorting web locale files..."
-  bun run --filter @smela/web locales:sort
-
-  echo "Running web linter..."
-  bun run --filter @smela/web lint:staged
-
-  WEB_STAGED_JS=$(echo "$WEB_STAGED" | grep -E '\.(js|jsx|ts|tsx)$' || true)
-  if [ -n "$WEB_STAGED_JS" ]; then
-    echo "Running web tests..."
-    bun run --filter @smela/web test -- $WEB_STAGED_JS --passWithNoTests
-  fi
-fi
+bun run --filter '*' lint:staged

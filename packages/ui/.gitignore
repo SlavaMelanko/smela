@@ -1,0 +1,12 @@
+# Build output
+dist
+storybook-static
+*storybook.log
+
+# Environment — local values only, not for version control
+.env
+.env.local
+*.local
+
+# Coverage
+coverage

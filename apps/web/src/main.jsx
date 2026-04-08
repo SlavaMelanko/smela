@@ -1,11 +1,15 @@
 import './index.css'
 
+import { initErrorTracker } from '@smela/ui/services'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { initErrorTracker } from './services/errorTracker'
+import packageJson from '../package.json' with { type: 'json' }
 
-initErrorTracker()
+initErrorTracker({
+  name: packageJson.name,
+  version: packageJson.version
+})
 
 import './i18n'
 

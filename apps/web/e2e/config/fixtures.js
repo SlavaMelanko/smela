@@ -3,9 +3,8 @@ import { fillLoginFormAndSubmit } from '@smela/e2e/actions'
 import { waitForApiCall } from '@smela/e2e/api'
 import { EmailService } from '@smela/e2e/email'
 import { resources } from '@smela/i18n/resources'
-
-import { HttpStatus } from '../../src/lib/net'
-import { LOGIN_PATH } from '../../src/services/backend/paths'
+import { HttpStatus } from '@smela/ui/lib/net'
+import { LOGIN_PATH } from '@smela/ui/services/backend/paths'
 
 export const test = base.extend({
   t: [resources.en.translation, { scope: 'worker' }],
