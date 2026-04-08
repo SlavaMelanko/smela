@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
-    "paths": { "@ui/*": ["src/*"] }
+    "paths": { "@ui/*": ["./src/*"] }
   },
   "include": ["src"]
 }
