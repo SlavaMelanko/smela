@@ -7,6 +7,7 @@ import globals from 'globals'
 import { basePlugins, baseRules } from './base.js'
 
 export const reactConfig = [
+  { ignores: ['dist', 'build', 'coverage'] },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -42,7 +43,7 @@ export const reactConfig = [
     },
     settings: {
       react: {
-        version: 'detect'
+        version: '19'
       }
     }
   }

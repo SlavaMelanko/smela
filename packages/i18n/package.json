@@ -7,8 +7,8 @@
     "clean": "rm -rf node_modules",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix",
     "lint:staged": "lint-staged",
     "locales:sort": "sort-json src/resources/*.json",
     "check": "bun run locales:sort && bun run format:fix && bun run lint:fix",
@@ -31,7 +31,6 @@
   "devDependencies": {
     "@smela/eslint": "workspace:*",
     "chokidar": "^5.0.0",
-    "eslint": "^9.39.2",
     "sort-json": "^2.0.1"
   },
   "peerDependencies": {

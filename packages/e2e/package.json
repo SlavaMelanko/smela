@@ -7,8 +7,8 @@
     "clean": "rm -rf node_modules",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix",
     "lint:staged": "lint-staged",
     "check": "bun run format:fix && bun run lint:fix"
   },
@@ -28,8 +28,7 @@
     "mailisk": "^2.2.2"
   },
   "devDependencies": {
-    "@smela/eslint": "workspace:*",
-    "eslint": "^9.39.2"
+    "@smela/eslint": "workspace:*"
   },
   "peerDependencies": {
     "@playwright/test": "^1.58.2"
