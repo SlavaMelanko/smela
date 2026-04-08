@@ -2,7 +2,7 @@
   "name": "@smela/api",
   "version": "2026.03.26",
   "scripts": {
-    "clean": "bun pm cache rm && rm -rf node_modules",
+    "clean": "rm -rf node_modules",
     "reinstall": "bun clean && bun install",
     "dev": "bun --watch src/app.ts",
     "build": "NODE_ENV=production bun build src/app.ts --outdir dist --target bun --minify",
