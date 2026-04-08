@@ -12,5 +12,5 @@ export const acceptInviteRoute = new Hono<AppContext>()
 acceptInviteRoute.post(
   '/accept-invite',
   requestValidator('json', acceptInviteBodySchema),
-  acceptInviteHandler,
+  acceptInviteHandler
 )

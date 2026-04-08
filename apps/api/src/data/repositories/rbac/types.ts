@@ -1,6 +1,10 @@
 import type { Role } from '@/types'
 
-import type { permissionsTable, userPermissionsTable, userRoleTable } from '../../schema'
+import type {
+  permissionsTable,
+  userPermissionsTable,
+  userRoleTable
+} from '../../schema'
 
 // Database types
 export type UserPermissionRecord = typeof userPermissionsTable.$inferSelect
@@ -14,7 +18,10 @@ export interface CreateUserRoleInput {
 }
 
 // Public-facing / API-return types
-export type ActivePermissionRow = Pick<typeof permissionsTable.$inferSelect, 'action' | 'resource'>
+export type ActivePermissionRow = Pick<
+  typeof permissionsTable.$inferSelect,
+  'action' | 'resource'
+>
 
 export interface Inviter {
   id: string

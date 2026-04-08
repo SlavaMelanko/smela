@@ -5,10 +5,14 @@ import Resource from '@/types/resource'
 
 import type { ActivePermissionRow } from './types'
 
-export type NormalizedPermissions = Partial<Record<Resource, { view?: boolean, manage: boolean }>>
+export type NormalizedPermissions = Partial<
+  Record<Resource, { view?: boolean; manage: boolean }>
+>
 
 // Before writing: collapse view + manage → manage only
-export const collapsePermissions = (permissions: PermissionsInput): NormalizedPermissions => {
+export const collapsePermissions = (
+  permissions: PermissionsInput
+): NormalizedPermissions => {
   const result: NormalizedPermissions = { ...permissions }
 
   for (const resource of Object.values(Resource)) {
@@ -22,7 +26,9 @@ export const collapsePermissions = (permissions: PermissionsInput): NormalizedPe
 }
 
 // After reading: expand manage → derive synthetic view rows
-export const expandPermissions = (rows: ActivePermissionRow[]): ActivePermissionRow[] => {
+export const expandPermissions = (
+  rows: ActivePermissionRow[]
+): ActivePermissionRow[] => {
   const derived: ActivePermissionRow[] = rows
     .filter(r => r.action === Action.Manage)
     .map(r => ({ action: Action.View, resource: r.resource }))

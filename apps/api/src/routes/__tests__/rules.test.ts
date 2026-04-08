@@ -7,19 +7,25 @@ import { rules } from '../rules'
 describe('rules.permissions', () => {
   describe('valid boolean values', () => {
     it('should accept true for both flags', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: true, manage: true } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: true, manage: true }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: true, manage: true })
     })
 
     it('should accept false for both flags', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: false, manage: false } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: false, manage: false }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: false, manage: false })
     })
 
     it('should accept mixed true/false flags', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: true, manage: false } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: true, manage: false }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: true, manage: false })
     })
@@ -27,19 +33,25 @@ describe('rules.permissions', () => {
 
   describe('null coercion', () => {
     it('should coerce null view to false', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: null, manage: true } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: null, manage: true }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: false, manage: true })
     })
 
     it('should coerce null manage to false', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: true, manage: null } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: true, manage: null }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: true, manage: false })
     })
 
     it('should coerce both null flags to false', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: null, manage: null } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: null, manage: null }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: false, manage: false })
     })
@@ -47,13 +59,17 @@ describe('rules.permissions', () => {
 
   describe('undefined coercion', () => {
     it('should coerce undefined view to false', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { manage: true } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { manage: true }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: false, manage: true })
     })
 
     it('should coerce undefined manage to false', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: true } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: true }
+      })
 
       expect(result[Resource.Users]).toEqual({ view: true, manage: false })
     })
@@ -67,7 +83,9 @@ describe('rules.permissions', () => {
 
   describe('optional resource', () => {
     it('should allow a resource to be omitted when others are present', () => {
-      const result = rules.permissions.parse({ [Resource.Users]: { view: true, manage: false } })
+      const result = rules.permissions.parse({
+        [Resource.Users]: { view: true, manage: false }
+      })
 
       expect(result[Resource.Teams]).toBeUndefined()
     })
@@ -75,7 +93,7 @@ describe('rules.permissions', () => {
     it('should allow partial resource coverage across multiple resources', () => {
       const result = rules.permissions.parse({
         [Resource.Users]: { view: true, manage: false },
-        [Resource.Teams]: { view: null },
+        [Resource.Teams]: { view: null }
       })
 
       expect(result[Resource.Users]).toEqual({ view: true, manage: false })
@@ -91,19 +109,21 @@ describe('rules.permissions', () => {
 
     it('should reject non-boolean view value', () => {
       expect(() =>
-        rules.permissions.parse({ [Resource.Users]: { view: 'yes', manage: true } }),
+        rules.permissions.parse({
+          [Resource.Users]: { view: 'yes', manage: true }
+        })
       ).toThrow()
     })
 
     it('should reject non-boolean manage value', () => {
       expect(() =>
-        rules.permissions.parse({ [Resource.Users]: { view: true, manage: 1 } }),
+        rules.permissions.parse({ [Resource.Users]: { view: true, manage: 1 } })
       ).toThrow()
     })
 
     it('should reject a non-object resource value', () => {
       expect(() =>
-        rules.permissions.parse({ [Resource.Users]: 'read' }),
+        rules.permissions.parse({ [Resource.Users]: 'read' })
       ).toThrow()
     })
   })

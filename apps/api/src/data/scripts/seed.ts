@@ -16,7 +16,15 @@ import { hashPassword } from '@/security/password'
 import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
-import { authTable, permissionsTable, teamMembersTable, teamsTable, userPermissionsTable, userRoleTable, usersTable } from '../schema'
+import {
+  authTable,
+  permissionsTable,
+  teamMembersTable,
+  teamsTable,
+  userPermissionsTable,
+  userRoleTable,
+  usersTable
+} from '../schema'
 
 // Seed faker for consistent data across runs
 faker.seed(42)
@@ -36,7 +44,7 @@ const seedPermissions = async () => {
   for (const resource of allResources) {
     for (const action of allActions) {
       const permissionExists = existingPermissions.some(
-        p => p.resource === resource && p.action === action,
+        p => p.resource === resource && p.action === action
       )
 
       if (!permissionExists) {
@@ -58,23 +66,22 @@ const seedPermissions = async () => {
 
 const setUserPermissions = async (
   userId: string,
-  permissions: { action: Action, resource: Resource }[],
+  permissions: { action: Action; resource: Resource }[]
 ) => {
   const allPermissions = await db.select().from(permissionsTable)
 
   const toInsert = permissions
     .map(({ action, resource }) => {
-      const perm = allPermissions.find(p => p.action === action && p.resource === resource)
+      const perm = allPermissions.find(
+        p => p.action === action && p.resource === resource
+      )
 
       return perm ? { userId, permissionId: perm.id } : null
     })
-    .filter(Boolean) as { userId: string, permissionId: number }[]
+    .filter(Boolean) as { userId: string; permissionId: number }[]
 
   if (toInsert.length > 0) {
-    await db
-      .insert(userPermissionsTable)
-      .values(toInsert)
-      .onConflictDoNothing()
+    await db.insert(userPermissionsTable).values(toInsert).onConflictDoNothing()
   }
 }
 
@@ -83,13 +90,13 @@ const seedTeams = async () => {
     {
       name: faker.company.name(),
       website: faker.internet.url(),
-      description: faker.company.catchPhrase(),
+      description: faker.company.catchPhrase()
     },
     {
       name: faker.company.name(),
       website: faker.internet.url(),
-      description: faker.company.catchPhrase(),
-    },
+      description: faker.company.catchPhrase()
+    }
   ]
 
   let secondTeamId: string | null = null
@@ -110,11 +117,14 @@ const seedTeams = async () => {
       continue
     }
 
-    const [createdTeam] = await db.insert(teamsTable).values({
-      name: team.name,
-      website: team.website,
-      description: team.description,
-    }).returning({ id: teamsTable.id })
+    const [createdTeam] = await db
+      .insert(teamsTable)
+      .values({
+        name: team.name,
+        website: team.website,
+        description: team.description
+      })
+      .returning({ id: teamsTable.id })
 
     console.log(`✅ ${team.name} team seeded`)
 
@@ -135,7 +145,7 @@ const seedSystemUsers = async () => {
     password: string
     role: Role
     status: UserStatus
-    permissions: { action: Action, resource: Resource }[]
+    permissions: { action: Action; resource: Resource }[]
   }[] = [
     {
       firstName: 'Slava',
@@ -147,8 +157,8 @@ const seedSystemUsers = async () => {
       permissions: [
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams },
-      ],
+        { action: Action.Manage, resource: Resource.Teams }
+      ]
     },
     {
       firstName: 'Slava',
@@ -159,9 +169,9 @@ const seedSystemUsers = async () => {
       status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams },
-      ],
-    },
+        { action: Action.Manage, resource: Resource.Teams }
+      ]
+    }
   ]
 
   for (const user of systemUsers) {
@@ -183,7 +193,7 @@ const seedSystemUsers = async () => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        status: user.status,
+        status: user.status
       })
       .returning({ id: usersTable.id })
 
@@ -191,12 +201,12 @@ const seedSystemUsers = async () => {
       userId: createdUser.id,
       provider: AuthProvider.Local,
       identifier: user.email,
-      passwordHash: hashedPassword,
+      passwordHash: hashedPassword
     })
 
     await db.insert(userRoleTable).values({
       userId: createdUser.id,
-      role: user.role,
+      role: user.role
     })
 
     await setUserPermissions(createdUser.id, user.permissions)
@@ -217,8 +227,8 @@ const seedTestUsers = async (teamId: string) => {
       position: 'Developer',
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams },
-      ],
+        { action: Action.Manage, resource: Resource.Teams }
+      ]
     },
     {
       firstName: faker.person.firstName(),
@@ -229,9 +239,9 @@ const seedTestUsers = async (teamId: string) => {
       position: 'Designer',
       permissions: [
         { action: Action.View, resource: Resource.Users },
-        { action: Action.View, resource: Resource.Teams },
-      ],
-    },
+        { action: Action.View, resource: Resource.Teams }
+      ]
+    }
   ]
 
   for (const user of testUsers) {
@@ -251,7 +261,7 @@ const seedTestUsers = async (teamId: string) => {
         await db.insert(teamMembersTable).values({
           userId: existingUser.id,
           teamId,
-          position: user.position,
+          position: user.position
         })
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
       } else {
@@ -269,7 +279,7 @@ const seedTestUsers = async (teamId: string) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        status: user.status,
+        status: user.status
       })
       .returning({ id: usersTable.id })
 
@@ -277,13 +287,13 @@ const seedTestUsers = async (teamId: string) => {
       userId: createdUser.id,
       provider: AuthProvider.Local,
       identifier: user.email,
-      passwordHash: hashedPassword,
+      passwordHash: hashedPassword
     })
 
     await db.insert(teamMembersTable).values({
       userId: createdUser.id,
       teamId,
-      position: user.position,
+      position: user.position
     })
 
     await setUserPermissions(createdUser.id, user.permissions)
@@ -299,7 +309,7 @@ const seed = async () => {
   await seedTestUsers(teamId)
 }
 
-seed().catch((err) => {
+seed().catch(err => {
   console.error('❌ Failed to seed database:', err)
   process.exit(1)
 })

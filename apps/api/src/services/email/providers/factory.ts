@@ -17,7 +17,9 @@ const getProviderType = (type?: EmailProviderType): EmailProviderType => {
   return env.EMAIL_RESEND_API_KEY ? 'resend' : 'ethereal'
 }
 
-export const createEmailProvider = (type?: EmailProviderType): EmailProvider => {
+export const createEmailProvider = (
+  type?: EmailProviderType
+): EmailProvider => {
   const providerType = getProviderType(type)
 
   logger.info(`📧 Email provider: ${providerType}`)
@@ -28,7 +30,7 @@ export const createEmailProvider = (type?: EmailProviderType): EmailProvider => 
         env.EMAIL_ETHEREAL_HOST,
         env.EMAIL_ETHEREAL_PORT,
         env.EMAIL_ETHEREAL_USERNAME,
-        env.EMAIL_ETHEREAL_PASSWORD,
+        env.EMAIL_ETHEREAL_PASSWORD
       )
     }
     case 'resend': {

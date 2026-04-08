@@ -12,5 +12,5 @@ export const checkInviteRoute = new Hono<AppContext>()
 checkInviteRoute.get(
   '/check-invite',
   requestValidator('query', checkInviteQuerySchema),
-  checkInviteHandler,
+  checkInviteHandler
 )

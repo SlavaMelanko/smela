@@ -15,33 +15,47 @@ const createNewUser = async (
   firstName: string,
   lastName: string | undefined,
   email: string,
-  password: string,
+  password: string
 ) => {
   const hashedPassword = await hashPassword(password)
 
-  const { type, token: verificationToken, expiresAt } = generateToken(TokenType.EmailVerification)
+  const {
+    type,
+    token: verificationToken,
+    expiresAt
+  } = generateToken(TokenType.EmailVerification)
 
-  const newUser = await db.transaction(async (tx) => {
-    const newUser = await userRepo.create({
-      firstName,
-      lastName,
-      email,
-      status: UserStatus.New,
-    }, tx)
+  const newUser = await db.transaction(async tx => {
+    const newUser = await userRepo.create(
+      {
+        firstName,
+        lastName,
+        email,
+        status: UserStatus.New
+      },
+      tx
+    )
 
-    await authRepo.create({
-      userId: newUser.id,
-      provider: AuthProvider.Local,
-      identifier: email,
-      passwordHash: hashedPassword,
-    }, tx)
+    await authRepo.create(
+      {
+        userId: newUser.id,
+        provider: AuthProvider.Local,
+        identifier: email,
+        passwordHash: hashedPassword
+      },
+      tx
+    )
 
-    await tokenRepo.issue(newUser.id, {
-      userId: newUser.id,
-      type,
-      token: verificationToken,
-      expiresAt,
-    }, tx)
+    await tokenRepo.issue(
+      newUser.id,
+      {
+        userId: newUser.id,
+        type,
+        token: verificationToken,
+        expiresAt
+      },
+      tx
+    )
 
     return newUser
   })
@@ -59,7 +73,7 @@ export interface SignupInput {
 export const signUpWithEmail = async (
   { firstName, lastName, email, password }: SignupInput,
   deviceInfo: DeviceInfo,
-  preferences?: UserPreferences,
+  preferences?: UserPreferences
 ) => {
   // Check if user exists (outside transaction for fast fail)
   const existingUser = await userRepo.findByEmail(email)
@@ -73,23 +87,31 @@ export const signUpWithEmail = async (
     firstName,
     lastName,
     email,
-    password,
+    password
   )
 
   // Send email verification (fire-and-forget, outside transaction)
-  emailAgent.sendEmailVerificationEmail(
-    newUser.firstName,
-    newUser.email,
-    verificationToken,
-    preferences,
-  ).catch((error: unknown) => {
-    logger.error({ error }, `Failed to send email verification email to ${newUser.email}`)
-  })
+  emailAgent
+    .sendEmailVerificationEmail(
+      newUser.firstName,
+      newUser.email,
+      verificationToken,
+      preferences
+    )
+    .catch((error: unknown) => {
+      logger.error(
+        { error },
+        `Failed to send email verification email to ${newUser.email}`
+      )
+    })
 
-  const [accessToken, refreshToken] = await createAuthTokens(newUser, deviceInfo)
+  const [accessToken, refreshToken] = await createAuthTokens(
+    newUser,
+    deviceInfo
+  )
 
   return {
     data: { user: newUser, accessToken },
-    refreshToken,
+    refreshToken
   }
 }

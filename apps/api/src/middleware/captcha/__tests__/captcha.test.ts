@@ -14,13 +14,13 @@ import { invalidCaptchaTokens } from './captcha.mock'
 // Simple schema for test validation (mirrors what requestValidator would validate)
 const captchaSchema = z.object({
   captcha: z.object({
-    token: z.string(),
-  }),
+    token: z.string()
+  })
 })
 
 // Extended schema to test passthrough of other fields
 const extendedSchema = captchaSchema.extend({
-  otherField: z.string().optional(),
+  otherField: z.string().optional()
 })
 
 describe('Captcha Middleware', () => {
@@ -34,8 +34,8 @@ describe('Captcha Middleware', () => {
 
       await moduleMocker.mock('@/services', () => ({
         createCaptchaVerifier: mock(() => ({
-          validate: mockCaptchaValidate,
-        })),
+          validate: mockCaptchaValidate
+        }))
       }))
     })
 
@@ -46,12 +46,17 @@ describe('Captcha Middleware', () => {
     it('should allow request to proceed when captcha is valid', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), c => c.json({ success: true }))
+      app.post(
+        '/test',
+        zValidator('json', captchaSchema),
+        captchaMiddleware(),
+        c => c.json({ success: true })
+      )
 
       const response = await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'valid-token-123' } }),
+        body: JSON.stringify({ captcha: { token: 'valid-token-123' } })
       })
 
       expect(response.status).toBe(HttpStatus.OK)
@@ -65,12 +70,20 @@ describe('Captcha Middleware', () => {
     it('should extract captcha token from request body', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', extendedSchema), captchaMiddleware(), c => c.json({ success: true }))
+      app.post(
+        '/test',
+        zValidator('json', extendedSchema),
+        captchaMiddleware(),
+        c => c.json({ success: true })
+      )
 
       await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'test-token' }, otherField: 'data' }),
+        body: JSON.stringify({
+          captcha: { token: 'test-token' },
+          otherField: 'data'
+        })
       })
 
       expect(mockCaptchaValidate).toHaveBeenCalledWith('test-token')
@@ -85,8 +98,8 @@ describe('Captcha Middleware', () => {
 
       await moduleMocker.mock('@/services', () => ({
         createCaptchaVerifier: mock(() => ({
-          validate: mockCaptchaValidate,
-        })),
+          validate: mockCaptchaValidate
+        }))
       }))
     })
 
@@ -97,12 +110,17 @@ describe('Captcha Middleware', () => {
     it('should reject request with BAD_REQUEST status', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), c => c.json({ success: true }))
+      app.post(
+        '/test',
+        zValidator('json', captchaSchema),
+        captchaMiddleware(),
+        c => c.json({ success: true })
+      )
 
       const response = await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } }),
+        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
       })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
@@ -113,12 +131,17 @@ describe('Captcha Middleware', () => {
     it('should return error response with correct error code', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), c => c.json({ success: true }))
+      app.post(
+        '/test',
+        zValidator('json', captchaSchema),
+        captchaMiddleware(),
+        c => c.json({ success: true })
+      )
 
       const response = await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } }),
+        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
       })
 
       const json = await response.json()
@@ -130,16 +153,21 @@ describe('Captcha Middleware', () => {
       const mockHandler = mock(() => {})
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), (c) => {
-        mockHandler()
+      app.post(
+        '/test',
+        zValidator('json', captchaSchema),
+        captchaMiddleware(),
+        c => {
+          mockHandler()
 
-        return c.json({ success: true })
-      })
+          return c.json({ success: true })
+        }
+      )
 
       await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } }),
+        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
       })
 
       expect(mockHandler).not.toHaveBeenCalled()
@@ -154,8 +182,8 @@ describe('Captcha Middleware', () => {
 
       await moduleMocker.mock('@/services', () => ({
         createCaptchaVerifier: mock(() => ({
-          validate: mockCaptchaValidate,
-        })),
+          validate: mockCaptchaValidate
+        }))
       }))
     })
 
@@ -166,12 +194,17 @@ describe('Captcha Middleware', () => {
     it('should convert unexpected errors to CaptchaValidationFailed', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), c => c.json({ success: true }))
+      app.post(
+        '/test',
+        zValidator('json', captchaSchema),
+        captchaMiddleware(),
+        c => c.json({ success: true })
+      )
 
       const response = await app.request('/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'any-token' } }),
+        body: JSON.stringify({ captcha: { token: 'any-token' } })
       })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
@@ -189,8 +222,8 @@ describe('Captcha Middleware', () => {
 
       await moduleMocker.mock('@/services', () => ({
         createCaptchaVerifier: mock(() => ({
-          validate: mockCaptchaValidate,
-        })),
+          validate: mockCaptchaValidate
+        }))
       }))
     })
 
@@ -202,12 +235,17 @@ describe('Captcha Middleware', () => {
       it(`should handle ${name} token`, async () => {
         const app = new Hono()
         app.onError(onError)
-        app.post('/test', zValidator('json', captchaSchema), captchaMiddleware(), c => c.json({ success: true }))
+        app.post(
+          '/test',
+          zValidator('json', captchaSchema),
+          captchaMiddleware(),
+          c => c.json({ success: true })
+        )
 
         await app.request('/test', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ captcha: { token } }),
+          body: JSON.stringify({ captcha: { token } })
         })
 
         expect(mockCaptchaValidate).toHaveBeenCalledWith(token)

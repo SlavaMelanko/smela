@@ -19,35 +19,41 @@ import { extractAccessToken } from './access-token'
  */
 export const createAuthMiddleware = (
   statusValidator: (status: UserStatus) => boolean,
-  roleValidator: (role: Role) => boolean,
-): MiddlewareHandler<AppContext> => createMiddleware<AppContext>(async (c, next) => {
-  const accessToken = extractAccessToken(c)
+  roleValidator: (role: Role) => boolean
+): MiddlewareHandler<AppContext> =>
+  createMiddleware<AppContext>(async (c, next) => {
+    const accessToken = extractAccessToken(c)
 
-  if (!accessToken) {
-    throw new AppError(ErrorCode.Unauthorized, 'No authentication token provided')
-  }
-
-  try {
-    const userClaims = await verifyJwt(accessToken, { secret: env.JWT_SECRET })
-
-    if (!statusValidator(userClaims.status)) {
-      throw new AppError(ErrorCode.Forbidden, 'UserStatus validation failure')
+    if (!accessToken) {
+      throw new AppError(
+        ErrorCode.Unauthorized,
+        'No authentication token provided'
+      )
     }
 
-    if (!roleValidator(userClaims.role)) {
-      throw new AppError(ErrorCode.Forbidden, 'Role validation failure')
+    try {
+      const userClaims = await verifyJwt(accessToken, {
+        secret: env.JWT_SECRET
+      })
+
+      if (!statusValidator(userClaims.status)) {
+        throw new AppError(ErrorCode.Forbidden, 'UserStatus validation failure')
+      }
+
+      if (!roleValidator(userClaims.role)) {
+        throw new AppError(ErrorCode.Forbidden, 'Role validation failure')
+      }
+
+      c.set('user', userClaims)
+
+      getErrorTracker().setUser({ id: userClaims.id })
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error
+      }
+
+      throw new AppError(ErrorCode.Unauthorized, 'Invalid authentication token')
     }
 
-    c.set('user', userClaims)
-
-    getErrorTracker().setUser({ id: userClaims.id })
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error
-    }
-
-    throw new AppError(ErrorCode.Unauthorized, 'Invalid authentication token')
-  }
-
-  return next()
-})
+    return next()
+  })

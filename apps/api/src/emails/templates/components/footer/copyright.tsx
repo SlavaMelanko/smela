@@ -1,8 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Text,
-} from '@react-email/components'
+import { Text } from '@react-email/components'
 
 import type { ThemeStyles } from '../../../styles'
 
@@ -16,16 +14,12 @@ interface Props {
 const Copyright = ({ styles, companyName }: Props): React.ReactElement => {
   const year = new Date().getFullYear()
 
-  return (
-    <Text style={styles.text.legal}>
-      {`© ${year} ${companyName}`}
-    </Text>
-  )
+  return <Text style={styles.text.legal}>{`© ${year} ${companyName}`}</Text>
 }
 
 Copyright.PreviewProps = {
   styles: getThemeStyles('light'),
-  companyName: 'Company Name',
+  companyName: 'Company Name'
 } as Props
 
 export default Copyright

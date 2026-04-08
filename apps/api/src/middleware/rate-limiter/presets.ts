@@ -12,12 +12,12 @@ import { createRateLimiter } from './core'
  */
 export const authRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: (isDevOrTestEnv()) ? 1_000 : 5,
+  limit: isDevOrTestEnv() ? 1_000 : 5,
   message: 'Too many authentication attempts, please try again later.',
-  skip: (c) => {
+  skip: c => {
     // Skip rate limiting for test environment if special header is present
-    return (isDevOrTestEnv()) && c.req.header('X-Skip-Rate-Limit') === 'true'
-  },
+    return isDevOrTestEnv() && c.req.header('X-Skip-Rate-Limit') === 'true'
+  }
 })
 
 /**
@@ -30,9 +30,9 @@ export const authRateLimiter = createRateLimiter({
  */
 export const generalRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: (isDevOrTestEnv()) ? 1_000 : 100,
-  skip: (c) => {
+  limit: isDevOrTestEnv() ? 1_000 : 100,
+  skip: c => {
     // Skip rate limiting for test environment if special header is present
-    return (isDevOrTestEnv()) && c.req.header('X-Skip-Rate-Limit') === 'true'
-  },
+    return isDevOrTestEnv() && c.req.header('X-Skip-Rate-Limit') === 'true'
+  }
 })

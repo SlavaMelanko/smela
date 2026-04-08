@@ -13,26 +13,27 @@ export interface EmailVerificationEmailData {
   verificationUrl: string
 }
 
-export default class EmailVerificationEmailRenderer
-implements EmailRenderer<EmailVerificationEmailData> {
+export default class EmailVerificationEmailRenderer implements EmailRenderer<EmailVerificationEmailData> {
   async render(
     data: EmailVerificationEmailData,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
+    metadata?: Metadata
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).emailVerification
     const styles = getThemeStyles(userPreferences?.theme)
 
     const subject = content.subject
-    const { html, text } = await renderEmail(
-      EmailVerificationEmail,
-      { data, content, styles, metadata },
-    )
+    const { html, text } = await renderEmail(EmailVerificationEmail, {
+      data,
+      content,
+      styles,
+      metadata
+    })
 
     return {
       subject,
       html,
-      text,
+      text
     }
   }
 }

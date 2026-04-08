@@ -13,8 +13,10 @@ import { getHttpStatus } from './http-status-mapper'
 
 const getErrorCode = (err: unknown): ErrorCode => {
   if (err instanceof HTTPException) {
-    if (err.status >= HttpStatus.BAD_REQUEST
-      && err.status < HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (
+      err.status >= HttpStatus.BAD_REQUEST &&
+      err.status < HttpStatus.INTERNAL_SERVER_ERROR
+    ) {
       return ErrorCode.BadRequest
     }
 
@@ -37,7 +39,8 @@ const onError: ErrorHandler = (err, c) => {
 
   const code = getErrorCode(err)
   const status = getHttpStatus(code)
-  const error = err.message || ErrorRegistry[code].error || getReasonPhrase(status)
+  const error =
+    err.message || ErrorRegistry[code].error || getReasonPhrase(status)
   const stack = isDevEnv() ? err.stack : undefined
 
   return c.json(
@@ -45,9 +48,9 @@ const onError: ErrorHandler = (err, c) => {
       name: APP_ERROR_NAME,
       code,
       error,
-      stack,
+      stack
     },
-    status as ContentfulStatusCode,
+    status as ContentfulStatusCode
   )
 }
 

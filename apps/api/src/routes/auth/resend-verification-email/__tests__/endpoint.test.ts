@@ -3,7 +3,10 @@ import type { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, ModuleMocker, post } from '@/__tests__'
-import { mockCaptchaSuccess, VALID_CAPTCHA_TOKEN } from '@/middleware/captcha/__tests__'
+import {
+  mockCaptchaSuccess,
+  VALID_CAPTCHA_TOKEN
+} from '@/middleware/captcha/__tests__'
 import { HttpStatus } from '@/net/http'
 
 import { resendVerificationEmailRoute } from '../index'
@@ -19,9 +22,12 @@ describe('Resend Verification Email Endpoint', () => {
   beforeEach(async () => {
     mockResendVerificationEmail = mock(async () => ({ success: true }))
 
-    await moduleMocker.mock('@/use-cases/auth/resend-verification-email', () => ({
-      resendVerificationEmail: mockResendVerificationEmail,
-    }))
+    await moduleMocker.mock(
+      '@/use-cases/auth/resend-verification-email',
+      () => ({
+        resendVerificationEmail: mockResendVerificationEmail
+      })
+    )
 
     await mockCaptchaSuccess()
 
@@ -36,7 +42,7 @@ describe('Resend Verification Email Endpoint', () => {
     it('should return success when verification email is resent', async () => {
       const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, {
         email: 'test@example.com',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.ACCEPTED)
@@ -47,7 +53,7 @@ describe('Resend Verification Email Endpoint', () => {
       expect(mockResendVerificationEmail).toHaveBeenCalledTimes(1)
       expect(mockResendVerificationEmail).toHaveBeenCalledWith(
         { email: 'test@example.com' },
-        undefined,
+        undefined
       )
     })
 
@@ -55,14 +61,14 @@ describe('Resend Verification Email Endpoint', () => {
       const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN },
-        preferences: { locale: 'uk', theme: 'dark' },
+        preferences: { locale: 'uk', theme: 'dark' }
       })
 
       expect(res.status).toBe(HttpStatus.ACCEPTED)
 
       expect(mockResendVerificationEmail).toHaveBeenCalledWith(
         { email: 'test@example.com' },
-        { locale: 'uk', theme: 'dark' },
+        { locale: 'uk', theme: 'dark' }
       )
     })
 
@@ -73,7 +79,7 @@ describe('Resend Verification Email Endpoint', () => {
 
       const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, {
         email: 'test@example.com',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -82,15 +88,28 @@ describe('Resend Verification Email Endpoint', () => {
 
     it('should validate request format and required fields', async () => {
       const invalidRequests = [
-        { name: 'empty email', body: { email: '', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'invalid email format', body: { email: 'invalid', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'missing email field', body: { captcha: { token: VALID_CAPTCHA_TOKEN } } },
+        {
+          name: 'empty email',
+          body: { email: '', captcha: { token: VALID_CAPTCHA_TOKEN } }
+        },
+        {
+          name: 'invalid email format',
+          body: { email: 'invalid', captcha: { token: VALID_CAPTCHA_TOKEN } }
+        },
+        {
+          name: 'missing email field',
+          body: { captcha: { token: VALID_CAPTCHA_TOKEN } }
+        },
         { name: 'missing captcha', body: { email: 'test@example.com' } },
-        { name: 'missing all fields', body: {} },
+        { name: 'missing all fields', body: {} }
       ]
 
       for (const testCase of invalidRequests) {
-        const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, testCase.body)
+        const res = await post(
+          app,
+          RESEND_VERIFICATION_EMAIL_URL,
+          testCase.body
+        )
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)
         const json = await res.json()
@@ -99,14 +118,38 @@ describe('Resend Verification Email Endpoint', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
-        { name: 'missing Content-Type', headers: {}, body: { email: 'test@example.com', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'malformed JSON', headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
-        { name: 'missing request body', headers: { 'Content-Type': 'application/json' }, body: '' },
+      const scenarios: Array<{
+        name: string
+        headers?: Record<string, string>
+        body?: any
+      }> = [
+        {
+          name: 'missing Content-Type',
+          headers: {},
+          body: {
+            email: 'test@example.com',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'malformed JSON',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{ invalid json'
+        },
+        {
+          name: 'missing request body',
+          headers: { 'Content-Type': 'application/json' },
+          body: ''
+        }
       ]
 
       for (const { headers, body } of scenarios) {
-        const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, body, headers)
+        const res = await post(
+          app,
+          RESEND_VERIFICATION_EMAIL_URL,
+          body,
+          headers
+        )
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       }

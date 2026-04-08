@@ -15,10 +15,12 @@ export class EtherealEmailProvider implements EmailProvider {
     host: string | undefined,
     port: number | undefined,
     username: string | undefined,
-    password: string | undefined,
+    password: string | undefined
   ) {
     if (!host || !port || !username || !password) {
-      throw new Error('Ethereal email configuration is required for development.')
+      throw new Error(
+        'Ethereal email configuration is required for development.'
+      )
     }
 
     this.transporter = nodemailer.createTransport({
@@ -27,8 +29,8 @@ export class EtherealEmailProvider implements EmailProvider {
       secure: false, // use TLS
       auth: {
         user: username,
-        pass: password,
-      },
+        pass: password
+      }
     })
   }
 
@@ -39,7 +41,7 @@ export class EtherealEmailProvider implements EmailProvider {
         to: Array.isArray(payload.to) ? payload.to.join(', ') : payload.to,
         subject: payload.subject,
         html: payload.html,
-        text: payload.text,
+        text: payload.text
       })
 
       const previewUrl = nodemailer.getTestMessageUrl(info)
@@ -49,14 +51,14 @@ export class EtherealEmailProvider implements EmailProvider {
         subject: payload.subject,
         messageId: info.messageId,
         previewUrl: previewUrl ?? 'No preview URL available',
-        to: payload.to,
+        to: payload.to
       })
     } catch (error: unknown) {
       logger.error({
         msg: 'Failed to send email via Ethereal',
         error: error instanceof Error ? error.message : 'Unknown error',
         to: payload.to,
-        subject: payload.subject,
+        subject: payload.subject
       })
     }
   }

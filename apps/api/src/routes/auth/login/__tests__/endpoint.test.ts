@@ -3,7 +3,10 @@ import type { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
-import { mockCaptchaSuccess, VALID_CAPTCHA_TOKEN } from '@/middleware/captcha/__tests__'
+import {
+  mockCaptchaSuccess,
+  VALID_CAPTCHA_TOKEN
+} from '@/middleware/captcha/__tests__'
 import { HttpStatus } from '@/net/http'
 
 import { loginRoute } from '../index'
@@ -29,15 +32,15 @@ describe('Login Endpoint', () => {
           role: 'user',
           status: 'active',
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         },
-        accessToken: 'login-jwt-token',
+        accessToken: 'login-jwt-token'
       },
-      refreshToken: 'refresh-token-123',
+      refreshToken: 'refresh-token-123'
     }))
 
     await moduleMocker.mock('@/use-cases/auth/login', () => ({
-      logInWithEmail: mockLogInWithEmail,
+      logInWithEmail: mockLogInWithEmail
     }))
 
     mockSetCookie = mock(() => {})
@@ -47,14 +50,19 @@ describe('Login Endpoint', () => {
         secure: false,
         sameSite: 'strict',
         maxAge: 3600,
-        path: '/',
+        path: '/'
       })
     })
 
     await moduleMocker.mock('@/net/http', () => ({
-      HttpStatus: { OK: 200, INTERNAL_SERVER_ERROR: 500, BAD_REQUEST: 400, NOT_FOUND: 404 },
+      HttpStatus: {
+        OK: 200,
+        INTERNAL_SERVER_ERROR: 500,
+        BAD_REQUEST: 400,
+        NOT_FOUND: 404
+      },
       setRefreshCookie: mockSetRefreshCookie,
-      getDeviceInfo: mock(() => ({ ipAddress: null, userAgent: null })),
+      getDeviceInfo: mock(() => ({ ipAddress: null, userAgent: null }))
     }))
 
     await mockCaptchaSuccess()
@@ -71,7 +79,7 @@ describe('Login Endpoint', () => {
       const res = await post(app, LOGIN_URL, {
         email: 'test@example.com',
         password: 'ValidPass123!',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -86,9 +94,9 @@ describe('Login Endpoint', () => {
           role: 'user',
           status: 'active',
           createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z'
         },
-        accessToken: 'login-jwt-token',
+        accessToken: 'login-jwt-token'
       })
 
       expect(mockSetCookie).toHaveBeenCalledTimes(1)
@@ -96,11 +104,15 @@ describe('Login Endpoint', () => {
         expect.any(Object),
         'refresh-token-test',
         'refresh-token-123',
-        expect.objectContaining({ httpOnly: true, sameSite: 'strict', path: '/' }),
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'strict',
+          path: '/'
+        })
       )
       expect(mockLogInWithEmail).toHaveBeenCalledWith(
         { email: 'test@example.com', password: 'ValidPass123!' },
-        { ipAddress: null, userAgent: null },
+        { ipAddress: null, userAgent: null }
       )
     })
 
@@ -112,7 +124,7 @@ describe('Login Endpoint', () => {
       const res = await post(app, LOGIN_URL, {
         email: 'test@example.com',
         password: 'WrongPass123!',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -121,12 +133,52 @@ describe('Login Endpoint', () => {
 
     it('should validate required fields', async () => {
       const invalidRequests = [
-        { name: 'empty email', body: { email: '', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'invalid email format', body: { email: 'invalid', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'empty password', body: { email: 'test@example.com', password: '', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'password without special chars', body: { email: 'test@example.com', password: 'NoSpecial123', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'missing password', body: { email: 'test@example.com', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'missing email', body: { password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } } },
+        {
+          name: 'empty email',
+          body: {
+            email: '',
+            password: 'ValidPass123!',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'invalid email format',
+          body: {
+            email: 'invalid',
+            password: 'ValidPass123!',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'empty password',
+          body: {
+            email: 'test@example.com',
+            password: '',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'password without special chars',
+          body: {
+            email: 'test@example.com',
+            password: 'NoSpecial123',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'missing password',
+          body: {
+            email: 'test@example.com',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'missing email',
+          body: {
+            password: 'ValidPass123!',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        }
       ]
 
       for (const testCase of invalidRequests) {
@@ -140,11 +192,22 @@ describe('Login Endpoint', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{ headers?: Record<string, string>, body?: any }> = [
-        { headers: {}, body: { email: 'test@example.com', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
-        { headers: { 'Content-Type': 'application/json' }, body: undefined },
-      ]
+      const scenarios: Array<{ headers?: Record<string, string>; body?: any }> =
+        [
+          {
+            headers: {},
+            body: {
+              email: 'test@example.com',
+              password: 'ValidPass123!',
+              captcha: { token: VALID_CAPTCHA_TOKEN }
+            }
+          },
+          {
+            headers: { 'Content-Type': 'application/json' },
+            body: '{ invalid json'
+          },
+          { headers: { 'Content-Type': 'application/json' }, body: undefined }
+        ]
 
       for (const { headers, body } of scenarios) {
         const res = await post(app, LOGIN_URL, body, headers)

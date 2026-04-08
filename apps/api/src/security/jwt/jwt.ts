@@ -11,14 +11,14 @@ import { parse } from './payload'
 
 export const signJwt = async (
   userClaims: UserClaims,
-  userOptions?: Partial<Options>,
+  userOptions?: Partial<Options>
 ): Promise<string> => {
   const options = mergeWithDefaults(userOptions)
   const standardClaims = createStandardClaims(options.expiresIn)
 
   const payload = {
     ...userClaims,
-    ...standardClaims,
+    ...standardClaims
   }
 
   return sign(payload, options.secret, options.signatureAlgorithm)
@@ -26,10 +26,12 @@ export const signJwt = async (
 
 export const verifyJwt = async (
   token: string,
-  userOptions?: Partial<Options>,
+  userOptions?: Partial<Options>
 ): Promise<UserClaims> => {
   const options = mergeWithDefaults(userOptions)
-  const secrets = [options.secret, options.previousSecret].filter(Boolean) as string[]
+  const secrets = [options.secret, options.previousSecret].filter(
+    Boolean
+  ) as string[]
 
   for (const secret of secrets) {
     try {

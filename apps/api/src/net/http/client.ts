@@ -26,7 +26,7 @@ export class HttpClient {
     this.baseUrl = removeTrailingSlash(baseUrl)
     this.defaultOptions = {
       headers: defaultOptions.headers ?? {},
-      timeout: defaultOptions.timeout ?? 10000,
+      timeout: defaultOptions.timeout ?? 10000
     }
   }
 
@@ -34,7 +34,11 @@ export class HttpClient {
     return this.request<T>(path, { method: 'GET', headers })
   }
 
-  async post<T = any>(path: string, body?: Body, headers?: Headers): Promise<T> {
+  async post<T = any>(
+    path: string,
+    body?: Body,
+    headers?: Headers
+  ): Promise<T> {
     return this.request<T>(path, { method: 'POST', body, headers })
   }
 
@@ -46,7 +50,10 @@ export class HttpClient {
     return this.request<T>(path, { method: 'DELETE', headers })
   }
 
-  private async request<T = any>(path: string, options: RequestOptions = {}): Promise<T> {
+  private async request<T = any>(
+    path: string,
+    options: RequestOptions = {}
+  ): Promise<T> {
     const url = makeUrl(this.baseUrl, path)
     const timeout = options.timeout ?? this.defaultOptions.timeout
 
@@ -54,23 +61,20 @@ export class HttpClient {
       method: options.method || 'GET',
       headers: {
         ...this.defaultOptions.headers,
-        ...options.headers,
-      },
+        ...options.headers
+      }
     }
 
     if (options.body) {
       config.body = options.body
     }
 
-    const response = await withTimeout(
-      async () => fetch(url, config),
-      timeout,
-    )
+    const response = await withTimeout(async () => fetch(url, config), timeout)
 
     if (!response.ok) {
       throw new AppError(
         ErrorCode.InternalError,
-        `API request failed: ${response.status} ${response.statusText}`,
+        `API request failed: ${response.status} ${response.statusText}`
       )
     }
 

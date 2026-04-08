@@ -18,14 +18,14 @@ import {
   ownerAuthMiddleware,
   secureHeadersMiddleware,
   userRelaxedAuthMiddleware,
-  userStrictAuthMiddleware,
+  userStrictAuthMiddleware
 } from '@/middleware'
 import {
   adminRoutes,
   authPublicRoutes,
   ownerRoutes,
   userRoutesAllowNew,
-  userRoutesVerifiedOnly,
+  userRoutesVerifiedOnly
 } from '@/routes'
 
 class Server {
@@ -54,31 +54,22 @@ class Server {
   }
 
   private setupRoutes() {
-    this.createRouteGroup(
-      '/api/v1/auth',
-      authPublicRoutes,
-      [authRequestSizeLimiter, authRateLimiter],
-    )
+    this.createRouteGroup('/api/v1/auth', authPublicRoutes, [
+      authRequestSizeLimiter,
+      authRateLimiter
+    ])
     this.createRouteGroup(
       '/api/v1/user',
       userRoutesAllowNew,
-      userRelaxedAuthMiddleware,
+      userRelaxedAuthMiddleware
     )
     this.createRouteGroup(
       '/api/v1/user/verified',
       userRoutesVerifiedOnly,
-      userStrictAuthMiddleware,
+      userStrictAuthMiddleware
     )
-    this.createRouteGroup(
-      '/api/v1/admin',
-      adminRoutes,
-      adminAuthMiddleware,
-    )
-    this.createRouteGroup(
-      '/api/v1/owner',
-      ownerRoutes,
-      ownerAuthMiddleware,
-    )
+    this.createRouteGroup('/api/v1/admin', adminRoutes, adminAuthMiddleware)
+    this.createRouteGroup('/api/v1/owner', ownerRoutes, ownerAuthMiddleware)
   }
 
   private setupHandlers() {
@@ -89,11 +80,13 @@ class Server {
   private createRouteGroup(
     path: string,
     routes: Hono<AppContext>[],
-    middleware: MiddlewareHandler | MiddlewareHandler[],
+    middleware: MiddlewareHandler | MiddlewareHandler[]
   ) {
     const group = new Hono<AppContext>()
 
-    const middlewareArray = Array.isArray(middleware) ? middleware : [middleware]
+    const middlewareArray = Array.isArray(middleware)
+      ? middleware
+      : [middleware]
     middlewareArray.forEach(mw => group.use(mw))
 
     routes.forEach(route => group.route('/', route))

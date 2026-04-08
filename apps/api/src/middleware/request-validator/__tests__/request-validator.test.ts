@@ -14,16 +14,18 @@ describe('Request Validator Middleware', () => {
   it('should accept valid email and password together', async () => {
     const schema = z.object({
       email: z.email(),
-      password: z.string().min(8),
+      password: z.string().min(8)
     })
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c => c.json({ success: true }))
+    app.post('/test', requestValidator('json', schema), c =>
+      c.json({ success: true })
+    )
 
     const response = await post(app, '/test', {
       email: 'user@example.com',
-      password: 'SecurePass123!',
+      password: 'SecurePass123!'
     })
 
     expect(response.status).toBe(HttpStatus.OK)
@@ -35,12 +37,14 @@ describe('Request Validator Middleware', () => {
   it('should return validation error when required password field is missing', async () => {
     const schema = z.object({
       email: z.email(),
-      password: z.string().min(8),
+      password: z.string().min(8)
     })
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c => c.json({ success: true }))
+    app.post('/test', requestValidator('json', schema), c =>
+      c.json({ success: true })
+    )
 
     const response = await post(app, '/test', { email: 'user@example.com' })
 
@@ -49,20 +53,28 @@ describe('Request Validator Middleware', () => {
     const json = await response.json()
     expect(json).toHaveProperty('code', ErrorCode.ValidationError)
 
-    const issues = JSON.parse(json.error as string) as { code: string, path: string[] }[]
-    expect(issues[0]).toMatchObject({ code: 'invalid_type', path: ['password'] })
+    const issues = JSON.parse(json.error as string) as {
+      code: string
+      path: string[]
+    }[]
+    expect(issues[0]).toMatchObject({
+      code: 'invalid_type',
+      path: ['password']
+    })
   })
 
   it('should return validation error when token exceeds required length', async () => {
     const schema = z.object({
       token: z.string().length(TOKEN_LENGTH, {
-        message: `Token must be exactly ${TOKEN_LENGTH} characters long`,
-      }),
+        message: `Token must be exactly ${TOKEN_LENGTH} characters long`
+      })
     })
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c => c.json({ success: true }))
+    app.post('/test', requestValidator('json', schema), c =>
+      c.json({ success: true })
+    )
 
     const validToken = 'a'.repeat(TOKEN_LENGTH) // exactly 64 characters
     const tooLongToken = `${validToken}extra` // 69 characters
@@ -74,7 +86,13 @@ describe('Request Validator Middleware', () => {
     const json = await response.json()
     expect(json).toHaveProperty('code', ErrorCode.ValidationError)
 
-    const issues = JSON.parse(json.error as string) as { path: string[], message: string }[]
-    expect(issues[0]).toMatchObject({ path: ['token'], message: `Token must be exactly ${TOKEN_LENGTH} characters long` })
+    const issues = JSON.parse(json.error as string) as {
+      path: string[]
+      message: string
+    }[]
+    expect(issues[0]).toMatchObject({
+      path: ['token'],
+      message: `Token must be exactly ${TOKEN_LENGTH} characters long`
+    })
   })
 })

@@ -2,7 +2,10 @@ import { AppError, ErrorCode } from '@/errors'
 
 import { DEFAULT_STREAMING_THRESHOLD } from './constants'
 
-const validateBodySizeStreaming = async (request: Request, maxSize: number): Promise<{
+const validateBodySizeStreaming = async (
+  request: Request,
+  maxSize: number
+): Promise<{
   ok: boolean
   bodySize: number
 }> => {
@@ -52,12 +55,12 @@ const validateBodySizeStreaming = async (request: Request, maxSize: number): Pro
 export const validateBodySize = async (
   request: Request,
   maxSize: number,
-  contentLength: number | null,
+  contentLength: number | null
 ): Promise<number> => {
   // Determine whether to use streaming based on Content-Length or max size
-  const shouldUseStreaming
-    = (contentLength !== null && contentLength > DEFAULT_STREAMING_THRESHOLD)
-      || (maxSize > DEFAULT_STREAMING_THRESHOLD)
+  const shouldUseStreaming =
+    (contentLength !== null && contentLength > DEFAULT_STREAMING_THRESHOLD) ||
+    maxSize > DEFAULT_STREAMING_THRESHOLD
 
   let actualSize: number = 0
 

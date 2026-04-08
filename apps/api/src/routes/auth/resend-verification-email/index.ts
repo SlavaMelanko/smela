@@ -13,5 +13,5 @@ resendVerificationEmailRoute.post(
   '/resend-verification-email',
   requestValidator('json', resendVerificationEmailBodySchema),
   captchaMiddleware(),
-  resendVerificationEmailHandler,
+  resendVerificationEmailHandler
 )

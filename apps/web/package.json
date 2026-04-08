@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules",
-    "reinstall": "bun run clean && bun install",
     "dev": "vite --mode development",
     "preview": "vite preview --mode production",
     "build": "vite build --mode production",

@@ -18,12 +18,12 @@ export interface InviteMemberInput {
 export const inviteMember = async (
   teamId: string,
   member: InviteMemberInput,
-  inviterId: string,
+  inviterId: string
 ) => {
   const [inviter, team, existingUser] = await Promise.all([
     userRepo.findById(inviterId),
     teamRepo.findById(teamId),
-    userRepo.findByEmail(member.email),
+    userRepo.findByEmail(member.email)
   ])
 
   if (!inviter) {
@@ -38,41 +38,54 @@ export const inviteMember = async (
     throw new AppError(ErrorCode.EmailAlreadyInUse)
   }
 
-  const { member: newMember, token } = await db.transaction(async (tx) => {
-    const newUser = await userRepo.create({
-      firstName: member.firstName,
-      lastName: member.lastName,
-      email: member.email,
-      status: UserStatus.Pending,
-    }, tx)
+  const { member: newMember, token } = await db.transaction(async tx => {
+    const newUser = await userRepo.create(
+      {
+        firstName: member.firstName,
+        lastName: member.lastName,
+        email: member.email,
+        status: UserStatus.Pending
+      },
+      tx
+    )
 
     // Use random password and user sets real password when accepting invitation
     const passwordHash = await generatePasswordHash()
 
-    await authRepo.create({
-      userId: newUser.id,
-      provider: AuthProvider.Local,
-      identifier: member.email,
-      passwordHash,
-    }, tx)
+    await authRepo.create(
+      {
+        userId: newUser.id,
+        provider: AuthProvider.Local,
+        identifier: member.email,
+        passwordHash
+      },
+      tx
+    )
 
-    await teamRepo.createMember({
-      userId: newUser.id,
-      teamId,
-      position: member.position,
-      invitedBy: inviterId,
-    }, tx)
+    await teamRepo.createMember(
+      {
+        userId: newUser.id,
+        teamId,
+        position: member.position,
+        invitedBy: inviterId
+      },
+      tx
+    )
 
     await rbacRepo.setUserPermissions(newUser.id, member.permissions, tx)
 
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
 
-    await tokenRepo.issue(newUser.id, {
-      userId: newUser.id,
-      type,
-      token,
-      expiresAt,
-    }, tx)
+    await tokenRepo.issue(
+      newUser.id,
+      {
+        userId: newUser.id,
+        type,
+        token,
+        expiresAt
+      },
+      tx
+    )
 
     return {
       member: {
@@ -83,9 +96,9 @@ export const inviteMember = async (
         status: newUser.status,
         position: member.position ?? null,
         invitedBy: inviterId,
-        joinedAt: newUser.createdAt,
+        joinedAt: newUser.createdAt
       },
-      token,
+      token
     }
   })
 
@@ -94,7 +107,7 @@ export const inviteMember = async (
     newMember.email,
     token,
     inviter.firstName,
-    team.name,
+    team.name
   )
 
   return { member: newMember }
@@ -103,13 +116,13 @@ export const inviteMember = async (
 export const resendMemberInvite = async (
   teamId: string,
   memberId: string,
-  inviterId: string,
+  inviterId: string
 ) => {
   const [inviter, team, member, membership] = await Promise.all([
     userRepo.findById(inviterId),
     teamRepo.findById(teamId),
     userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId),
+    teamRepo.findMember(teamId, memberId)
   ])
 
   if (!inviter) {
@@ -129,12 +142,19 @@ export const resendMemberInvite = async (
   }
 
   if (member.status !== UserStatus.Pending) {
-    throw new AppError(ErrorCode.BadRequest, 'Member has already accepted invitation')
+    throw new AppError(
+      ErrorCode.BadRequest,
+      'Member has already accepted invitation'
+    )
   }
 
-  const token = await db.transaction(async (tx) => {
+  const token = await db.transaction(async tx => {
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
-    await tokenRepo.issue(memberId, { userId: memberId, type, token, expiresAt }, tx)
+    await tokenRepo.issue(
+      memberId,
+      { userId: memberId, type, token, expiresAt },
+      tx
+    )
 
     return token
   })
@@ -144,7 +164,7 @@ export const resendMemberInvite = async (
     member.email,
     token,
     inviter.firstName,
-    team.name,
+    team.name
   )
 
   return { success: true }
@@ -153,7 +173,7 @@ export const resendMemberInvite = async (
 export const cancelMemberInvite = async (teamId: string, memberId: string) => {
   const [member, membership] = await Promise.all([
     userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId),
+    teamRepo.findMember(teamId, memberId)
   ])
 
   if (!member || !membership) {
@@ -161,10 +181,13 @@ export const cancelMemberInvite = async (teamId: string, memberId: string) => {
   }
 
   if (member.status !== UserStatus.Pending) {
-    throw new AppError(ErrorCode.BadRequest, 'Member has already accepted invitation')
+    throw new AppError(
+      ErrorCode.BadRequest,
+      'Member has already accepted invitation'
+    )
   }
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await tokenRepo.deprecate(memberId, TokenType.UserInvite, tx)
     await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
   })

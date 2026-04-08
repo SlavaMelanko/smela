@@ -8,7 +8,7 @@ import { getTeamMembers, inviteMember } from '@/use-cases/user'
 
 import type { InviteMemberCtx, TeamIdCtx } from './schema'
 
-export const getMemberDefaultPermissionsHandler: Handler<AppContext> = (c) => {
+export const getMemberDefaultPermissionsHandler: Handler<AppContext> = c => {
   return c.json({ permissions: getMemberDefaultPermissions() }, HttpStatus.OK)
 }
 

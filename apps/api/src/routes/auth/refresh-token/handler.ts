@@ -1,6 +1,11 @@
 import type { AppCtx } from '@/routes/validated-ctx'
 
-import { getDeviceInfo, getRefreshCookie, HttpStatus, setRefreshCookie } from '@/net/http'
+import {
+  getDeviceInfo,
+  getRefreshCookie,
+  HttpStatus,
+  setRefreshCookie
+} from '@/net/http'
 import { refreshAuthTokens } from '@/use-cases/auth'
 
 export const refreshTokenHandler = async (c: AppCtx) => {

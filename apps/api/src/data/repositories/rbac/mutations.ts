@@ -12,7 +12,7 @@ import { findAllPermissions } from './queries'
 
 export const assignRole = async (
   input: CreateUserRoleInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<UserRoleRecord> => {
   const executor = tx || db
 
@@ -27,7 +27,7 @@ export const assignRole = async (
 export const setUserPermissions = async (
   userId: string,
   permissions: PermissionsInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<void> => {
   const executor = tx || db
   const normalized = collapsePermissions(permissions)
@@ -62,8 +62,8 @@ export const setUserPermissions = async (
       .where(
         and(
           eq(userPermissionsTable.userId, userId),
-          inArray(userPermissionsTable.permissionId, toRevoke),
-        ),
+          inArray(userPermissionsTable.permissionId, toRevoke)
+        )
       )
   }
 

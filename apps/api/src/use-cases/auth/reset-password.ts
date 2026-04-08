@@ -15,16 +15,23 @@ export interface ResetPasswordInput {
 
 export const resetPassword = async (
   { token, password }: ResetPasswordInput,
-  deviceInfo: DeviceInfo,
+  deviceInfo: DeviceInfo
 ) => {
-  const validatedToken = await validateOneTimeToken(token, TokenType.PasswordReset)
+  const validatedToken = await validateOneTimeToken(
+    token,
+    TokenType.PasswordReset
+  )
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     // Mark token as used
-    await tokenRepo.update(validatedToken.id, {
-      status: TokenStatus.Used,
-      usedAt: new Date(),
-    }, tx)
+    await tokenRepo.update(
+      validatedToken.id,
+      {
+        status: TokenStatus.Used,
+        usedAt: new Date()
+      },
+      tx
+    )
 
     // Update user's password
     const passwordHash = await hashPassword(password)
@@ -34,18 +41,25 @@ export const resetPassword = async (
   const user = await userRepo.findById(validatedToken.userId)
 
   if (!user) {
-    throw new AppError(ErrorCode.InternalError, 'User not found after password reset')
+    throw new AppError(
+      ErrorCode.InternalError,
+      'User not found after password reset'
+    )
   }
 
   const [team, permissions] = await Promise.all([
     teamRepo.findUserTeam(user.id),
-    resolvePermissionList(user.id),
+    resolvePermissionList(user.id)
   ])
 
-  const [accessToken, refreshToken] = await createAuthTokens(user, deviceInfo, permissions)
+  const [accessToken, refreshToken] = await createAuthTokens(
+    user,
+    deviceInfo,
+    permissions
+  )
 
   return {
     data: { user, team, permissions, accessToken },
-    refreshToken,
+    refreshToken
   }
 }

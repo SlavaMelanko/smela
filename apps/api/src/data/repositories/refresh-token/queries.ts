@@ -20,7 +20,7 @@ export const lastActiveSubquery = (executor: Database) =>
   executor
     .select({
       userId: refreshTokensTable.userId,
-      lastActive: max(refreshTokensTable.createdAt).as('last_active'),
+      lastActive: max(refreshTokensTable.createdAt).as('last_active')
     })
     .from(refreshTokensTable)
     .groupBy(refreshTokensTable.userId)
@@ -28,7 +28,7 @@ export const lastActiveSubquery = (executor: Database) =>
 
 export const findByTokenHash = async (
   tokenHash: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<RefreshToken | undefined> => {
   const executor = tx || db
 

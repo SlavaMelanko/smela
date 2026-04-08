@@ -4,7 +4,7 @@ export enum SenderProfile {
   SYSTEM = 'system',
   SUPPORT = 'support',
   CEO = 'ceo',
-  MARKETING = 'marketing',
+  MARKETING = 'marketing'
 }
 
 export interface EmailSender {
@@ -18,6 +18,6 @@ export const getSenderDetails = (senderProfile: SenderProfile): EmailSender => {
 
   return {
     email: profile.email,
-    name: profile.name,
+    name: profile.name
   }
 }

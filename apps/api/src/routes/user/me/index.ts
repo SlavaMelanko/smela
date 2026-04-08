@@ -11,6 +11,14 @@ export const meRoute = new Hono<AppContext>()
 
 meRoute.get('/me', getMeHandler)
 
-meRoute.patch('/me', requestValidator('json', updateProfileSchema), updateMeHandler)
+meRoute.patch(
+  '/me',
+  requestValidator('json', updateProfileSchema),
+  updateMeHandler
+)
 
-meRoute.patch('/me/password', requestValidator('json', changePasswordSchema), changePasswordHandler)
+meRoute.patch(
+  '/me/password',
+  requestValidator('json', changePasswordSchema),
+  changePasswordHandler
+)

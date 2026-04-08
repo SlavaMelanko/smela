@@ -32,23 +32,23 @@ describe('Request Password Reset', () => {
       status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     }
     mockUserRepo = {
-      findByEmail: mock(async () => mockUser),
+      findByEmail: mock(async () => mockUser)
     }
     mockTokenRepo = {
-      issue: mock(async () => {}),
+      issue: mock(async () => {})
     }
     mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>),
+      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
       tokenRepo: mockTokenRepo,
       authRepo: {},
-      db: mockTransaction,
+      db: mockTransaction
     }))
 
     mockTokenString = 'reset-token-123'
@@ -58,16 +58,16 @@ describe('Request Password Reset', () => {
       generateToken: mock(() => ({
         type: TokenType.PasswordReset,
         token: mockTokenString,
-        expiresAt: mockExpiresAt,
-      })),
+        expiresAt: mockExpiresAt
+      }))
     }))
 
     mockEmailAgent = {
-      sendResetPasswordEmail: mock(async () => {}),
+      sendResetPasswordEmail: mock(async () => {})
     }
 
     await moduleMocker.mock('@/services', () => ({
-      emailAgent: mockEmailAgent,
+      emailAgent: mockEmailAgent
     }))
   })
 
@@ -82,12 +82,16 @@ describe('Request Password Reset', () => {
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
       // Replace token should be called
-      expect(mockTokenRepo.issue).toHaveBeenCalledWith(mockUser.id, {
-        userId: mockUser.id,
-        type: TokenType.PasswordReset,
-        token: mockTokenString,
-        expiresAt: mockExpiresAt,
-      }, {})
+      expect(mockTokenRepo.issue).toHaveBeenCalledWith(
+        mockUser.id,
+        {
+          userId: mockUser.id,
+          type: TokenType.PasswordReset,
+          token: mockTokenString,
+          expiresAt: mockExpiresAt
+        },
+        {}
+      )
       expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 
       // Send reset email
@@ -95,7 +99,7 @@ describe('Request Password Reset', () => {
         mockUser.firstName,
         mockUser.email,
         mockTokenString,
-        undefined,
+        undefined
       )
       expect(mockEmailAgent.sendResetPasswordEmail).toHaveBeenCalledTimes(1)
 
@@ -105,7 +109,9 @@ describe('Request Password Reset', () => {
     it('should return success when user not found', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => null)
 
-      const result = await requestPasswordReset({ email: 'nonexistent@example.com' })
+      const result = await requestPasswordReset({
+        email: 'nonexistent@example.com'
+      })
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
@@ -114,9 +120,13 @@ describe('Request Password Reset', () => {
   })
 
   describe('non-active user scenarios', () => {
-    const inactiveStatuses = [UserStatus.New, UserStatus.Suspended, UserStatus.Archived]
+    const inactiveStatuses = [
+      UserStatus.New,
+      UserStatus.Suspended,
+      UserStatus.Archived
+    ]
 
-    inactiveStatuses.forEach((status) => {
+    inactiveStatuses.forEach(status => {
       it(`should return success when user status is ${status}`, async () => {
         const inactiveUser = { ...mockUser, status }
         mockUserRepo.findByEmail.mockImplementation(async () => inactiveUser)

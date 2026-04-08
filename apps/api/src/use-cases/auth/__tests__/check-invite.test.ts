@@ -36,49 +36,49 @@ describe('Check Invite', () => {
       expiresAt: nowPlus(hour()),
       createdAt: new Date(),
       usedAt: null,
-      metadata: null,
+      metadata: null
     }
 
     mockTeam = {
       id: testUuids.TEAM_1,
       name: 'Acme Corp',
-      position: 'Team Member',
+      position: 'Team Member'
     }
 
     mockAdminRole = {
       userId: testUuids.ADMIN_1,
       role: Role.Admin,
       invitedBy: testUuids.OWNER_1,
-      assignedAt: new Date(),
+      assignedAt: new Date()
     }
 
     mockTokenRepo = {
-      findByToken: mock(async () => mockTokenRecord),
+      findByToken: mock(async () => mockTokenRecord)
     }
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam),
+      findUserTeam: mock(async () => mockTeam)
     }
     mockRbacRepo = {
-      findRole: mock(async () => mockAdminRole),
+      findRole: mock(async () => mockAdminRole)
     }
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,
       teamRepo: mockTeamRepo,
-      rbacRepo: mockRbacRepo,
+      rbacRepo: mockRbacRepo
     }))
 
     await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: MOCK_COMPANY_NAME },
+      default: { COMPANY_NAME: MOCK_COMPANY_NAME }
     }))
 
     mockTokenValidator = {
-      validate: mock(() => mockTokenRecord),
+      validate: mock(() => mockTokenRecord)
     }
 
     await moduleMocker.mock('@/security/token', () => ({
       TokenValidator: mockTokenValidator,
-      TokenType,
+      TokenType
     }))
   })
 
@@ -95,11 +95,13 @@ describe('Check Invite', () => {
 
       expect(mockTokenValidator.validate).toHaveBeenCalledWith(
         mockTokenRecord,
-        TokenType.UserInvite,
+        TokenType.UserInvite
       )
       expect(mockTokenValidator.validate).toHaveBeenCalledTimes(1)
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockTokenRecord.userId)
+      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+        mockTokenRecord.userId
+      )
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledTimes(1)
 
       expect(mockRbacRepo.findRole).not.toHaveBeenCalled()
@@ -116,7 +118,9 @@ describe('Check Invite', () => {
     it('should return admin type and company name for admin invitation token', async () => {
       const result = await checkInvite(mockTokenString)
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockTokenRecord.userId)
+      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+        mockTokenRecord.userId
+      )
       expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
       expect(mockRbacRepo.findRole).toHaveBeenCalledTimes(1)
 
@@ -228,7 +232,9 @@ describe('Check Invite', () => {
         expect((error as AppError).message).toBe('Invalid invitation state')
       }
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockTokenRecord.userId)
+      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+        mockTokenRecord.userId
+      )
       expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
     })
   })
@@ -238,7 +244,7 @@ describe('Check Invite', () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
       mockRbacRepo.findRole.mockResolvedValue({
         ...mockAdminRole,
-        role: Role.User,
+        role: Role.User
       })
 
       try {
@@ -254,7 +260,9 @@ describe('Check Invite', () => {
 
   describe('when database query fails', () => {
     it('should propagate the error', async () => {
-      mockTeamRepo.findUserTeam.mockRejectedValue(new Error('Database connection failed'))
+      mockTeamRepo.findUserTeam.mockRejectedValue(
+        new Error('Database connection failed')
+      )
 
       try {
         await checkInvite(mockTokenString)

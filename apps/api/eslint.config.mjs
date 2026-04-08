@@ -6,12 +6,8 @@ export default antfu(
     typescript: {
       tsconfigPath: './tsconfig.json',
     },
-    formatters: true,
-    stylistic: {
-      indent: 2,
-      semi: false,
-      quotes: 'single',
-    },
+    formatters: false,
+    stylistic: false,
     ignores: [
       'src/data/migrations/**',
       'scripts/**',
@@ -40,17 +36,6 @@ export default antfu(
         },
       ],
       'prefer-arrow-callback': ['error'],
-      'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-      'style/max-len': [
-        'error',
-        {
-          code: 100,
-          ignoreUrls: true,
-          ignoreStrings: true,
-          ignoreTemplateLiterals: true,
-          ignoreRegExpLiterals: true,
-        },
-      ],
       'ts/member-ordering': [
         'error',
         {

@@ -28,9 +28,9 @@ describe('Owner Authentication Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         },
-        { secret: env.JWT_SECRET },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/owner', ownerAuthMiddleware)
@@ -38,8 +38,8 @@ describe('Owner Authentication Middleware', () => {
 
       const res = await app.request('/owner', {
         headers: {
-          Authorization: `Bearer ${ownerToken}`,
-        },
+          Authorization: `Bearer ${ownerToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -53,9 +53,9 @@ describe('Owner Authentication Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         },
-        { secret: env.JWT_SECRET },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/owner', ownerAuthMiddleware)
@@ -63,8 +63,8 @@ describe('Owner Authentication Middleware', () => {
 
       const res = await app.request('/owner', {
         headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
+          Authorization: `Bearer ${adminToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -79,9 +79,9 @@ describe('Owner Authentication Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         },
-        { secret: env.JWT_SECRET },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/owner', ownerAuthMiddleware)
@@ -89,8 +89,8 @@ describe('Owner Authentication Middleware', () => {
 
       const res = await app.request('/owner', {
         headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+          Authorization: `Bearer ${userToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -106,7 +106,7 @@ describe('Owner Authentication Middleware', () => {
         UserStatus.New,
         UserStatus.Verified,
         UserStatus.Trial,
-        UserStatus.Suspended,
+        UserStatus.Suspended
       ]
 
       for (const status of nonActiveStatuses) {
@@ -114,8 +114,13 @@ describe('Owner Authentication Middleware', () => {
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.OWNER_1, email: 'owner@example.com', role: Role.Owner, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.OWNER_1,
+            email: 'owner@example.com',
+            role: Role.Owner,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/owner', ownerAuthMiddleware)
@@ -123,8 +128,8 @@ describe('Owner Authentication Middleware', () => {
 
         const res = await testApp.request('/owner', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.FORBIDDEN)

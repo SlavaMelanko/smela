@@ -4,7 +4,7 @@ import {
   getTeamMember,
   removeTeamMember,
   resendMemberInvite,
-  updateTeamMember,
+  updateTeamMember
 } from '@/use-cases/user'
 
 import type { MemberIdCtx, UpdateTeamMemberCtx } from './schema'

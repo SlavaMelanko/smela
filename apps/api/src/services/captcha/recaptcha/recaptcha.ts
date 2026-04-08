@@ -16,10 +16,7 @@ export class Recaptcha implements Captcha {
 
   constructor(config: Config) {
     this.config = config
-    this.httpClient = new HttpClient(
-      config.baseUrl,
-      config.options,
-    )
+    this.httpClient = new HttpClient(config.baseUrl, config.options)
   }
 
   async validate(token: string): Promise<void> {
@@ -33,8 +30,7 @@ export class Recaptcha implements Captcha {
     if (!result.success) {
       const errorCodes = result['error-codes'] || []
       const hostname = result.hostname || 'unknown'
-      const message
-        = `reCAPTCHA token validation failed. Error codes: ${errorCodes.join(', ')}. Hostname: ${hostname}`
+      const message = `reCAPTCHA token validation failed. Error codes: ${errorCodes.join(', ')}. Hostname: ${hostname}`
 
       throw new AppError(ErrorCode.CaptchaValidationFailed, message)
     }
@@ -43,7 +39,7 @@ export class Recaptcha implements Captcha {
   private createBody(token: string): URLSearchParams {
     return new URLSearchParams({
       secret: this.config.secret,
-      response: token,
+      response: token
     })
   }
 }

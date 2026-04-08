@@ -15,7 +15,10 @@ export abstract class BaseEmailConfig implements EmailConfig {
   protected readonly emailType: EmailType
   protected readonly sender: EmailSender
 
-  constructor(emailType: EmailType, senderProfile: SenderProfile = SenderProfile.SYSTEM) {
+  constructor(
+    emailType: EmailType,
+    senderProfile: SenderProfile = SenderProfile.SYSTEM
+  ) {
     this.emailType = emailType
     this.sender = getSenderDetails(senderProfile)
   }

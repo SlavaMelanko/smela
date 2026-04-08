@@ -35,7 +35,7 @@
  */
 export const withTimeout = async <T>(
   asyncFn: () => Promise<T>,
-  timeoutMs: number = 10000,
+  timeoutMs: number = 10000
 ): Promise<T> => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
@@ -45,8 +45,9 @@ export const withTimeout = async <T>(
       asyncFn(),
       new Promise<never>((_, reject) => {
         controller.signal.addEventListener('abort', () =>
-          reject(new Error('Timeout.')))
-      }),
+          reject(new Error('Timeout.'))
+        )
+      })
     ])
 
     return result
@@ -115,7 +116,7 @@ export const sleepFor = async (ms: number): Promise<void> => {
 export const exponentialBackoffDelay = (
   baseDelayMs: number,
   attempt: number,
-  maxDelayMs?: number,
+  maxDelayMs?: number
 ): number => {
   const delay = baseDelayMs * 2 ** attempt
 

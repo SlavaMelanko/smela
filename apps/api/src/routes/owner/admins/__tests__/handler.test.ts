@@ -9,7 +9,7 @@ import { Resource, Role, UserStatus } from '@/types'
 import {
   createAdminHandler,
   getAdminDefaultPermissionsHandler,
-  getAdminsHandler,
+  getAdminsHandler
 } from '../handler'
 
 describe('getAdminDefaultPermissionsHandler', () => {
@@ -28,10 +28,10 @@ describe('getAdminDefaultPermissionsHandler', () => {
       {
         permissions: {
           [Resource.Users]: { view: true, manage: true },
-          [Resource.Teams]: { view: true, manage: true },
-        },
+          [Resource.Teams]: { view: true, manage: true }
+        }
       },
-      HttpStatus.OK,
+      HttpStatus.OK
     )
   })
 })
@@ -57,23 +57,29 @@ describe('getAdminsHandler', () => {
         role: Role.Admin,
         status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-      },
+        updatedAt: new Date('2024-01-01')
+      }
     ]
 
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: {
-        valid: mock(() => ({ statuses: undefined, page: 1, limit: DEFAULT_LIMIT })),
+        valid: mock(() => ({
+          statuses: undefined,
+          page: 1,
+          limit: DEFAULT_LIMIT
+        }))
       },
-      json: mockJson,
+      json: mockJson
     }
     mockGetAdmins = mock(async () => ({
       data: { users: mockAdmins },
-      pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 },
+      pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 }
     }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ getAdmins: mockGetAdmins }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      getAdmins: mockGetAdmins
+    }))
   })
 
   afterEach(async () => {
@@ -85,11 +91,14 @@ describe('getAdminsHandler', () => {
 
     expect(mockGetAdmins).toHaveBeenCalledWith(
       { search: undefined, roles: [], statuses: undefined },
-      { page: 1, limit: DEFAULT_LIMIT },
+      { page: 1, limit: DEFAULT_LIMIT }
     )
     expect(mockJson).toHaveBeenCalledWith(
-      { users: mockAdmins, pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 } },
-      HttpStatus.OK,
+      {
+        users: mockAdmins,
+        pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 }
+      },
+      HttpStatus.OK
     )
     expect(result.status).toBe(HttpStatus.OK)
   })
@@ -99,7 +108,9 @@ describe('getAdminsHandler', () => {
       throw new Error('Database connection failed')
     })
 
-    expect(getAdminsHandler(mockContext)).rejects.toThrow('Database connection failed')
+    expect(getAdminsHandler(mockContext)).rejects.toThrow(
+      'Database connection failed'
+    )
   })
 })
 
@@ -114,7 +125,7 @@ describe('createAdminHandler', () => {
     firstName: 'New',
     lastName: 'Admin',
     email: 'newadmin@example.com',
-    permissions: {},
+    permissions: {}
   }
 
   beforeEach(async () => {
@@ -122,11 +133,15 @@ describe('createAdminHandler', () => {
     mockContext = {
       req: { valid: mock(() => body) },
       get: mock(() => ({ id: testUuids.OWNER_1 })),
-      json: mockJson,
+      json: mockJson
     }
-    mockInviteAdmin = mock(async () => ({ admin: { id: testUuids.ADMIN_1, ...body } }))
+    mockInviteAdmin = mock(async () => ({
+      admin: { id: testUuids.ADMIN_1, ...body }
+    }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ inviteAdmin: mockInviteAdmin }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      inviteAdmin: mockInviteAdmin
+    }))
   })
 
   afterEach(async () => {
@@ -139,7 +154,7 @@ describe('createAdminHandler', () => {
     expect(mockInviteAdmin).toHaveBeenCalledWith(body, testUuids.OWNER_1)
     expect(mockJson).toHaveBeenCalledWith(
       { admin: { id: testUuids.ADMIN_1, ...body } },
-      HttpStatus.CREATED,
+      HttpStatus.CREATED
     )
     expect(result.status).toBe(HttpStatus.CREATED)
   })
@@ -149,6 +164,8 @@ describe('createAdminHandler', () => {
       throw new Error('Email already in use')
     })
 
-    expect(createAdminHandler(mockContext)).rejects.toThrow('Email already in use')
+    expect(createAdminHandler(mockContext)).rejects.toThrow(
+      'Email already in use'
+    )
   })
 })

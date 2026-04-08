@@ -28,7 +28,7 @@ export class SentryErrorTracker implements ErrorTracker {
     Sentry.init({
       dsn: this.config.dsn,
       environment: this.config.environment,
-      release: this.config.release,
+      release: this.config.release
     })
 
     this.initialized = true

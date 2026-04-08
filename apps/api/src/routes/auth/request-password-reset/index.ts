@@ -13,5 +13,5 @@ requestPasswordResetRoute.post(
   '/request-password-reset',
   requestValidator('json', requestPasswordResetBodySchema),
   captchaMiddleware(),
-  requestPasswordResetHandler,
+  requestPasswordResetHandler
 )

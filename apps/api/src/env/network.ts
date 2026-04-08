@@ -12,21 +12,32 @@ export const networkEnvVars = (nodeEnv?: string) => {
 
     // Refresh token cookie configuration
     COOKIE_REFRESH_TOKEN_NAME: z.string().default('refresh-token'),
-    COOKIE_REFRESH_TOKEN_EXPIRATION: z.coerce.number().int().positive().default(86400), // 24 hours
+    COOKIE_REFRESH_TOKEN_EXPIRATION: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(86400), // 24 hours
     COOKIE_REFRESH_TOKEN_DOMAIN: z.string().optional(), // domain for cookies in production/staging
 
     // CORS: Required for staging/production, optional for dev/test
-    ALLOWED_ORIGINS: z.string().optional().superRefine((val, ctx) => {
-      if ((nodeEnv === 'staging' || nodeEnv === 'production') && (!val || val.trim() === '')) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'ALLOWED_ORIGINS is required for staging/production environments',
-        })
-      }
-    }),
+    ALLOWED_ORIGINS: z
+      .string()
+      .optional()
+      .superRefine((val, ctx) => {
+        if (
+          (nodeEnv === 'staging' || nodeEnv === 'production') &&
+          (!val || val.trim() === '')
+        ) {
+          ctx.addIssue({
+            code: 'custom',
+            message:
+              'ALLOWED_ORIGINS is required for staging/production environments'
+          })
+        }
+      }),
 
     // Base URLs
     BE_BASE_URL: z.url().default('http://localhost:3000'),
-    FE_BASE_URL: z.url().default('http://localhost:5173'),
+    FE_BASE_URL: z.url().default('http://localhost:5173')
   }
 }

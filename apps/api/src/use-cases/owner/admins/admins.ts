@@ -7,10 +7,13 @@ import { Role } from '@/types'
 
 const normalizeRoles = (params: SearchParams): SearchParams => ({
   ...params,
-  roles: [Role.Admin],
+  roles: [Role.Admin]
 })
 
-export const getAdmins = async (params: SearchParams, pagination: PaginationParams) => {
+export const getAdmins = async (
+  params: SearchParams,
+  pagination: PaginationParams
+) => {
   const result = await userRepo.search(normalizeRoles(params), pagination)
 
   const adminIds = result.users.map(u => u.id)
@@ -18,12 +21,12 @@ export const getAdmins = async (params: SearchParams, pagination: PaginationPara
 
   const admins = result.users.map(admin => ({
     ...admin,
-    inviter: inviters.get(admin.id),
+    inviter: inviters.get(admin.id)
   }))
 
   return {
     data: { admins },
-    pagination: result.pagination,
+    pagination: result.pagination
   }
 }
 
@@ -39,8 +42,8 @@ export const getAdmin = async (adminId: string) => {
   return {
     admin: {
       ...admin,
-      inviter: inviters.get(adminId),
-    },
+      inviter: inviters.get(adminId)
+    }
   }
 }
 
@@ -50,7 +53,10 @@ export interface UpdateAdminInput {
   status?: UserStatus
 }
 
-export const updateAdmin = async (adminId: string, updates: UpdateAdminInput) => {
+export const updateAdmin = async (
+  adminId: string,
+  updates: UpdateAdminInput
+) => {
   const admin = await userRepo.findById(adminId)
 
   if (admin?.role !== Role.Admin) {

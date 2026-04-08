@@ -1,9 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Link,
-  Text,
-} from '@react-email/components'
+import { Link, Text } from '@react-email/components'
 
 import type { EmailVerificationContent } from '../content'
 import type { Metadata } from '../metadata'
@@ -28,7 +25,7 @@ const EmailVerificationEmail = ({
   data,
   content: c,
   styles: s,
-  metadata,
+  metadata
 }: Props) => {
   const { firstName, verificationUrl } = data
 
@@ -39,13 +36,9 @@ const EmailVerificationEmail = ({
       styles={s}
       metadata={metadata}
     >
-      <Text style={s.text.body}>
-        {c.greeting(firstName)}
-      </Text>
+      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 
-      <Text style={s.text.body}>
-        {c.body}
-      </Text>
+      <Text style={s.text.body}>{c.body}</Text>
 
       <Link href={verificationUrl} style={s.link}>
         {c.ctaText}
@@ -65,10 +58,10 @@ const EmailVerificationEmail = ({
 EmailVerificationEmail.PreviewProps = {
   data: {
     firstName: 'Jason',
-    verificationUrl: `http://localhost:5173/auth/verify-email?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
+    verificationUrl: `http://localhost:5173/auth/verify-email?token=eb6a0c90a8e75d4c9d5a93def2911d7b`
   },
   content: getContent('uk').emailVerification,
-  styles: getThemeStyles('dark'),
+  styles: getThemeStyles('dark')
 } as Props
 
 export default EmailVerificationEmail

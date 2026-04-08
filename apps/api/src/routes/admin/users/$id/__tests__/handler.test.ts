@@ -23,18 +23,20 @@ describe('getUserHandler', () => {
     role: Role.User,
     status: UserStatus.Active,
     createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01')
   }
 
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: { valid: mock(() => ({ id: testUuids.USER_1 })) },
-      json: mockJson,
+      json: mockJson
     }
     mockGetUser = mock(async () => ({ user: mockUser }))
 
-    await moduleMocker.mock('@/use-cases/admin', () => ({ getUser: mockGetUser }))
+    await moduleMocker.mock('@/use-cases/admin', () => ({
+      getUser: mockGetUser
+    }))
   })
 
   afterEach(async () => {
@@ -74,7 +76,7 @@ describe('updateUserHandler', () => {
     role: Role.User,
     status: UserStatus.Active,
     createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-02'),
+    updatedAt: new Date('2024-01-02')
   }
 
   beforeEach(async () => {
@@ -82,14 +84,16 @@ describe('updateUserHandler', () => {
     mockContext = {
       req: {
         valid: mock((type: string) =>
-          type === 'param' ? { id: testUuids.USER_1 } : body,
-        ),
+          type === 'param' ? { id: testUuids.USER_1 } : body
+        )
       },
-      json: mockJson,
+      json: mockJson
     }
     mockUpdateUser = mock(async () => ({ user: updatedUser }))
 
-    await moduleMocker.mock('@/use-cases/admin', () => ({ updateUser: mockUpdateUser }))
+    await moduleMocker.mock('@/use-cases/admin', () => ({
+      updateUser: mockUpdateUser
+    }))
   })
 
   afterEach(async () => {

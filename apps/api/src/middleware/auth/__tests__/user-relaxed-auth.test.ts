@@ -30,8 +30,13 @@ describe('User Relaxed Authentication Middleware', () => {
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_1, email: 'test@example.com', role, status: UserStatus.Active },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.USER_1,
+            email: 'test@example.com',
+            role,
+            status: UserStatus.Active
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/', userRelaxedAuthMiddleware)
@@ -39,8 +44,8 @@ describe('User Relaxed Authentication Middleware', () => {
 
         const res = await testApp.request('/', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.OK)
@@ -56,7 +61,7 @@ describe('User Relaxed Authentication Middleware', () => {
         UserStatus.New,
         UserStatus.Verified,
         UserStatus.Trial,
-        UserStatus.Active,
+        UserStatus.Active
       ]
 
       for (const status of allowedStatuses) {
@@ -64,8 +69,13 @@ describe('User Relaxed Authentication Middleware', () => {
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_2, email: 'user@example.com', role: Role.User, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.USER_2,
+            email: 'user@example.com',
+            role: Role.User,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/', userRelaxedAuthMiddleware)
@@ -73,8 +83,8 @@ describe('User Relaxed Authentication Middleware', () => {
 
         const res = await testApp.request('/', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.OK)
@@ -84,15 +94,24 @@ describe('User Relaxed Authentication Middleware', () => {
     })
 
     it('should reject invalid statuses', async () => {
-      const invalidStatuses = [UserStatus.Suspended, UserStatus.Archived, UserStatus.Pending]
+      const invalidStatuses = [
+        UserStatus.Suspended,
+        UserStatus.Archived,
+        UserStatus.Pending
+      ]
 
       for (const status of invalidStatuses) {
         const testApp = new Hono<AppContext>()
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_3, email: 'user@example.com', role: Role.User, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.USER_3,
+            email: 'user@example.com',
+            role: Role.User,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/', userRelaxedAuthMiddleware)
@@ -100,8 +119,8 @@ describe('User Relaxed Authentication Middleware', () => {
 
         const res = await testApp.request('/', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.FORBIDDEN)

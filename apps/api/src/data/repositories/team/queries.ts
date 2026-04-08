@@ -3,7 +3,14 @@ import { alias } from 'drizzle-orm/pg-core'
 
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
-import type { Team, TeamMemberDetails, TeamSearchParams, TeamSearchResult, TeamWithMemberCount, UserTeamInfo } from './types'
+import type {
+  Team,
+  TeamMemberDetails,
+  TeamSearchParams,
+  TeamSearchResult,
+  TeamWithMemberCount,
+  UserTeamInfo
+} from './types'
 
 import { db } from '../../clients'
 import { teamMembersTable, teamsTable, usersTable } from '../../schema'
@@ -16,7 +23,7 @@ const buildWhereConditions = ({ search }: TeamSearchParams) => {
   if (search && search.length > 0) {
     // Use concatenated expression to leverage GIN index (idx_teams_search_trgm)
     conditions.push(
-      sql`(${teamsTable.id}::text || ' ' || ${teamsTable.name} || ' ' || COALESCE(${teamsTable.website}, '') || ' ' || COALESCE(${teamsTable.description}, '')) ILIKE ${`%${search}%`}`,
+      sql`(${teamsTable.id}::text || ' ' || ${teamsTable.name} || ' ' || COALESCE(${teamsTable.website}, '') || ' ' || COALESCE(${teamsTable.description}, '')) ILIKE ${`%${search}%`}`
     )
   }
 
@@ -26,7 +33,7 @@ const buildWhereConditions = ({ search }: TeamSearchParams) => {
 export const searchTeams = async (
   filters: TeamSearchParams,
   pagination: PaginationParams,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamSearchResult> => {
   const executor = tx || db
 
@@ -40,21 +47,18 @@ export const searchTeams = async (
       .orderBy(desc(teamsTable.createdAt))
       .limit(pagination.limit)
       .offset(calcOffset(pagination)),
-    executor
-      .select({ value: count() })
-      .from(teamsTable)
-      .where(whereClause),
+    executor.select({ value: count() }).from(teamsTable).where(whereClause)
   ])
 
   return {
     teams,
-    pagination: buildPagination(pagination, countResult),
+    pagination: buildPagination(pagination, countResult)
   }
 }
 
 export const findTeamById = async (
   teamId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<Team | undefined> => {
   const executor = tx || db
 
@@ -72,7 +76,7 @@ export const findTeamById = async (
 export const findTeamMembers = async (
   teamId: string,
   userId?: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamMemberDetails[]> => {
   const executor = tx || db
   const invitersTable = alias(usersTable, 'inviters')
@@ -99,8 +103,8 @@ export const findTeamMembers = async (
       inviter: {
         id: invitersTable.id,
         firstName: invitersTable.firstName,
-        lastName: invitersTable.lastName,
-      },
+        lastName: invitersTable.lastName
+      }
     })
     .from(teamMembersTable)
     .innerJoin(usersTable, eq(teamMembersTable.userId, usersTable.id))
@@ -114,7 +118,7 @@ export const findTeamMembers = async (
 
 export const countTeamMembers = async (
   teamId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<number> => {
   const executor = tx || db
 
@@ -129,7 +133,7 @@ export const countTeamMembers = async (
 export const findTeamMember = async (
   teamId: string,
   userId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamMemberDetails | undefined> => {
   const members = await findTeamMembers(teamId, userId, tx)
 
@@ -138,11 +142,11 @@ export const findTeamMember = async (
 
 export const findTeamWithMemberCount = async (
   teamId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<TeamWithMemberCount | undefined> => {
   const [team, memberCount] = await Promise.all([
     findTeamById(teamId, tx),
-    countTeamMembers(teamId, tx),
+    countTeamMembers(teamId, tx)
   ])
 
   if (!team) {
@@ -151,13 +155,13 @@ export const findTeamWithMemberCount = async (
 
   return {
     ...team,
-    memberCount,
+    memberCount
   }
 }
 
 export const findUserTeam = async (
   userId: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<UserTeamInfo | undefined> => {
   const executor = tx || db
 
@@ -165,7 +169,7 @@ export const findUserTeam = async (
     .select({
       id: teamsTable.id,
       name: teamsTable.name,
-      position: teamMembersTable.position,
+      position: teamMembersTable.position
     })
     .from(teamMembersTable)
     .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))

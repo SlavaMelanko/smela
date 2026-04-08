@@ -36,15 +36,19 @@ const BATCH_SIZE = 500
 const DEFAULT_COUNT = 5000
 
 // Pre-computed bcrypt hash for "FakeUser123!" to avoid slow hashing
-const DUMMY_PASSWORD_HASH = '$2b$10$QKxGzLHk1BrFb7YrLsLnZuvEw3K.vUqhD4TxCPDdKFfqsHVqoA3lC'
+const DUMMY_PASSWORD_HASH =
+  '$2b$10$QKxGzLHk1BrFb7YrLsLnZuvEw3K.vUqhD4TxCPDdKFfqsHVqoA3lC'
 
 const NON_ALPHA_RE = /[^a-z]/g
 
-const sanitizeForEmail = (name: string) => name.toLowerCase().replace(NON_ALPHA_RE, '')
+const sanitizeForEmail = (name: string) =>
+  name.toLowerCase().replace(NON_ALPHA_RE, '')
 
 const generateUser = (index: number) => {
   const firstName = faker.person.firstName()
-  const lastName = faker.helpers.maybe(() => faker.person.lastName(), { probability: 0.9 }) ?? null
+  const lastName =
+    faker.helpers.maybe(() => faker.person.lastName(), { probability: 0.9 }) ??
+    null
   const lastNamePart = lastName ? sanitizeForEmail(lastName) : 'user'
 
   return {
@@ -52,7 +56,11 @@ const generateUser = (index: number) => {
     lastName,
     email: `${sanitizeForEmail(firstName)}.${lastNamePart}+${index}@test.local`,
     role: Role.User,
-    status: faker.helpers.arrayElement([UserStatus.New, UserStatus.Verified, UserStatus.Active]),
+    status: faker.helpers.arrayElement([
+      UserStatus.New,
+      UserStatus.Verified,
+      UserStatus.Active
+    ])
   }
 }
 
@@ -65,19 +73,24 @@ const seedFakeUsers = async (count: number) => {
   for (let i = 0; i < count; i += BATCH_SIZE) {
     const batchSize = Math.min(BATCH_SIZE, count - i)
 
-    await db.transaction(async (tx) => {
+    await db.transaction(async tx => {
       // Generate batch of users
-      const users = Array.from({ length: batchSize }, (_, j) => generateUser(i + j))
+      const users = Array.from({ length: batchSize }, (_, j) =>
+        generateUser(i + j)
+      )
 
       // Insert users, get IDs
-      const inserted = await tx.insert(usersTable).values(users).returning({ id: usersTable.id })
+      const inserted = await tx
+        .insert(usersTable)
+        .values(users)
+        .returning({ id: usersTable.id })
 
       // Insert auth records (local provider, dummy password hash)
       const authRecords = inserted.map((user, j) => ({
         userId: user.id,
         provider: AuthProvider.Local,
         identifier: users[j].email,
-        passwordHash: DUMMY_PASSWORD_HASH,
+        passwordHash: DUMMY_PASSWORD_HASH
       }))
 
       await tx.insert(authTable).values(authRecords)
@@ -128,7 +141,9 @@ const main = async () => {
   const count = countArg ? Number.parseInt(countArg, 10) : DEFAULT_COUNT
 
   if (Number.isNaN(count) || count <= 0) {
-    console.error('Invalid count. Usage: bun src/data/scripts/seed-fake-users.ts [count]')
+    console.error(
+      'Invalid count. Usage: bun src/data/scripts/seed-fake-users.ts [count]'
+    )
     process.exit(1)
   }
 
@@ -138,7 +153,7 @@ const main = async () => {
   await seedFakeUsers(count)
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error('Failed to seed fake users:', err)
   process.exit(1)
 })

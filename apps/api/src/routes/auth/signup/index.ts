@@ -13,5 +13,5 @@ signupRoute.post(
   '/signup',
   requestValidator('json', signupBodySchema),
   captchaMiddleware(),
-  signupHandler,
+  signupHandler
 )

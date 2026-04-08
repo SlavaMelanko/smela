@@ -9,7 +9,10 @@ import type { CreateUserInput, UpdateUserInput, User } from './types'
 import { db } from '../../clients'
 import { userRoleTable, usersTable } from '../../schema'
 
-export const createUser = async (user: CreateUserInput, tx?: Database): Promise<User> => {
+export const createUser = async (
+  user: CreateUserInput,
+  tx?: Database
+): Promise<User> => {
   const executor = tx || db
 
   const [createdUser] = await executor
@@ -28,7 +31,7 @@ export const createUser = async (user: CreateUserInput, tx?: Database): Promise<
 export const updateUser = async (
   userId: string,
   updates: UpdateUserInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<User> => {
   const executor = tx || db
 
@@ -37,7 +40,7 @@ export const updateUser = async (
       .update(usersTable)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(usersTable.id, userId))
-      .returning(),
+      .returning()
   )
 
   const [updatedUser] = await executor
@@ -50,7 +53,7 @@ export const updateUser = async (
       status: updatedCte.status,
       createdAt: updatedCte.createdAt,
       updatedAt: updatedCte.updatedAt,
-      role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`,
+      role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`
     })
     .from(updatedCte)
     .leftJoin(userRoleTable, eq(updatedCte.id, userRoleTable.userId))

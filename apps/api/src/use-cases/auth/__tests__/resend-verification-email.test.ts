@@ -32,23 +32,23 @@ describe('Resend Verification Email', () => {
       status: UserStatus.New,
       role: Role.User,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     }
 
     mockUserRepo = {
-      findByEmail: mock(async () => mockUser),
+      findByEmail: mock(async () => mockUser)
     }
     mockTokenRepo = {
-      issue: mock(async () => {}),
+      issue: mock(async () => {})
     }
     mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>),
+      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
       tokenRepo: mockTokenRepo,
-      db: mockTransaction,
+      db: mockTransaction
     }))
 
     mockTokenString = 'mock-resend-verification-token-123'
@@ -56,19 +56,19 @@ describe('Resend Verification Email', () => {
     mockGenerateToken = mock(() => ({
       type: TokenType.EmailVerification,
       token: mockTokenString,
-      expiresAt: mockExpiresAt,
+      expiresAt: mockExpiresAt
     }))
 
     await moduleMocker.mock('@/security/token', () => ({
-      generateToken: mockGenerateToken,
+      generateToken: mockGenerateToken
     }))
 
     mockEmailAgent = {
-      sendEmailVerificationEmail: mock(async () => {}),
+      sendEmailVerificationEmail: mock(async () => {})
     }
 
     await moduleMocker.mock('@/services', () => ({
-      emailAgent: mockEmailAgent,
+      emailAgent: mockEmailAgent
     }))
   })
 
@@ -82,12 +82,16 @@ describe('Resend Verification Email', () => {
 
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-      expect(mockTokenRepo.issue).toHaveBeenCalledWith(mockUser.id, {
-        userId: mockUser.id,
-        type: TokenType.EmailVerification,
-        token: mockTokenString,
-        expiresAt: mockExpiresAt,
-      }, {})
+      expect(mockTokenRepo.issue).toHaveBeenCalledWith(
+        mockUser.id,
+        {
+          userId: mockUser.id,
+          type: TokenType.EmailVerification,
+          token: mockTokenString,
+          expiresAt: mockExpiresAt
+        },
+        {}
+      )
       expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 
       expect(result).toEqual({ success: true })
@@ -100,7 +104,7 @@ describe('Resend Verification Email', () => {
         mockUser.firstName,
         mockUser.email,
         mockTokenString,
-        undefined,
+        undefined
       )
       expect(mockEmailAgent.sendEmailVerificationEmail).toHaveBeenCalledTimes(1)
     })
@@ -110,7 +114,9 @@ describe('Resend Verification Email', () => {
     it('should return success response to prevent email enumeration', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => null)
 
-      const result = await resendVerificationEmail({ email: 'nonexistent@example.com' })
+      const result = await resendVerificationEmail({
+        email: 'nonexistent@example.com'
+      })
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
@@ -122,12 +128,14 @@ describe('Resend Verification Email', () => {
     it('should return success response to prevent email enumeration', async () => {
       const verifiedUser = {
         ...mockUser,
-        status: UserStatus.Verified,
+        status: UserStatus.Verified
       }
 
       mockUserRepo.findByEmail.mockImplementation(async () => verifiedUser)
 
-      const result = await resendVerificationEmail({ email: verifiedUser.email })
+      const result = await resendVerificationEmail({
+        email: verifiedUser.email
+      })
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
@@ -139,12 +147,14 @@ describe('Resend Verification Email', () => {
     it('should return success response to prevent email enumeration', async () => {
       const suspendedUser = {
         ...mockUser,
-        status: UserStatus.Suspended,
+        status: UserStatus.Suspended
       }
 
       mockUserRepo.findByEmail.mockImplementation(async () => suspendedUser)
 
-      const result = await resendVerificationEmail({ email: suspendedUser.email })
+      const result = await resendVerificationEmail({
+        email: suspendedUser.email
+      })
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
@@ -185,7 +195,7 @@ describe('Resend Verification Email', () => {
         UserStatus.Trial,
         UserStatus.Active,
         UserStatus.Archived,
-        UserStatus.Pending,
+        UserStatus.Pending
       ]
 
       for (const status of ineligibleStatuses) {
@@ -193,7 +203,9 @@ describe('Resend Verification Email', () => {
 
         mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
 
-        const result = await resendVerificationEmail({ email: userWithStatus.email })
+        const result = await resendVerificationEmail({
+          email: userWithStatus.email
+        })
 
         expect(result).toEqual({ success: true })
         expect(mockTokenRepo.issue).not.toHaveBeenCalled()

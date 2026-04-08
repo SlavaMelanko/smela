@@ -14,7 +14,7 @@ describe('Login with Email', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockLoginParams: LoginInput
-  let mockDeviceInfo: { ipAddress: string, userAgent: string }
+  let mockDeviceInfo: { ipAddress: string; userAgent: string }
 
   let mockUser: User
   let mockUserRepo: any
@@ -35,11 +35,11 @@ describe('Login with Email', () => {
   beforeEach(async () => {
     mockLoginParams = {
       email: 'test@example.com',
-      password: 'ValidPass123!',
+      password: 'ValidPass123!'
     }
     mockDeviceInfo = {
       ipAddress: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 (Test)',
+      userAgent: 'Mozilla/5.0 (Test)'
     }
 
     mockUser = {
@@ -50,10 +50,10 @@ describe('Login with Email', () => {
       status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
     mockUserRepo = {
-      findByEmail: mock(async () => mockUser),
+      findByEmail: mock(async () => mockUser)
     }
     mockAuthRecord = {
       userId: testUuids.USER_1,
@@ -61,54 +61,54 @@ describe('Login with Email', () => {
       identifier: 'test@example.com',
       passwordHash: '$2b$10$hashedPassword123',
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
     mockAuthRepo = {
-      findById: mock(async () => mockAuthRecord),
+      findById: mock(async () => mockAuthRecord)
     }
     mockRefreshTokenRepo = {
-      create: mock(async () => 1),
+      create: mock(async () => 1)
     }
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam),
+      findUserTeam: mock(async () => mockTeam)
     }
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
       authRepo: mockAuthRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
-      teamRepo: mockTeamRepo,
+      teamRepo: mockTeamRepo
     }))
 
     mockComparePasswords = mock(async () => true)
 
     await moduleMocker.mock('@/security/password', () => ({
-      comparePasswordHashes: mockComparePasswords,
+      comparePasswordHashes: mockComparePasswords
     }))
 
     mockJwtToken = 'login-jwt-token-123'
     mockCreateJwt = mock(async () => mockJwtToken)
 
     await moduleMocker.mock('@/security/jwt', () => ({
-      signJwt: mockCreateJwt,
+      signJwt: mockCreateJwt
     }))
 
     mockGenerateHashedToken = mock(async () => ({
       token: { raw: 'refresh_token_123', hashed: 'hashed_refresh_token_123' },
       expiresAt: new Date('2024-02-01'),
-      type: 'refresh_token',
+      type: 'refresh_token'
     }))
 
     await moduleMocker.mock('@/security/token', () => ({
       generateHashedToken: mockGenerateHashedToken,
-      TokenType: { RefreshToken: 'refresh_token' },
+      TokenType: { RefreshToken: 'refresh_token' }
     }))
 
     mockResolvePermissions = mock(async () => undefined)
 
     await moduleMocker.mock('../../resolve-permissions', () => ({
-      resolvePermissionList: mockResolvePermissions,
+      resolvePermissionList: mockResolvePermissions
     }))
   })
 
@@ -134,7 +134,7 @@ describe('Login with Email', () => {
       mockTeam = {
         id: 'team-123',
         name: 'Acme Corp',
-        position: 'Software Engineer',
+        position: 'Software Engineer'
       }
       mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
 
@@ -158,9 +158,11 @@ describe('Login with Email', () => {
     it('should throw InvalidCredentials when user does not exist', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => null)
 
-      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toMatchObject({
+      expect(
+        logInWithEmail(mockLoginParams, mockDeviceInfo)
+      ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials,
+        code: ErrorCode.InvalidCredentials
       })
     })
 
@@ -170,7 +172,7 @@ describe('Login with Email', () => {
       // Should still work with different case
       const result = await logInWithEmail(
         { ...mockLoginParams, email: upperCaseEmail },
-        mockDeviceInfo,
+        mockDeviceInfo
       )
       expect(result).toHaveProperty('data')
       expect(result).toHaveProperty('refreshToken')
@@ -181,20 +183,25 @@ describe('Login with Email', () => {
     it('should throw InvalidCredentials when auth record not found', async () => {
       mockAuthRepo.findById.mockImplementation(async () => null)
 
-      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toMatchObject({
+      expect(
+        logInWithEmail(mockLoginParams, mockDeviceInfo)
+      ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials,
+        code: ErrorCode.InvalidCredentials
       })
     })
 
     it('should throw InvalidCredentials when auth record has no password hash', async () => {
-      mockAuthRepo.findById.mockImplementation(
-        async () => ({ ...mockAuthRecord, passwordHash: null }),
-      )
+      mockAuthRepo.findById.mockImplementation(async () => ({
+        ...mockAuthRecord,
+        passwordHash: null
+      }))
 
-      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toMatchObject({
+      expect(
+        logInWithEmail(mockLoginParams, mockDeviceInfo)
+      ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials,
+        code: ErrorCode.InvalidCredentials
       })
     })
   })
@@ -203,18 +210,22 @@ describe('Login with Email', () => {
     it('should throw InvalidCredentials for incorrect password', async () => {
       mockComparePasswords.mockImplementation(async () => false)
 
-      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toMatchObject({
+      expect(
+        logInWithEmail(mockLoginParams, mockDeviceInfo)
+      ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials,
+        code: ErrorCode.InvalidCredentials
       })
     })
 
     it('should handle empty password input', async () => {
       mockComparePasswords.mockImplementation(async () => false)
 
-      expect(logInWithEmail({ ...mockLoginParams, password: '' }, mockDeviceInfo)).rejects.toMatchObject({
+      expect(
+        logInWithEmail({ ...mockLoginParams, password: '' }, mockDeviceInfo)
+      ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials,
+        code: ErrorCode.InvalidCredentials
       })
     })
 
@@ -224,7 +235,7 @@ describe('Login with Email', () => {
       })
 
       expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toThrow(
-        'Password comparison failed',
+        'Password comparison failed'
       )
     })
   })
@@ -235,7 +246,9 @@ describe('Login with Email', () => {
         throw new Error('JWT signing failed')
       })
 
-      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toThrow('JWT signing failed')
+      expect(logInWithEmail(mockLoginParams, mockDeviceInfo)).rejects.toThrow(
+        'JWT signing failed'
+      )
     })
   })
 
@@ -243,29 +256,32 @@ describe('Login with Email', () => {
     const testCases = [
       {
         name: 'very long email addresses',
-        params: { email: `${'a'.repeat(100)}@example.com` },
+        params: { email: `${'a'.repeat(100)}@example.com` }
       },
       {
         name: 'very long passwords',
-        params: { password: 'a'.repeat(1000) },
+        params: { password: 'a'.repeat(1000) }
       },
       {
         name: 'special characters in email',
-        params: { email: 'test+tag@example-domain.co.uk' },
+        params: { email: 'test+tag@example-domain.co.uk' }
       },
       {
         name: 'special characters in password',
-        params: { password: '!@#$%^&*()_+-=[]{}|;:,.<>?' },
+        params: { password: '!@#$%^&*()_+-=[]{}|;:,.<>?' }
       },
       {
         name: 'Unicode characters in password',
-        params: { password: '密码123é🔑' },
-      },
+        params: { password: '密码123é🔑' }
+      }
     ]
 
     testCases.forEach(({ name, params }) => {
       it(`should handle ${name}`, async () => {
-        const result = await logInWithEmail({ ...mockLoginParams, ...params }, mockDeviceInfo)
+        const result = await logInWithEmail(
+          { ...mockLoginParams, ...params },
+          mockDeviceInfo
+        )
         expect(result).toHaveProperty('data')
         expect(result).toHaveProperty('refreshToken')
       })
@@ -302,9 +318,10 @@ describe('Login with Email', () => {
     })
 
     it('should handle malformed auth data from database', async () => {
-      mockAuthRepo.findById.mockImplementation(
-        async () => ({ ...mockAuthRecord, passwordHash: undefined }),
-      )
+      mockAuthRepo.findById.mockImplementation(async () => ({
+        ...mockAuthRecord,
+        passwordHash: undefined
+      }))
 
       try {
         await logInWithEmail(mockLoginParams, mockDeviceInfo)
@@ -342,7 +359,11 @@ describe('Login with Email', () => {
     })
 
     it('should handle user with all possible statuses', async () => {
-      const statuses = [UserStatus.New, UserStatus.Verified, UserStatus.Suspended]
+      const statuses = [
+        UserStatus.New,
+        UserStatus.Verified,
+        UserStatus.Suspended
+      ]
 
       for (const status of statuses) {
         const userWithStatus = { ...mockUser, status }

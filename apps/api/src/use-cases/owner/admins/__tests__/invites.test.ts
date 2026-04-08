@@ -30,8 +30,8 @@ describe('inviteAdmin', () => {
     permissions: {
       users: { view: true, manage: false },
       admins: { view: true, manage: false },
-      teams: { view: false, manage: false },
-    },
+      teams: { view: false, manage: false }
+    }
   }
 
   beforeEach(async () => {
@@ -43,7 +43,7 @@ describe('inviteAdmin', () => {
       role: Role.Admin,
       status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockFindByEmail = mock(async () => undefined)
@@ -62,44 +62,44 @@ describe('inviteAdmin', () => {
       userRepo: {
         findByEmail: mockFindByEmail,
         findById: mockUserFindById,
-        create: mockUserCreate,
+        create: mockUserCreate
       },
       rbacRepo: {
         assignRole: mockUserRoleAssign,
-        setUserPermissions: mockRbacSet,
+        setUserPermissions: mockRbacSet
       },
       authRepo: { create: mockAuthCreate },
       tokenRepo: { issue: mockTokenIssue },
-      db: { transaction: mockTransaction },
+      db: { transaction: mockTransaction }
     }))
 
     await moduleMocker.mock('@/crypto', () => ({
       createRandomBytesGenerator: () => ({
-        generate: () => 'random-placeholder-password',
-      }),
+        generate: () => 'random-placeholder-password'
+      })
     }))
 
     await moduleMocker.mock('@/security/password', () => ({
-      hashPassword: async () => 'hashed-placeholder',
+      hashPassword: async () => 'hashed-placeholder'
     }))
 
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
         token: 'invitation-token-123',
-        expiresAt: new Date('2024-01-08'),
+        expiresAt: new Date('2024-01-08')
       }),
-      TokenType: { UserInvite: 'user_invite' },
+      TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
       emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail,
-      },
+        sendUserInvitationEmail: mockSendUserInvitationEmail
+      }
     }))
 
     await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: 'Test Company' },
+      default: { COMPANY_NAME: 'Test Company' }
     }))
   })
 
@@ -110,9 +110,13 @@ describe('inviteAdmin', () => {
   it('should throw EmailAlreadyInUse when email exists', async () => {
     mockFindByEmail.mockImplementation(async () => mockAdmin)
 
-    expect(inviteAdmin(inviteAdminParams, testUuids.OWNER_1)).rejects.toThrow(AppError)
-    expect(inviteAdmin(inviteAdminParams, testUuids.OWNER_1)).rejects.toMatchObject({
-      code: ErrorCode.EmailAlreadyInUse,
+    expect(inviteAdmin(inviteAdminParams, testUuids.OWNER_1)).rejects.toThrow(
+      AppError
+    )
+    expect(
+      inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
+    ).rejects.toMatchObject({
+      code: ErrorCode.EmailAlreadyInUse
     })
   })
 
@@ -124,17 +128,17 @@ describe('inviteAdmin', () => {
         firstName: 'New',
         lastName: 'Admin',
         email: 'newadmin@example.com',
-        status: UserStatus.Pending,
+        status: UserStatus.Pending
       },
-      expect.anything(),
+      expect.anything()
     )
     expect(mockUserRoleAssign).toHaveBeenCalledWith(
       {
         userId: mockAdmin.id,
         role: Role.Admin,
-        invitedBy: testUuids.OWNER_1,
+        invitedBy: testUuids.OWNER_1
       },
-      expect.anything(),
+      expect.anything()
     )
     expect(result).toEqual({ admin: mockAdmin })
   })
@@ -147,7 +151,7 @@ describe('inviteAdmin', () => {
       'newadmin@example.com',
       'invitation-token-123',
       'New',
-      'Test Company',
+      'Test Company'
     )
   })
 })
@@ -171,7 +175,7 @@ describe('resendAdminInvite', () => {
       role: Role.Admin,
       status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockInviter = {
@@ -182,7 +186,7 @@ describe('resendAdminInvite', () => {
       role: Role.Owner,
       status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockFindById = mock(async (id: string) => {
@@ -204,26 +208,26 @@ describe('resendAdminInvite', () => {
     await moduleMocker.mock('@/data', () => ({
       userRepo: { findById: mockFindById },
       tokenRepo: { issue: mockTokenIssue },
-      db: { transaction: mockTransaction },
+      db: { transaction: mockTransaction }
     }))
 
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
         token: 'new-invitation-token',
-        expiresAt: new Date('2024-01-08'),
+        expiresAt: new Date('2024-01-08')
       }),
-      TokenType: { UserInvite: 'user_invite' },
+      TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
       emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail,
-      },
+        sendUserInvitationEmail: mockSendUserInvitationEmail
+      }
     }))
 
     await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: 'Test Company' },
+      default: { COMPANY_NAME: 'Test Company' }
     }))
   })
 
@@ -240,16 +244,14 @@ describe('resendAdminInvite', () => {
       return undefined
     })
 
-    expect(resendAdminInvite(
-      testUuids.NON_EXISTENT,
-      testUuids.OWNER_1,
-    )).rejects.toThrow(AppError)
-    expect(resendAdminInvite(
-      testUuids.NON_EXISTENT,
-      testUuids.OWNER_1,
-    )).rejects.toMatchObject({
+    expect(
+      resendAdminInvite(testUuids.NON_EXISTENT, testUuids.OWNER_1)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendAdminInvite(testUuids.NON_EXISTENT, testUuids.OWNER_1)
+    ).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Admin not found',
+      message: 'Admin not found'
     })
   })
 
@@ -265,10 +267,14 @@ describe('resendAdminInvite', () => {
       return undefined
     })
 
-    expect(resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)).rejects.toThrow(AppError)
-    expect(resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)).rejects.toMatchObject({
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
+    ).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Admin not found',
+      message: 'Admin not found'
     })
   })
 
@@ -284,10 +290,14 @@ describe('resendAdminInvite', () => {
       return undefined
     })
 
-    expect(resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)).rejects.toThrow(AppError)
-    expect(resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)).rejects.toMatchObject({
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
+    ).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
-      message: 'Admin has already accepted invitation',
+      message: 'Admin has already accepted invitation'
     })
   })
 
@@ -300,16 +310,14 @@ describe('resendAdminInvite', () => {
       return undefined
     })
 
-    expect(resendAdminInvite(
-      testUuids.ADMIN_1,
-      testUuids.NON_EXISTENT,
-    )).rejects.toThrow(AppError)
-    expect(resendAdminInvite(
-      testUuids.ADMIN_1,
-      testUuids.NON_EXISTENT,
-    )).rejects.toMatchObject({
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.NON_EXISTENT)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendAdminInvite(testUuids.ADMIN_1, testUuids.NON_EXISTENT)
+    ).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Inviter not found',
+      message: 'Inviter not found'
     })
   })
 
@@ -322,16 +330,16 @@ describe('resendAdminInvite', () => {
         userId: testUuids.ADMIN_1,
         type: 'user_invite',
         token: 'new-invitation-token',
-        expiresAt: expect.any(Date),
+        expiresAt: expect.any(Date)
       },
-      expect.anything(),
+      expect.anything()
     )
     expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
       'Admin',
       'admin@example.com',
       'new-invitation-token',
       'Owner',
-      'Test Company',
+      'Test Company'
     )
     expect(result).toEqual({ success: true })
   })
@@ -355,12 +363,15 @@ describe('cancelAdminInvite', () => {
       role: Role.Admin,
       status: UserStatus.Pending,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockFindById = mock(async () => mockAdmin)
     mockTokenDeprecate = mock(async () => {})
-    mockUserUpdate = mock(async () => ({ ...mockAdmin, status: UserStatus.Archived }))
+    mockUserUpdate = mock(async () => ({
+      ...mockAdmin,
+      status: UserStatus.Archived
+    }))
 
     // eslint-disable-next-line ts/no-unsafe-return
     mockTransaction = mock(async (callback: any) => callback({}))
@@ -368,11 +379,11 @@ describe('cancelAdminInvite', () => {
     await moduleMocker.mock('@/data', () => ({
       userRepo: { findById: mockFindById, update: mockUserUpdate },
       tokenRepo: { deprecate: mockTokenDeprecate },
-      db: { transaction: mockTransaction },
+      db: { transaction: mockTransaction }
     }))
 
     await moduleMocker.mock('@/security/token', () => ({
-      TokenType: { UserInvite: 'user_invite' },
+      TokenType: { UserInvite: 'user_invite' }
     }))
   })
 
@@ -386,38 +397,48 @@ describe('cancelAdminInvite', () => {
     expect(cancelAdminInvite(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
     expect(cancelAdminInvite(testUuids.NON_EXISTENT)).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Admin not found',
+      message: 'Admin not found'
     })
   })
 
   it('should throw NotFound when user is not Admin role', async () => {
-    mockFindById.mockImplementation(async () => ({ ...mockAdmin, role: Role.User }))
+    mockFindById.mockImplementation(async () => ({
+      ...mockAdmin,
+      role: Role.User
+    }))
 
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toThrow(AppError)
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Admin not found',
+      message: 'Admin not found'
     })
   })
 
   it('should throw BadRequest when admin has already accepted invitation', async () => {
-    mockFindById.mockImplementation(async () => ({ ...mockAdmin, status: UserStatus.Active }))
+    mockFindById.mockImplementation(async () => ({
+      ...mockAdmin,
+      status: UserStatus.Active
+    }))
 
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toThrow(AppError)
     expect(cancelAdminInvite(testUuids.ADMIN_1)).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
-      message: 'Admin has already accepted invitation',
+      message: 'Admin has already accepted invitation'
     })
   })
 
   it('should deprecate token and archive user in a transaction', async () => {
     const result = await cancelAdminInvite(testUuids.ADMIN_1)
 
-    expect(mockTokenDeprecate).toHaveBeenCalledWith(testUuids.ADMIN_1, 'user_invite', expect.anything())
+    expect(mockTokenDeprecate).toHaveBeenCalledWith(
+      testUuids.ADMIN_1,
+      'user_invite',
+      expect.anything()
+    )
     expect(mockUserUpdate).toHaveBeenCalledWith(
       testUuids.ADMIN_1,
       { status: UserStatus.Archived },
-      expect.anything(),
+      expect.anything()
     )
     expect(result).toEqual({ success: true })
   })

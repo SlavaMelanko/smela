@@ -10,28 +10,28 @@ export const get = (theme: Theme = 'light') => ({
       fontSize: font.size.base,
       fontWeight: font.weight.normal,
       lineHeight: font.lineHeight.normal,
-      color: color[theme].text.primary,
+      color: color[theme].text.primary
     },
     detail: {
       fontFamily: font.family.sans,
       fontSize: font.size.sm,
       fontWeight: font.weight.thin,
       lineHeight: font.lineHeight.normal,
-      color: color[theme].text.tertiary,
+      color: color[theme].text.tertiary
     },
     legal: {
       fontFamily: font.family.sans,
       fontSize: font.size.xs,
       fontWeight: font.weight.thin,
       lineHeight: font.lineHeight.normal,
-      color: color[theme].text.tertiary,
-    },
+      color: color[theme].text.tertiary
+    }
   },
 
   link: {
     color: color[theme].link,
     textDecoration: 'underline',
-    fontWeight: font.weight.medium,
+    fontWeight: font.weight.medium
   },
 
   icon: {
@@ -41,6 +41,6 @@ export const get = (theme: Theme = 'light') => ({
     strokeWidth: '1.5',
     fill: 'none',
     transition: 'stroke 0.2s ease-in-out',
-    cursor: 'pointer',
-  },
+    cursor: 'pointer'
+  }
 })

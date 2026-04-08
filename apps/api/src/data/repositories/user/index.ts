@@ -1,5 +1,10 @@
 import { createUser, updateUser } from './mutations'
-import { findUserByEmail, findUserById, findUserByIdExtended, search } from './queries'
+import {
+  findUserByEmail,
+  findUserById,
+  findUserByIdExtended,
+  search
+} from './queries'
 
 export * from './types'
 
@@ -9,5 +14,5 @@ export const userRepo = {
   findById: findUserById,
   findByIdExtended: findUserByIdExtended,
   search,
-  update: updateUser,
+  update: updateUser
 }

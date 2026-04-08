@@ -8,7 +8,7 @@ import { generateHashedToken, generateToken } from '../facade'
 import {
   EMAIL_VERIFICATION_EXPIRY_SECONDS,
   PASSWORD_RESET_EXPIRY_SECONDS,
-  REFRESH_TOKEN_EXPIRY_SECONDS,
+  REFRESH_TOKEN_EXPIRY_SECONDS
 } from '../options'
 import { TokenType } from '../types'
 
@@ -26,14 +26,18 @@ describe('Token Facade', () => {
       expect(/^[0-9a-f]+$/.test(result.token)).toBe(true)
 
       const expectedMinExpiry = new Date(
-        beforeGeneration.getTime() + seconds(EMAIL_VERIFICATION_EXPIRY_SECONDS),
+        beforeGeneration.getTime() + seconds(EMAIL_VERIFICATION_EXPIRY_SECONDS)
       )
       const expectedMaxExpiry = new Date(
-        afterGeneration.getTime() + seconds(EMAIL_VERIFICATION_EXPIRY_SECONDS),
+        afterGeneration.getTime() + seconds(EMAIL_VERIFICATION_EXPIRY_SECONDS)
       )
 
-      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(expectedMinExpiry.getTime())
-      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(expectedMaxExpiry.getTime())
+      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
+        expectedMinExpiry.getTime()
+      )
+      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
+        expectedMaxExpiry.getTime()
+      )
     })
 
     it('should generate PasswordReset token with default options', () => {
@@ -48,14 +52,18 @@ describe('Token Facade', () => {
       expect(/^[0-9a-f]+$/.test(result.token)).toBe(true)
 
       const expectedMinExpiry = new Date(
-        beforeGeneration.getTime() + seconds(PASSWORD_RESET_EXPIRY_SECONDS),
+        beforeGeneration.getTime() + seconds(PASSWORD_RESET_EXPIRY_SECONDS)
       )
       const expectedMaxExpiry = new Date(
-        afterGeneration.getTime() + seconds(PASSWORD_RESET_EXPIRY_SECONDS),
+        afterGeneration.getTime() + seconds(PASSWORD_RESET_EXPIRY_SECONDS)
       )
 
-      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(expectedMinExpiry.getTime())
-      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(expectedMaxExpiry.getTime())
+      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
+        expectedMinExpiry.getTime()
+      )
+      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
+        expectedMaxExpiry.getTime()
+      )
     })
 
     it('should generate unique tokens on consecutive calls', () => {
@@ -72,7 +80,7 @@ describe('Token Facade', () => {
       const beforeGeneration = new Date()
       const result = generateToken(TokenType.EmailVerification, {
         tokenLength: CUSTOM_LENGTH,
-        expirySeconds: CUSTOM_EXPIRY,
+        expirySeconds: CUSTOM_EXPIRY
       })
       const afterGeneration = new Date()
 
@@ -80,25 +88,33 @@ describe('Token Facade', () => {
       expect(/^[0-9a-f]+$/.test(result.token)).toBe(true)
 
       const expectedMinExpiry = new Date(
-        beforeGeneration.getTime() + seconds(CUSTOM_EXPIRY),
+        beforeGeneration.getTime() + seconds(CUSTOM_EXPIRY)
       )
       const expectedMaxExpiry = new Date(
-        afterGeneration.getTime() + seconds(CUSTOM_EXPIRY),
+        afterGeneration.getTime() + seconds(CUSTOM_EXPIRY)
       )
 
-      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(expectedMinExpiry.getTime())
-      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(expectedMaxExpiry.getTime())
+      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
+        expectedMinExpiry.getTime()
+      )
+      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
+        expectedMaxExpiry.getTime()
+      )
     })
 
     it('should handle zero expiry seconds', () => {
       const beforeGeneration = new Date()
       const result = generateToken(TokenType.EmailVerification, {
-        expirySeconds: 0,
+        expirySeconds: 0
       })
       const afterGeneration = new Date()
 
-      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(beforeGeneration.getTime())
-      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(afterGeneration.getTime())
+      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
+        beforeGeneration.getTime()
+      )
+      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
+        afterGeneration.getTime()
+      )
     })
   })
 
@@ -120,14 +136,18 @@ describe('Token Facade', () => {
       expect(/^[0-9a-f]+$/.test(result.token.hashed)).toBe(true)
 
       const expectedMinExpiry = new Date(
-        beforeGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS),
+        beforeGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS)
       )
       const expectedMaxExpiry = new Date(
-        afterGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS),
+        afterGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS)
       )
 
-      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(expectedMinExpiry.getTime())
-      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(expectedMaxExpiry.getTime())
+      expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
+        expectedMinExpiry.getTime()
+      )
+      expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
+        expectedMaxExpiry.getTime()
+      )
     })
 
     it('should throw error when token is empty string', async () => {
@@ -138,13 +158,14 @@ describe('Token Facade', () => {
           generateWithExpiry() {
             return { token: '', expiresAt: new Date() }
           }
-        },
+        }
       }))
 
-      const { generateHashedToken: mockedGenerateHashedToken } = await import('../facade')
+      const { generateHashedToken: mockedGenerateHashedToken } =
+        await import('../facade')
 
       expect(mockedGenerateHashedToken(TokenType.RefreshToken)).rejects.toThrow(
-        'Token must be a non-empty string',
+        'Token must be a non-empty string'
       )
 
       await moduleMocker.clear()

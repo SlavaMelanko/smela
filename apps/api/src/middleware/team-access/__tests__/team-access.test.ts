@@ -15,8 +15,8 @@ const mockTeamRepoFindMember = mock()
 
 void mock.module('@/data', () => ({
   teamRepo: {
-    findMember: mockTeamRepoFindMember,
-  },
+    findMember: mockTeamRepoFindMember
+  }
 }))
 
 describe('Team Access Middleware', () => {
@@ -35,7 +35,7 @@ describe('Team Access Middleware', () => {
         teamId: testUuids.TEAM_1,
         position: 'Developer',
         invitedBy: testUuids.ADMIN_1,
-        joinedAt: new Date(),
+        joinedAt: new Date()
       }))
 
       app.use('/teams/:teamId', async (c, next) => {
@@ -43,7 +43,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -53,7 +53,10 @@ describe('Team Access Middleware', () => {
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(testUuids.TEAM_1, testUuids.USER_1)
+      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+        testUuids.TEAM_1,
+        testUuids.USER_1
+      )
 
       const json = await res.json()
       expect(json.message).toBe('success')
@@ -67,7 +70,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -77,7 +80,10 @@ describe('Team Access Middleware', () => {
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(testUuids.TEAM_1, testUuids.USER_1)
+      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+        testUuids.TEAM_1,
+        testUuids.USER_1
+      )
 
       const json = await res.json()
       expect(json.code).toBe(ErrorCode.Forbidden)
@@ -91,7 +97,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -101,7 +107,10 @@ describe('Team Access Middleware', () => {
       const res = await app.request(`/teams/${testUuids.TEAM_2}`)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(testUuids.TEAM_2, testUuids.USER_1)
+      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+        testUuids.TEAM_2,
+        testUuids.USER_1
+      )
     })
   })
 
@@ -112,7 +121,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -134,7 +143,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -155,7 +164,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -177,7 +186,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -198,7 +207,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.ADMIN_1,
           email: 'admin@example.com',
           role: Role.Admin,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -216,7 +225,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
           role: Role.Owner,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -231,7 +240,7 @@ describe('Team Access Middleware', () => {
     it('should query database for regular User', async () => {
       mockTeamRepoFindMember.mockImplementation(async () => ({
         userId: testUuids.USER_1,
-        teamId: testUuids.TEAM_1,
+        teamId: testUuids.TEAM_1
       }))
 
       app.use('/teams/:teamId', async (c, next) => {
@@ -239,7 +248,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -249,7 +258,10 @@ describe('Team Access Middleware', () => {
       await app.request(`/teams/${testUuids.TEAM_1}`)
 
       expect(mockTeamRepoFindMember).toHaveBeenCalledTimes(1)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(testUuids.TEAM_1, testUuids.USER_1)
+      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+        testUuids.TEAM_1,
+        testUuids.USER_1
+      )
     })
   })
 
@@ -262,7 +274,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })
@@ -288,7 +300,7 @@ describe('Team Access Middleware', () => {
           id: testUuids.USER_1,
           email: 'user@example.com',
           role: Role.User,
-          status: UserStatus.Active,
+          status: UserStatus.Active
         })
         await next()
       })

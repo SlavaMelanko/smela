@@ -6,10 +6,7 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
 
-import {
-  getTeam,
-  updateTeam,
-} from '../teams'
+import { getTeam, updateTeam } from '../teams'
 
 const { TEAM_1 } = testUuids
 
@@ -28,17 +25,20 @@ describe('getTeam', () => {
       description: 'A test team',
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
-      memberCount: 0,
+      memberCount: 0
     }
 
     mockTeamRepoFind = mock(async () => mockTeam)
-    mockTeamRepoFindMember = mock(async () => ({ userId: testUuids.USER_1, teamId: TEAM_1 }))
+    mockTeamRepoFindMember = mock(async () => ({
+      userId: testUuids.USER_1,
+      teamId: TEAM_1
+    }))
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         find: mockTeamRepoFind,
-        findMember: mockTeamRepoFindMember,
-      },
+        findMember: mockTeamRepoFindMember
+      }
     }))
   })
 
@@ -59,7 +59,7 @@ describe('getTeam', () => {
     expect(getTeam(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
     expect(getTeam(testUuids.NON_EXISTENT)).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Team not found',
+      message: 'Team not found'
     })
   })
 })
@@ -80,25 +80,28 @@ describe('updateTeam', () => {
       website: 'https://oldteam.com',
       description: 'An old team',
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockUpdatedTeam = {
       ...mockExistingTeam,
       name: 'Updated Team',
-      updatedAt: new Date('2024-01-02'),
+      updatedAt: new Date('2024-01-02')
     }
 
     mockTeamRepoFindById = mock(async () => mockExistingTeam)
     mockTeamRepoUpdate = mock(async () => mockUpdatedTeam)
-    mockTeamRepoFindMember = mock(async () => ({ userId: testUuids.USER_1, teamId: TEAM_1 }))
+    mockTeamRepoFindMember = mock(async () => ({
+      userId: testUuids.USER_1,
+      teamId: TEAM_1
+    }))
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         findById: mockTeamRepoFindById,
         update: mockTeamRepoUpdate,
-        findMember: mockTeamRepoFindMember,
-      },
+        findMember: mockTeamRepoFindMember
+      }
     }))
   })
 
@@ -119,10 +122,14 @@ describe('updateTeam', () => {
   it('should throw NotFound error when team does not exist', async () => {
     mockTeamRepoFindById.mockImplementation(async () => undefined)
 
-    expect(updateTeam(testUuids.NON_EXISTENT, { name: 'Test' })).rejects.toThrow(AppError)
-    expect(updateTeam(testUuids.NON_EXISTENT, { name: 'Test' })).rejects.toMatchObject({
+    expect(
+      updateTeam(testUuids.NON_EXISTENT, { name: 'Test' })
+    ).rejects.toThrow(AppError)
+    expect(
+      updateTeam(testUuids.NON_EXISTENT, { name: 'Test' })
+    ).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Team not found',
+      message: 'Team not found'
     })
   })
 })

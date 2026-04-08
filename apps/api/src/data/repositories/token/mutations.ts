@@ -13,7 +13,7 @@ import { tokensTable } from '../../schema'
 export const deprecateOldTokens = async (
   userId: string,
   tokenType: TokenType,
-  tx?: Database,
+  tx?: Database
 ) => {
   const executor = tx || db
 
@@ -25,19 +25,22 @@ export const deprecateOldTokens = async (
         eq(tokensTable.userId, userId),
         eq(tokensTable.type, tokenType),
         isNull(tokensTable.usedAt),
-        eq(tokensTable.status, TokenStatus.Pending),
-      ),
+        eq(tokensTable.status, TokenStatus.Pending)
+      )
     )
 }
 
-export const createToken = async (token: CreateTokenInput, tx?: Database): Promise<number> => {
+export const createToken = async (
+  token: CreateTokenInput,
+  tx?: Database
+): Promise<number> => {
   const executor = tx || db
 
   const [createdToken] = await executor
     .insert(tokensTable)
     .values({
       ...token,
-      status: token.status || TokenStatus.Pending,
+      status: token.status || TokenStatus.Pending
     })
     .returning({ id: tokensTable.id })
 
@@ -47,7 +50,7 @@ export const createToken = async (token: CreateTokenInput, tx?: Database): Promi
 export const issueToken = async (
   userId: string,
   token: CreateTokenInput,
-  tx: Database,
+  tx: Database
 ): Promise<void> => {
   await deprecateOldTokens(userId, token.type, tx)
   await createToken(token, tx)
@@ -56,7 +59,7 @@ export const issueToken = async (
 export const updateToken = async (
   tokenId: number,
   updates: UpdateTokenInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<void> => {
   const executor = tx || db
 

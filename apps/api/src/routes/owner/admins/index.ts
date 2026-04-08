@@ -8,7 +8,7 @@ import { ownerAdminByIdRoute } from './$id'
 import {
   createAdminHandler,
   getAdminDefaultPermissionsHandler,
-  getAdminsHandler,
+  getAdminsHandler
 } from './handler'
 import { createAdminBodySchema, getAdminsQuerySchema } from './schema'
 
@@ -17,18 +17,18 @@ export const ownerAdminsRoute = new Hono<AppContext>()
 ownerAdminsRoute.get(
   '/admins',
   requestValidator('query', getAdminsQuerySchema),
-  getAdminsHandler,
+  getAdminsHandler
 )
 
 ownerAdminsRoute.post(
   '/admins',
   requestValidator('json', createAdminBodySchema),
-  createAdminHandler,
+  createAdminHandler
 )
 
 ownerAdminsRoute.get(
   '/admins/default-permissions',
-  getAdminDefaultPermissionsHandler,
+  getAdminDefaultPermissionsHandler
 )
 
 ownerAdminsRoute.route('/admins/:adminId', ownerAdminByIdRoute)

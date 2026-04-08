@@ -19,7 +19,7 @@ export const validateEnvVars = (envVars: NodeJS.ProcessEnv = process.env) => {
       ...networkEnvVars(nodeEnv),
       ...companyEnvVars,
       ...captchaEnvVars,
-      ...sentryEnvVars,
+      ...sentryEnvVars
     })
 
     const parsedEnv = envSchema.parse(envVars)
@@ -30,17 +30,17 @@ export const validateEnvVars = (envVars: NodeJS.ProcessEnv = process.env) => {
       parsedEnv.POSTGRES_PASSWORD,
       parsedEnv.POSTGRES_HOST,
       parsedEnv.POSTGRES_PORT,
-      parsedEnv.POSTGRES_DB,
+      parsedEnv.POSTGRES_DB
     )
 
     return {
       ...parsedEnv,
-      POSTGRES_URL,
+      POSTGRES_URL
     }
   } catch (error: unknown) {
     console.error(
       'Failed to parse environment variables:',
-      error instanceof ZodError ? z.flattenError(error).fieldErrors : error,
+      error instanceof ZodError ? z.flattenError(error).fieldErrors : error
     )
 
     process.exit(1)

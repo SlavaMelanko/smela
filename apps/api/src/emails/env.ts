@@ -15,8 +15,8 @@ const parseSocialLinks = (jsonString?: string) => {
   try {
     const parsed = JSON.parse(jsonString) as unknown
 
-    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed))
-      ? parsed as CompanyEnv['companySocialLinks']
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as CompanyEnv['companySocialLinks'])
       : DEFAULT_SOCIAL_LINKS
   } catch {
     return DEFAULT_SOCIAL_LINKS
@@ -29,7 +29,7 @@ const createCompanyEnv = (): CompanyEnv => {
 
   return {
     companyName: COMPANY_NAME || 'SMELA',
-    companySocialLinks: parseSocialLinks(COMPANY_SOCIAL_LINKS),
+    companySocialLinks: parseSocialLinks(COMPANY_SOCIAL_LINKS)
   }
 }
 

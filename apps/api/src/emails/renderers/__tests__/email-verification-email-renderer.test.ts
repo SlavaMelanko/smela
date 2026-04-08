@@ -12,12 +12,12 @@ describe('Email Verification Email Renderer', () => {
 
   const mockData: EmailVerificationEmailData = {
     firstName: 'John',
-    verificationUrl: 'https://example.com/verify?token=abc123',
+    verificationUrl: 'https://example.com/verify?token=abc123'
   }
 
   const mockMetadata: Metadata = {
     emailId: 'test-email-id',
-    sentAt: '2024-01-01T00:00:00Z',
+    sentAt: '2024-01-01T00:00:00Z'
   }
 
   it('should render email verification email with required fields', async () => {
@@ -53,7 +53,7 @@ describe('Email Verification Email Renderer', () => {
   it('should render with Ukrainian locale when specified', async () => {
     const userPreferences: UserPreferences = {
       locale: 'uk',
-      theme: 'light',
+      theme: 'light'
     }
 
     const result = await renderer.render(mockData, userPreferences)
@@ -67,12 +67,12 @@ describe('Email Verification Email Renderer', () => {
   it('should render with different themes', async () => {
     const lightPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'light',
+      theme: 'light'
     }
 
     const darkPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'dark',
+      theme: 'dark'
     }
 
     const lightResult = await renderer.render(mockData, lightPreferences)
@@ -97,10 +97,14 @@ describe('Email Verification Email Renderer', () => {
   it('should handle complete parameters', async () => {
     const userPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'light',
+      theme: 'light'
     }
 
-    const result = await renderer.render(mockData, userPreferences, mockMetadata)
+    const result = await renderer.render(
+      mockData,
+      userPreferences,
+      mockMetadata
+    )
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -112,7 +116,7 @@ describe('Email Verification Email Renderer', () => {
   it('should handle special characters in firstName', async () => {
     const dataWithSpecialChars: EmailVerificationEmailData = {
       firstName: 'José María',
-      verificationUrl: 'https://example.com/verify?token=abc123',
+      verificationUrl: 'https://example.com/verify?token=abc123'
     }
 
     const result = await renderer.render(dataWithSpecialChars)
@@ -124,7 +128,8 @@ describe('Email Verification Email Renderer', () => {
   it('should handle long verification URLs', async () => {
     const dataWithLongUrl: EmailVerificationEmailData = {
       firstName: 'John',
-      verificationUrl: 'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456',
+      verificationUrl:
+        'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456'
     }
 
     const result = await renderer.render(dataWithLongUrl)
