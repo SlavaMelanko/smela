@@ -20,6 +20,8 @@
     "allowUnreachableCode": false,
     "noPropertyAccessFromIndexSignature": true,
 
+    "types": ["bun-types"],
+
     "esModuleInterop": true,
     "skipLibCheck": true
   },
