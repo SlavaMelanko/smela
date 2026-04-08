@@ -5,6 +5,10 @@
 - `apps/api` — Bun/Hono backend (see [apps/api/CLAUDE.md](apps/api/CLAUDE.md))
 - `apps/web` — React/Vite frontend (see [apps/web/CLAUDE.md](apps/web/CLAUDE.md))
 
+## Dev Notes
+
+- When upgrading React, update the `version` field in `packages/eslint/src/react.js` → `settings.react.version`.
+
 ## Skills
 
 ### apps/web
