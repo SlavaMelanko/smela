@@ -35,6 +35,6 @@
     "sort-json": "^2.0.1"
   },
   "peerDependencies": {
-    "i18next": "^25.8.11"
+    "i18next": "^26.0.4"
   }
 }

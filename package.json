@@ -19,7 +19,7 @@
   },
   "scripts": {
     "clean": "bun run --parallel --filter '*' clean & rm -rf node_modules & wait",
-    "reinstall": "bun run clean && bun install",
+    "reinstall": "bun pm cache rm && bun run clean && bun install",
     "prepare": "husky",
     "postinstall": "bun run --filter @smela/i18n sync",
     "dev:web": "bash scripts/dev.sh",
