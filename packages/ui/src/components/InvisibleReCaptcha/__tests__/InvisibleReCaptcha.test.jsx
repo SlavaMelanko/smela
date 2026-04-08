@@ -5,7 +5,7 @@ const mockExecuteAsync = vi.fn()
 const mockReset = vi.fn()
 
 // Must unmock the component since setup.js mocks it globally
-vi.unmock('@/components/InvisibleReCaptcha')
+vi.unmock('@ui/components/InvisibleReCaptcha')
 
 vi.mock('react-google-recaptcha', async () => {
   const React = await vi.importActual('react')
