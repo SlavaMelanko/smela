@@ -19,12 +19,7 @@ while [[ $# -gt 0 ]]; do
       E2E_CMD="e2e:ui"
       shift
       ;;
-    --kill)
-      SESSION="smela-e2e-$CALLER_APP"
-      tmux kill-session -t $SESSION 2>/dev/null || true
-      exit 0
-      ;;
-    *)
+*)
       shift
       ;;
   esac

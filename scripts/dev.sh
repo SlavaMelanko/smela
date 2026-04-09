@@ -2,11 +2,6 @@
 
 SESSION="smela-dev"
 
-if [[ "$1" == "--kill" ]]; then
-  tmux kill-session -t $SESSION 2>/dev/null || true
-  exit 0
-fi
-
 if tmux has-session -t $SESSION 2>/dev/null; then
   tmux attach-session -t $SESSION
   exit 0
