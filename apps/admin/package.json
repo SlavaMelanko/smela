@@ -10,10 +10,12 @@
     "build": "vite build --mode production",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "lint": "eslint --cache src",
-    "lint:fix": "eslint --cache src --fix",
+    "lint": "eslint --cache src e2e",
+    "lint:fix": "eslint --cache src e2e --fix",
     "lint:staged": "lint-staged --no-stash",
     "check": "bun run format:fix && bun run lint:fix",
+    "e2e": "NODE_ENV=test playwright test -x",
+    "e2e:ui": "NODE_ENV=test playwright test --ui",
     "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
   },
   "lint-staged": {
@@ -36,6 +38,9 @@
   },
   "devDependencies": {
     "@smela/eslint": "workspace:*",
+    "@smela/e2e": "workspace:*",
+    "@faker-js/faker": "^10.3.0",
+    "@playwright/test": "^1.58.2",
     "@sentry/vite-plugin": "^5.2.0",
     "@tailwindcss/vite": "^4.2.0",
     "tailwindcss": "^4.2.0",

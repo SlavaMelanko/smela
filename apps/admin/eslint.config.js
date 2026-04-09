@@ -1,3 +1,3 @@
-import { reactConfig, shadcnConfig } from '@smela/eslint'
+import { playwrightConfig, reactConfig, shadcnConfig } from '@smela/eslint'
 
-export default [...reactConfig, ...shadcnConfig]
+export default [...reactConfig, ...shadcnConfig, ...playwrightConfig]

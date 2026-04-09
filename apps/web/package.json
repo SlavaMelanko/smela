@@ -8,14 +8,14 @@
     "dev": "vite --mode development",
     "preview": "vite preview --mode production",
     "build": "vite build --mode production",
-    "e2e": "NODE_ENV=test bunx playwright test -x",
-    "e2e:ui": "NODE_ENV=test bunx playwright test --ui",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "eslint --cache src e2e",
     "lint:fix": "eslint --cache src e2e --fix",
     "lint:staged": "lint-staged --no-stash",
     "check": "bun run format:fix && bun run lint:fix",
+    "e2e": "NODE_ENV=test playwright test -x",
+    "e2e:ui": "NODE_ENV=test playwright test --ui",
     "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
   },
   "lint-staged": {
