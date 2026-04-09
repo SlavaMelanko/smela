@@ -1,13 +1,14 @@
 import { wrapCreateBrowserRouterV6 } from '@sentry/react'
+import { AuthLayout, ErrorLayout, UserLayout } from '@smela/ui/layouts'
+import { adminActiveStatuses, Role } from '@smela/ui/lib/types'
 import {
-  AuthLayout,
-  ErrorLayout,
-  LegalLayout,
-  PublicLayout,
-  TeamLayout,
-  UserLayout
-} from '@smela/ui/layouts'
-import { Role, userActiveStatuses } from '@smela/ui/lib/types'
+  DashboardPage,
+  SettingsPage as AdminSettingsPage,
+  TeamPage,
+  TeamsPage,
+  UserPage,
+  UsersPage
+} from '@smela/ui/pages/admin'
 import {
   AcceptInvitePage,
   EmailConfirmationPage,
@@ -21,34 +22,22 @@ import {
   NetworkErrorPage,
   NotFoundErrorPage
 } from '@smela/ui/pages/errors'
-import { PrivacyPage, TermsPage } from '@smela/ui/pages/legal'
-import { PricingPage } from '@smela/ui/pages/public'
-import {
-  HomePage,
-  ProfilePage,
-  SettingsPage as UserSettingsPage,
-  TeamGeneralPage,
-  TeamMemberPage,
-  TeamMembersPage
-} from '@smela/ui/pages/user'
+import { AdminPage, AdminsPage } from '@smela/ui/pages/owner'
+import { ProfilePage } from '@smela/ui/pages/user'
 import {
   ErrorBoundary,
   PrivateRoute,
   PublicRoute,
   RootRedirect
 } from '@smela/ui/routes'
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 
 const sentryCreateBrowserRouter = wrapCreateBrowserRouterV6(createBrowserRouter)
 
 export const router = sentryCreateBrowserRouter([
   {
-    element: <PublicLayout />,
-    errorElement: <ErrorBoundary />,
-    children: [
-      { path: '/', element: <RootRedirect /> },
-      { path: 'pricing', element: <PricingPage /> }
-    ]
+    element: <RootRedirect />,
+    path: '/'
   },
   {
     element: (
@@ -67,37 +56,40 @@ export const router = sentryCreateBrowserRouter([
     ]
   },
   {
-    element: <LegalLayout />,
-    errorElement: <ErrorBoundary />,
-    children: [
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'privacy', element: <PrivacyPage /> }
-    ]
-  },
-  {
+    path: '/admin',
     element: (
       <PrivateRoute
-        requireStatuses={userActiveStatuses}
-        requireRoles={[Role.User]}
+        requireStatuses={adminActiveStatuses}
+        requireRoles={[Role.Admin, Role.Owner]}
       >
         <UserLayout />
       </PrivateRoute>
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'home', element: <HomePage /> },
-      {
-        path: 'team',
-        element: <TeamLayout />,
-        children: [
-          { index: true, element: <Navigate to='general' replace /> },
-          { path: 'general', element: <TeamGeneralPage /> },
-          { path: 'members', element: <TeamMembersPage /> }
-        ]
-      },
-      { path: 'team/members/:id', element: <TeamMemberPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
+      { path: 'users', element: <UsersPage /> },
+      { path: 'users/:id', element: <UserPage /> },
+      { path: 'teams', element: <TeamsPage /> },
+      { path: 'teams/:id', element: <TeamPage /> },
       { path: 'profile', element: <ProfilePage /> },
-      { path: 'settings', element: <UserSettingsPage /> }
+      { path: 'settings', element: <AdminSettingsPage /> }
+    ]
+  },
+  {
+    path: '/owner',
+    element: (
+      <PrivateRoute
+        requireStatuses={adminActiveStatuses}
+        requireRoles={[Role.Owner]}
+      >
+        <UserLayout />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      { path: 'admins', element: <AdminsPage /> },
+      { path: 'admins/:id', element: <AdminPage /> }
     ]
   },
   {

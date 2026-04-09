@@ -1,0 +1,3 @@
+@import '@smela/ui/index.css';
+
+@source "../../../packages/ui/src/**/*.{js,jsx,ts,tsx}";
