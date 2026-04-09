@@ -2,12 +2,12 @@
   "name": "smela",
   "private": true,
   "workspaces": [
-    "apps/web",
     "apps/admin",
     "apps/api",
+    "apps/web",
     "packages/e2e",
-    "packages/i18n",
     "packages/eslint",
+    "packages/i18n",
     "packages/ui"
   ],
   "engines": {
