@@ -90,6 +90,7 @@ export default defineConfig({
       })
   ].filter(Boolean),
   resolve: {
+    dedupe: ['react', 'react-dom', '@tanstack/react-query'],
     alias: {
       '@ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@': path.resolve(__dirname, 'src')
