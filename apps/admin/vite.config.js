@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { reactCompilerOptions } from '@smela/ui/react-compiler'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -15,14 +16,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const isProdOrStage =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-
-// TanStack Table uses interior mutability: it modifies config objects in place
-// while keeping the same reference. React Compiler assumes immutable props and
-// memoizes based on reference equality, so these mutations go undetected.
-// Excluding table components forces React to re-render them normally.
-const reactCompilerOptions = {
-  sources: filename => !filename.includes('packages/ui/src/components/table/')
-}
 
 export default defineConfig({
   server: {
