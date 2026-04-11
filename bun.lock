@@ -5,6 +5,7 @@
     "": {
       "name": "smela",
       "devDependencies": {
+        "@playwright/test": "^1.58.2",
         "eslint": "^10",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.6",
@@ -29,7 +30,6 @@
       },
       "devDependencies": {
         "@faker-js/faker": "^10.3.0",
-        "@playwright/test": "^1.58.2",
         "@sentry/vite-plugin": "^5.2.0",
         "@smela/e2e": "workspace:*",
         "@smela/eslint": "workspace:*",
@@ -95,7 +95,6 @@
       },
       "devDependencies": {
         "@faker-js/faker": "^10.3.0",
-        "@playwright/test": "^1.58.2",
         "@sentry/vite-plugin": "^5.2.0",
         "@smela/e2e": "workspace:*",
         "@smela/eslint": "workspace:*",

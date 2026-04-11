@@ -40,7 +40,6 @@
     "@smela/eslint": "workspace:*",
     "@smela/e2e": "workspace:*",
     "@faker-js/faker": "^10.3.0",
-    "@playwright/test": "^1.58.2",
     "@sentry/vite-plugin": "^5.2.0",
     "@tailwindcss/vite": "^4.2.0",
     "tailwindcss": "^4.2.0",
