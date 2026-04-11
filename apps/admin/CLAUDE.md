@@ -5,9 +5,10 @@ code in this repository.
 
 ## Project Overview
 
-This is the user version of the frontend application built with React 19, Vite,
-React Compiler, and TanStack Query. The project uses a custom backend API and
-emphasizes clear architecture, easy maintenance, and simple UX.
+This is the admin/owner version of the frontend application built with React 19,
+Vite, React Compiler, and TanStack Query. This app is dedicated to admin and
+owner functionality only, separated from the main user app for security and
+bundle optimization.
 
 ## Technology Stack
 
@@ -19,9 +20,7 @@ emphasizes clear architecture, easy maintenance, and simple UX.
 - **React Hook Form** - Performant forms with easy validation
 - **Yup** - Schema validation
 - **Tailwind CSS v4** - Utility-first CSS framework with shadcn/ui components
-- **Storybook** - Component development and documentation
 - **i18n** - Internationalization (English/Ukrainian)
-- **Playwright** - E2E testing framework
 
 ## Essential Commands
 
@@ -29,14 +28,16 @@ All script commands are defined in [package.json](package.json). Key workflows:
 
 ### Development
 
-- Development server, production builds, and preview: `dev`, `build`, `preview`
+- Development server: `dev` (runs on port 5175)
+- Production builds: `build`
+- Preview: `preview` (runs on port 5175)
 - Build analysis: `bundle:analyze` opens bundle visualization
 
 ### Code Quality
 
 - Linting: `lint` (check only), `lint:fix` (fix issues)
 - Formatting: `format` (check only), `format:fix` (fix formatting)
-- Check everything: `check` (runs format:fix and lint:fix)
+- Check everything: `check` (runs format:fix, lint:fix)
 
 ## Architecture Overview
 
@@ -53,25 +54,22 @@ The app uses React Context API for global state:
 - **LocaleContext** - i18n language switching (EN/UK)
 - **ModalContext** - Global modal management
 - **ToastContext** - Global toast notifications (available everywhere)
-- **NotificationContext** - User notifications (authenticated users only, in
-  `UserLayout`)
 
 ### Routing Architecture
 
-Routes are defined in `/src/routes/router.jsx` with layout-based organization:
+Routes are defined in `/src/routes/router.jsx` with admin-focused organization:
 
-| Layout         | Guard          | Routes                                       |
-| -------------- | -------------- | -------------------------------------------- |
-| `PublicLayout` | None           | `/` (redirect), `/pricing`                   |
-| `AuthLayout`   | `PublicRoute`  | `/login`, `/signup`, `/reset-password`, etc. |
-| `LegalLayout`  | None           | `/terms`, `/privacy`                         |
-| `UserLayout`   | `PrivateRoute` | `/home` (user), `/admin/*` (admin)           |
-| `ErrorLayout`  | None           | `/errors/*`, `*` (404)                       |
+| Layout        | Guard          | Routes                                       |
+| ------------- | -------------- | -------------------------------------------- |
+| Root          | None           | `/` (redirect to login or admin)             |
+| `AuthLayout`  | `PublicRoute`  | `/login`, `/signup`, `/reset-password`, etc. |
+| `UserLayout`  | `PrivateRoute` | `/admin/*` (admin), `/owner/*` (owner)       |
+| `ErrorLayout` | None           | `/errors/*`, `*` (404)                       |
 
 Route guards:
 
 - **PublicRoute** - Redirects authenticated users away from auth pages
-- **PrivateRoute** - Requires authentication + valid status (`requireStatuses`)
+- **PrivateRoute** - Requires authentication + admin/owner roles
 
 ### API Integration
 
@@ -105,35 +103,13 @@ custom backend API:
    - Trailing comments: Lowercase start, brief, no period (e.g.,
      `const i = 0 // initial value`)
 
-## Known Issues / FIXME
-
-### TanStack Table + React Compiler Incompatibility
-
-TanStack Table uses interior mutability which is incompatible with React
-Compiler's memoization assumptions. See:
-https://react.dev/reference/eslint-plugin-react-hooks/lints/incompatible-library
-
-**Current workarounds:**
-
-1. Always use the ESLint disable comment when calling `useReactTable`:
-
-   ```jsx
-   // eslint-disable-next-line react-hooks/incompatible-library
-   const table = useReactTable({
-   ```
-
-2. React Compiler is disabled for `src/components/table/` in `vite.config.js`
-   (fixed column visibility dropdown in PR #158)
-
-**Tracking:** Issue #149 - Update TanStack Table when compatible version is
-released.
-
 ## Important Considerations
 
 - The app supports English and Ukrainian languages
 - Theme switching between dark and light modes is implemented
-- Role-based access control differentiates admin and regular users
+- Role-based access control for admin and owner users only
 - All forms include proper validation and error handling
 - API authentication uses JWT tokens for secure access
 - TanStack Query provides automatic caching, background refetching, and
   optimistic updates
+- This app runs on port 5175 to avoid conflicts with the main user app (5173)

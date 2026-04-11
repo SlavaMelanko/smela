@@ -18,6 +18,12 @@ const isProdOrStage =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
 
 export default defineConfig({
+  server: {
+    port: 5175
+  },
+  preview: {
+    port: 5175
+  },
   build: {
     sourcemap: isProdOrStage ? 'hidden' : true,
     rollupOptions: {

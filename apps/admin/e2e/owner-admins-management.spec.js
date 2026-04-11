@@ -162,7 +162,9 @@ test.describe.serial('Owner: Admin Invitation', () => {
 
     expect(link).toContain('/accept-invite?token=')
 
-    await page.goto(link)
+    const url = new URL(link)
+
+    await page.goto(url.pathname + url.search)
 
     // Verify page title
     await expect(

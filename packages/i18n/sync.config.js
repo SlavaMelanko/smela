@@ -7,5 +7,9 @@ export default [
   {
     from: 'src/resources',
     to: dest('apps/web/public/locales')
+  },
+  {
+    from: 'src/resources',
+    to: dest('apps/admin/public/locales')
   }
 ]

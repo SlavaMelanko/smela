@@ -22,6 +22,7 @@ const copyAll = ({ from, to }) => {
     console.error(
       `${timestamp()}: sync failed (${from} → ${to}): ${err.message}`
     )
+
     process.exit(1)
   }
 }
@@ -37,7 +38,9 @@ if (watch) {
     const src = resolve(root, entry.from)
 
     chokidarWatch(src, { ignoreInitial: true }).on('change', filePath => {
-      if (!filePath.endsWith('.json')) return
+      if (!filePath.endsWith('.json')) {
+        return
+      }
 
       const file = filePath.split('/').pop()
 

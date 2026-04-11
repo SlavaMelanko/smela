@@ -1,12 +1,12 @@
 {
-  "name": "@smela/web",
+  "name": "@smela/admin",
   "private": true,
   "version": "2026.03.26",
   "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules",
-    "dev": "vite --mode development",
-    "preview": "vite preview --mode production",
+    "dev": "vite --mode development --port 5175",
+    "preview": "vite preview --mode production --port 5175",
     "build": "vite build --mode production",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",

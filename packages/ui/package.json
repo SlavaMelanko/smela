@@ -32,6 +32,7 @@
     "./routes": "./src/routes/index.js",
     "./services": "./src/services/index.js",
     "./services/backend/paths": "./src/services/backend/paths.js",
+    "./react-compiler": "./react-compiler.js",
     "./tests": "./src/tests/index.js"
   },
   "scripts": {
@@ -53,6 +54,11 @@
       "prettier --ignore-unknown --write"
     ]
   },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@tanstack/react-query": "^5.0.0"
+  },
   "dependencies": {
     "@smela/i18n": "workspace:*",
     "@base-ui/react": "^1.0.0",
@@ -60,7 +66,6 @@
     "@hookform/resolvers": "^5.2.2",
     "@sentry/react": "^10.39.0",
     "@tanstack/react-pacer": "^0.21.1",
-    "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -68,8 +73,6 @@
     "http-status-codes": "^2.3.0",
     "i18next": "^26.0.4",
     "lucide-react": "^1.7.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.71.1",
     "react-i18next": "^17.0.2",
