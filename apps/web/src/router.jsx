@@ -1,4 +1,3 @@
-import { wrapCreateBrowserRouterV6 } from '@sentry/react'
 import {
   AuthLayout,
   ErrorLayout,
@@ -39,9 +38,7 @@ import {
 } from '@smela/ui/routes'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
-const sentryCreateBrowserRouter = wrapCreateBrowserRouterV6(createBrowserRouter)
-
-export const router = sentryCreateBrowserRouter([
+export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     errorElement: <ErrorBoundary />,

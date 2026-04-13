@@ -27,7 +27,6 @@
   "dependencies": {
     "@smela/ui": "workspace:*",
     "@smela/i18n": "workspace:*",
-    "@sentry/react": "^10.39.0",
     "@tanstack/react-query": "^5.90.21",
     "i18next": "^26.0.4",
     "i18next-http-backend": "^3.0.2",
@@ -40,7 +39,6 @@
     "@smela/eslint": "workspace:*",
     "@smela/e2e": "workspace:*",
     "@faker-js/faker": "^10.3.0",
-    "@sentry/vite-plugin": "^5.2.0",
     "@tailwindcss/vite": "^4.2.0",
     "tailwindcss": "^4.2.0",
     "@types/node": "^25.2.3",

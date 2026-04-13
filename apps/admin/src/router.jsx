@@ -1,4 +1,3 @@
-import { wrapCreateBrowserRouterV6 } from '@sentry/react'
 import { AuthLayout, ErrorLayout, UserLayout } from '@smela/ui/layouts'
 import { adminActiveStatuses, Role } from '@smela/ui/lib/types'
 import {
@@ -32,9 +31,7 @@ import {
 } from '@smela/ui/routes'
 import { createBrowserRouter } from 'react-router-dom'
 
-const sentryCreateBrowserRouter = wrapCreateBrowserRouterV6(createBrowserRouter)
-
-export const router = sentryCreateBrowserRouter([
+export const router = createBrowserRouter([
   {
     element: <RootRedirect />,
     path: '/'

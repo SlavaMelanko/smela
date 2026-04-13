@@ -2,15 +2,12 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { reactCompilerOptions } from '@smela/ui/react-compiler'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import webpackStatsPlugin from 'rollup-plugin-webpack-stats'
 import { defineConfig } from 'vite'
-
-import packageJson from './package.json' with { type: 'json' }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -38,10 +35,6 @@ export default defineConfig({
       }
     }
   },
-  define: {
-    // Strip Sentry debug logging from production bundles
-    __SENTRY_DEBUG__: false
-  },
   plugins: [
     react({
       babel: {
@@ -67,18 +60,6 @@ export default defineConfig({
           modules: true,
           reasons: true,
           chunkModules: true
-        }
-      }),
-    process.env.SENTRY_AUTH_TOKEN &&
-      sentryVitePlugin({
-        org: 'smela',
-        project: `${packageJson.name}`,
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        release: {
-          name: `${packageJson.name}@${packageJson.version}`
-        },
-        sourcemaps: {
-          filesToDeleteAfterUpload: ['./dist/**/*.map']
         }
       })
   ].filter(Boolean),
