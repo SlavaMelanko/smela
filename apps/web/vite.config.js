@@ -66,6 +66,20 @@ export default defineConfig({
   },
   // Ensure Vite processes JSX from the @smela/ui workspace package
   optimizeDeps: {
-    include: ['@smela/ui']
+    include: [
+      '@smela/ui/contexts',
+      '@smela/ui/devtools',
+      '@smela/ui/layouts',
+      '@smela/ui/lib/queryClient',
+      '@smela/ui/lib/types',
+      '@smela/ui/lib/userPreferences',
+      '@smela/ui/pages/auth',
+      '@smela/ui/pages/errors',
+      '@smela/ui/pages/legal',
+      '@smela/ui/pages/public',
+      '@smela/ui/pages/user',
+      '@smela/ui/routes',
+      '@smela/ui/services'
+    ]
   }
 })
