@@ -22,8 +22,8 @@ import {
   useSidebar
 } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useLocation, useNavigate } from '@ui/hooks/useRouter'
 import { ExternalLink } from 'lucide-react'
-import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ActiveIndicator } from './ActiveIndicator'
 

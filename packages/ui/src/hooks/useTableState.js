@@ -1,7 +1,7 @@
 import { isValidLimit, Limit } from '@ui/components/Pagination'
-import { useSearchParams } from 'react-router-dom'
 
 import { useDebouncedSearch } from './useDebouncedSearch'
+import { useSearchParams } from './useRouter'
 
 const parseArrayParam = value => {
   if (!value) {

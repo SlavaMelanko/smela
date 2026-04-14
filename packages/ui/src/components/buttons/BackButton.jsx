@@ -1,7 +1,7 @@
 import { Button } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 export const BackButton = ({ to }) => {
   const navigate = useNavigate()

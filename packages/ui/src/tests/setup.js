@@ -5,6 +5,7 @@ import { TextDecoder, TextEncoder } from 'node:util'
 import { resources } from '@smela/i18n/resources'
 import { cleanup } from '@testing-library/react'
 import i18next from 'i18next'
+import React from 'react'
 import { initReactI18next } from 'react-i18next'
 
 // Ensure text encoding/decoding works in JSDOM
@@ -49,9 +50,18 @@ const mockNavigate = vi.fn()
 
 globalThis.mockNavigate = mockNavigate
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useNavigate: () => mockNavigate
+vi.mock('@ui/hooks/useRouter', () => ({
+  useNavigate: () => mockNavigate,
+  useLocation: () => ({ pathname: '/', search: '', hash: '', state: null }),
+  useParams: () => ({}),
+  useSearchParams: () => [new URLSearchParams(), vi.fn()],
+  useOutletContext: () => ({}),
+  useRouteError: () => null,
+  Outlet: () => null,
+  Navigate: () => null,
+  RouterLink: ({ to, children, ...props }) =>
+    React.createElement('a', { href: to, ...props }, children),
+  MemoryRouter: ({ children }) => children
 }))
 
 vi.mock('@ui/services/errorTracker', () => ({

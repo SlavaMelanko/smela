@@ -1,8 +1,8 @@
 import { Spinner } from '@ui/components/Spinner'
 import { useHasAccess } from '@ui/hooks/useHasAccess'
+import { Navigate } from '@ui/hooks/useRouter'
 import { ErrorLayout } from '@ui/layouts'
 import { NotFoundErrorPage } from '@ui/pages/errors'
-import { Navigate } from 'react-router-dom'
 
 export const PrivateRoute = ({
   children,

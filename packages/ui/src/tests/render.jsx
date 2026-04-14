@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 import { LocaleProvider } from '@ui/contexts/LocaleContext'
+import { MemoryRouter } from '@ui/hooks/useRouter'
 // i18next global is pre-initialized with English translations in setup.js
 import i18n from 'i18next'
-import { MemoryRouter } from 'react-router-dom'
 
 export const renderWithProviders = (ui, options = {}) => {
   return render(

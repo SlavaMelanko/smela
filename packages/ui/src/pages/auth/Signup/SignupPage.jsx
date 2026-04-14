@@ -9,9 +9,9 @@ import {
 } from '@ui/hooks/useAuth'
 import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { useTheme } from '@ui/hooks/useTheme'
 import { useToast } from '@ui/hooks/useToast'
-import { useNavigate } from 'react-router-dom'
 
 import { AuthRoot } from '../Auth'
 import { SignupForm } from './Form'
