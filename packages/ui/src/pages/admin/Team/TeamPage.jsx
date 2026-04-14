@@ -12,8 +12,8 @@ import {
 import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate, useParams } from '@ui/hooks/useRouter'
 import { useTeam } from '@ui/hooks/useTeam'
-import { useNavigate, useParams } from 'react-router-dom'
 
 export const TeamPage = () => {
   const { id: teamId } = useParams()

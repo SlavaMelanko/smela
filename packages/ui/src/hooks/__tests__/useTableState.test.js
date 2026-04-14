@@ -1,16 +1,16 @@
 import { act, renderHook } from '@testing-library/react'
 import { Limit } from '@ui/components/Pagination'
-import { useSearchParams } from 'react-router-dom'
 
 import { useDebouncedSearch } from '../useDebouncedSearch'
+import { useSearchParams } from '../useRouter'
 import { useTableState } from '../useTableState'
-
-vi.mock('react-router-dom', () => ({
-  useSearchParams: vi.fn()
-}))
 
 vi.mock('../useDebouncedSearch', () => ({
   useDebouncedSearch: vi.fn()
+}))
+
+vi.mock('../useRouter', () => ({
+  useSearchParams: vi.fn()
 }))
 
 describe('useTableState', () => {

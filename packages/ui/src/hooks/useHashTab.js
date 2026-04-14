@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from './useRouter'
 
 export const useHashTab = (validValues, defaultValue) => {
   const location = useLocation()

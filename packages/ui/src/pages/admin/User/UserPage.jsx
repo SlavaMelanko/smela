@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
 import { useUser } from '@ui/hooks/useAdmin'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from '@ui/hooks/useRouter'
 
 import { MembershipTab } from './MembershipTab'
 import { ProfileTab } from './ProfileTab'

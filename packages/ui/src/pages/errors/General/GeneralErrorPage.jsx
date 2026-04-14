@@ -1,6 +1,6 @@
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { ServerCrash } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import {
   ErrorButton,

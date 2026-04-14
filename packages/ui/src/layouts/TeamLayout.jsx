@@ -7,8 +7,8 @@ import { getTeamTabs, TeamTab } from '@ui/components/team'
 import { Tabs, TabsLine } from '@ui/components/ui'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useLocale } from '@ui/hooks/useLocale'
+import { Navigate, Outlet, useLocation, useNavigate } from '@ui/hooks/useRouter'
 import { userTeamQueryOptions, useTeam } from '@ui/hooks/useTeam'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 // Handles /team/general AND /team/members/:id — index 1 is always the tab segment
 const getActiveTab = pathname => {

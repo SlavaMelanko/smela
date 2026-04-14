@@ -1,5 +1,5 @@
+import { RouterLink } from '@ui/hooks/useRouter'
 import { cn } from '@ui/lib/utils'
-import { Link as RouterLink } from 'react-router-dom'
 
 import { linkVariants } from './variants'
 

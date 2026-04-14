@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from './useRouter'
 
 const stringToNumber = str => Number(str)
 

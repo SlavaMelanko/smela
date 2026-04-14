@@ -3,9 +3,9 @@ import { Sidebar } from '@ui/components/Sidebar'
 import { Spinner } from '@ui/components/Spinner'
 import { SidebarInset, SidebarProvider } from '@ui/components/ui'
 import { NotificationProvider } from '@ui/contexts/NotificationContext'
+import { Outlet } from '@ui/hooks/useRouter'
 import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
 
 export const UserLayout = () => {
   const { items, team } = useSidebarMenu()

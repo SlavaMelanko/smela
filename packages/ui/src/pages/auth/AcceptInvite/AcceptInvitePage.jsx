@@ -1,11 +1,11 @@
 import { Spinner } from '@ui/components/Spinner'
 import { useAcceptInvite, useCheckInvite } from '@ui/hooks/useAuth'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
 import { useUrlParams } from '@ui/hooks/useUrlParams'
 import env from '@ui/lib/env'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { AuthDescription, AuthHeader, AuthRoot, AuthTitle } from '../Auth'
 import { AcceptInviteForm } from './PasswordForm'

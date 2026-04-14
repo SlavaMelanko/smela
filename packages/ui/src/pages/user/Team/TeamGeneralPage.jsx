@@ -1,5 +1,5 @@
 import { TeamGeneralSection } from '@ui/components/team'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext } from '@ui/hooks/useRouter'
 
 export const TeamGeneralPage = () => {
   const { team } = useOutletContext()

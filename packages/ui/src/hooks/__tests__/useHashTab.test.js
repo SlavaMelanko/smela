@@ -5,7 +5,7 @@ import { useHashTab } from '../useHashTab'
 const mockNavigate = vi.fn()
 let mockLocation = { pathname: '/test', search: '', hash: '' }
 
-vi.mock('react-router-dom', () => ({
+vi.mock('../useRouter', () => ({
   useLocation: () => mockLocation,
   useNavigate: () => mockNavigate
 }))

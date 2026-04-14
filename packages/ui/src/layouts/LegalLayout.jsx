@@ -3,8 +3,8 @@ import { Logo } from '@ui/components/icons'
 import { LanguageDropdown } from '@ui/components/LanguageDropdown'
 import { Spinner } from '@ui/components/Spinner'
 import { ThemeToggle } from '@ui/components/ThemeToggle'
+import { Outlet } from '@ui/hooks/useRouter'
 import { Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
 
 import { LayoutContent, LayoutRoot, LayoutTopRightControls } from './Layout'
 
