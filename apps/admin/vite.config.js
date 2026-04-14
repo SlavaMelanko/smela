@@ -80,7 +80,7 @@ export default defineConfig({
       '@smela/ui/lib/types',
       '@smela/ui/lib/userPreferences',
       '@smela/ui/pages/admin',
-      '@smela/ui/pages/auth', 
+      '@smela/ui/pages/auth',
       '@smela/ui/pages/errors',
       '@smela/ui/pages/owner',
       '@smela/ui/pages/user',
