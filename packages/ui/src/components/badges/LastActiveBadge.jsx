@@ -1,7 +1,7 @@
 import { useLocale } from '@ui/hooks/useLocale'
 import { timeSince } from '@ui/lib/format'
 
-const getLastActiveKey = date => {
+const getTranslationKey = date => {
   const { seconds, minutes, hours, days } = timeSince(date)
 
   if (seconds < 60) {
@@ -30,7 +30,7 @@ export const LastActiveBadge = ({ date, className }) => {
     return null
   }
 
-  const { key, count } = getLastActiveKey(date)
+  const { key, count } = getTranslationKey(date)
 
   const label = key
     ? t(key, count !== undefined ? { count } : undefined)
