@@ -1,7 +1,7 @@
 import { Alert } from '.'
 
 const withContainer = Story => (
-  <div className='flex min-h-screen w-full items-center justify-center'>
+  <div className='flex items-center'>
     <Story />
   </div>
 )
@@ -10,7 +10,7 @@ export default {
   title: 'Components/Alert',
   component: Alert,
   decorators: [withContainer],
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   argTypes: {
     variant: {
       control: 'select',
