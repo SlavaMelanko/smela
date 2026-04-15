@@ -3,22 +3,21 @@ import { renderWithProviders } from '@ui/tests'
 
 import { TeamBadge } from '../TeamBadge'
 
-const mockTeam = {
-  name: 'Engineering Team',
-  position: 'Senior Developer'
-}
-
 describe('TeamBadge', () => {
-  it('renders team name', () => {
-    renderWithProviders(<TeamBadge team={mockTeam} />)
+  it('renders team badge with name, position, icon, and button', () => {
+    const team = {
+      name: 'Engineering Team',
+      position: 'Senior Developer'
+    }
 
-    expect(screen.getByText('Engineering Team')).toBeInTheDocument()
-  })
+    renderWithProviders(<TeamBadge team={team} />)
 
-  it('renders team position', () => {
-    renderWithProviders(<TeamBadge team={mockTeam} />)
+    const button = screen.getByRole('button')
 
-    expect(screen.getByText('Senior Developer')).toBeInTheDocument()
+    expect(button).toBeInTheDocument()
+    expect(button.querySelector('svg')).toHaveClass('lucide-users')
+    expect(screen.getByText(team.name)).toBeInTheDocument()
+    expect(screen.getByText(team.position)).toBeInTheDocument()
   })
 
   it('renders default position when position is missing', () => {
@@ -27,23 +26,5 @@ describe('TeamBadge', () => {
     renderWithProviders(<TeamBadge team={teamWithoutPosition} />)
 
     expect(screen.getByText('Team member')).toBeInTheDocument()
-  })
-
-  it('renders as a button', () => {
-    renderWithProviders(<TeamBadge team={mockTeam} />)
-
-    const button = screen.getByRole('button')
-
-    expect(button).toBeInTheDocument()
-  })
-
-  it('renders team icon', () => {
-    renderWithProviders(<TeamBadge team={mockTeam} />)
-
-    const button = screen.getByRole('button')
-    const icon = button.querySelector('svg')
-
-    expect(icon).toBeInTheDocument()
-    expect(icon).toHaveClass('lucide-users')
   })
 })
