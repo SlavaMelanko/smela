@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority'
 import * as React from 'react'
 
 const alertVariants = cva(
-  "group/alert relative flex w-full items-center gap-2.5 rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 *:[svg]:shrink-0 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
+  "group/alert relative flex flex-col items-start gap-1 w-full rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 *:[svg]:shrink-0 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -24,6 +24,16 @@ function Alert({ className, variant, ...props }) {
       data-slot='alert'
       role='alert'
       className={cn(alertVariants({ variant }), className)}
+      {...props}
+    />
+  )
+}
+
+function AlertHeader({ className, ...props }) {
+  return (
+    <div
+      data-slot='alert-header'
+      className={cn('flex items-center gap-2', className)}
       {...props}
     />
   )
@@ -65,4 +75,4 @@ function AlertAction({ className, ...props }) {
   )
 }
 
-export { Alert, AlertAction, AlertDescription, AlertTitle }
+export { Alert, AlertAction, AlertDescription, AlertHeader, AlertTitle }
