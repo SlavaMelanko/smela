@@ -13,8 +13,7 @@ vi.mock('@ui/hooks/useLocale', () => ({
 }))
 
 vi.mock('../flags', () => ({
-  __esModule: true,
-  default: {
+  flags: {
     us: '/mock-us-flag.svg',
     ua: '/mock-ua-flag.svg'
   }
