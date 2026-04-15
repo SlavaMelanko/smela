@@ -5,7 +5,7 @@ import env from '@ui/lib/env'
 import { useImperativeHandle, useRef } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 
-export function InvisibleReCaptcha({ ref, ...props }) {
+export const InvisibleReCaptcha = ({ ref, ...props }) => {
   const { theme } = useTheme()
   const { locale } = useLocale()
   const recaptchaRef = useRef(null)
