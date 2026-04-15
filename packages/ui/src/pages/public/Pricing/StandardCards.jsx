@@ -11,7 +11,7 @@ import {
   UserPlus
 } from 'lucide-react'
 
-const StandardCards = () => {
+export const StandardCards = () => {
   const { t } = useLocale({ keyPrefix: 'pricing' })
   const { openModal } = useModal()
   const navigate = useNavigate()
@@ -148,5 +148,3 @@ const StandardCards = () => {
     </div>
   )
 }
-
-export default StandardCards

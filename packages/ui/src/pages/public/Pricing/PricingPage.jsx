@@ -3,9 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/components/ui'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
 
-import EnterpriseTab from './EnterpriseTab'
+import { EnterpriseTab } from './EnterpriseTab'
 import { PricingFaq } from './PricingFaq'
-import StandardCards from './StandardCards'
+import { StandardCards } from './StandardCards'
 
 const TabId = Object.freeze({
   STANDARD: 'standard',

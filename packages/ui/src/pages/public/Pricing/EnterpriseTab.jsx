@@ -2,7 +2,7 @@ import { Button } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 
-const EnterpriseTab = () => {
+export const EnterpriseTab = () => {
   const { t } = useLocale()
   const navigate = useNavigate()
 
@@ -21,5 +21,3 @@ const EnterpriseTab = () => {
     </div>
   )
 }
-
-export default EnterpriseTab
