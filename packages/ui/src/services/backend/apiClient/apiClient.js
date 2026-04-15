@@ -5,7 +5,7 @@ import { accessTokenStorage } from '@ui/lib/storage'
 
 import { REFRESH_TOKEN_PATH } from '../paths'
 import { createError } from './error'
-import TokenRefreshManager from './tokenRefreshManager'
+import { TokenRefreshManager } from './tokenRefreshManager'
 
 export class ApiClient {
   #baseUrl

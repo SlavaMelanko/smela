@@ -16,7 +16,7 @@ class PendingRequestQueue {
   }
 }
 
-export default class TokenRefreshManager {
+export class TokenRefreshManager {
   #isRefreshing = false
   #pendingRequests = new PendingRequestQueue()
 

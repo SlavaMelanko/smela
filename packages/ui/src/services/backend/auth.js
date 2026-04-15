@@ -1,4 +1,4 @@
-import apiClient from './apiClient'
+import { apiClient } from './apiClient'
 import {
   ACCEPT_INVITE_PATH,
   CHECK_INVITE_PATH,

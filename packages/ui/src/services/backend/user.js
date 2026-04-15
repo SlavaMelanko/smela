@@ -1,4 +1,4 @@
-import apiClient from './apiClient'
+import { apiClient } from './apiClient'
 import { ME_PATH, UPDATE_PASSWORD_PATH } from './paths'
 
 export const userApi = {

@@ -1,4 +1,4 @@
-import TokenRefreshManager from '../tokenRefreshManager'
+import { TokenRefreshManager } from '../tokenRefreshManager'
 
 describe('TokenRefreshManager', () => {
   let manager

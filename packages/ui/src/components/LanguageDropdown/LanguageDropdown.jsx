@@ -8,7 +8,7 @@ import {
 } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 
-import flags from './flags'
+import { flags } from './flags'
 import { languages } from './languages'
 
 const Flag = ({ code, className }) => {

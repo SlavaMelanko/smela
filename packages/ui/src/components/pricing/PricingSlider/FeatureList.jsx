@@ -57,7 +57,7 @@ const getFeatures = value => {
   ]
 }
 
-const FeatureList = ({ value }) => {
+export const FeatureList = ({ value }) => {
   const { t } = useLocale()
 
   const features = getFeatures(value)
@@ -77,5 +77,3 @@ const FeatureList = ({ value }) => {
     </div>
   )
 }
-
-export default FeatureList

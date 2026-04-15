@@ -3,8 +3,8 @@ import { Badge, Button } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useState } from 'react'
 
-import FeatureList from './FeatureList'
-import PlanSummary from './PlanSummary'
+import { FeatureList } from './FeatureList'
+import { PlanSummary } from './PlanSummary'
 
 export const PricingSlider = ({ discount, onComplete }) => {
   const { t } = useLocale()

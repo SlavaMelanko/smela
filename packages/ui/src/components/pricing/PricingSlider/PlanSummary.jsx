@@ -21,7 +21,7 @@ const SummaryItem = ({ label, value }) => (
   </div>
 )
 
-const PlanSummary = ({ value, discount }) => {
+export const PlanSummary = ({ value, discount }) => {
   const { t, formatNumber, formatPrice } = useLocale()
 
   const pricePerGB = getPricePerGB(value)
@@ -63,5 +63,3 @@ const PlanSummary = ({ value, discount }) => {
     </div>
   )
 }
-
-export default PlanSummary
