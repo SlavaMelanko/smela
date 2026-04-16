@@ -37,9 +37,9 @@
   "changesSaved": "Зміни успішно збережено.",
   "contextMenu": {
     "cancel": "Скасувати",
-    "delete": "Видалити",
     "invite": "Запрошення",
     "open": "Відкрити",
+    "remove": "Видалити",
     "resend": "Надіслати повторно"
   },
   "continueWithGoogle": "Продовжити з Google",

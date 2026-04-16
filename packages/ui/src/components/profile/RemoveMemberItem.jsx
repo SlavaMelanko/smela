@@ -5,12 +5,12 @@ import {
   ItemContent,
   ItemTitle
 } from '@ui/components/ui'
-import { useDeleteTeamMember } from '@ui/hooks/useDeleteTeamMember'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 
 export const RemoveMemberItem = ({ member, teamId }) => {
   const { t } = useLocale()
-  const { handleDeleteMember } = useDeleteTeamMember(teamId)
+  const { handleRemoveMember } = useRemoveTeamMember(teamId)
 
   return (
     <Item variant='outline' className='border-destructive/20'>
@@ -22,7 +22,7 @@ export const RemoveMemberItem = ({ member, teamId }) => {
       <ItemActions>
         <Button
           variant='destructive'
-          onClick={() => handleDeleteMember(member)}
+          onClick={() => handleRemoveMember(member)}
         >
           {t('team.members.remove.cta')}
         </Button>

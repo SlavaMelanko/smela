@@ -37,9 +37,9 @@
   "changesSaved": "Changes saved successfully.",
   "contextMenu": {
     "cancel": "Cancel",
-    "delete": "Delete",
     "invite": "Invitation",
     "open": "Open",
+    "remove": "Remove",
     "resend": "Resend"
   },
   "continueWithGoogle": "Continue with Google",

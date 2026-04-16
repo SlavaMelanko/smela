@@ -242,7 +242,7 @@ test.describe.serial('User: Team Members', () => {
 
     await ownRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).not.toBeVisible()
 
     // Close context menu
@@ -255,7 +255,7 @@ test.describe.serial('User: Team Members', () => {
 
     await otherRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).toBeVisible()
 
     await page.keyboard.press('Escape')
@@ -287,7 +287,7 @@ test.describe.serial('User: Team Members', () => {
 
     await memberRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).toBeVisible()
 
     const deletePath = TEAM_MEMBER_PATH.replace(':teamId', teamId).replace(
@@ -300,7 +300,7 @@ test.describe.serial('User: Team Members', () => {
       { path: membersPath, method: 'GET', status: HttpStatus.OK }
     ])
 
-    await page.getByRole('menuitem', { name: t.contextMenu.delete }).click()
+    await page.getByRole('menuitem', { name: t.contextMenu.remove }).click()
 
     // Confirm in the dialog
     await page.getByRole('button', { name: t.team.members.remove.cta }).click()
