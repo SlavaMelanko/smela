@@ -44,6 +44,16 @@ export const basePlugins = {
 
 export const baseConfig = [
   {
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/.vite/**',
+      '**/coverage/**',
+      '**/html-report/**',
+      '**/*.min.js'
+    ]
+  },
+  {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',

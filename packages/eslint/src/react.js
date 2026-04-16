@@ -7,7 +7,16 @@ import globals from 'globals'
 import { basePlugins, baseRules } from './base.js'
 
 export const reactConfig = [
-  { ignores: ['dist', 'build', 'coverage'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/.vite/**',
+      '**/coverage/**',
+      '**/html-report/**',
+      '**/*.min.js'
+    ]
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
