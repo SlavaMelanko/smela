@@ -20,8 +20,10 @@ i18next.use(initReactI18next).init({
   interpolation: { escapeValue: false }
 })
 
-// Register mocks for auth hooks
+// Register mocks for hooks used in stories
 sb.mock('../src/hooks/useAuth.js')
+sb.mock('../src/hooks/useOwner.js')
+sb.mock('../src/hooks/useTeam.js')
 
 /** @type { import('@storybook/react-vite').Preview } */
 const preview = {

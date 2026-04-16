@@ -8,19 +8,19 @@ const MINUTE = 60
 const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
 
+const withContainer = Story => (
+  <div className='flex items-center p-6'>
+    <Story />
+  </div>
+)
+
 export default {
   title: 'Components/Badges',
+  decorators: [withContainer],
   parameters: { layout: 'centered' }
 }
 
 export const LastActive = {
-  decorators: [
-    Story => (
-      <div className='flex items-center justify-center p-6'>
-        <Story />
-      </div>
-    )
-  ],
   render: () => (
     <table className='border-separate border-spacing-y-2 text-sm'>
       <tbody>
@@ -67,13 +67,6 @@ export const Team = {
 }
 
 export const You = {
-  decorators: [
-    Story => (
-      <div className='flex items-center justify-center p-6'>
-        <Story />
-      </div>
-    )
-  ],
   render: () => (
     <div className='flex flex-col items-center gap-4'>
       <div className='flex items-center gap-1 text-sm'>
