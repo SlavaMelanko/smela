@@ -4,10 +4,12 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
 
-import { basePlugins, baseRules } from './base.js'
+import { basePlugins, baseRules, globalIgnores } from './base.js'
 
 export const reactConfig = [
-  { ignores: ['dist', 'build', 'coverage'] },
+  {
+    ignores: globalIgnores
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {

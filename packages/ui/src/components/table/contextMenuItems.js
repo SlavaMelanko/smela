@@ -31,13 +31,13 @@ export const createInviteItem = (
   ]
 })
 
-export const createDeleteMemberItem = (
+export const createRemoveMemberItem = (
   t,
-  { handleDeleteMember, isDeleting, meId }
+  { handleRemoveMember, isDeleting, meId }
 ) => ({
   icon: UserMinus,
-  label: t('contextMenu.delete'),
-  onClick: handleDeleteMember,
+  label: t('contextMenu.remove'),
+  onClick: handleRemoveMember,
   variant: 'destructive',
   disabled: isDeleting,
   isVisible: member => member.id !== meId

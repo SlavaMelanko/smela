@@ -246,7 +246,7 @@ export const useCancelMemberInvite = teamId => {
   })
 }
 
-export const useDeleteMember = teamId => {
+export const useRemoveMember = teamId => {
   const queryClient = useQueryClient()
 
   return useMutation({
