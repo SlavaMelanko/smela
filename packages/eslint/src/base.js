@@ -42,16 +42,18 @@ export const basePlugins = {
   'simple-import-sort': simpleImportSort
 }
 
+export const globalIgnores = [
+  '**/dist/**',
+  '**/build/**',
+  '**/.vite/**',
+  '**/coverage/**',
+  '**/html-report/**',
+  '**/*.min.js'
+]
+
 export const baseConfig = [
   {
-    ignores: [
-      '**/dist/**',
-      '**/build/**',
-      '**/.vite/**',
-      '**/coverage/**',
-      '**/html-report/**',
-      '**/*.min.js'
-    ]
+    ignores: globalIgnores
   },
   {
     files: ['**/*.js'],

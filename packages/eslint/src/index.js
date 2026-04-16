@@ -1,4 +1,4 @@
-export { baseConfig, basePlugins, baseRules } from './base.js'
+export { baseConfig, basePlugins, baseRules, globalIgnores } from './base.js'
 export { playwrightConfig } from './playwright.js'
 export { reactConfig } from './react.js'
 export { shadcnConfig } from './shadcn.js'
