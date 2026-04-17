@@ -5,7 +5,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services/email'
-import { AuthProvider, UserStatus } from '@/types'
+import { AuthProvider, Role, UserStatus } from '@/types'
 
 export interface InviteMemberInput {
   firstName: string
@@ -105,6 +105,7 @@ export const inviteMember = async (
   await emailAgent.sendUserInvitationEmail(
     newMember.firstName,
     newMember.email,
+    Role.User,
     token,
     inviter.firstName,
     team.name
@@ -162,6 +163,7 @@ export const resendMemberInvite = async (
   await emailAgent.sendUserInvitationEmail(
     member.firstName,
     member.email,
+    Role.User,
     token,
     inviter.firstName,
     team.name

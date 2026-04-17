@@ -149,6 +149,7 @@ describe('inviteAdmin', () => {
     expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
       'New',
       'newadmin@example.com',
+      Role.Admin,
       'invitation-token-123',
       'New',
       'Test Company'
@@ -337,6 +338,7 @@ describe('resendAdminInvite', () => {
     expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
       'Admin',
       'admin@example.com',
+      Role.Admin,
       'new-invitation-token',
       'Owner',
       'Test Company'

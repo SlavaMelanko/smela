@@ -70,12 +70,13 @@ export class EmailAgent {
   async sendUserInvitationEmail(
     firstName: string,
     email: string,
+    role: Role,
     token: string,
     inviterName?: string,
     teamName?: string,
     preferences?: UserPreferences
   ) {
-    const inviteUrl = `${env.FE_USER_URL}/accept-invite?token=${token}`
+    const inviteUrl = `${getFeBaseUrl(role)}/accept-invite?token=${token}`
 
     await this.service.send(
       EmailType.USER_INVITATION,
