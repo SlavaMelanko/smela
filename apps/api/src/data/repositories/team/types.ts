@@ -45,6 +45,7 @@ export interface UserTeamInfo {
 }
 
 export interface TeamSearchParams {
+  ids?: string[]
   search?: string
 }
 

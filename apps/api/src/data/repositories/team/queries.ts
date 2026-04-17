@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
 import type { Database } from '../../clients'
@@ -17,8 +17,12 @@ import { teamMembersTable, teamsTable, usersTable } from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
 import { lastActiveSubquery } from '../refresh-token/queries'
 
-const buildWhereConditions = ({ search }: TeamSearchParams) => {
+const buildWhereConditions = ({ ids, search }: TeamSearchParams) => {
   const conditions = []
+
+  if (ids && ids.length > 0) {
+    conditions.push(inArray(teamsTable.id, ids))
+  }
 
   if (search && search.length > 0) {
     // Use concatenated expression to leverage GIN index (idx_teams_search_trgm)
@@ -70,6 +74,15 @@ export const searchTeams = async (
     teams,
     pagination: buildPagination(pagination, countResult)
   }
+}
+
+export const findTeam = async (
+  teamId: string,
+  tx?: Database
+): Promise<TeamWithMemberCount | undefined> => {
+  const result = await searchTeams({ ids: [teamId] }, { page: 1, limit: 1 }, tx)
+
+  return result.teams[0]
 }
 
 export const findTeamById = async (
@@ -132,20 +145,6 @@ export const findTeamMembers = async (
   return rows
 }
 
-export const countTeamMembers = async (
-  teamId: string,
-  tx?: Database
-): Promise<number> => {
-  const executor = tx || db
-
-  const [result] = await executor
-    .select({ value: count() })
-    .from(teamMembersTable)
-    .where(eq(teamMembersTable.teamId, teamId))
-
-  return result?.value ?? 0
-}
-
 export const findTeamMember = async (
   teamId: string,
   userId: string,
@@ -154,25 +153,6 @@ export const findTeamMember = async (
   const members = await findTeamMembers(teamId, userId, tx)
 
   return members[0]
-}
-
-export const findTeamWithMemberCount = async (
-  teamId: string,
-  tx?: Database
-): Promise<TeamWithMemberCount | undefined> => {
-  const [team, memberCount] = await Promise.all([
-    findTeamById(teamId, tx),
-    countTeamMembers(teamId, tx)
-  ])
-
-  if (!team) {
-    return undefined
-  }
-
-  return {
-    ...team,
-    memberCount
-  }
 }
 
 export const findUserTeam = async (
