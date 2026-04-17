@@ -45,15 +45,16 @@ const selectUserExtended = (executor: Database) => {
       updatedAt: usersTable.updatedAt,
       lastActive: lastActiveSq.lastActive,
       role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`,
-      team: {
-        id: teamsTable.id,
-        name: teamsTable.name
-      }
+      team: sql<{ id: string; name: string } | null>`(
+        SELECT JSON_BUILD_OBJECT('id', t.id, 'name', t.name)
+        FROM ${teamMembersTable} tm
+        JOIN ${teamsTable} t ON t.id = tm.team_id
+        WHERE tm.user_id = ${usersTable.id}
+        LIMIT 1
+      )`
     })
     .from(usersTable)
     .leftJoin(userRoleTable, eq(usersTable.id, userRoleTable.userId))
-    .leftJoin(teamMembersTable, eq(usersTable.id, teamMembersTable.userId))
-    .leftJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
     .leftJoin(lastActiveSq, eq(usersTable.id, lastActiveSq.userId))
 }
 
