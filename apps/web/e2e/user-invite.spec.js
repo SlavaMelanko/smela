@@ -4,6 +4,7 @@ import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
+  CHECK_INVITE_PATH,
   TEAM_MEMBER_CANCEL_INVITE_PATH,
   TEAM_MEMBER_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
@@ -312,5 +313,25 @@ test.describe.serial('User: Team Members', () => {
     await expect(memberRow).not.toBeVisible()
 
     await logOut(page, t)
+  })
+
+  test('rejects cancelled invite link and redirects to login', async ({
+    page,
+    t,
+    emailService
+  }) => {
+    const { link } = await emailService.waitForInvitationEmail(newMember.email)
+
+    const checkInvitePromise = waitForApiCall(page, {
+      path: CHECK_INVITE_PATH,
+      method: 'GET',
+      status: HttpStatus.GONE
+    })
+
+    await page.goto(link)
+    await checkInvitePromise
+
+    await expect(page).toHaveURL('/login')
+    await expect(page.getByText(t.backend['token/deprecated'])).toBeVisible()
   })
 })
