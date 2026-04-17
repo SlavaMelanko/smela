@@ -297,7 +297,6 @@
   },
   "processing": "Processing...",
   "profile": {
-    "description": "Your profile settings",
     "title": "Profile"
   },
   "save": "Save",

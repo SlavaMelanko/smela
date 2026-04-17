@@ -1,30 +1,23 @@
-import { useLocale } from '@ui/hooks/useLocale'
 import { getFullName } from '@ui/lib/format/user'
 
 import {
   PageHeader,
   PageHeaderContent,
-  PageHeaderDescription,
+  PageHeaderEmail,
   PageHeaderGroup,
   PageHeaderIcon,
   PageHeaderTitle
 } from './PageHeader'
 import { getRoleIcon } from './utils'
 
-export const ProfilePageHeader = ({ user }) => {
-  const { t } = useLocale()
-
-  return (
-    <PageHeader>
-      <PageHeaderGroup>
-        <PageHeaderIcon icon={getRoleIcon(user?.role)} />
-        <PageHeaderContent>
-          <PageHeaderTitle>{getFullName(user)}</PageHeaderTitle>
-          <PageHeaderDescription>
-            {t('profile.description')}
-          </PageHeaderDescription>
-        </PageHeaderContent>
-      </PageHeaderGroup>
-    </PageHeader>
-  )
-}
+export const ProfilePageHeader = ({ user }) => (
+  <PageHeader>
+    <PageHeaderGroup>
+      <PageHeaderIcon icon={getRoleIcon(user?.role)} />
+      <PageHeaderContent>
+        <PageHeaderTitle>{getFullName(user)}</PageHeaderTitle>
+        <PageHeaderEmail email={user?.email} />
+      </PageHeaderContent>
+    </PageHeaderGroup>
+  </PageHeader>
+)
