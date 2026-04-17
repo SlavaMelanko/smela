@@ -69,23 +69,5 @@ export default defineConfig({
       '@ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@': path.resolve(__dirname, 'src')
     }
-  },
-  // Ensure Vite processes JSX from the @smela/ui workspace package
-  optimizeDeps: {
-    include: [
-      '@smela/ui/contexts',
-      '@smela/ui/devtools',
-      '@smela/ui/layouts',
-      '@smela/ui/lib/queryClient',
-      '@smela/ui/lib/types',
-      '@smela/ui/lib/userPreferences',
-      '@smela/ui/pages/admin',
-      '@smela/ui/pages/auth',
-      '@smela/ui/pages/errors',
-      '@smela/ui/pages/owner',
-      '@smela/ui/pages/user',
-      '@smela/ui/routes',
-      '@smela/ui/services'
-    ]
   }
 })
