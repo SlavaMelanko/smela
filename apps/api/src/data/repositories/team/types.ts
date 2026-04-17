@@ -49,6 +49,6 @@ export interface TeamSearchParams {
 }
 
 export interface TeamSearchResult {
-  teams: Team[]
+  teams: TeamWithMemberCount[]
   pagination: PaginatedResult
 }

@@ -39,9 +39,25 @@ export const searchTeams = async (
 
   const whereClause = buildWhereConditions(filters)
 
+  // Correlated subquery — executes once per returned row,
+  // hits team_members_team_index exactly N times (N = page size)
+  const memberCountSubquery = sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${teamMembersTable}
+    WHERE ${teamMembersTable.teamId} = ${teamsTable.id}
+  )`
+
   const [teams, countResult] = await Promise.all([
     executor
-      .select()
+      .select({
+        id: teamsTable.id,
+        name: teamsTable.name,
+        website: teamsTable.website,
+        description: teamsTable.description,
+        createdAt: teamsTable.createdAt,
+        updatedAt: teamsTable.updatedAt,
+        memberCount: memberCountSubquery
+      })
       .from(teamsTable)
       .where(whereClause)
       .orderBy(desc(teamsTable.createdAt))
