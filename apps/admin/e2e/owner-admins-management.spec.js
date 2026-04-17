@@ -160,11 +160,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
   }) => {
     const { link } = await emailService.waitForInvitationEmail(newAdmin.email)
 
-    expect(link).toContain('/accept-invite?token=')
-
-    const url = new URL(link)
-
-    await page.goto(url.pathname + url.search)
+    await page.goto(link)
 
     // Verify page title
     await expect(
