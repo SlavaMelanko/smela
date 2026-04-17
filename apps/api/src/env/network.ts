@@ -38,6 +38,7 @@ export const networkEnvVars = (nodeEnv?: string) => {
 
     // Base URLs
     BE_BASE_URL: z.url().default('http://localhost:3000'),
-    FE_BASE_URL: z.url().default('http://localhost:5173')
+    FE_USER_URL: z.url().default('http://localhost:5173'),
+    FE_ADMIN_URL: z.url().default('http://localhost:5175')
   }
 }

@@ -1,11 +1,15 @@
-import type { UserPreferences } from '@/types'
+import type { Role, UserPreferences } from '@/types'
 
 import env from '@/env'
+import { isAdmin } from '@/types'
 
 import { EmailType } from './email-type'
 import { createEmailProvider } from './providers'
 import { buildEmailRegistry } from './registry'
 import { EmailService } from './service'
+
+const getFeBaseUrl = (role: Role) =>
+  isAdmin(role) ? env.FE_ADMIN_URL : env.FE_USER_URL
 
 export class EmailAgent {
   private static instance: EmailAgent | null = null
@@ -30,7 +34,7 @@ export class EmailAgent {
     token: string,
     preferences?: UserPreferences
   ) {
-    const verificationUrl = `${env.FE_BASE_URL}/verify-email?token=${token}`
+    const verificationUrl = `${env.FE_USER_URL}/verify-email?token=${token}`
 
     await this.service.send(
       EmailType.EMAIL_VERIFICATION,
@@ -46,10 +50,11 @@ export class EmailAgent {
   async sendResetPasswordEmail(
     firstName: string,
     email: string,
+    role: Role,
     token: string,
     preferences?: UserPreferences
   ) {
-    const resetUrl = `${env.FE_BASE_URL}/reset-password?token=${token}`
+    const resetUrl = `${getFeBaseUrl(role)}/reset-password?token=${token}`
 
     await this.service.send(
       EmailType.PASSWORD_RESET,
@@ -70,7 +75,7 @@ export class EmailAgent {
     teamName?: string,
     preferences?: UserPreferences
   ) {
-    const inviteUrl = `${env.FE_BASE_URL}/accept-invite?token=${token}`
+    const inviteUrl = `${env.FE_USER_URL}/accept-invite?token=${token}`
 
     await this.service.send(
       EmailType.USER_INVITATION,

@@ -62,7 +62,8 @@ describe('Environment Configuration', () => {
     expect(devEnv.COOKIE_REFRESH_TOKEN_NAME).toBe('refresh-token')
     expect(devEnv.COOKIE_REFRESH_TOKEN_EXPIRATION).toBe(86400)
     expect(devEnv.BE_BASE_URL).toBe('http://localhost:3000')
-    expect(devEnv.FE_BASE_URL).toBe('http://localhost:5173')
+    expect(devEnv.FE_USER_URL).toBe('http://localhost:5173')
+    expect(devEnv.FE_ADMIN_URL).toBe('http://localhost:5175')
 
     // Company defaults
     expect(devEnv.COMPANY_NAME).toBe('SMELA')
