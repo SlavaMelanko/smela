@@ -219,7 +219,7 @@ describe('Check Invite', () => {
   })
 
   describe('when user has no team membership and no admin role', () => {
-    it('should throw InternalError', async () => {
+    it('should throw TokenDeprecated', async () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
       mockRbacRepo.findRole.mockResolvedValue(undefined)
 
@@ -228,8 +228,8 @@ describe('Check Invite', () => {
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.InternalError)
-        expect((error as AppError).message).toBe('Invalid invitation state')
+        expect((error as AppError).code).toBe(ErrorCode.TokenDeprecated)
+        expect((error as AppError).message).toBe('Invalid invite')
       }
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
@@ -240,7 +240,7 @@ describe('Check Invite', () => {
   })
 
   describe('when user has non-admin role', () => {
-    it('should throw InternalError', async () => {
+    it('should throw TokenDeprecated', async () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
       mockRbacRepo.findRole.mockResolvedValue({
         ...mockAdminRole,
@@ -252,8 +252,8 @@ describe('Check Invite', () => {
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.InternalError)
-        expect((error as AppError).message).toBe('Invalid invitation state')
+        expect((error as AppError).code).toBe(ErrorCode.TokenDeprecated)
+        expect((error as AppError).message).toBe('Invalid invite')
       }
     })
   })
