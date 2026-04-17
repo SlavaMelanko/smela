@@ -54,5 +54,5 @@ export const checkInvite = async (
     return adminInvite
   }
 
-  throw new AppError(ErrorCode.InternalError, 'Invalid invitation state')
+  throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
 }
