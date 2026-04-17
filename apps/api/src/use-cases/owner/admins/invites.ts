@@ -88,6 +88,7 @@ export const inviteAdmin = async (
   await emailAgent.sendUserInvitationEmail(
     newAdmin.firstName,
     newAdmin.email,
+    Role.Admin,
     token,
     inviter.firstName,
     env.COMPANY_NAME
@@ -131,6 +132,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
   await emailAgent.sendUserInvitationEmail(
     admin.firstName,
     admin.email,
+    Role.Admin,
     token,
     inviter.firstName,
     env.COMPANY_NAME

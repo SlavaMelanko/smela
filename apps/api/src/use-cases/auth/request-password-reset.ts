@@ -32,7 +32,13 @@ export const requestPasswordReset = async (
     const token = await createPasswordResetToken(user.id)
 
     emailAgent
-      .sendResetPasswordEmail(user.firstName, user.email, token, preferences)
+      .sendResetPasswordEmail(
+        user.firstName,
+        user.email,
+        user.role,
+        token,
+        preferences
+      )
       .catch((error: unknown) => {
         logger.error(
           { error },

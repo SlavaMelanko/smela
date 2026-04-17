@@ -98,6 +98,7 @@ describe('Request Password Reset', () => {
       expect(mockEmailAgent.sendResetPasswordEmail).toHaveBeenCalledWith(
         mockUser.firstName,
         mockUser.email,
+        mockUser.role,
         mockTokenString,
         undefined
       )

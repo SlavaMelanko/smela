@@ -183,6 +183,7 @@ describe('inviteMember', () => {
     expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
       'John',
       'john@example.com',
+      Role.User,
       'invitation-token-123',
       'Admin',
       'Acme Corp'
@@ -402,6 +403,7 @@ describe('resendMemberInvite', () => {
     expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
       'John',
       'john@example.com',
+      Role.User,
       'new-invitation-token',
       'Admin',
       'Acme Corp'
