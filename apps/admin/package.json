@@ -12,7 +12,7 @@
     "format:fix": "prettier --write .",
     "lint": "eslint --cache src e2e",
     "lint:fix": "eslint --cache src e2e --fix",
-    "lint:staged": "lint-staged --no-stash",
+    "lint:staged": "lint-staged",
     "check": "bun run format:fix && bun run lint:fix",
     "e2e": "NODE_ENV=test playwright test -x",
     "e2e:ui": "NODE_ENV=test playwright test --ui",

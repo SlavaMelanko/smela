@@ -12,11 +12,12 @@ import {
 import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useNavigate, useParams } from '@ui/hooks/useRouter'
+import { useLocation, useNavigate, useParams } from '@ui/hooks/useRouter'
 import { useTeam } from '@ui/hooks/useTeam'
 
 export const TeamPage = () => {
   const { id: teamId } = useParams()
+  const { state } = useLocation()
   const navigate = useNavigate()
   const { t } = useLocale()
   const [activeTab, setActiveTab] = useHashTab(
@@ -24,7 +25,15 @@ export const TeamPage = () => {
     TeamTab.GENERAL
   )
 
-  const { data: team, isPending, isError, error, refetch } = useTeam(teamId)
+  const {
+    data: team,
+    isPending,
+    isError,
+    error,
+    refetch
+  } = useTeam(teamId, {
+    initialData: state?.team ? { team: state.team } : undefined
+  })
 
   if (isError) {
     return <ErrorState error={error} onRetry={refetch} />

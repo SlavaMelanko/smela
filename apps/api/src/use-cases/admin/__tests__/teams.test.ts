@@ -25,7 +25,8 @@ describe('getTeams', () => {
           website: 'https://acme.com',
           description: 'A test team',
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01')
+          updatedAt: new Date('2024-01-01'),
+          memberCount: 3
         }
       ],
       pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }

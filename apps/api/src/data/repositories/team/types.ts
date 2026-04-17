@@ -45,10 +45,11 @@ export interface UserTeamInfo {
 }
 
 export interface TeamSearchParams {
+  ids?: string[]
   search?: string
 }
 
 export interface TeamSearchResult {
-  teams: Team[]
+  teams: TeamWithMemberCount[]
   pagination: PaginatedResult
 }

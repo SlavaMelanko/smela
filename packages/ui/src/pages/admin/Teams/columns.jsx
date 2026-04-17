@@ -17,6 +17,11 @@ export const getColumns = (t, formatDate) => {
       header: label('website')
     },
     {
+      accessorKey: 'memberCount',
+      header: label('memberCount'),
+      cell: info => info.getValue() || '—'
+    },
+    {
       accessorKey: 'createdAt',
       header: label('createdAt'),
       cell: info => formatDate(info.getValue())
