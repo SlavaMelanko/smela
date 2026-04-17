@@ -52,7 +52,7 @@ export const searchTeams = async (
   const memberCountSubquery = sql<number>`(
     SELECT COUNT(*)::int
     FROM ${teamMembersTable}
-    WHERE ${teamMembersTable.teamId} = ${teamsTable.id}
+    WHERE ${teamMembersTable.teamId} = ${sql.raw('"teams"."id"')}
   )`
 
   const [teams, countResult] = await Promise.all([

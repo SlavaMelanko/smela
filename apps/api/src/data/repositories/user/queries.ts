@@ -49,7 +49,7 @@ const selectUserExtended = (executor: Database) => {
         SELECT JSON_BUILD_OBJECT('id', t.id, 'name', t.name)
         FROM ${teamMembersTable} tm
         JOIN ${teamsTable} t ON t.id = tm.team_id
-        WHERE tm.user_id = ${usersTable.id}
+        WHERE tm.user_id = ${sql.raw('"users"."id"')}
         LIMIT 1
       )`
     })

@@ -359,6 +359,7 @@
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
+      "memberCount": "Members",
       "name": "Name",
       "updatedAt": "$t(updatedAt)",
       "website": "Website"

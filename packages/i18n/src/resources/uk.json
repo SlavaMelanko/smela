@@ -365,6 +365,7 @@
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
+      "memberCount": "Учасники",
       "name": "Назва",
       "updatedAt": "$t(updatedAt)",
       "website": "Сайт"
