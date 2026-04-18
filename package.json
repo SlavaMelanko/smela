@@ -36,7 +36,7 @@
     "check:i18n": "bun run --filter @smela/i18n check",
     "check:ui": "bun run --filter @smela/ui check",
     "check:web": "bun run --filter @smela/web check",
-    "check": "bun run --parallel --filter '*' check",
+    "check": "bun run --filter '*' check",
     "e2e:web": "bash scripts/e2e.sh --web",
     "e2e:web:ui": "bash scripts/e2e.sh --web --ui",
     "e2e:admin": "bash scripts/e2e.sh --admin",
