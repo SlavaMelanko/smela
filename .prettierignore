@@ -38,6 +38,3 @@ pnpm-lock.yaml
 *.log
 *.tmp
 *.temp
-
-# API uses @antfu/eslint-config for formatting
-apps/api/
