@@ -19,11 +19,6 @@ const defaultOptions = {
 }
 
 export const LoginPage = ({ options = {} }) => {
-  const { showSignupPrompt, showSocialLogin } = {
-    ...defaultOptions,
-    ...options
-  }
-
   const { t, te } = useLocale()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -32,6 +27,11 @@ export const LoginPage = ({ options = {} }) => {
     useLoginWithGoogle()
   const { showErrorToast } = useToast()
   const { captchaRef, getCaptchaToken } = useCaptcha()
+
+  const { showSignupPrompt, showSocialLogin } = {
+    ...defaultOptions,
+    ...options
+  }
 
   const handleLogin = async data => {
     const token = await getCaptchaToken()
