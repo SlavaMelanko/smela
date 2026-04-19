@@ -74,7 +74,7 @@
   "error": {
     "general": {
       "cta": "Go home",
-      "message": "This is unexpected for us too. We'll take a closer look and handle it according to our current priorities. Thanks for your patience.",
+      "message": "Something went wrong on our end. If it keeps happening, feel free to contact us. In the meantime, try refreshing.",
       "title": "Oops! Something went wrong"
     },
     "network": {
