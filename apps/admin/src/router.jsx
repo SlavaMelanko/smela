@@ -10,11 +10,8 @@ import {
 } from '@smela/ui/pages/admin'
 import {
   AcceptInvitePage,
-  EmailConfirmationPage,
   LoginPage,
-  ResetPasswordPage,
-  SignupPage,
-  VerifyEmailPage
+  ResetPasswordPage
 } from '@smela/ui/pages/auth'
 import {
   GeneralErrorPage,
@@ -44,12 +41,16 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'login', element: <LoginPage /> },
-      { path: 'signup', element: <SignupPage /> },
+      {
+        path: 'login',
+        element: (
+          <LoginPage
+            options={{ showSignupPrompt: false, showSocialLogin: false }}
+          />
+        )
+      },
       { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'accept-invite', element: <AcceptInvitePage /> },
-      { path: 'email-confirmation', element: <EmailConfirmationPage /> },
-      { path: 'verify-email', element: <VerifyEmailPage /> }
+      { path: 'accept-invite', element: <AcceptInvitePage /> }
     ]
   },
   {

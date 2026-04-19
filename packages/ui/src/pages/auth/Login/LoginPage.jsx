@@ -13,7 +13,12 @@ import { useToast } from '@ui/hooks/useToast'
 import { AuthRoot } from '../Auth'
 import { LoginForm } from './Form'
 
-export const LoginPage = () => {
+const defaultOptions = {
+  showSignupPrompt: true,
+  showSocialLogin: true
+}
+
+export const LoginPage = ({ options = {} }) => {
   const { t, te } = useLocale()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -22,6 +27,11 @@ export const LoginPage = () => {
     useLoginWithGoogle()
   const { showErrorToast } = useToast()
   const { captchaRef, getCaptchaToken } = useCaptcha()
+
+  const { showSignupPrompt, showSocialLogin } = {
+    ...defaultOptions,
+    ...options
+  }
 
   const handleLogin = async data => {
     const token = await getCaptchaToken()
@@ -66,22 +76,26 @@ export const LoginPage = () => {
         <div className='flex flex-col gap-2'>
           <LoginForm isLoading={isEmailPending} onSubmit={handleLogin} />
 
-          <TextSeparator text={t('or')} />
+          {showSocialLogin && (
+            <>
+              <TextSeparator text={t('or')} />
 
-          <div className='flex flex-col gap-4'>
-            <Button
-              variant='outline'
-              className='w-full'
-              onClick={handleLoginWithGoogle}
-              disabled={isGooglePending}
-            >
-              <GoogleIcon />
-              {t('continueWithGoogle')}
-            </Button>
-          </div>
+              <div className='flex flex-col gap-4'>
+                <Button
+                  variant='outline'
+                  className='w-full'
+                  onClick={handleLoginWithGoogle}
+                  disabled={isGooglePending}
+                >
+                  <GoogleIcon />
+                  {t('continueWithGoogle')}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
-        <SignupPrompt />
+        {showSignupPrompt && <SignupPrompt />}
 
         <ForgotYourPasswordPrompt />
       </AuthRoot>
