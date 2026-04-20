@@ -1,6 +1,6 @@
 {
   "name": "@smela/eslint",
-  "version": "0.0.1",
+  "version": "2026.04.20",
   "private": true,
   "type": "module",
   "exports": {
