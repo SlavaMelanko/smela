@@ -1,13 +1,15 @@
 # API
 
-Layered monolithic REST API with authentication and RBAC, focused on security and modularity.
+Layered monolithic REST API with authentication and RBAC, focused on security
+and modularity.
 
 ## 📋 Prerequisites
 
 Besides [root prerequisites](../../README.md#-prerequisites) we need:
 
 - [Docker](https://www.docker.com/) for running PostgreSQL
-- Email service account ([Resend](https://resend.com/) for production, [Ethereal](https://ethereal.email/) for development)
+- Email service account ([Resend](https://resend.com/) for production,
+  [Ethereal](https://ethereal.email/) for development)
 
 See [CI workflow](../../.github/workflows/api-ci-ubuntu.yml) for more details.
 
