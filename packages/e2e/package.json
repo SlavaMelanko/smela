@@ -1,6 +1,6 @@
 {
   "name": "@smela/e2e",
-  "version": "2026.04.20",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
