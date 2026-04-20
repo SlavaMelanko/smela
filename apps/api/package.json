@@ -1,6 +1,6 @@
 {
   "name": "@smela/api",
-  "version": "2026.03.26",
+  "version": "2026.04.20",
   "scripts": {
     "clean": "rm -rf node_modules",
     "dev": "bun --watch src/app.ts",
@@ -26,7 +26,10 @@
     "emails": "email dev --dir src/emails --port 3001"
   },
   "lint-staged": {
-    "*.ts": ["bunx prettier --write", "bunx eslint --cache --fix"]
+    "*.ts": [
+      "bunx prettier --write",
+      "bunx eslint --cache --fix"
+    ]
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
