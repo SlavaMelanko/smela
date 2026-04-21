@@ -8,11 +8,12 @@ export interface PaginatedResult extends PaginationParams {
   totalPages: number
 }
 
-export const calcOffset = ({ page, limit }: PaginationParams) => (page - 1) * limit
+export const calcOffset = ({ page, limit }: PaginationParams) =>
+  (page - 1) * limit
 
 export const buildPagination = (
   pagination: PaginationParams,
-  countResult: { value: number }[],
+  countResult: { value: number }[]
 ): PaginatedResult => {
   const { page, limit } = pagination
   const total = countResult[0]?.value ?? 0
@@ -21,6 +22,6 @@ export const buildPagination = (
     page,
     limit,
     total,
-    totalPages: Math.ceil(total / limit),
+    totalPages: Math.ceil(total / limit)
   }
 }

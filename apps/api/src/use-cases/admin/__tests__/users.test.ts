@@ -5,7 +5,7 @@ import type { SearchResult, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getUser, searchUsers } from '../users'
 
@@ -26,18 +26,18 @@ describe('searchUsers', () => {
           lastName: 'Doe',
           email: 'john@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01'),
-        },
+          updatedAt: new Date('2024-01-01')
+        }
       ],
-      pagination: { page: 1, limit: 25, total: 1, totalPages: 1 },
+      pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }
     }
 
     mockUserRepoSearch = mock(async () => mockSearchResult)
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { search: mockUserRepoSearch },
+      userRepo: { search: mockUserRepoSearch }
     }))
   })
 
@@ -46,11 +46,14 @@ describe('searchUsers', () => {
   })
 
   it('should filter out admin roles from search params', async () => {
-    await searchUsers({ roles: [Role.Admin, Role.User, Role.Owner] }, DEFAULT_PAGINATION)
+    await searchUsers(
+      { roles: [Role.Admin, Role.User, Role.Owner] },
+      DEFAULT_PAGINATION
+    )
 
     expect(mockUserRepoSearch).toHaveBeenCalledWith(
       { roles: [Role.User] },
-      DEFAULT_PAGINATION,
+      DEFAULT_PAGINATION
     )
   })
 
@@ -59,7 +62,7 @@ describe('searchUsers', () => {
 
     expect(mockUserRepoSearch).toHaveBeenCalledWith(
       { roles: [Role.User] },
-      DEFAULT_PAGINATION,
+      DEFAULT_PAGINATION
     )
   })
 
@@ -68,19 +71,19 @@ describe('searchUsers', () => {
 
     expect(result).toEqual({
       data: { users: mockSearchResult.users },
-      pagination: mockSearchResult.pagination,
+      pagination: mockSearchResult.pagination
     })
   })
 
   it('should preserve statuses in search params', async () => {
     await searchUsers(
-      { roles: [Role.User], statuses: [Status.Active, Status.Active] },
-      DEFAULT_PAGINATION,
+      { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
+      DEFAULT_PAGINATION
     )
 
     expect(mockUserRepoSearch).toHaveBeenCalledWith(
-      { roles: [Role.User], statuses: [Status.Active, Status.Active] },
-      DEFAULT_PAGINATION,
+      { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
+      DEFAULT_PAGINATION
     )
   })
 })
@@ -98,15 +101,15 @@ describe('getUser', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockFindByIdExtended = mock(async () => mockUser)
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findByIdExtended: mockFindByIdExtended },
+      userRepo: { findByIdExtended: mockFindByIdExtended }
     }))
   })
 
@@ -127,7 +130,7 @@ describe('getUser', () => {
     expect(getUser(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
     expect(getUser(testUuids.NON_EXISTENT)).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'User not found',
+      message: 'User not found'
     })
   })
 })

@@ -1,10 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Column,
-  Row,
-  Section,
-} from '@react-email/components'
+import { Column, Row, Section } from '@react-email/components'
 
 import type { ThemeStyles } from '../../../styles'
 
@@ -20,16 +16,25 @@ interface Props {
 const Header = ({
   styles,
   logoWidth = 200,
-  showBorder = true,
+  showBorder = true
 }: Props): React.ReactElement => (
   <>
     <Logo styles={styles} width={logoWidth} />
     {showBorder && (
       <Section style={{ width: '100%', marginTop: styles.spacing.md }}>
         <Row>
-          <Column style={{ borderBottom: `1px solid ${styles.color.border}` }} />
-          <Column style={{ borderBottom: `1px solid ${styles.color.orange}`, width: '220px' }} />
-          <Column style={{ borderBottom: `1px solid ${styles.color.border}` }} />
+          <Column
+            style={{ borderBottom: `1px solid ${styles.color.border}` }}
+          />
+          <Column
+            style={{
+              borderBottom: `1px solid ${styles.color.orange}`,
+              width: '220px'
+            }}
+          />
+          <Column
+            style={{ borderBottom: `1px solid ${styles.color.border}` }}
+          />
         </Row>
       </Section>
     )}
@@ -39,7 +44,7 @@ const Header = ({
 Header.PreviewProps = {
   styles: getThemeStyles('light'),
   logoWidth: 200,
-  showBorder: true,
+  showBorder: true
 } as Props
 
 export default Header

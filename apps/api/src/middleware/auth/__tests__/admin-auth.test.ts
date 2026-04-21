@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { adminAuthMiddleware } from '../index'
 
@@ -24,8 +24,13 @@ describe('Admin Authentication Middleware', () => {
   describe('Role Validation', () => {
     it('should allow Owner with Active status', async () => {
       const ownerToken = await signJwt(
-        { id: testUuids.OWNER_1, email: 'owner@example.com', role: Role.Owner, status: Status.Active },
-        { secret: env.JWT_SECRET },
+        {
+          id: testUuids.OWNER_1,
+          email: 'owner@example.com',
+          role: Role.Owner,
+          status: UserStatus.Active
+        },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/admin', adminAuthMiddleware)
@@ -33,8 +38,8 @@ describe('Admin Authentication Middleware', () => {
 
       const res = await app.request('/admin', {
         headers: {
-          Authorization: `Bearer ${ownerToken}`,
-        },
+          Authorization: `Bearer ${ownerToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -44,8 +49,13 @@ describe('Admin Authentication Middleware', () => {
 
     it('should allow Admin with Active status', async () => {
       const adminToken = await signJwt(
-        { id: testUuids.ADMIN_1, email: 'admin@example.com', role: Role.Admin, status: Status.Active },
-        { secret: env.JWT_SECRET },
+        {
+          id: testUuids.ADMIN_1,
+          email: 'admin@example.com',
+          role: Role.Admin,
+          status: UserStatus.Active
+        },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/admin', adminAuthMiddleware)
@@ -53,8 +63,8 @@ describe('Admin Authentication Middleware', () => {
 
       const res = await app.request('/admin', {
         headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
+          Authorization: `Bearer ${adminToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -64,8 +74,13 @@ describe('Admin Authentication Middleware', () => {
 
     it('should reject User role with Active status', async () => {
       const userToken = await signJwt(
-        { id: testUuids.USER_1, email: 'user@example.com', role: Role.User, status: Status.Active },
-        { secret: env.JWT_SECRET },
+        {
+          id: testUuids.USER_1,
+          email: 'user@example.com',
+          role: Role.User,
+          status: UserStatus.Active
+        },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/admin', adminAuthMiddleware)
@@ -73,8 +88,8 @@ describe('Admin Authentication Middleware', () => {
 
       const res = await app.request('/admin', {
         headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+          Authorization: `Bearer ${userToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -84,17 +99,27 @@ describe('Admin Authentication Middleware', () => {
     })
   })
 
-  describe('Status Validation', () => {
+  describe('UserStatus Validation', () => {
     it('should reject non-Active statuses', async () => {
-      const nonActiveStatuses = [Status.New, Status.Verified, Status.Trial, Status.Suspended]
+      const nonActiveStatuses = [
+        UserStatus.New,
+        UserStatus.Verified,
+        UserStatus.Trial,
+        UserStatus.Suspended
+      ]
 
       for (const status of nonActiveStatuses) {
         const testApp = new Hono<AppContext>()
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.ADMIN_1, email: 'admin@example.com', role: Role.Admin, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.ADMIN_1,
+            email: 'admin@example.com',
+            role: Role.Admin,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/admin', adminAuthMiddleware)
@@ -102,14 +127,14 @@ describe('Admin Authentication Middleware', () => {
 
         const res = await testApp.request('/admin', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.FORBIDDEN)
         const json = await res.json()
         expect(json.code).toBe(ErrorCode.Forbidden)
-        expect(json.error).toBe('Status validation failure')
+        expect(json.error).toBe('UserStatus validation failure')
       }
     })
   })

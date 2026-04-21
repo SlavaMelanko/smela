@@ -1,0 +1,39 @@
+{
+  "name": "@smela/i18n",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint --cache src scripts",
+    "lint:fix": "eslint --cache src scripts --fix",
+    "lint:staged": "lint-staged",
+    "locales:sort": "sort-json src/resources/*.json",
+    "check": "bun run locales:sort && bun run format:fix && bun run lint:fix",
+    "sync": "bun scripts/sync.js",
+    "sync:watch": "bun scripts/sync.js --watch"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ],
+    "src/resources/*.json": [
+      "sort-json"
+    ]
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./resources": "./src/resources.js"
+  },
+  "peerDependencies": {
+    "i18next": "^26.0.4"
+  },
+  "devDependencies": {
+    "@smela/eslint": "workspace:*",
+    "chokidar": "^5.0.0",
+    "sort-json": "^2.0.1"
+  }
+}

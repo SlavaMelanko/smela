@@ -17,21 +17,23 @@ export default class PasswordResetEmailRenderer implements EmailRenderer<Passwor
   async render(
     data: PasswordResetEmailData,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
+    metadata?: Metadata
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).passwordReset
     const styles = getThemeStyles(userPreferences?.theme)
 
     const subject = content.subject
-    const { html, text } = await renderEmail(
-      PasswordResetEmail,
-      { data, content, styles, metadata },
-    )
+    const { html, text } = await renderEmail(PasswordResetEmail, {
+      data,
+      content,
+      styles,
+      metadata
+    })
 
     return {
       subject,
       html,
-      text,
+      text
     }
   }
 }

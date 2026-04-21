@@ -1,0 +1,51 @@
+{
+  "name": "@smela/admin",
+  "private": true,
+  "version": "2026.04.20",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "dev": "vite --mode development --port 5175",
+    "preview": "vite preview --mode production --port 5175",
+    "build": "vite build --mode production",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint --cache src e2e",
+    "lint:fix": "eslint --cache src e2e --fix",
+    "lint:staged": "lint-staged",
+    "check": "bun run format:fix && bun run lint:fix",
+    "e2e": "NODE_ENV=test playwright test -x",
+    "e2e:ui": "NODE_ENV=test playwright test --ui",
+    "bundle:analyze": "ANALYZE_BUNDLE=true bun run build"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --ignore-unknown --write"
+    ]
+  },
+  "dependencies": {
+    "@smela/ui": "workspace:*",
+    "@smela/i18n": "workspace:*",
+    "@tanstack/react-query": "^5.90.21",
+    "i18next": "^26.0.4",
+    "i18next-http-backend": "^3.0.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-i18next": "^17.0.2",
+    "react-router-dom": "^7.12.0"
+  },
+  "devDependencies": {
+    "@smela/eslint": "workspace:*",
+    "@smela/e2e": "workspace:*",
+    "@faker-js/faker": "^10.3.0",
+    "@tailwindcss/vite": "^4.2.0",
+    "tailwindcss": "^4.2.0",
+    "@types/node": "^25.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "rollup-plugin-visualizer": "^7.0.1",
+    "rollup-plugin-webpack-stats": "^3.1.1",
+    "vite": "^7.3.1"
+  }
+}

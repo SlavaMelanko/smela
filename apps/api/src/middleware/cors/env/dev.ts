@@ -8,7 +8,7 @@ import {
   ALLOWED_HEADERS,
   ALLOWED_METHODS,
   EXPOSED_HEADERS,
-  MAX_AGE_TEN_MINUTES,
+  MAX_AGE_TEN_MINUTES
 } from '../constants'
 
 export const devCors = (): MiddlewareHandler => {
@@ -30,6 +30,6 @@ export const devCors = (): MiddlewareHandler => {
     allowHeaders: ALLOWED_HEADERS,
     exposeHeaders: EXPOSED_HEADERS,
     maxAge: MAX_AGE_TEN_MINUTES,
-    credentials: true,
+    credentials: true
   })
 }

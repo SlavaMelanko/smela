@@ -15,7 +15,7 @@ class CryptoTokenGenerator implements TokenGenerator {
   constructor(options?: Options) {
     this.options = {
       expirySeconds: options?.expirySeconds ?? DEFAULT_EXPIRY_SECONDS,
-      tokenLength: options?.tokenLength ?? TOKEN_LENGTH,
+      tokenLength: options?.tokenLength ?? TOKEN_LENGTH
     }
     this.generator = createRandomBytesGenerator()
   }
@@ -26,7 +26,7 @@ class CryptoTokenGenerator implements TokenGenerator {
     return this.generator.generate(numberOfBytes)
   }
 
-  generateWithExpiry(): { token: string, expiresAt: Date } {
+  generateWithExpiry(): { token: string; expiresAt: Date } {
     const token = this.generate()
     const expiresAt = nowPlus(seconds(this.options.expirySeconds))
 

@@ -1,6 +1,6 @@
 import { db, teamRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
@@ -8,10 +8,7 @@ export const getTeamMembers = async (teamId: string) => {
   return { members }
 }
 
-export const getTeamMember = async (
-  teamId: string,
-  memberId: string,
-) => {
+export const getTeamMember = async (teamId: string, memberId: string) => {
   const member = await teamRepo.findMember(teamId, memberId)
 
   if (!member) {
@@ -34,7 +31,7 @@ export interface UpdateTeamMemberInput {
 export const updateTeamMember = async (
   teamId: string,
   memberId: string,
-  input: UpdateTeamMemberInput,
+  input: UpdateTeamMemberInput
 ) => {
   const existing = await teamRepo.findMember(teamId, memberId)
 
@@ -66,9 +63,9 @@ export const removeTeamMember = async (teamId: string, memberId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Member not found')
   }
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await teamRepo.deleteMember(memberId, teamId, tx)
-    await userRepo.update(memberId, { status: Status.Archived }, tx)
+    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }

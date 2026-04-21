@@ -1,23 +1,5 @@
 #!/bin/sh
+
 set -e
 
-CHANGED=""
-
-while read local_ref local_sha remote_ref remote_sha; do
-  # On first push remote_sha is all zeros (branch doesn't exist on remote yet)
-  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
-    CHANGED="$CHANGED $(git diff --name-only "$local_sha")"
-  else
-    CHANGED="$CHANGED $(git diff --name-only "$remote_sha" "$local_sha")"
-  fi
-done
-
-if echo "$CHANGED" | grep -qE "^apps/api/.*\.(ts|js)$"; then
-  echo "Running api tests..."
-  bun run --filter @smela/api test
-fi
-
-if echo "$CHANGED" | grep -qE "^apps/web/.*\.(js|jsx|ts|tsx)$"; then
-  echo "Running web tests..."
-  bun run --filter @smela/web test
-fi
+bun run check

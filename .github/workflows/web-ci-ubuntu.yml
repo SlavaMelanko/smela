@@ -5,10 +5,16 @@ on:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'packages/eslint/**'
+      - 'packages/i18n/**'
+      - 'packages/ui/**'
   push:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'packages/eslint/**'
+      - 'packages/i18n/**'
+      - 'packages/ui/**'
 
 concurrency:
   group: web-ci-${{ github.ref }}
@@ -23,32 +29,26 @@ jobs:
     runs-on: ubuntu-latest
     container: oven/bun:1.3.11
     environment: web-test
-    defaults:
-      run:
-        working-directory: apps/web
     env:
+      VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+      VITE_BE_BASE_URL: ${{ vars.VITE_BE_BASE_URL }}
       VITE_CAPTCHA_SITE_KEY: ${{ secrets.VITE_CAPTCHA_SITE_KEY }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Check formatting
-        run: bun run format
+        run: bun run format:web
 
       - name: Check linting
-        run: bun run lint
+        run: bun run lint:web
 
       - name: Run tests with coverage
-        run: NODE_ENV=test npx jest --coverage
+        run: bun run coverage:web
 
       - name: Install dependencies for Codecov
         run: apt-get update && apt-get install -y git curl gpg
@@ -57,6 +57,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: apps/web/coverage/lcov.info
+          files: packages/ui/coverage/lcov.info
           flags: web
           fail_ci_if_error: true

@@ -13,5 +13,5 @@ loginRoute.post(
   '/login',
   requestValidator('json', loginBodySchema),
   captchaMiddleware(),
-  loginHandler,
+  loginHandler
 )

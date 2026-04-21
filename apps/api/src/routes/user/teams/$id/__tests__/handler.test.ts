@@ -9,7 +9,7 @@ const mockTeam = {
   id: testUuids.TEAM_1,
   name: 'Engineering',
   createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01')
 }
 
 describe('getTeamHandler', () => {
@@ -23,11 +23,13 @@ describe('getTeamHandler', () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: { valid: mock(() => ({ teamId: testUuids.TEAM_1 })) },
-      json: mockJson,
+      json: mockJson
     }
     mockGetTeam = mock(async () => ({ team: mockTeam }))
 
-    await moduleMocker.mock('@/use-cases/user', () => ({ getTeam: mockGetTeam }))
+    await moduleMocker.mock('@/use-cases/user', () => ({
+      getTeam: mockGetTeam
+    }))
   })
 
   afterEach(async () => {
@@ -59,21 +61,27 @@ describe('updateTeamHandler', () => {
   let mockUpdateTeam: any
 
   const body = { name: 'Platform', description: 'Platform team' }
-  const updatedTeam = { ...mockTeam, ...body, updatedAt: new Date('2024-01-02') }
+  const updatedTeam = {
+    ...mockTeam,
+    ...body,
+    updatedAt: new Date('2024-01-02')
+  }
 
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: {
         valid: mock((type: string) =>
-          type === 'param' ? { teamId: testUuids.TEAM_1 } : body,
-        ),
+          type === 'param' ? { teamId: testUuids.TEAM_1 } : body
+        )
       },
-      json: mockJson,
+      json: mockJson
     }
     mockUpdateTeam = mock(async () => ({ team: updatedTeam }))
 
-    await moduleMocker.mock('@/use-cases/user', () => ({ updateTeam: mockUpdateTeam }))
+    await moduleMocker.mock('@/use-cases/user', () => ({
+      updateTeam: mockUpdateTeam
+    }))
   })
 
   afterEach(async () => {

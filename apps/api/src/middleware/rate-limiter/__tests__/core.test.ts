@@ -13,7 +13,7 @@ describe('Rate Limiter Core', () => {
 
   beforeEach(async () => {
     await moduleMocker.mock('@/env', () => ({
-      isDevOrTestEnv: () => true,
+      isDevOrTestEnv: () => true
     }))
 
     app = new Hono()
@@ -25,11 +25,13 @@ describe('Rate Limiter Core', () => {
 
   describe('Basic Rate Limiting', () => {
     it('should allow requests under the limit', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000, // 1 minute
-        limit: 3, // 3 requests per minute
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000, // 1 minute
+          limit: 3, // 3 requests per minute
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -43,11 +45,13 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should block requests over the limit', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000, // 1 minute
-        limit: 2,
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000, // 1 minute
+          limit: 2,
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -64,11 +68,13 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should include rate limit headers', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 5,
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 5,
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -84,11 +90,13 @@ describe('Rate Limiter Core', () => {
     it('should allow different keys to have separate limits', async () => {
       let keyCounter = 0
 
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 1, // 1 request per minute per key
-        keyGenerator: () => `key-${keyCounter++}`,
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 1, // 1 request per minute per key
+          keyGenerator: () => `key-${keyCounter++}`
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -103,11 +111,13 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should use IP address as default key when available', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 2,
-        // No keyGenerator - should use IP
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 2
+          // No keyGenerator - should use IP
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -127,12 +137,14 @@ describe('Rate Limiter Core', () => {
     it('should allow custom error message', async () => {
       const customMessage = 'Rate limit exceeded! Please try again later.'
 
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 1,
-        message: customMessage,
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 1,
+          message: customMessage,
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -145,12 +157,14 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should work with custom status code', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 1,
-        statusCode: HttpStatus.SERVICE_UNAVAILABLE,
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 1,
+          statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -162,22 +176,25 @@ describe('Rate Limiter Core', () => {
 
     it('should have high limits in test environment', async () => {
       // This test simulates what we need for Playwright tests
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 1000, // High limit for tests
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 1000, // High limit for tests
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
       // Make many requests quickly (simulating test suite)
       const requests = Array.from({ length: 50 }, async (_, _i) =>
-        app.request('/test', { method: 'GET' }))
+        app.request('/test', { method: 'GET' })
+      )
 
       const responses = await Promise.all(requests)
 
       // All should pass with high limits
-      responses.forEach((res) => {
+      responses.forEach(res => {
         expect(res.status).toBe(HttpStatus.OK)
       })
     })
@@ -185,12 +202,14 @@ describe('Rate Limiter Core', () => {
 
   describe('Skip Function', () => {
     it('should skip rate limiting when skip function returns true', async () => {
-      app.use(createRateLimiter({
-        windowMs: 60 * 1_000,
-        limit: 1,
-        keyGenerator: () => 'test-key',
-        skip: c => c.req.header('X-Skip-Rate-Limit') === 'true',
-      }))
+      app.use(
+        createRateLimiter({
+          windowMs: 60 * 1_000,
+          limit: 1,
+          keyGenerator: () => 'test-key',
+          skip: c => c.req.header('X-Skip-Rate-Limit') === 'true'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 
@@ -204,7 +223,7 @@ describe('Rate Limiter Core', () => {
       // Request with skip header - should pass
       const res2 = await app.request('/test', {
         method: 'GET',
-        headers: { 'X-Skip-Rate-Limit': 'true' },
+        headers: { 'X-Skip-Rate-Limit': 'true' }
       })
       expect(res2.status).toBe(HttpStatus.OK)
     })
@@ -223,9 +242,11 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should use environment-appropriate default limits', async () => {
-      app.use(createRateLimiter({
-        keyGenerator: () => 'test-key',
-      }))
+      app.use(
+        createRateLimiter({
+          keyGenerator: () => 'test-key'
+        })
+      )
 
       app.get('/test', c => c.text('OK'))
 

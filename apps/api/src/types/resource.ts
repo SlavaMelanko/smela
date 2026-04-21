@@ -1,7 +1,7 @@
 enum Resource {
   Users = 'users',
   Admins = 'admins',
-  Teams = 'teams',
+  Teams = 'teams'
 }
 
 export default Resource

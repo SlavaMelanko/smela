@@ -8,31 +8,31 @@ import { signJwt } from '@/security/jwt'
 import {
   generateHashedToken,
   TokenType,
-  TokenValidator,
+  TokenValidator
 } from '@/security/token'
 
 export const createAccessToken = async (
   user: User,
-  permissions?: Permission[],
+  permissions?: Permission[]
 ) =>
   signJwt({
     id: user.id,
     email: user.email,
     role: user.role,
     status: user.status,
-    permissions,
+    permissions
   })
 
 export const createRefreshToken = async (
   userId: string,
   deviceInfo: DeviceInfo,
-  tx?: Database,
+  tx?: Database
 ) => {
   const {
     token: { raw, hashed },
-    expiresAt,
+    expiresAt
   } = await generateHashedToken(TokenType.RefreshToken, {
-    expirySeconds: env.COOKIE_REFRESH_TOKEN_EXPIRATION,
+    expirySeconds: env.COOKIE_REFRESH_TOKEN_EXPIRATION
   })
 
   await refreshTokenRepo.create(
@@ -41,9 +41,9 @@ export const createRefreshToken = async (
       tokenHash: hashed,
       ipAddress: deviceInfo.ipAddress,
       userAgent: deviceInfo.userAgent,
-      expiresAt,
+      expiresAt
     },
-    tx,
+    tx
   )
 
   return raw
@@ -53,11 +53,11 @@ export const createAuthTokens = async (
   user: User,
   deviceInfo: DeviceInfo,
   permissions?: Permission[],
-  tx?: Database,
+  tx?: Database
 ) =>
   Promise.all([
     createAccessToken(user, permissions),
-    createRefreshToken(user.id, deviceInfo, tx),
+    createRefreshToken(user.id, deviceInfo, tx)
   ])
 
 export const validateOneTimeToken = async (token: string, type: TokenType) => {

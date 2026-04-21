@@ -13,7 +13,7 @@ export const adminUsersRoute = new Hono<AppContext>()
 adminUsersRoute.get(
   '/users',
   requestValidator('query', getUsersQuerySchema),
-  getUsersHandler,
+  getUsersHandler
 )
 
 adminUsersRoute.route('/users/:id', adminUserByIdRoute)

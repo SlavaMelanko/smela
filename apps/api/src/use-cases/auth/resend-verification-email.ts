@@ -4,12 +4,12 @@ import { db, tokenRepo, userRepo } from '@/data'
 import { logger } from '@/logging'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 const createEmailVerificationToken = async (userId: string) => {
   const { type, token, expiresAt } = generateToken(TokenType.EmailVerification)
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await tokenRepo.issue(userId, { userId, type, token, expiresAt }, tx)
   })
 
@@ -22,23 +22,28 @@ export interface ResendVerificationEmailInput {
 
 export const resendVerificationEmail = async (
   { email }: ResendVerificationEmailInput,
-  preferences?: UserPreferences,
+  preferences?: UserPreferences
 ) => {
   const user = await userRepo.findByEmail(email)
 
   // Always return success to prevent email enumeration
   // Only send email if user exists and is unverified
-  if (user?.status === Status.New) {
+  if (user?.status === UserStatus.New) {
     const token = await createEmailVerificationToken(user.id)
 
-    emailAgent.sendEmailVerificationEmail(
-      user.firstName,
-      user.email,
-      token,
-      preferences,
-    ).catch((error: unknown) => {
-      logger.error({ error }, `Failed to send email verification email to ${user.email}`)
-    })
+    emailAgent
+      .sendEmailVerificationEmail(
+        user.firstName,
+        user.email,
+        token,
+        preferences
+      )
+      .catch((error: unknown) => {
+        logger.error(
+          { error },
+          `Failed to send email verification email to ${user.email}`
+        )
+      })
   }
 
   return { success: true }

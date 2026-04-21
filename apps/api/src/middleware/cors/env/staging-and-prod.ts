@@ -6,13 +6,19 @@ import env from '@/env'
 import { logger } from '@/logging'
 import { isHttps, isValidOrigin, normalizeOrigin } from '@/net/url'
 
-import { ALLOWED_HEADERS, ALLOWED_METHODS, EXPOSED_HEADERS, MAX_AGE_ONE_HOUR } from '../constants'
+import {
+  ALLOWED_HEADERS,
+  ALLOWED_METHODS,
+  EXPOSED_HEADERS,
+  MAX_AGE_ONE_HOUR
+} from '../constants'
 
 export const stagingAndProdCors = (): MiddlewareHandler => {
-  const allowedOrigins = env.ALLOWED_ORIGINS?.split(',')
-    .map(o => o.trim())
-    .filter(Boolean)
-    .map(normalizeOrigin) || []
+  const allowedOrigins =
+    env.ALLOWED_ORIGINS?.split(',')
+      .map(o => o.trim())
+      .filter(Boolean)
+      .map(normalizeOrigin) || []
 
   if (allowedOrigins.length === 0) {
     throw new Error('ALLOWED_ORIGINS must be configured for production/staging')
@@ -44,6 +50,6 @@ export const stagingAndProdCors = (): MiddlewareHandler => {
     allowHeaders: ALLOWED_HEADERS,
     exposeHeaders: EXPOSED_HEADERS,
     maxAge: MAX_AGE_ONE_HOUR,
-    credentials: true,
+    credentials: true
   })
 }

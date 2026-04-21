@@ -26,15 +26,16 @@ describe('getTeams', () => {
           description: 'A test team',
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
-        },
+          memberCount: 3
+        }
       ],
-      pagination: { page: 1, limit: 25, total: 1, totalPages: 1 },
+      pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }
     }
 
     mockTeamRepoSearch = mock(async () => mockSearchResult)
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: { search: mockTeamRepoSearch },
+      teamRepo: { search: mockTeamRepoSearch }
     }))
   })
 
@@ -47,7 +48,7 @@ describe('getTeams', () => {
 
     expect(mockTeamRepoSearch).toHaveBeenCalledWith(
       { search: 'acme' },
-      DEFAULT_PAGINATION,
+      DEFAULT_PAGINATION
     )
   })
 
@@ -71,15 +72,15 @@ describe('createTeam', () => {
       website: 'https://newteam.com',
       description: 'A new team',
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
 
     mockTeamRepoCreate = mock(async () => mockTeam)
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
-        create: mockTeamRepoCreate,
-      },
+        create: mockTeamRepoCreate
+      }
     }))
   })
 

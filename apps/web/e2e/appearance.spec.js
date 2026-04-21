@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './config/fixtures'
 
 test.describe('Appearance', () => {
   test('theme toggle: switches from light to dark on login page', async ({

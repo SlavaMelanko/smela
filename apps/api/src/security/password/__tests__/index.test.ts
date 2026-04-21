@@ -95,7 +95,10 @@ describe('Password Security', () => {
       const specialPassword = '!@#$%^&*()_+-=[]{}|;:,.<>?'
       const hashedPassword = await hashPassword(specialPassword)
 
-      const isValid = await comparePasswordHashes(specialPassword, hashedPassword)
+      const isValid = await comparePasswordHashes(
+        specialPassword,
+        hashedPassword
+      )
 
       expect(isValid).toBe(true)
     })
@@ -104,7 +107,10 @@ describe('Password Security', () => {
       const unicodePassword = 'Пароль123!😀🔐'
       const hashedPassword = await hashPassword(unicodePassword)
 
-      const isValid = await comparePasswordHashes(unicodePassword, hashedPassword)
+      const isValid = await comparePasswordHashes(
+        unicodePassword,
+        hashedPassword
+      )
 
       expect(isValid).toBe(true)
     })

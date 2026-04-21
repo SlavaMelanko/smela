@@ -5,7 +5,7 @@ import { nowInSeconds } from '@/utils/chrono'
 export const standardClaimsSchema = z.object({
   iat: z.number(),
   nbf: z.number(),
-  exp: z.number(),
+  exp: z.number()
 })
 
 export type StandardClaims = z.infer<typeof standardClaimsSchema>
@@ -16,7 +16,7 @@ export const createStandardClaims = (expiresIn: number): StandardClaims => {
   return {
     iat: now,
     nbf: now,
-    exp: now + expiresIn,
+    exp: now + expiresIn
   }
 }
 

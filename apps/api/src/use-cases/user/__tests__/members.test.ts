@@ -5,7 +5,7 @@ import type { TeamMember } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { Status } from '@/types'
+import { UserStatus } from '@/types'
 
 import { removeTeamMember } from '../members'
 
@@ -27,26 +27,28 @@ describe('removeTeamMember', () => {
       teamId: TEAM_1,
       position: 'Developer',
       invitedBy: null,
-      joinedAt: new Date('2024-01-01'),
+      joinedAt: new Date('2024-01-01')
     }
 
     mockTeamRepoFindMember = mock(async () => mockMembership)
     mockTeamRepoDeleteMember = mock(async () => {})
     mockUserRepoUpdate = mock(async () => {})
-    mockTransaction = mock(async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
-      return callback({})
-    })
+    mockTransaction = mock(
+      async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
+        return callback({})
+      }
+    )
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         findMember: mockTeamRepoFindMember,
-        deleteMember: mockTeamRepoDeleteMember,
+        deleteMember: mockTeamRepoDeleteMember
       },
       userRepo: { update: mockUserRepoUpdate },
-      db: { transaction: mockTransaction },
+      db: { transaction: mockTransaction }
     }))
 
-    await moduleMocker.mock('@/types', () => ({ Status }))
+    await moduleMocker.mock('@/types', () => ({ UserStatus }))
   })
 
   afterEach(async () => {
@@ -59,14 +61,18 @@ describe('removeTeamMember', () => {
     expect(removeTeamMember(TEAM_1, USER_1)).rejects.toThrow(AppError)
     expect(removeTeamMember(TEAM_1, USER_1)).rejects.toMatchObject({
       code: ErrorCode.NotFound,
-      message: 'Member not found',
+      message: 'Member not found'
     })
   })
 
   it('should delete membership row in transaction', async () => {
     await removeTeamMember(TEAM_1, USER_1)
 
-    expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(USER_1, TEAM_1, expect.anything())
+    expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(
+      USER_1,
+      TEAM_1,
+      expect.anything()
+    )
   })
 
   it('should archive user in transaction', async () => {
@@ -74,8 +80,8 @@ describe('removeTeamMember', () => {
 
     expect(mockUserRepoUpdate).toHaveBeenCalledWith(
       USER_1,
-      { status: Status.Archived },
-      expect.anything(),
+      { status: UserStatus.Archived },
+      expect.anything()
     )
   })
 

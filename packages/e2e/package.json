@@ -1,0 +1,36 @@
+{
+  "name": "@smela/e2e",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix",
+    "lint:staged": "lint-staged",
+    "check": "bun run format:fix && bun run lint:fix"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ]
+  },
+  "exports": {
+    "./config": "./src/config.js",
+    "./api": "./src/api.js",
+    "./email": "./src/email/index.js",
+    "./actions": "./src/actions/index.js"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.59.1"
+  },
+  "dependencies": {
+    "mailisk": "^2.2.2"
+  },
+  "devDependencies": {
+    "@smela/eslint": "workspace:*"
+  }
+}

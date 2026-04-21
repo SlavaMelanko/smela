@@ -8,16 +8,19 @@ Custom SQL migrations that extend Drizzle ORM's auto-generated migrations.
 
 - Uses `pg_trgm` extension for fast substring matching
 - Migration: `0000_search_indexes.sql`
-- Query uses concatenated expression to leverage the GIN index (~5x faster than separate ILIKE per column)
+- Query uses concatenated expression to leverage the GIN index (~5x faster than
+  separate ILIKE per column)
 
 ### Index-Query Coupling
 
 The query expression must exactly match the index expression:
 
 - Index: see `0000_search_indexes.sql`
-- Queries: `src/data/repositories/user/queries.ts`, `src/data/repositories/team/queries.ts`
+- Queries: `src/data/repositories/user/queries.ts`,
+  `src/data/repositories/team/queries.ts`
 - To add a searchable column, update both the migration AND the query
-- Raw SQL expressions must use table-qualified column references (e.g. `usersTable.id`) to avoid ambiguity when joins are present
+- Raw SQL expressions must use table-qualified column references (e.g.
+  `usersTable.id`) to avoid ambiguity when joins are present
 
 ### Capabilities
 

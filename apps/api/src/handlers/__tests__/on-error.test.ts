@@ -25,7 +25,7 @@ describe('onError handler', () => {
     expect(body).toMatchObject({
       code: ErrorCode.InternalError,
       error: 'Something went wrong',
-      name: APP_ERROR_NAME,
+      name: APP_ERROR_NAME
     })
   })
 
@@ -48,7 +48,7 @@ describe('onError handler', () => {
     expect(body).toMatchObject({
       code: ErrorCode.BadRequest,
       error: 'Custom error',
-      name: APP_ERROR_NAME,
+      name: APP_ERROR_NAME
     })
   })
 

@@ -32,7 +32,7 @@ enum ErrorCode {
   RequestTooLarge = 'request/too-large',
   InvalidContentLength = 'request/invalid-content-length',
   ContentLengthMismatch = 'request/content-length-mismatch',
-  BadRequest = 'request/bad',
+  BadRequest = 'request/bad'
 }
 
 export default ErrorCode

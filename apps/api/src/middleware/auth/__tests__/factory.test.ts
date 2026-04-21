@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { createAuthMiddleware } from '../factory'
 
@@ -20,7 +20,7 @@ describe('Auth Middleware Factory', () => {
     id: testUuids.USER_1,
     email: 'test@example.com',
     role: Role.User,
-    status: Status.Verified,
+    status: UserStatus.Verified
   }
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('Auth Middleware Factory', () => {
     it('should throw Unauthorized when no token is provided', async () => {
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -49,7 +49,7 @@ describe('Auth Middleware Factory', () => {
     it('should throw Unauthorized when Authorization header is malformed', async () => {
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -57,8 +57,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: 'not-bearer-format',
-        },
+          Authorization: 'not-bearer-format'
+        }
       })
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -69,7 +69,7 @@ describe('Auth Middleware Factory', () => {
     it('should throw Unauthorized when Authorization header has wrong format', async () => {
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -77,8 +77,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: 'BearerTokenWithoutSpace',
-        },
+          Authorization: 'BearerTokenWithoutSpace'
+        }
       })
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -93,7 +93,7 @@ describe('Auth Middleware Factory', () => {
 
       const middleware = createAuthMiddleware(
         () => false, // status validator fails
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -101,14 +101,14 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${validToken}`,
-        },
+          Authorization: `Bearer ${validToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()
       expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Status validation failure')
+      expect(json.error).toBe('UserStatus validation failure')
     })
 
     it('should re-throw AppError from role validator', async () => {
@@ -116,7 +116,7 @@ describe('Auth Middleware Factory', () => {
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => false, // role validator fails
+        () => false // role validator fails
       )
 
       app.use('/', middleware)
@@ -124,8 +124,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${validToken}`,
-        },
+          Authorization: `Bearer ${validToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -137,11 +137,12 @@ describe('Auth Middleware Factory', () => {
 
   describe('Integration with JWT Verification Errors', () => {
     it('should handle invalid JWT signature', async () => {
-      const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature'
+      const invalidToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature'
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -149,8 +150,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${invalidToken}`,
-        },
+          Authorization: `Bearer ${invalidToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -161,12 +162,12 @@ describe('Auth Middleware Factory', () => {
     it('should handle expired JWT tokens', async () => {
       const expiredToken = await signJwt(mockUser, {
         secret: env.JWT_SECRET,
-        expiresIn: -1,
+        expiresIn: -1
       })
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -174,8 +175,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${expiredToken}`,
-        },
+          Authorization: `Bearer ${expiredToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -185,12 +186,12 @@ describe('Auth Middleware Factory', () => {
 
     it('should handle JWT with wrong secret', async () => {
       const tokenWithWrongSecret = await signJwt(mockUser, {
-        secret: 'wrong-secret-key',
+        secret: 'wrong-secret-key'
       })
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -198,8 +199,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${tokenWithWrongSecret}`,
-        },
+          Authorization: `Bearer ${tokenWithWrongSecret}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -214,7 +215,7 @@ describe('Auth Middleware Factory', () => {
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
@@ -222,8 +223,8 @@ describe('Auth Middleware Factory', () => {
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${validToken}`,
-        },
+          Authorization: `Bearer ${validToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -238,11 +239,11 @@ describe('Auth Middleware Factory', () => {
 
       const middleware = createAuthMiddleware(
         () => true,
-        () => true,
+        () => true
       )
 
       app.use('/', middleware)
-      app.get('/', (c) => {
+      app.get('/', c => {
         const user = c.get('user')
 
         return c.json({
@@ -250,14 +251,14 @@ describe('Auth Middleware Factory', () => {
           userId: user.id,
           email: user.email,
           role: user.role,
-          status: user.status,
+          status: user.status
         })
       })
 
       const res = await app.request('/', {
         headers: {
-          Authorization: `Bearer ${validToken}`,
-        },
+          Authorization: `Bearer ${validToken}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.OK)

@@ -9,7 +9,7 @@ const styles = {
   font,
   spacing,
   borderRadius,
-  get,
+  get
 } as const
 
 export const getThemeStyles = (theme: Theme = 'light') => {

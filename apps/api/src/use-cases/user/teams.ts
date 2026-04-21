@@ -17,10 +17,7 @@ export interface UpdateTeamInput {
   description?: string | null
 }
 
-export const updateTeam = async (
-  teamId: string,
-  updates: UpdateTeamInput,
-) => {
+export const updateTeam = async (teamId: string, updates: UpdateTeamInput) => {
   const existing = await teamRepo.findById(teamId)
 
   if (!existing) {

@@ -6,9 +6,12 @@ import { zValidator } from '@hono/zod-validator'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 
-export const requestValidator = <Target extends keyof ValidationTargets, Schema extends ZodType>(
+export const requestValidator = <
+  Target extends keyof ValidationTargets,
+  Schema extends ZodType
+>(
   target: Target,
-  schema: Schema,
+  schema: Schema
 ) =>
   zValidator(target, schema, (result, _c) => {
     if (!result.success) {

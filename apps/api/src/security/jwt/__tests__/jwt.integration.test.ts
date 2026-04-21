@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 
 import { testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { signJwt, verifyJwt } from '../jwt'
 
@@ -11,7 +11,7 @@ describe('JWT Integration Tests', () => {
     id: testUuids.USER_1,
     email: 'test@example.com',
     role: Role.User,
-    status: Status.Active,
+    status: UserStatus.Active
   }
 
   describe('signJwt + verifyJwt round-trip', () => {
@@ -35,7 +35,10 @@ describe('JWT Integration Tests', () => {
       const secret = 'test-secret-key'
       const customExpiresIn = 7200
 
-      const token = await signJwt(testUserClaims, { secret, expiresIn: customExpiresIn })
+      const token = await signJwt(testUserClaims, {
+        secret,
+        expiresIn: customExpiresIn
+      })
 
       // Verify token doesn't throw - expiration is validated internally
       const resultUserClaims = await verifyJwt(token, { secret })
@@ -55,12 +58,12 @@ describe('JWT Integration Tests', () => {
 
     it('should handle different user statuses', async () => {
       const secret = 'test-secret-key'
-      const newUserClaims = { ...testUserClaims, status: Status.New }
+      const newUserClaims = { ...testUserClaims, status: UserStatus.New }
 
       const token = await signJwt(newUserClaims, { secret })
       const resultUserClaims = await verifyJwt(token, { secret })
 
-      expect(resultUserClaims.status).toBe(Status.New)
+      expect(resultUserClaims.status).toBe(UserStatus.New)
     })
   })
 
@@ -68,23 +71,33 @@ describe('JWT Integration Tests', () => {
     it('should fail verification with wrong secret', async () => {
       const token = await signJwt(testUserClaims, { secret: 'correct-secret' })
 
-      expect(verifyJwt(token, { secret: 'wrong-secret' })).rejects.toThrow(AppError)
-      expect(verifyJwt(token, { secret: 'wrong-secret' })).rejects.toMatchObject({
+      expect(verifyJwt(token, { secret: 'wrong-secret' })).rejects.toThrow(
+        AppError
+      )
+      expect(
+        verifyJwt(token, { secret: 'wrong-secret' })
+      ).rejects.toMatchObject({
         code: ErrorCode.Unauthorized,
-        message: 'Invalid authentication token',
+        message: 'Invalid authentication token'
       })
     })
 
     it('should fail verification with malformed token', async () => {
-      expect(verifyJwt('invalid.token.here', { secret: 'test-secret' })).rejects.toThrow(AppError)
-      expect(verifyJwt('invalid.token.here', { secret: 'test-secret' })).rejects.toMatchObject({
+      expect(
+        verifyJwt('invalid.token.here', { secret: 'test-secret' })
+      ).rejects.toThrow(AppError)
+      expect(
+        verifyJwt('invalid.token.here', { secret: 'test-secret' })
+      ).rejects.toMatchObject({
         code: ErrorCode.Unauthorized,
-        message: 'Invalid authentication token',
+        message: 'Invalid authentication token'
       })
     })
 
     it('should fail verification with completely invalid token', async () => {
-      expect(verifyJwt('not-a-jwt-at-all', { secret: 'test-secret' })).rejects.toThrow(AppError)
+      expect(
+        verifyJwt('not-a-jwt-at-all', { secret: 'test-secret' })
+      ).rejects.toThrow(AppError)
     })
 
     it('should fail verification with empty token', async () => {
@@ -94,7 +107,9 @@ describe('JWT Integration Tests', () => {
     it('should fail verification with token signed by different secret', async () => {
       const token = await signJwt(testUserClaims, { secret: 'secret-one' })
 
-      expect(verifyJwt(token, { secret: 'secret-two' })).rejects.toThrow(AppError)
+      expect(verifyJwt(token, { secret: 'secret-two' })).rejects.toThrow(
+        AppError
+      )
     })
   })
 
@@ -139,8 +154,14 @@ describe('JWT Integration Tests', () => {
 
     it('should support HS512 algorithm', async () => {
       const secret = 'test-secret'
-      const token = await signJwt(testUserClaims, { secret, signatureAlgorithm: 'HS512' })
-      const resultUserClaims = await verifyJwt(token, { secret, signatureAlgorithm: 'HS512' })
+      const token = await signJwt(testUserClaims, {
+        secret,
+        signatureAlgorithm: 'HS512'
+      })
+      const resultUserClaims = await verifyJwt(token, {
+        secret,
+        signatureAlgorithm: 'HS512'
+      })
 
       expect(resultUserClaims.id).toBe(testUserClaims.id)
       expect(resultUserClaims.email).toBe(testUserClaims.email)
@@ -148,9 +169,14 @@ describe('JWT Integration Tests', () => {
 
     it('should fail verification when algorithm mismatch', async () => {
       const secret = 'test-secret'
-      const token = await signJwt(testUserClaims, { secret, signatureAlgorithm: 'HS256' })
+      const token = await signJwt(testUserClaims, {
+        secret,
+        signatureAlgorithm: 'HS256'
+      })
 
-      expect(verifyJwt(token, { secret, signatureAlgorithm: 'HS512' })).rejects.toThrow(AppError)
+      expect(
+        verifyJwt(token, { secret, signatureAlgorithm: 'HS512' })
+      ).rejects.toThrow(AppError)
     })
   })
 })

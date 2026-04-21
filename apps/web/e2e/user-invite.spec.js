@@ -1,21 +1,22 @@
 import { faker } from '@faker-js/faker'
-
-import { HttpStatus } from '../src/lib/net'
+import { fillMemberInviteFormAndSubmit, logOut } from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmailAddress } from '@smela/e2e/email'
+import { HttpStatus } from '@smela/ui/lib/net'
 import {
+  CHECK_INVITE_PATH,
   TEAM_MEMBER_CANCEL_INVITE_PATH,
   TEAM_MEMBER_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
   TEAMS_PATH
-} from '../src/services/backend/paths'
-import { auth } from '../src/tests/data'
+} from '@smela/ui/services/backend/paths'
+
 import { expect, test } from './config/fixtures'
-import { fillMemberInviteFormAndSubmit, logOut } from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,
-  password: process.env.VITE_E2E_USER_PASSWORD
+  password: process.env.VITE_E2E_DEFAULT_PASSWORD
 }
 
 test.describe.serial('User: Team Members', () => {
@@ -29,8 +30,8 @@ test.describe.serial('User: Team Members', () => {
   const newMember = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
-    password: auth.password.strong,
+    email: generateEmailAddress({ prefix: firstName }),
+    password: process.env.VITE_E2E_DEFAULT_PASSWORD,
     position: faker.person.jobTitle()
   }
 
@@ -242,7 +243,7 @@ test.describe.serial('User: Team Members', () => {
 
     await ownRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).not.toBeVisible()
 
     // Close context menu
@@ -255,7 +256,7 @@ test.describe.serial('User: Team Members', () => {
 
     await otherRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).toBeVisible()
 
     await page.keyboard.press('Escape')
@@ -287,7 +288,7 @@ test.describe.serial('User: Team Members', () => {
 
     await memberRow.click({ button: 'right' })
     await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.delete })
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
     ).toBeVisible()
 
     const deletePath = TEAM_MEMBER_PATH.replace(':teamId', teamId).replace(
@@ -300,7 +301,7 @@ test.describe.serial('User: Team Members', () => {
       { path: membersPath, method: 'GET', status: HttpStatus.OK }
     ])
 
-    await page.getByRole('menuitem', { name: t.contextMenu.delete }).click()
+    await page.getByRole('menuitem', { name: t.contextMenu.remove }).click()
 
     // Confirm in the dialog
     await page.getByRole('button', { name: t.team.members.remove.cta }).click()
@@ -312,5 +313,25 @@ test.describe.serial('User: Team Members', () => {
     await expect(memberRow).not.toBeVisible()
 
     await logOut(page, t)
+  })
+
+  test('rejects cancelled invite link and redirects to login', async ({
+    page,
+    t,
+    emailService
+  }) => {
+    const { link } = await emailService.waitForInvitationEmail(newMember.email)
+
+    const checkInvitePromise = waitForApiCall(page, {
+      path: CHECK_INVITE_PATH,
+      method: 'GET',
+      status: HttpStatus.GONE
+    })
+
+    await page.goto(link)
+    await checkInvitePromise
+
+    await expect(page).toHaveURL('/login')
+    await expect(page.getByText(t.backend['token/deprecated'])).toBeVisible()
   })
 })

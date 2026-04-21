@@ -12,39 +12,47 @@ describe('CORS Middleware', () => {
     it('should allow localhost origins', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'http://localhost:3000',
-        },
+          Origin: 'http://localhost:3000'
+        }
       })
 
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000')
-      expect(response.headers.get('Access-Control-Allow-Credentials')).toBe('true')
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+        'http://localhost:3000'
+      )
+      expect(response.headers.get('Access-Control-Allow-Credentials')).toBe(
+        'true'
+      )
     })
 
     it('should allow 127.0.0.1 origins', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'http://127.0.0.1:5173',
-        },
+          Origin: 'http://127.0.0.1:5173'
+        }
       })
 
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://127.0.0.1:5173')
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+        'http://127.0.0.1:5173'
+      )
     })
 
     it('should allow https localhost', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'https://localhost:8080',
-        },
+          Origin: 'https://localhost:8080'
+        }
       })
 
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('https://localhost:8080')
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+        'https://localhost:8080'
+      )
     })
 
     it('should reject non-localhost origins', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'https://example.com',
-        },
+          Origin: 'https://example.com'
+        }
       })
 
       expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull()
@@ -60,14 +68,18 @@ describe('CORS Middleware', () => {
       const response = await app.request('/test', {
         method: 'OPTIONS',
         headers: {
-          'Origin': 'http://localhost:3000',
+          Origin: 'http://localhost:3000',
           'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type',
-        },
+          'Access-Control-Request-Headers': 'Content-Type'
+        }
       })
 
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000')
-      expect(response.headers.get('Access-Control-Allow-Methods')).toContain('POST')
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+        'http://localhost:3000'
+      )
+      expect(response.headers.get('Access-Control-Allow-Methods')).toContain(
+        'POST'
+      )
       expect(response.headers.get('Access-Control-Max-Age')).toBe('600')
     })
   })
@@ -80,8 +92,8 @@ describe('CORS Middleware', () => {
     it('should allow all origins', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'https://any-domain.com',
-        },
+          Origin: 'https://any-domain.com'
+        }
       })
 
       expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
@@ -90,11 +102,13 @@ describe('CORS Middleware', () => {
     it('should not send credentials', async () => {
       const response = await app.request('/test', {
         headers: {
-          Origin: 'https://any-domain.com',
-        },
+          Origin: 'https://any-domain.com'
+        }
       })
 
-      expect(response.headers.get('Access-Control-Allow-Credentials')).toBeNull()
+      expect(
+        response.headers.get('Access-Control-Allow-Credentials')
+      ).toBeNull()
     })
   })
 })

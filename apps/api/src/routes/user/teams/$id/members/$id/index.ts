@@ -9,7 +9,7 @@ import {
   getTeamMemberHandler,
   removeTeamMemberHandler,
   resendMemberInviteHandler,
-  updateTeamMemberHandler,
+  updateTeamMemberHandler
 } from './handler'
 import { memberIdParamsSchema, updateTeamMemberBodySchema } from './schema'
 
@@ -19,7 +19,7 @@ teamsMemberByIdRoute.get(
   '/',
   requestValidator('param', memberIdParamsSchema),
   teamAccessMiddleware,
-  getTeamMemberHandler,
+  getTeamMemberHandler
 )
 
 teamsMemberByIdRoute.patch(
@@ -27,26 +27,26 @@ teamsMemberByIdRoute.patch(
   requestValidator('param', memberIdParamsSchema),
   requestValidator('json', updateTeamMemberBodySchema),
   teamAccessMiddleware,
-  updateTeamMemberHandler,
+  updateTeamMemberHandler
 )
 
 teamsMemberByIdRoute.delete(
   '/',
   requestValidator('param', memberIdParamsSchema),
   teamAccessMiddleware,
-  removeTeamMemberHandler,
+  removeTeamMemberHandler
 )
 
 teamsMemberByIdRoute.post(
   '/resend-invite',
   requestValidator('param', memberIdParamsSchema),
   teamAccessMiddleware,
-  resendMemberInviteHandler,
+  resendMemberInviteHandler
 )
 
 teamsMemberByIdRoute.post(
   '/cancel-invite',
   requestValidator('param', memberIdParamsSchema),
   teamAccessMiddleware,
-  cancelMemberInviteHandler,
+  cancelMemberInviteHandler
 )

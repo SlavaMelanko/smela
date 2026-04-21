@@ -8,7 +8,7 @@ import { getErrorTracker } from '@/services'
 
 import { getHttpStatus } from './http-status-mapper'
 
-const notFound: NotFoundHandler<AppContext> = (c) => {
+const notFound: NotFoundHandler<AppContext> = c => {
   const code = ErrorCode.NotFound
   const error = ErrorRegistry[code].error
   const status = getHttpStatus(code)
@@ -21,9 +21,9 @@ const notFound: NotFoundHandler<AppContext> = (c) => {
       name: APP_ERROR_NAME,
       code,
       error,
-      path,
+      path
     },
-    status as ContentfulStatusCode,
+    status as ContentfulStatusCode
   )
 }
 

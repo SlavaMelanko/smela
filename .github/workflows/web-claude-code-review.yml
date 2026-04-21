@@ -5,6 +5,9 @@ on:
     types: [opened, synchronize]
     paths:
       - 'apps/web/**'
+      - 'apps/admin/**'
+      - 'packages/ui/**'
+      - 'packages/i18n/**'
 
 jobs:
   claude-code-review:
@@ -44,22 +47,24 @@ jobs:
 
           # Direct prompt for automated review (no @claude mention needed)
           direct_prompt: |
-            Please review this pull request for a Vite + React (JavaScript) frontend application.
+            Please review this pull request. It may touch one or more of: apps/web, apps/admin (Vite + React JS apps), packages/ui (shared React component library), or packages/i18n (i18n/translation resources — no components, focus on key naming and missing translations).
 
             Review areas:
             1. Code quality and best practices
             2. Potential bugs or issues
             3. Performance considerations (only flag obvious issues, not speculative optimizations)
             4. Security concerns
-            5. Test coverage: We aim for 40-60% coverage, not 100%. In real development with limited team size (might be solo dev), we focus on minimum testable solution. Prefer a few tests covering normal flow plus a few edge cases. When issues arise, we add unit tests to prevent regression. We can focus on comprehensive testing later if needed.
+            5. Test coverage: ~40% unit test coverage is sufficient — Storybook covers component behavior and Playwright E2E covers critical user flows. Unit tests should target logic, not UI. Add regression tests only when a bug is fixed.
 
             Format your feedback:
+              - Be concise — no verbose explanations, no padding
+              - Cap any list (suggestions, benefits, examples) at 3 items max
               - Group issues by priority:
                 * **Critical**: Bugs, security vulnerabilities, breaking changes — must fix
-                * **Medium**: Important improvements to address
-                * Skip low-priority nitpicks
-              - Include code examples for each suggestion
+                * **Suggestions**: Important improvements to address
+              - Include a short code example only when the fix is non-obvious
               - Do NOT include a "Review Summary" section (summaries are in PR descriptions)
+              - Do NOT include a "Positive Observations", "Test Coverage Assessment", "Security & Performance" section at the end
 
               DO NOT suggest:
               - JSDoc comments (only comment genuinely complex logic)

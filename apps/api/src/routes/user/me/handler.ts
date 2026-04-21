@@ -27,7 +27,12 @@ export const changePasswordHandler = async (c: ChangePasswordCtx) => {
   const { currentPassword, newPassword } = c.req.valid('json')
   const refreshToken = getRefreshCookie(c)
 
-  const result = await changePassword(user.id, currentPassword, newPassword, refreshToken)
+  const result = await changePassword(
+    user.id,
+    currentPassword,
+    newPassword,
+    refreshToken
+  )
 
   return c.json(result)
 }

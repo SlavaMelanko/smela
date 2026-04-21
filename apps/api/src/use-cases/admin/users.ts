@@ -1,5 +1,5 @@
 import type { PaginationParams, SearchParams } from '@/data'
-import type { Status } from '@/types'
+import type { UserStatus } from '@/types'
 
 import { userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
@@ -11,16 +11,19 @@ const normalizeRoles = (params: SearchParams): SearchParams => {
 
   return {
     ...params,
-    roles: validRoles,
+    roles: validRoles
   }
 }
 
-export const searchUsers = async (params: SearchParams, pagination: PaginationParams) => {
+export const searchUsers = async (
+  params: SearchParams,
+  pagination: PaginationParams
+) => {
   const result = await userRepo.search(normalizeRoles(params), pagination)
 
   return {
     data: { users: result.users },
-    pagination: result.pagination,
+    pagination: result.pagination
   }
 }
 
@@ -37,7 +40,7 @@ export const getUser = async (userId: string) => {
 export interface UpdateUserInput {
   firstName?: string
   lastName?: string
-  status?: Status
+  status?: UserStatus
 }
 
 export const updateUser = async (userId: string, updates: UpdateUserInput) => {

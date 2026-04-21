@@ -11,7 +11,7 @@ export type LocaleContent = typeof en
 
 const content: Record<SupportedLocale, LocaleContent> = {
   en,
-  uk,
+  uk
 }
 
 export const getContent = (locale: SupportedLocale = 'en'): LocaleContent => {

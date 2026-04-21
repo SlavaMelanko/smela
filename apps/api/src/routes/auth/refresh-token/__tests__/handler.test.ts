@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { refreshTokenHandler } from '../handler'
 
@@ -24,7 +24,7 @@ describe('Refresh Token Handler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      json: mockJson,
+      json: mockJson
     } as any
 
     mockRefreshToken = 'refresh_token_123'
@@ -32,14 +32,14 @@ describe('Refresh Token Handler', () => {
     mockSetRefreshCookie = mock(() => {})
     mockGetDeviceInfo = mock(() => ({
       ipAddress: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 (Test)',
+      userAgent: 'Mozilla/5.0 (Test)'
     }))
 
     await moduleMocker.mock('@/net/http', () => ({
       getRefreshCookie: mockGetRefreshCookie,
       setRefreshCookie: mockSetRefreshCookie,
       getDeviceInfo: mockGetDeviceInfo,
-      HttpStatus,
+      HttpStatus
     }))
 
     mockRefreshAuthTokens = mock(async () => ({
@@ -49,18 +49,18 @@ describe('Refresh Token Handler', () => {
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',
-          status: Status.Verified,
+          status: UserStatus.Verified,
           role: Role.User,
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         },
-        accessToken: 'new_access_token_123',
+        accessToken: 'new_access_token_123'
       },
-      refreshToken: 'new_refresh_token_456',
+      refreshToken: 'new_refresh_token_456'
     }))
 
     await moduleMocker.mock('@/use-cases/auth', () => ({
-      refreshAuthTokens: mockRefreshAuthTokens,
+      refreshAuthTokens: mockRefreshAuthTokens
     }))
   })
 
@@ -75,23 +75,32 @@ describe('Refresh Token Handler', () => {
     expect(mockGetDeviceInfo).toHaveBeenCalledWith(mockContext)
     expect(mockRefreshAuthTokens).toHaveBeenCalledWith(
       { refreshToken: mockRefreshToken },
-      { ipAddress: '192.168.1.1', userAgent: 'Mozilla/5.0 (Test)' },
+      { ipAddress: '192.168.1.1', userAgent: 'Mozilla/5.0 (Test)' }
     )
-    expect(mockSetRefreshCookie).toHaveBeenCalledWith(mockContext, 'new_refresh_token_456')
-    expect(mockJson).toHaveBeenCalledWith(expect.objectContaining({
-      accessToken: 'new_access_token_123',
-    }), HttpStatus.OK)
+    expect(mockSetRefreshCookie).toHaveBeenCalledWith(
+      mockContext,
+      'new_refresh_token_456'
+    )
+    expect(mockJson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessToken: 'new_access_token_123'
+      }),
+      HttpStatus.OK
+    )
     expect(result.status).toBe(HttpStatus.OK)
   })
 
   it('should handle device info with null values', async () => {
-    mockGetDeviceInfo.mockImplementation(() => ({ ipAddress: null, userAgent: null }))
+    mockGetDeviceInfo.mockImplementation(() => ({
+      ipAddress: null,
+      userAgent: null
+    }))
 
     const result = await refreshTokenHandler(mockContext)
 
     expect(mockRefreshAuthTokens).toHaveBeenCalledWith(
       { refreshToken: mockRefreshToken },
-      { ipAddress: null, userAgent: null },
+      { ipAddress: null, userAgent: null }
     )
     expect(result.status).toBe(HttpStatus.OK)
   })
@@ -101,7 +110,9 @@ describe('Refresh Token Handler', () => {
       throw new Error('Invalid refresh token')
     })
 
-    expect(refreshTokenHandler(mockContext)).rejects.toThrow('Invalid refresh token')
+    expect(refreshTokenHandler(mockContext)).rejects.toThrow(
+      'Invalid refresh token'
+    )
     expect(mockSetRefreshCookie).not.toHaveBeenCalled()
     expect(mockJson).not.toHaveBeenCalled()
   })
@@ -111,7 +122,9 @@ describe('Refresh Token Handler', () => {
       throw new Error('Cookie parsing failed')
     })
 
-    expect(refreshTokenHandler(mockContext)).rejects.toThrow('Cookie parsing failed')
+    expect(refreshTokenHandler(mockContext)).rejects.toThrow(
+      'Cookie parsing failed'
+    )
     expect(mockRefreshAuthTokens).not.toHaveBeenCalled()
   })
 
@@ -120,7 +133,9 @@ describe('Refresh Token Handler', () => {
       throw new Error('Cookie setting failed')
     })
 
-    expect(refreshTokenHandler(mockContext)).rejects.toThrow('Cookie setting failed')
+    expect(refreshTokenHandler(mockContext)).rejects.toThrow(
+      'Cookie setting failed'
+    )
     expect(mockJson).not.toHaveBeenCalled()
   })
 })

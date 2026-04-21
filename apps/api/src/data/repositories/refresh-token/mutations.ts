@@ -8,7 +8,7 @@ import { refreshTokensTable } from '../../schema'
 
 export const createRefreshToken = async (
   token: CreateRefreshTokenInput,
-  tx?: Database,
+  tx?: Database
 ): Promise<number> => {
   const executor = tx || db
 
@@ -22,7 +22,7 @@ export const createRefreshToken = async (
 
 export const revokeByHash = async (
   hash: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<boolean> => {
   const executor = tx || db
 
@@ -32,8 +32,8 @@ export const revokeByHash = async (
     .where(
       and(
         eq(refreshTokensTable.tokenHash, hash),
-        isNull(refreshTokensTable.revokedAt),
-      ),
+        isNull(refreshTokensTable.revokedAt)
+      )
     )
     .returning({ id: refreshTokensTable.id })
 
@@ -49,7 +49,7 @@ export const revokeByHash = async (
 export const revokeByUserId = async (
   userId: string,
   excludeHash?: string,
-  tx?: Database,
+  tx?: Database
 ): Promise<void> => {
   const executor = tx || db
 
@@ -60,15 +60,13 @@ export const revokeByUserId = async (
       and(
         eq(refreshTokensTable.userId, userId),
         isNull(refreshTokensTable.revokedAt),
-        ...(excludeHash ? [ne(refreshTokensTable.tokenHash, excludeHash)] : []),
-      ),
+        ...(excludeHash ? [ne(refreshTokensTable.tokenHash, excludeHash)] : [])
+      )
     )
 }
 
 // Scheduled cleanup job — see https://github.com/SlavaMelanko/smela-back/issues/118
-export const cleanupExpiredTokens = async (
-  tx?: Database,
-): Promise<number> => {
+export const cleanupExpiredTokens = async (tx?: Database): Promise<number> => {
   const executor = tx || db
 
   const result = await executor
@@ -76,8 +74,8 @@ export const cleanupExpiredTokens = async (
     .where(
       and(
         lt(refreshTokensTable.expiresAt, new Date()),
-        isNull(refreshTokensTable.revokedAt),
-      ),
+        isNull(refreshTokensTable.revokedAt)
+      )
     )
     .returning({ id: refreshTokensTable.id })
 

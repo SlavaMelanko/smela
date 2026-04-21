@@ -1,0 +1,6 @@
+export { baseConfig, basePlugins, baseRules, globalIgnores } from './base.js'
+export { playwrightConfig } from './playwright.js'
+export { reactConfig } from './react.js'
+export { shadcnConfig } from './shadcn.js'
+export { storybookConfig } from './storybook.js'
+export { vitestConfig } from './vitest.js'

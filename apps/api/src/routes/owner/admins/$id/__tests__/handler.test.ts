@@ -4,13 +4,13 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import {
   cancelAdminInviteHandler,
   getAdminHandler,
   resendAdminInviteHandler,
-  updateAdminHandler,
+  updateAdminHandler
 } from '../handler'
 
 const mockAdmin: User = {
@@ -19,9 +19,9 @@ const mockAdmin: User = {
   lastName: 'User',
   email: 'admin@example.com',
   role: Role.Admin,
-  status: Status.Active,
+  status: UserStatus.Active,
   createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01')
 }
 
 describe('getAdminHandler', () => {
@@ -35,11 +35,13 @@ describe('getAdminHandler', () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: { valid: mock(() => ({ adminId: testUuids.ADMIN_1 })) },
-      json: mockJson,
+      json: mockJson
     }
     mockGetAdmin = mock(async () => ({ admin: mockAdmin }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ getAdmin: mockGetAdmin }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      getAdmin: mockGetAdmin
+    }))
   })
 
   afterEach(async () => {
@@ -74,7 +76,7 @@ describe('updateAdminHandler', () => {
     ...mockAdmin,
     firstName: 'Updated',
     lastName: 'Name',
-    updatedAt: new Date('2024-01-02'),
+    updatedAt: new Date('2024-01-02')
   }
 
   beforeEach(async () => {
@@ -84,14 +86,16 @@ describe('updateAdminHandler', () => {
         valid: mock((type: string) =>
           type === 'param'
             ? { adminId: testUuids.ADMIN_1 }
-            : { firstName: 'Updated', lastName: 'Name' },
-        ),
+            : { firstName: 'Updated', lastName: 'Name' }
+        )
       },
-      json: mockJson,
+      json: mockJson
     }
     mockUpdateAdmin = mock(async () => ({ admin: updatedAdmin }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ updateAdmin: mockUpdateAdmin }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      updateAdmin: mockUpdateAdmin
+    }))
   })
 
   afterEach(async () => {
@@ -101,8 +105,14 @@ describe('updateAdminHandler', () => {
   it('should call updateAdmin and return updated admin with OK status', async () => {
     const result = await updateAdminHandler(mockContext)
 
-    expect(mockUpdateAdmin).toHaveBeenCalledWith(testUuids.ADMIN_1, { firstName: 'Updated', lastName: 'Name' })
-    expect(mockJson).toHaveBeenCalledWith({ admin: updatedAdmin }, HttpStatus.OK)
+    expect(mockUpdateAdmin).toHaveBeenCalledWith(testUuids.ADMIN_1, {
+      firstName: 'Updated',
+      lastName: 'Name'
+    })
+    expect(mockJson).toHaveBeenCalledWith(
+      { admin: updatedAdmin },
+      HttpStatus.OK
+    )
     expect(result.status).toBe(HttpStatus.OK)
   })
 
@@ -127,11 +137,13 @@ describe('resendAdminInviteHandler', () => {
     mockContext = {
       req: { valid: mock(() => ({ adminId: testUuids.ADMIN_1 })) },
       get: mock(() => ({ id: testUuids.OWNER_1 })),
-      json: mockJson,
+      json: mockJson
     }
     mockResendAdminInvite = mock(async () => ({ success: true }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ resendAdminInvite: mockResendAdminInvite }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      resendAdminInvite: mockResendAdminInvite
+    }))
   })
 
   afterEach(async () => {
@@ -141,7 +153,10 @@ describe('resendAdminInviteHandler', () => {
   it('should call resendAdminInvite and return result with OK status', async () => {
     const result = await resendAdminInviteHandler(mockContext)
 
-    expect(mockResendAdminInvite).toHaveBeenCalledWith(testUuids.ADMIN_1, testUuids.OWNER_1)
+    expect(mockResendAdminInvite).toHaveBeenCalledWith(
+      testUuids.ADMIN_1,
+      testUuids.OWNER_1
+    )
     expect(mockJson).toHaveBeenCalledWith({ success: true }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
   })
@@ -151,7 +166,9 @@ describe('resendAdminInviteHandler', () => {
       throw new Error('Invite already accepted')
     })
 
-    expect(resendAdminInviteHandler(mockContext)).rejects.toThrow('Invite already accepted')
+    expect(resendAdminInviteHandler(mockContext)).rejects.toThrow(
+      'Invite already accepted'
+    )
   })
 })
 
@@ -166,11 +183,13 @@ describe('cancelAdminInviteHandler', () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
       req: { valid: mock(() => ({ adminId: testUuids.ADMIN_1 })) },
-      json: mockJson,
+      json: mockJson
     }
     mockCancelAdminInvite = mock(async () => ({ success: true }))
 
-    await moduleMocker.mock('@/use-cases/owner', () => ({ cancelAdminInvite: mockCancelAdminInvite }))
+    await moduleMocker.mock('@/use-cases/owner', () => ({
+      cancelAdminInvite: mockCancelAdminInvite
+    }))
   })
 
   afterEach(async () => {
@@ -190,6 +209,8 @@ describe('cancelAdminInviteHandler', () => {
       throw new Error('Invite not found')
     })
 
-    expect(cancelAdminInviteHandler(mockContext)).rejects.toThrow('Invite not found')
+    expect(cancelAdminInviteHandler(mockContext)).rejects.toThrow(
+      'Invite not found'
+    )
   })
 })

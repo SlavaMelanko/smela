@@ -10,7 +10,7 @@ import {
   authRequestSizeLimiter,
   createRequestSizeLimiter,
   fileUploadSizeLimiter,
-  generalRequestSizeLimiter,
+  generalRequestSizeLimiter
 } from '../index'
 
 describe('Request Size Limiter Middleware', () => {
@@ -31,9 +31,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': smallPayload.length.toString(),
+          'Content-Length': smallPayload.length.toString()
         },
-        body: smallPayload,
+        body: smallPayload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -50,9 +50,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': largePayload.length.toString(),
+          'Content-Length': largePayload.length.toString()
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -69,9 +69,9 @@ describe('Request Size Limiter Middleware', () => {
       const res = await app.request('/test', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: smallPayload,
+        body: smallPayload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -87,9 +87,9 @@ describe('Request Size Limiter Middleware', () => {
       const res = await app.request('/test', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -106,9 +106,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': 'invalid',
+          'Content-Length': 'invalid'
         },
-        body: JSON.stringify({ data: 'test' }),
+        body: JSON.stringify({ data: 'test' })
       })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
@@ -123,14 +123,17 @@ describe('Request Size Limiter Middleware', () => {
       app.use('*', authRequestSizeLimiter)
       app.post('/auth/login', c => c.json({ success: true }))
 
-      const smallPayload = JSON.stringify({ email: 'test@test.com', password: 'Test123!' })
+      const smallPayload = JSON.stringify({
+        email: 'test@test.com',
+        password: 'Test123!'
+      })
       const res = await app.request('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': smallPayload.length.toString(),
+          'Content-Length': smallPayload.length.toString()
         },
-        body: smallPayload,
+        body: smallPayload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -145,15 +148,15 @@ describe('Request Size Limiter Middleware', () => {
       const largePayload = JSON.stringify({
         email: 'test@test.com',
         password: 'Test123!',
-        padding: 'x'.repeat(11000), // >10KB
+        padding: 'x'.repeat(11000) // >10KB
       })
       const res = await app.request('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': largePayload.length.toString(),
+          'Content-Length': largePayload.length.toString()
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -173,9 +176,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Content-Length': fileSize.toString(),
+          'Content-Length': fileSize.toString()
         },
-        body: new ArrayBuffer(fileSize),
+        body: new ArrayBuffer(fileSize)
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -192,9 +195,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Content-Length': fileSize.toString(),
+          'Content-Length': fileSize.toString()
         },
-        body: new ArrayBuffer(fileSize),
+        body: new ArrayBuffer(fileSize)
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -216,9 +219,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': smallPayload.length.toString(),
+          'Content-Length': smallPayload.length.toString()
         },
-        body: smallPayload,
+        body: smallPayload
       })
 
       expect(smallRes.status).toBe(HttpStatus.OK)
@@ -229,9 +232,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': largePayload.length.toString(),
+          'Content-Length': largePayload.length.toString()
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(largeRes.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -248,14 +251,16 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '100', // Declare smaller size than actual
+          'Content-Length': '100' // Declare smaller size than actual
         },
-        body: payload,
+        body: payload
       })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       const json = await res.json()
-      expect(json.error).toBe('Content-Length header does not match actual body size.')
+      expect(json.error).toBe(
+        'Content-Length header does not match actual body size.'
+      )
       expect(json.code).toBe('request/content-length-mismatch')
     })
 
@@ -268,14 +273,16 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '10000', // Declare larger size than actual
+          'Content-Length': '10000' // Declare larger size than actual
         },
-        body: payload,
+        body: payload
       })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       const json = await res.json()
-      expect(json.error).toBe('Content-Length header does not match actual body size.')
+      expect(json.error).toBe(
+        'Content-Length header does not match actual body size.'
+      )
       expect(json.code).toBe('request/content-length-mismatch')
     })
   })
@@ -289,9 +296,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '0',
+          'Content-Length': '0'
         },
-        body: '',
+        body: ''
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -308,9 +315,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
-          'Content-Length': '1024',
+          'Content-Length': '1024'
         },
-        body: exactPayload,
+        body: exactPayload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -325,9 +332,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '-1',
+          'Content-Length': '-1'
         },
-        body: payload,
+        body: payload
       })
 
       // Negative Content-Length is invalid and should be rejected immediately.
@@ -342,7 +349,7 @@ describe('Request Size Limiter Middleware', () => {
       app.get('/test', c => c.json({ success: true }))
 
       const res = await app.request('/test', {
-        method: 'GET',
+        method: 'GET'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -352,7 +359,7 @@ describe('Request Size Limiter Middleware', () => {
 
     it('should handle HEAD requests without body', async () => {
       app.use('*', generalRequestSizeLimiter)
-      app.all('/test', (c) => {
+      app.all('/test', c => {
         if (c.req.method === 'HEAD') {
           return c.body(null, HttpStatus.OK)
         }
@@ -361,7 +368,7 @@ describe('Request Size Limiter Middleware', () => {
       })
 
       const res = await app.request('/test', {
-        method: 'HEAD',
+        method: 'HEAD'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -372,7 +379,7 @@ describe('Request Size Limiter Middleware', () => {
       app.delete('/test', c => c.json({ success: true }))
 
       const res = await app.request('/test', {
-        method: 'DELETE',
+        method: 'DELETE'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -385,7 +392,7 @@ describe('Request Size Limiter Middleware', () => {
       app.options('/test', c => c.json({ success: true }))
 
       const res = await app.request('/test', {
-        method: 'OPTIONS',
+        method: 'OPTIONS'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -397,7 +404,7 @@ describe('Request Size Limiter Middleware', () => {
   describe('Streaming Validation', () => {
     it('should use streaming for large payloads when enabled', async () => {
       const streamingLimiter = createRequestSizeLimiter({
-        maxSize: 1024 * 1024, // 1MB
+        maxSize: 1024 * 1024 // 1MB
       })
 
       app.use('*', streamingLimiter)
@@ -409,9 +416,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
-          'Content-Length': largePayload.length.toString(),
+          'Content-Length': largePayload.length.toString()
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -421,7 +428,7 @@ describe('Request Size Limiter Middleware', () => {
 
     it('should reject large streaming payloads exceeding limit', async () => {
       const streamingLimiter = createRequestSizeLimiter({
-        maxSize: 100 * 1024, // 100KB
+        maxSize: 100 * 1024 // 100KB
       })
 
       app.use('*', streamingLimiter)
@@ -433,9 +440,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
-          'Content-Length': largePayload.length.toString(),
+          'Content-Length': largePayload.length.toString()
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -446,7 +453,7 @@ describe('Request Size Limiter Middleware', () => {
 
     it('should handle streaming validation without Content-Length', async () => {
       const streamingLimiter = createRequestSizeLimiter({
-        maxSize: 50 * 1024, // 50KB
+        maxSize: 50 * 1024 // 50KB
       })
 
       app.use('*', streamingLimiter)
@@ -457,9 +464,9 @@ describe('Request Size Limiter Middleware', () => {
       const res = await app.request('/test', {
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain',
+          'Content-Type': 'text/plain'
         },
-        body: payload,
+        body: payload
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -469,7 +476,7 @@ describe('Request Size Limiter Middleware', () => {
 
     it('should detect Content-Length mismatch with streaming', async () => {
       const streamingLimiter = createRequestSizeLimiter({
-        maxSize: 100 * 1024, // 100KB
+        maxSize: 100 * 1024 // 100KB
       })
 
       app.use('*', streamingLimiter)
@@ -480,14 +487,16 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
-          'Content-Length': '10000', // Lie about size
+          'Content-Length': '10000' // Lie about size
         },
-        body: payload,
+        body: payload
       })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       const json = await res.json()
-      expect(json.error).toBe('Content-Length header does not match actual body size.')
+      expect(json.error).toBe(
+        'Content-Length header does not match actual body size.'
+      )
       expect(json.code).toBe('request/content-length-mismatch')
     })
 
@@ -503,9 +512,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/octet-stream',
-          'Content-Length': fileSize.toString(),
+          'Content-Length': fileSize.toString()
         },
-        body: fileContent,
+        body: fileContent
       })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -524,10 +533,10 @@ describe('Request Size Limiter Middleware', () => {
       const res = await app.request('/test', {
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain',
+          'Content-Type': 'text/plain'
           // No Content-Length header.
         },
-        body: largePayload,
+        body: largePayload
       })
 
       expect(res.status).toBe(HttpStatus.REQUEST_TOO_LONG)
@@ -546,9 +555,9 @@ describe('Request Size Limiter Middleware', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
-          'Content-Length': '100', // Lie about size
+          'Content-Length': '100' // Lie about size
         },
-        body: largePayload,
+        body: largePayload
       })
 
       // Should be rejected due to actual body size exceeding limit.

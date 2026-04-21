@@ -1,11 +1,14 @@
 # Rate Limiter Middleware
 
-A comprehensive rate limiting middleware for Hono applications with support for multiple configurations, IP detection, and environment-aware defaults.
+A comprehensive rate limiting middleware for Hono applications with support for
+multiple configurations, IP detection, and environment-aware defaults.
 
 ## Features
 
-- 🚦 **Flexible Rate Limiting**: Configure limits, windows, and behaviors per endpoint
-- 🌍 **Smart IP Detection**: Supports X-Forwarded-For, X-Real-IP, and CF-Connecting-IP headers
+- 🚦 **Flexible Rate Limiting**: Configure limits, windows, and behaviors per
+  endpoint
+- 🌍 **Smart IP Detection**: Supports X-Forwarded-For, X-Real-IP, and
+  CF-Connecting-IP headers
 - 🎯 **Predefined Presets**: Ready-to-use configurations for common scenarios
 - 🧪 **Test-Friendly**: High limits in development/test environments
 - 📊 **Standard Headers**: RFC-compliant rate limit headers
@@ -16,7 +19,11 @@ A comprehensive rate limiting middleware for Hono applications with support for 
 ```typescript
 import { Hono } from 'hono'
 
-import { authRateLimiter, createRateLimiter, generalRateLimiter } from '@/middleware/rate-limiter'
+import {
+  authRateLimiter,
+  createRateLimiter,
+  generalRateLimiter
+} from '@/middleware/rate-limiter'
 
 const app = new Hono()
 
@@ -25,11 +32,14 @@ app.use('/api/v1/auth/*', authRateLimiter)
 app.use('/api/*', generalRateLimiter)
 
 // Create custom limiters
-app.use('/upload', createRateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  limit: 5, // 5 uploads per minute
-  message: 'Upload limit exceeded. Please wait before uploading again.'
-}))
+app.use(
+  '/upload',
+  createRateLimiter({
+    windowMs: 60 * 1000, // 1 minute
+    limit: 5, // 5 uploads per minute
+    message: 'Upload limit exceeded. Please wait before uploading again.'
+  })
+)
 ```
 
 ## Predefined Rate Limiters
@@ -40,7 +50,8 @@ For authentication endpoints (login, registration, password reset).
 
 - **Production**: 5 attempts per 15 minutes
 - **Development/Test**: 1000 attempts per 15 minutes
-- **Use cases**: `/api/v1/auth/login`, `/api/v1/auth/signup`, `/api/v1/auth/reset-password`
+- **Use cases**: `/api/v1/auth/login`, `/api/v1/auth/signup`,
+  `/api/v1/auth/reset-password`
 
 ```typescript
 import { authRateLimiter } from '@/middleware/rate-limiter'
@@ -87,14 +98,14 @@ const advancedLimiter = createRateLimiter({
   limit: 10,
 
   // Custom key generator (e.g., by user ID)
-  keyGenerator: (c) => {
+  keyGenerator: c => {
     const userId = c.get('userId')
 
     return userId ? `user:${userId}` : getClientIp(c)
   },
 
   // Skip rate limiting for certain conditions
-  skip: (c) => {
+  skip: c => {
     const isAdmin = c.get('isAdmin')
 
     return isAdmin || c.req.header('X-Skip-Rate-Limit') === 'true'
@@ -151,7 +162,8 @@ The middleware adds standard rate limit headers to responses:
 The middleware automatically adjusts limits based on environment:
 
 - **Production**: Uses configured limits for security
-- **Development/Test**: Uses high limits (1000) to avoid blocking during development
+- **Development/Test**: Uses high limits (1000) to avoid blocking during
+  development
 
 ### Test Environment Skip
 
@@ -178,8 +190,10 @@ Or a custom message if configured.
 
 ## Performance Considerations
 
-- **Memory Store**: Uses in-memory storage by default (suitable for single-instance deployments)
-- **Distributed Systems**: For multi-instance deployments, consider implementing a custom store with Redis
+- **Memory Store**: Uses in-memory storage by default (suitable for
+  single-instance deployments)
+- **Distributed Systems**: For multi-instance deployments, consider implementing
+  a custom store with Redis
 - **Headers**: Standard headers are included automatically for client awareness
 
 ## Examples
@@ -190,7 +204,7 @@ Or a custom message if configured.
 const userRateLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   limit: 30, // 30 requests per minute per user
-  keyGenerator: (c) => {
+  keyGenerator: c => {
     const userId = c.get('userId')
 
     return userId || getClientIp(c)
@@ -206,7 +220,7 @@ app.use('/api/user/*', userRateLimiter)
 const apiKeyLimiter = createRateLimiter({
   windowMs: 60 * 1000,
   limit: 1000, // Higher limit for API keys
-  keyGenerator: (c) => {
+  keyGenerator: c => {
     const apiKey = c.req.header('X-API-Key')
 
     return apiKey ? `api:${apiKey}` : getClientIp(c)

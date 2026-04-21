@@ -5,9 +5,8 @@
 
     "module": "esnext",
     "moduleResolution": "bundler",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
     "jsx": "react-jsx",
@@ -20,6 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "allowUnreachableCode": false,
     "noPropertyAccessFromIndexSignature": true,
+
+    "types": ["@types/bun"],
 
     "esModuleInterop": true,
     "skipLibCheck": true

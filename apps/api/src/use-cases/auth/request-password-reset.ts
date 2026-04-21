@@ -9,7 +9,7 @@ import { isActive } from '@/types'
 const createPasswordResetToken = async (userId: string) => {
   const { type, token, expiresAt } = generateToken(TokenType.PasswordReset)
 
-  await db.transaction(async (tx) => {
+  await db.transaction(async tx => {
     await tokenRepo.issue(userId, { userId, type, token, expiresAt }, tx)
   })
 
@@ -22,7 +22,7 @@ export interface RequestPasswordResetInput {
 
 export const requestPasswordReset = async (
   { email }: RequestPasswordResetInput,
-  preferences?: UserPreferences,
+  preferences?: UserPreferences
 ) => {
   const user = await userRepo.findByEmail(email)
 
@@ -31,14 +31,20 @@ export const requestPasswordReset = async (
   if (user && isActive(user.status)) {
     const token = await createPasswordResetToken(user.id)
 
-    emailAgent.sendResetPasswordEmail(
-      user.firstName,
-      user.email,
-      token,
-      preferences,
-    ).catch((error: unknown) => {
-      logger.error({ error }, `Failed to send password reset email to ${user.email}`)
-    })
+    emailAgent
+      .sendResetPasswordEmail(
+        user.firstName,
+        user.email,
+        user.role,
+        token,
+        preferences
+      )
+      .catch((error: unknown) => {
+        logger.error(
+          { error },
+          `Failed to send password reset email to ${user.email}`
+        )
+      })
   }
 
   return { success: true }

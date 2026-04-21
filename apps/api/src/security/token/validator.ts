@@ -7,7 +7,10 @@ import type { TokenType } from './types'
 import { TokenStatus } from './types'
 
 class TokenValidator {
-  static validate(tokenRecord: TokenRecord | undefined, expectedType: TokenType): TokenRecord {
+  static validate(
+    tokenRecord: TokenRecord | undefined,
+    expectedType: TokenType
+  ): TokenRecord {
     TokenValidator.shouldExist(tokenRecord)
     TokenValidator.shouldNotBeUsed(tokenRecord)
     TokenValidator.shouldNotBeDeprecated(tokenRecord)
@@ -18,7 +21,9 @@ class TokenValidator {
     return tokenRecord
   }
 
-  static shouldExist(tokenRecord: TokenRecord | undefined): asserts tokenRecord is TokenRecord {
+  static shouldExist(
+    tokenRecord: TokenRecord | undefined
+  ): asserts tokenRecord is TokenRecord {
     if (!tokenRecord) {
       throw new AppError(ErrorCode.TokenNotFound)
     }
@@ -48,11 +53,14 @@ class TokenValidator {
     }
   }
 
-  static hasExpectedType(tokenRecord: TokenRecord, expectedType: TokenType): void {
+  static hasExpectedType(
+    tokenRecord: TokenRecord,
+    expectedType: TokenType
+  ): void {
     if (tokenRecord.type !== expectedType) {
       throw new AppError(
         ErrorCode.TokenTypeMismatch,
-        `Token type mismatch: expected ${expectedType}, got ${tokenRecord.type}`,
+        `Token type mismatch: expected ${expectedType}, got ${tokenRecord.type}`
       )
     }
   }

@@ -9,13 +9,15 @@ const MIGRATIONS_DIR = import.meta.dir
 const TRACKING_TABLE = '__custom_migrations'
 
 const ensureTrackingTable = async () => {
-  await db.execute(sql.raw(`
+  await db.execute(
+    sql.raw(`
     CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL UNIQUE,
       applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     )
-  `))
+  `)
+  )
 }
 
 const getAppliedMigrations = async (): Promise<Set<string>> => {
@@ -24,7 +26,9 @@ const getAppliedMigrations = async (): Promise<Set<string>> => {
 }
 
 const markAsApplied = async (name: string) => {
-  await db.execute(sql.raw(`INSERT INTO ${TRACKING_TABLE} (name) VALUES ('${name}')`))
+  await db.execute(
+    sql.raw(`INSERT INTO ${TRACKING_TABLE} (name) VALUES ('${name}')`)
+  )
 }
 
 export const runCustomMigrations = async () => {
@@ -57,8 +61,7 @@ export const runCustomMigrations = async () => {
 
   if (count === 0) {
     console.log('No new custom migrations to apply')
-  }
-  else {
+  } else {
     console.log(`Applied ${count} custom migration(s)`)
   }
 }
@@ -67,7 +70,7 @@ export const runCustomMigrations = async () => {
 if (import.meta.main) {
   runCustomMigrations()
     .then(() => process.exit(0))
-    .catch((err) => {
+    .catch(err => {
       console.error('Custom migration failed:', err)
       process.exit(1)
     })

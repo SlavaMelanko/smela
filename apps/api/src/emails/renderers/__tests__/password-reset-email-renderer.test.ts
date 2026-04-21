@@ -12,12 +12,12 @@ describe('Password Reset Email Renderer', () => {
 
   const mockData: PasswordResetEmailData = {
     firstName: 'John',
-    resetUrl: 'https://example.com/reset-password?token=xyz789',
+    resetUrl: 'https://example.com/reset-password?token=xyz789'
   }
 
   const mockMetadata: Metadata = {
     emailId: 'test-email-id',
-    sentAt: '2024-01-01T00:00:00Z',
+    sentAt: '2024-01-01T00:00:00Z'
   }
 
   it('should render password reset email with required fields', async () => {
@@ -47,13 +47,15 @@ describe('Password Reset Email Renderer', () => {
     const result = await renderer.render(mockData)
 
     // Basic check that subject is in English (contains common English words)
-    expect(result.subject.toLowerCase()).toMatch(/password|reset|recovery|forgot/)
+    expect(result.subject.toLowerCase()).toMatch(
+      /password|reset|recovery|forgot/
+    )
   })
 
   it('should render with Ukrainian locale when specified', async () => {
     const userPreferences: UserPreferences = {
       locale: 'uk',
-      theme: 'light',
+      theme: 'light'
     }
 
     const result = await renderer.render(mockData, userPreferences)
@@ -67,12 +69,12 @@ describe('Password Reset Email Renderer', () => {
   it('should render with different themes', async () => {
     const lightPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'light',
+      theme: 'light'
     }
 
     const darkPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'dark',
+      theme: 'dark'
     }
 
     const lightResult = await renderer.render(mockData, lightPreferences)
@@ -97,10 +99,14 @@ describe('Password Reset Email Renderer', () => {
   it('should handle complete parameters', async () => {
     const userPreferences: UserPreferences = {
       locale: 'en',
-      theme: 'light',
+      theme: 'light'
     }
 
-    const result = await renderer.render(mockData, userPreferences, mockMetadata)
+    const result = await renderer.render(
+      mockData,
+      userPreferences,
+      mockMetadata
+    )
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -112,7 +118,7 @@ describe('Password Reset Email Renderer', () => {
   it('should handle special characters in firstName', async () => {
     const dataWithSpecialChars: PasswordResetEmailData = {
       firstName: 'José María',
-      resetUrl: 'https://example.com/reset-password?token=xyz789',
+      resetUrl: 'https://example.com/reset-password?token=xyz789'
     }
 
     const result = await renderer.render(dataWithSpecialChars)
@@ -124,7 +130,8 @@ describe('Password Reset Email Renderer', () => {
   it('should handle long reset URLs', async () => {
     const dataWithLongUrl: PasswordResetEmailData = {
       firstName: 'John',
-      resetUrl: 'https://example.com/reset-password?token=very-long-reset-token-that-might-be-used-in-production-environments-with-secure-random-generation-xyz789abc123',
+      resetUrl:
+        'https://example.com/reset-password?token=very-long-reset-token-that-might-be-used-in-production-environments-with-secure-random-generation-xyz789abc123'
     }
 
     const result = await renderer.render(dataWithLongUrl)
@@ -146,12 +153,12 @@ describe('Password Reset Email Renderer', () => {
   it('should handle different users with same reset URL pattern', async () => {
     const userData1: PasswordResetEmailData = {
       firstName: 'Alice',
-      resetUrl: 'https://example.com/reset-password?token=token1',
+      resetUrl: 'https://example.com/reset-password?token=token1'
     }
 
     const userData2: PasswordResetEmailData = {
       firstName: 'Bob',
-      resetUrl: 'https://example.com/reset-password?token=token2',
+      resetUrl: 'https://example.com/reset-password?token=token2'
     }
 
     const result1 = await renderer.render(userData1)

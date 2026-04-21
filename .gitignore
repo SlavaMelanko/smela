@@ -23,6 +23,12 @@ logs/
 coverage/
 *.lcov
 
+# Playwright
+*.playwright*/
+
+# ESLint
+.eslintcache
+
 # TypeScript
 *.tsbuildinfo
 

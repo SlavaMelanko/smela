@@ -1,12 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Preview,
-} from '@react-email/components'
+import { Body, Container, Head, Html, Preview } from '@react-email/components'
 
 import type { Metadata } from '../../metadata'
 import type { ThemeStyles } from '../../styles'
@@ -25,15 +19,15 @@ export interface Props {
 const getStyles = (styles: ThemeStyles) => ({
   main: {
     backgroundColor: styles.color.background.primary,
-    fontFamily: styles.font.family.sans,
+    fontFamily: styles.font.family.sans
   },
   container: {
     maxWidth: '580px',
     margin: '2rem auto',
     padding: styles.spacing.lg,
     backgroundColor: styles.color.background.secondary,
-    borderRadius: styles.borderRadius.lg,
-  },
+    borderRadius: styles.borderRadius.lg
+  }
 })
 
 export const BaseEmail = ({
@@ -41,7 +35,7 @@ export const BaseEmail = ({
   previewText,
   styles,
   metadata,
-  children,
+  children
 }: Props) => {
   const emailStyles = getStyles(styles)
 
@@ -65,7 +59,7 @@ export const BaseEmail = ({
 BaseEmail.PreviewProps = {
   subject: 'Email Subject',
   previewText: 'Email Preview Text',
-  styles: getThemeStyles('light'),
+  styles: getThemeStyles('light')
 } as Props
 
 export default BaseEmail

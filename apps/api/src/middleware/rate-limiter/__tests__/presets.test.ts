@@ -45,7 +45,7 @@ describe('Rate Limiter Presets', () => {
 
       const res = await app.request('/api/v1/auth/login', {
         method: 'POST',
-        headers: { 'X-Skip-Rate-Limit': 'true' },
+        headers: { 'X-Skip-Rate-Limit': 'true' }
       })
 
       expect(res.status).toBe(200)
@@ -78,7 +78,7 @@ describe('Rate Limiter Presets', () => {
 
       const res = await app.request('/api/data', {
         method: 'GET',
-        headers: { 'X-Skip-Rate-Limit': 'true' },
+        headers: { 'X-Skip-Rate-Limit': 'true' }
       })
 
       expect(res.status).toBe(200)

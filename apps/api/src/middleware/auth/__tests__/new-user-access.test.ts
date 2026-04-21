@@ -9,7 +9,7 @@ import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { userRelaxedAuthMiddleware, userStrictAuthMiddleware } from '../index'
 
@@ -21,11 +21,16 @@ describe('Auth Middleware - New User Access', () => {
     app.onError(onError)
   })
 
-  describe('Strict Auth - Status Validation', () => {
+  describe('Strict Auth - UserStatus Validation', () => {
     it('should reject New status', async () => {
       const token = await signJwt(
-        { id: testUuids.USER_1, email: 'user@example.com', role: Role.User, status: Status.New },
-        { secret: env.JWT_SECRET },
+        {
+          id: testUuids.USER_1,
+          email: 'user@example.com',
+          role: Role.User,
+          status: UserStatus.New
+        },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/strict', userStrictAuthMiddleware)
@@ -33,26 +38,35 @@ describe('Auth Middleware - New User Access', () => {
 
       const res = await app.request('/strict', {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()
       expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Status validation failure')
+      expect(json.error).toBe('UserStatus validation failure')
     })
 
     it('should accept active statuses', async () => {
-      const activeStatuses = [Status.Verified, Status.Trial, Status.Active]
+      const activeStatuses = [
+        UserStatus.Verified,
+        UserStatus.Trial,
+        UserStatus.Active
+      ]
 
       for (const status of activeStatuses) {
         const testApp = new Hono<AppContext>()
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_1, email: 'user@example.com', role: Role.User, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.USER_1,
+            email: 'user@example.com',
+            role: Role.User,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/strict', userStrictAuthMiddleware)
@@ -60,8 +74,8 @@ describe('Auth Middleware - New User Access', () => {
 
         const res = await testApp.request('/strict', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.OK)
@@ -71,17 +85,27 @@ describe('Auth Middleware - New User Access', () => {
     })
   })
 
-  describe('Relaxed Auth - Status Validation', () => {
+  describe('Relaxed Auth - UserStatus Validation', () => {
     it('should accept new and active statuses', async () => {
-      const allowedStatuses = [Status.New, Status.Verified, Status.Trial, Status.Active]
+      const allowedStatuses = [
+        UserStatus.New,
+        UserStatus.Verified,
+        UserStatus.Trial,
+        UserStatus.Active
+      ]
 
       for (const status of allowedStatuses) {
         const testApp = new Hono<AppContext>()
         testApp.onError(onError)
 
         const token = await signJwt(
-          { id: testUuids.USER_2, email: 'user@example.com', role: Role.User, status },
-          { secret: env.JWT_SECRET },
+          {
+            id: testUuids.USER_2,
+            email: 'user@example.com',
+            role: Role.User,
+            status
+          },
+          { secret: env.JWT_SECRET }
         )
 
         testApp.use('/relaxed', userRelaxedAuthMiddleware)
@@ -89,8 +113,8 @@ describe('Auth Middleware - New User Access', () => {
 
         const res = await testApp.request('/relaxed', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         })
 
         expect(res.status).toBe(HttpStatus.OK)
@@ -101,8 +125,13 @@ describe('Auth Middleware - New User Access', () => {
 
     it('should reject Suspended status', async () => {
       const token = await signJwt(
-        { id: testUuids.USER_3, email: 'user@example.com', role: Role.User, status: Status.Suspended },
-        { secret: env.JWT_SECRET },
+        {
+          id: testUuids.USER_3,
+          email: 'user@example.com',
+          role: Role.User,
+          status: UserStatus.Suspended
+        },
+        { secret: env.JWT_SECRET }
       )
 
       app.use('/relaxed', userRelaxedAuthMiddleware)
@@ -110,14 +139,14 @@ describe('Auth Middleware - New User Access', () => {
 
       const res = await app.request('/relaxed', {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       })
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()
       expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Status validation failure')
+      expect(json.error).toBe('UserStatus validation failure')
     })
   })
 })

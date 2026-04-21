@@ -5,7 +5,7 @@ import { HttpClient } from '../client'
 // Mock fetch globally
 const mockFetch = mock(async () => ({
   ok: true,
-  json: async () => ({ success: true, data: 'test' }),
+  json: async () => ({ success: true, data: 'test' })
 }))
 
 // Store original fetch to restore later
@@ -43,7 +43,10 @@ describe('HTTP Client', () => {
 
     test('should store default options with headers and timeout', () => {
       const headers = { 'Content-Type': 'application/json' }
-      const client = new HttpClient('https://example.com', { headers, timeout: 5000 })
+      const client = new HttpClient('https://example.com', {
+        headers,
+        timeout: 5000
+      })
       expect(client).toBeInstanceOf(HttpClient)
     })
 
@@ -68,8 +71,8 @@ describe('HTTP Client', () => {
         'https://example.com/users',
         expect.objectContaining({
           method: 'GET',
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
 
@@ -79,13 +82,13 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/users',
-        expect.objectContaining({ method: 'GET' }),
+        expect.objectContaining({ method: 'GET' })
       )
     })
 
     test('should merge custom headers with default headers', async () => {
       const client = new HttpClient('https://example.com', {
-        headers: { Authorization: 'Bearer token' },
+        headers: { Authorization: 'Bearer token' }
       })
       await client.get('/users', { 'Content-Type': 'application/json' })
 
@@ -94,10 +97,10 @@ describe('HTTP Client', () => {
         expect.objectContaining({
           method: 'GET',
           headers: {
-            'Authorization': 'Bearer token',
-            'Content-Type': 'application/json',
-          },
-        }),
+            Authorization: 'Bearer token',
+            'Content-Type': 'application/json'
+          }
+        })
       )
     })
 
@@ -105,7 +108,7 @@ describe('HTTP Client', () => {
       const mockData = { id: 1, name: 'John' }
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockData,
+        json: async () => mockData
       } as any)
 
       const client = new HttpClient('https://example.com')
@@ -127,8 +130,8 @@ describe('HTTP Client', () => {
         expect.objectContaining({
           method: 'POST',
           body,
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
 
@@ -140,8 +143,8 @@ describe('HTTP Client', () => {
         'https://example.com/users',
         expect.objectContaining({
           method: 'POST',
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
 
@@ -155,8 +158,8 @@ describe('HTTP Client', () => {
         'https://example.com/users',
         expect.objectContaining({
           method: 'POST',
-          body,
-        }),
+          body
+        })
       )
     })
 
@@ -171,26 +174,28 @@ describe('HTTP Client', () => {
         'https://example.com/users',
         expect.objectContaining({
           method: 'POST',
-          body,
-        }),
+          body
+        })
       )
     })
 
     test('should merge custom headers', async () => {
       const client = new HttpClient('https://example.com', {
-        headers: { Authorization: 'Bearer token' },
+        headers: { Authorization: 'Bearer token' }
       })
-      await client.post('/users', 'data', { 'Content-Type': 'application/json' })
+      await client.post('/users', 'data', {
+        'Content-Type': 'application/json'
+      })
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/users',
         expect.objectContaining({
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer token',
-            'Content-Type': 'application/json',
-          },
-        }),
+            Authorization: 'Bearer token',
+            'Content-Type': 'application/json'
+          }
+        })
       )
     })
   })
@@ -207,8 +212,8 @@ describe('HTTP Client', () => {
         expect.objectContaining({
           method: 'PUT',
           body,
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
 
@@ -220,8 +225,8 @@ describe('HTTP Client', () => {
         'https://example.com/users/1',
         expect.objectContaining({
           method: 'PUT',
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
   })
@@ -235,8 +240,8 @@ describe('HTTP Client', () => {
         'https://example.com/users/1',
         expect.objectContaining({
           method: 'DELETE',
-          headers: {},
-        }),
+          headers: {}
+        })
       )
     })
 
@@ -248,8 +253,8 @@ describe('HTTP Client', () => {
         'https://example.com/users/1',
         expect.objectContaining({
           method: 'DELETE',
-          headers: { Authorization: 'Bearer token' },
-        }),
+          headers: { Authorization: 'Bearer token' }
+        })
       )
     })
   })
@@ -261,7 +266,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api/users',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
@@ -271,7 +276,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api/users',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
@@ -281,7 +286,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api/users',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
@@ -291,7 +296,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
@@ -301,7 +306,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
@@ -311,7 +316,7 @@ describe('HTTP Client', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/users',
-        expect.any(Object),
+        expect.any(Object)
       )
     })
   })
@@ -319,38 +324,40 @@ describe('HTTP Client', () => {
   describe('header merging', () => {
     test('should use only default headers when no custom headers provided', async () => {
       const client = new HttpClient('https://example.com', {
-        headers: { 'User-Agent': 'TestClient' },
+        headers: { 'User-Agent': 'TestClient' }
       })
       await client.get('/users')
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/users',
         expect.objectContaining({
-          headers: { 'User-Agent': 'TestClient' },
-        }),
+          headers: { 'User-Agent': 'TestClient' }
+        })
       )
     })
 
     test('should override default headers with custom headers', async () => {
       const client = new HttpClient('https://example.com', {
-        headers: { 'Content-Type': 'application/xml' },
+        headers: { 'Content-Type': 'application/xml' }
       })
-      await client.post('/users', 'data', { 'Content-Type': 'application/json' })
+      await client.post('/users', 'data', {
+        'Content-Type': 'application/json'
+      })
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/users',
         expect.objectContaining({
-          headers: { 'Content-Type': 'application/json' },
-        }),
+          headers: { 'Content-Type': 'application/json' }
+        })
       )
     })
 
     test('should merge multiple headers correctly', async () => {
       const client = new HttpClient('https://example.com', {
         headers: {
-          'Authorization': 'Bearer token',
-          'User-Agent': 'TestClient',
-        },
+          Authorization: 'Bearer token',
+          'User-Agent': 'TestClient'
+        }
       })
       await client.get('/users', { 'Content-Type': 'application/json' })
 
@@ -358,11 +365,11 @@ describe('HTTP Client', () => {
         'https://example.com/users',
         expect.objectContaining({
           headers: {
-            'Authorization': 'Bearer token',
+            Authorization: 'Bearer token',
             'User-Agent': 'TestClient',
-            'Content-Type': 'application/json',
-          },
-        }),
+            'Content-Type': 'application/json'
+          }
+        })
       )
     })
   })
@@ -385,8 +392,8 @@ describe('HTTP Client', () => {
 
     test('should handle timeout errors', async () => {
       // Mock a slow response that exceeds timeout
-      mockFetch.mockImplementationOnce(async () =>
-        new Promise(resolve => setTimeout(resolve, 20)), // 20ms delay
+      mockFetch.mockImplementationOnce(
+        async () => new Promise(resolve => setTimeout(resolve, 20)) // 20ms delay
       )
 
       const client = new HttpClient('https://example.com', { timeout: 10 }) // 10ms timeout
@@ -398,7 +405,7 @@ describe('HTTP Client', () => {
       const mockData = { id: 1, name: 'John' }
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockData,
+        json: async () => mockData
       } as any)
 
       const client = new HttpClient('https://example.com', { timeout: 1000 })

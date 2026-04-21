@@ -13,7 +13,10 @@ export const getAdminsHandler = async (c: GetAdminsCtx) => {
 
   const filters = { search, roles: [], statuses }
   const pagination = { page, limit }
-  const { data, pagination: paginationResult } = await getAdmins(filters, pagination)
+  const { data, pagination: paginationResult } = await getAdmins(
+    filters,
+    pagination
+  )
 
   return c.json({ ...data, pagination: paginationResult }, HttpStatus.OK)
 }
@@ -27,6 +30,6 @@ export const createAdminHandler = async (c: CreateAdminCtx) => {
   return c.json(result, HttpStatus.CREATED)
 }
 
-export const getAdminDefaultPermissionsHandler: Handler<AppContext> = (c) => {
+export const getAdminDefaultPermissionsHandler: Handler<AppContext> = c => {
   return c.json({ permissions: getAdminDefaultPermissions() }, HttpStatus.OK)
 }

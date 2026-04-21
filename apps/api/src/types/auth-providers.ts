@@ -1,7 +1,7 @@
 enum AuthProvider {
   Local = 'local',
   Google = 'google',
-  Github = 'github',
+  Github = 'github'
 }
 
 export default AuthProvider

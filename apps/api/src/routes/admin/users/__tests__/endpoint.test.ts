@@ -7,7 +7,7 @@ import type { UserClaims } from '@/security/jwt'
 
 import { createTestApp, ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { adminUsersRoute } from '../index'
 
@@ -32,9 +32,9 @@ describe('Admin Users Endpoint', () => {
         lastName: 'Doe',
         email: 'john@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       },
       {
         id: testUuids.USER_2,
@@ -42,10 +42,10 @@ describe('Admin Users Endpoint', () => {
         lastName: 'Smith',
         email: 'jane@example.com',
         role: Role.User,
-        status: Status.Verified,
+        status: UserStatus.Verified,
         createdAt: new Date('2024-01-02'),
-        updatedAt: new Date('2024-01-02'),
-      },
+        updatedAt: new Date('2024-01-02')
+      }
     ]
 
     mockSearchUsers = mock(async () => ({
@@ -54,19 +54,19 @@ describe('Admin Users Endpoint', () => {
         page: 1,
         limit: DEFAULT_LIMIT,
         total: 2,
-        totalPages: 1,
-      },
+        totalPages: 1
+      }
     }))
 
     await moduleMocker.mock('@/use-cases/admin', () => ({
-      searchUsers: mockSearchUsers,
+      searchUsers: mockSearchUsers
     }))
 
     mockAdminClaims = {
       id: testUuids.ADMIN_1,
       email: 'admin@example.com',
       role: Role.Admin,
-      status: Status.Active,
+      status: UserStatus.Active
     }
 
     const adminMiddleware: any = async (c: any, next: any) => {
@@ -96,9 +96,9 @@ describe('Admin Users Endpoint', () => {
             lastName: 'Doe',
             email: 'john@example.com',
             role: Role.User,
-            status: Status.Active,
+            status: UserStatus.Active,
             createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z'
           },
           {
             id: testUuids.USER_2,
@@ -106,17 +106,17 @@ describe('Admin Users Endpoint', () => {
             lastName: 'Smith',
             email: 'jane@example.com',
             role: Role.User,
-            status: Status.Verified,
+            status: UserStatus.Verified,
             createdAt: '2024-01-02T00:00:00.000Z',
-            updatedAt: '2024-01-02T00:00:00.000Z',
-          },
+            updatedAt: '2024-01-02T00:00:00.000Z'
+          }
         ],
         pagination: {
           page: 1,
           limit: DEFAULT_LIMIT,
           total: 2,
-          totalPages: 1,
-        },
+          totalPages: 1
+        }
       })
     })
 
@@ -139,31 +139,37 @@ describe('Admin Users Endpoint', () => {
     })
 
     it('should reject invalid statuses value', async () => {
-      const res = await app.request(`${USERS_URL}?statuses=invalid`, { method: 'GET' })
+      const res = await app.request(`${USERS_URL}?statuses=invalid`, {
+        method: 'GET'
+      })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
     it('should reject invalid roles value', async () => {
-      const res = await app.request(`${USERS_URL}?roles=invalid`, { method: 'GET' })
+      const res = await app.request(`${USERS_URL}?roles=invalid`, {
+        method: 'GET'
+      })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
     it('should pass search parameter to use case', async () => {
-      const res = await app.request(`${USERS_URL}?search=john`, { method: 'GET' })
+      const res = await app.request(`${USERS_URL}?search=john`, {
+        method: 'GET'
+      })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockSearchUsers).toHaveBeenCalledWith(
         expect.objectContaining({ search: 'john' }),
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
     it('should pass search combined with filters', async () => {
       const res = await app.request(
-        `${USERS_URL}?search=test&roles=${Role.User}&statuses=${Status.Active}`,
-        { method: 'GET' },
+        `${USERS_URL}?search=test&roles=${Role.User}&statuses=${UserStatus.Active}`,
+        { method: 'GET' }
       )
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -171,29 +177,34 @@ describe('Admin Users Endpoint', () => {
         expect.objectContaining({
           search: 'test',
           roles: [Role.User],
-          statuses: [Status.Active],
+          statuses: [UserStatus.Active]
         }),
-        expect.any(Object),
+        expect.any(Object)
       )
     })
 
     it('should pass search combined with pagination', async () => {
-      const res = await app.request(`${USERS_URL}?search=jane&page=2&limit=10`, { method: 'GET' })
+      const res = await app.request(
+        `${USERS_URL}?search=jane&page=2&limit=10`,
+        { method: 'GET' }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockSearchUsers).toHaveBeenCalledWith(
         expect.objectContaining({ search: 'jane' }),
-        { page: 2, limit: 10 },
+        { page: 2, limit: 10 }
       )
     })
 
     it('should trim whitespace from search parameter', async () => {
-      const res = await app.request(`${USERS_URL}?search=  john  `, { method: 'GET' })
+      const res = await app.request(`${USERS_URL}?search=  john  `, {
+        method: 'GET'
+      })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockSearchUsers).toHaveBeenCalledWith(
         expect.objectContaining({ search: 'john' }),
-        expect.any(Object),
+        expect.any(Object)
       )
     })
   })

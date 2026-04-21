@@ -12,12 +12,12 @@ export const adminUserByIdRoute = new Hono<AppContext>()
 adminUserByIdRoute.get(
   '/',
   requestValidator('param', userIdParamsSchema),
-  getUserHandler,
+  getUserHandler
 )
 
 adminUserByIdRoute.patch(
   '/',
   requestValidator('param', userIdParamsSchema),
   requestValidator('json', updateUserBodySchema),
-  updateUserHandler,
+  updateUserHandler
 )

@@ -4,9 +4,13 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
-import { changePasswordHandler, getMeHandler, updateMeHandler } from '../handler'
+import {
+  changePasswordHandler,
+  getMeHandler,
+  updateMeHandler
+} from '../handler'
 
 const mockUser: User = {
   id: testUuids.USER_1,
@@ -14,9 +18,9 @@ const mockUser: User = {
   lastName: 'Doe',
   email: 'john@example.com',
   role: Role.User,
-  status: Status.Active,
+  status: UserStatus.Active,
   createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01')
 }
 
 describe('getMeHandler', () => {
@@ -30,11 +34,13 @@ describe('getMeHandler', () => {
     mockJson = mock((data: any) => ({ data }))
     mockContext = {
       get: mock(() => ({ id: testUuids.USER_1 })),
-      json: mockJson,
+      json: mockJson
     }
     mockGetUser = mock(async () => ({ user: mockUser }))
 
-    await moduleMocker.mock('@/use-cases/user/me', () => ({ getUser: mockGetUser }))
+    await moduleMocker.mock('@/use-cases/user/me', () => ({
+      getUser: mockGetUser
+    }))
   })
 
   afterEach(async () => {
@@ -65,18 +71,24 @@ describe('updateMeHandler', () => {
   let mockUpdateUser: any
 
   const body = { firstName: 'Jane', lastName: 'Smith' }
-  const updatedUser: User = { ...mockUser, ...body, updatedAt: new Date('2024-01-02') }
+  const updatedUser: User = {
+    ...mockUser,
+    ...body,
+    updatedAt: new Date('2024-01-02')
+  }
 
   beforeEach(async () => {
     mockJson = mock((data: any) => ({ data }))
     mockContext = {
       get: mock(() => ({ id: testUuids.USER_1 })),
       req: { valid: mock(() => body) },
-      json: mockJson,
+      json: mockJson
     }
     mockUpdateUser = mock(async () => ({ user: updatedUser }))
 
-    await moduleMocker.mock('@/use-cases/user/me', () => ({ updateUser: mockUpdateUser }))
+    await moduleMocker.mock('@/use-cases/user/me', () => ({
+      updateUser: mockUpdateUser
+    }))
   })
 
   afterEach(async () => {
@@ -109,14 +121,23 @@ describe('changePasswordHandler', () => {
   beforeEach(async () => {
     mockContext = {
       get: mock(() => ({ id: testUuids.USER_1 })),
-      req: { valid: mock(() => ({ currentPassword: 'OldPass1!', newPassword: 'NewPass1!' })) },
-      json: mock((data: any) => ({ data })),
+      req: {
+        valid: mock(() => ({
+          currentPassword: 'OldPass1!',
+          newPassword: 'NewPass1!'
+        }))
+      },
+      json: mock((data: any) => ({ data }))
     }
     mockChangePassword = mock(async () => ({ success: true }))
     mockGetRefreshCookie = mock(() => 'raw-refresh-token')
 
-    await moduleMocker.mock('@/use-cases/user/me', () => ({ changePassword: mockChangePassword }))
-    await moduleMocker.mock('@/net/http/cookie/refresh-token', () => ({ getRefreshCookie: mockGetRefreshCookie }))
+    await moduleMocker.mock('@/use-cases/user/me', () => ({
+      changePassword: mockChangePassword
+    }))
+    await moduleMocker.mock('@/net/http/cookie/refresh-token', () => ({
+      getRefreshCookie: mockGetRefreshCookie
+    }))
   })
 
   afterEach(async () => {
@@ -131,7 +152,7 @@ describe('changePasswordHandler', () => {
       testUuids.USER_1,
       'OldPass1!',
       'NewPass1!',
-      'raw-refresh-token',
+      'raw-refresh-token'
     )
     expect(mockContext.json).toHaveBeenCalledWith({ success: true })
   })
@@ -142,7 +163,7 @@ describe('changePasswordHandler', () => {
     })
 
     expect(changePasswordHandler(mockContext)).rejects.toMatchObject({
-      code: ErrorCode.InvalidCredentials,
+      code: ErrorCode.InvalidCredentials
     })
   })
 })

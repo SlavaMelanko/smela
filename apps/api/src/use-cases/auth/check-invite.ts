@@ -11,7 +11,9 @@ interface CheckInviteResult {
   teamName: string
 }
 
-const checkMemberInvite = async (userId: string): Promise<CheckInviteResult | null> => {
+const checkMemberInvite = async (
+  userId: string
+): Promise<CheckInviteResult | null> => {
   const userTeam = await teamRepo.findUserTeam(userId)
 
   if (!userTeam) {
@@ -21,7 +23,9 @@ const checkMemberInvite = async (userId: string): Promise<CheckInviteResult | nu
   return { type: 'member', teamName: userTeam.name }
 }
 
-const checkAdminInvite = async (userId: string): Promise<CheckInviteResult | null> => {
+const checkAdminInvite = async (
+  userId: string
+): Promise<CheckInviteResult | null> => {
   const userRole = await rbacRepo.findRole(userId)
 
   if (userRole?.role !== Role.Admin) {
@@ -31,9 +35,14 @@ const checkAdminInvite = async (userId: string): Promise<CheckInviteResult | nul
   return { type: 'admin', teamName: env.COMPANY_NAME }
 }
 
-export const checkInvite = async (token: string): Promise<CheckInviteResult> => {
+export const checkInvite = async (
+  token: string
+): Promise<CheckInviteResult> => {
   const tokenRecord = await tokenRepo.findByToken(token)
-  const validatedToken = TokenValidator.validate(tokenRecord, TokenType.UserInvite)
+  const validatedToken = TokenValidator.validate(
+    tokenRecord,
+    TokenType.UserInvite
+  )
 
   const memberInvite = await checkMemberInvite(validatedToken.userId)
   if (memberInvite) {
@@ -45,5 +54,5 @@ export const checkInvite = async (token: string): Promise<CheckInviteResult> => 
     return adminInvite
   }
 
-  throw new AppError(ErrorCode.InternalError, 'Invalid invitation state')
+  throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
 }

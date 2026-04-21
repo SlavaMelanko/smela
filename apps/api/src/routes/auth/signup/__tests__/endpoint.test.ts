@@ -3,9 +3,12 @@ import type { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
-import { mockCaptchaSuccess, VALID_CAPTCHA_TOKEN } from '@/middleware/captcha/__tests__'
+import {
+  mockCaptchaSuccess,
+  VALID_CAPTCHA_TOKEN
+} from '@/middleware/captcha/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { signupRoute } from '../index'
 
@@ -28,23 +31,23 @@ describe('Signup Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.New,
+          status: UserStatus.New,
           createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         },
-        accessToken: 'signup-jwt-token',
+        accessToken: 'signup-jwt-token'
       },
-      refreshToken: 'refresh-token-123',
+      refreshToken: 'refresh-token-123'
     }))
 
     await moduleMocker.mock('@/use-cases/auth/signup', () => ({
-      signUpWithEmail: mockSignUpWithEmail,
+      signUpWithEmail: mockSignUpWithEmail
     }))
 
     mockSetRefreshCookie = mock(() => {})
     mockGetDeviceInfo = mock(() => ({
       ipAddress: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 (Test)',
+      userAgent: 'Mozilla/5.0 (Test)'
     }))
 
     await moduleMocker.mock('@/net/http', () => ({
@@ -53,10 +56,10 @@ describe('Signup Endpoint', () => {
         CREATED: 201,
         INTERNAL_SERVER_ERROR: 500,
         BAD_REQUEST: 400,
-        NOT_FOUND: 404,
+        NOT_FOUND: 404
       },
       setRefreshCookie: mockSetRefreshCookie,
-      getDeviceInfo: mockGetDeviceInfo,
+      getDeviceInfo: mockGetDeviceInfo
     }))
 
     await mockCaptchaSuccess()
@@ -75,7 +78,7 @@ describe('Signup Endpoint', () => {
         lastName: 'Doe',
         email: 'test@example.com',
         password: 'ValidPass123!',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       }
 
       const res = await post(app, SIGNUP_URL, validPayload)
@@ -90,21 +93,29 @@ describe('Signup Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.New,
+          status: UserStatus.New,
           createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z'
         },
-        accessToken: 'signup-jwt-token',
+        accessToken: 'signup-jwt-token'
       })
 
       expect(mockSetRefreshCookie).toHaveBeenCalledTimes(1)
-      expect(mockSetRefreshCookie).toHaveBeenCalledWith(expect.any(Object), 'refresh-token-123')
+      expect(mockSetRefreshCookie).toHaveBeenCalledWith(
+        expect.any(Object),
+        'refresh-token-123'
+      )
 
       expect(mockSignUpWithEmail).toHaveBeenCalledTimes(1)
       expect(mockSignUpWithEmail).toHaveBeenCalledWith(
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', password: 'ValidPass123!' },
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'ValidPass123!'
+        },
         { ipAddress: '192.168.1.1', userAgent: 'Mozilla/5.0 (Test)' },
-        undefined,
+        undefined
       )
     })
 
@@ -115,7 +126,7 @@ describe('Signup Endpoint', () => {
         email: 'test@example.com',
         password: 'ValidPass123!',
         captcha: { token: VALID_CAPTCHA_TOKEN },
-        preferences: { locale: 'uk', theme: 'dark' },
+        preferences: { locale: 'uk', theme: 'dark' }
       }
 
       const res = await post(app, SIGNUP_URL, validPayload)
@@ -123,20 +134,61 @@ describe('Signup Endpoint', () => {
       expect(res.status).toBe(HttpStatus.CREATED)
 
       expect(mockSignUpWithEmail).toHaveBeenCalledWith(
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', password: 'ValidPass123!' },
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'ValidPass123!'
+        },
         { ipAddress: '192.168.1.1', userAgent: 'Mozilla/5.0 (Test)' },
-        { locale: 'uk', theme: 'dark' },
+        { locale: 'uk', theme: 'dark' }
       )
     })
 
     it('should validate required field formats', async () => {
       const invalidData = [
-        { firstName: '', lastName: 'Doe', email: 'test@example.com', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // empty firstName
-        { firstName: 'John', lastName: 'X', email: 'test@example.com', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // lastName too short (1 char)
-        { firstName: 'John', lastName: 'Doe', email: 'invalid', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // invalid email format
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', password: 'short', captcha: { token: VALID_CAPTCHA_TOKEN } }, // password too short
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', password: 'NoNumbers!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // password missing numbers
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', password: 'NoSpecial123', captcha: { token: VALID_CAPTCHA_TOKEN } }, // password missing special chars
+        {
+          firstName: '',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'ValidPass123!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // empty firstName
+        {
+          firstName: 'John',
+          lastName: 'X',
+          email: 'test@example.com',
+          password: 'ValidPass123!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // lastName too short (1 char)
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'invalid',
+          password: 'ValidPass123!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // invalid email format
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'short',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // password too short
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'NoNumbers!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // password missing numbers
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'NoSpecial123',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        } // password missing special chars
       ]
 
       for (const body of invalidData) {
@@ -150,11 +202,25 @@ describe('Signup Endpoint', () => {
 
     it('should require all required fields', async () => {
       const incompleteRequests = [
-        { lastName: 'Doe', email: 'test@example.com', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // missing firstName
-        { firstName: 'John', password: 'ValidPass123!', captcha: { token: VALID_CAPTCHA_TOKEN } }, // missing lastName and email
-        { firstName: 'John', lastName: 'Doe', email: 'test@example.com', captcha: { token: VALID_CAPTCHA_TOKEN } }, // missing password
+        {
+          lastName: 'Doe',
+          email: 'test@example.com',
+          password: 'ValidPass123!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // missing firstName
+        {
+          firstName: 'John',
+          password: 'ValidPass123!',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // missing lastName and email
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'test@example.com',
+          captcha: { token: VALID_CAPTCHA_TOKEN }
+        }, // missing password
         { captcha: { token: VALID_CAPTCHA_TOKEN } }, // missing all fields
-        {}, // completely empty
+        {} // completely empty
       ]
 
       for (const body of incompleteRequests) {
@@ -172,13 +238,25 @@ describe('Signup Endpoint', () => {
         lastName: 'Doe',
         email: 'test@example.com',
         password: 'ValidPass123!',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       }
 
-      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
+      const scenarios: Array<{
+        name: string
+        headers?: Record<string, string>
+        body?: any
+      }> = [
         { name: 'missing Content-Type', headers: {}, body: validPayload },
-        { name: 'malformed JSON', headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
-        { name: 'missing request body', headers: { 'Content-Type': 'application/json' }, body: '' },
+        {
+          name: 'malformed JSON',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{ invalid json'
+        },
+        {
+          name: 'missing request body',
+          headers: { 'Content-Type': 'application/json' },
+          body: ''
+        }
       ]
 
       for (const { headers, body } of scenarios) {
@@ -198,7 +276,7 @@ describe('Signup Endpoint', () => {
         lastName: 'Doe',
         email: 'test@example.com',
         password: 'ValidPass123!',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)

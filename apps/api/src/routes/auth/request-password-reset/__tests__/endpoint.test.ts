@@ -3,7 +3,10 @@ import type { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, ModuleMocker, post } from '@/__tests__'
-import { mockCaptchaSuccess, VALID_CAPTCHA_TOKEN } from '@/middleware/captcha/__tests__'
+import {
+  mockCaptchaSuccess,
+  VALID_CAPTCHA_TOKEN
+} from '@/middleware/captcha/__tests__'
 import { HttpStatus } from '@/net/http'
 
 import { requestPasswordResetRoute } from '../index'
@@ -20,7 +23,7 @@ describe('Request Password Reset Endpoint', () => {
     mockRequestPasswordReset = mock(async () => ({ success: true }))
 
     await moduleMocker.mock('@/use-cases/auth/request-password-reset', () => ({
-      requestPasswordReset: mockRequestPasswordReset,
+      requestPasswordReset: mockRequestPasswordReset
     }))
 
     await mockCaptchaSuccess()
@@ -36,7 +39,7 @@ describe('Request Password Reset Endpoint', () => {
     it('should return success response on valid request', async () => {
       const res = await post(app, REQUEST_PASSWORD_RESET_URL, {
         email: 'test@example.com',
-        captcha: { token: VALID_CAPTCHA_TOKEN },
+        captcha: { token: VALID_CAPTCHA_TOKEN }
       })
 
       expect(res.status).toBe(HttpStatus.ACCEPTED)
@@ -47,7 +50,7 @@ describe('Request Password Reset Endpoint', () => {
       expect(mockRequestPasswordReset).toHaveBeenCalledTimes(1)
       expect(mockRequestPasswordReset).toHaveBeenCalledWith(
         { email: 'test@example.com' },
-        undefined,
+        undefined
       )
     })
 
@@ -55,14 +58,14 @@ describe('Request Password Reset Endpoint', () => {
       const res = await post(app, REQUEST_PASSWORD_RESET_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN },
-        preferences: { locale: 'uk', theme: 'dark' },
+        preferences: { locale: 'uk', theme: 'dark' }
       })
 
       expect(res.status).toBe(HttpStatus.ACCEPTED)
 
       expect(mockRequestPasswordReset).toHaveBeenCalledWith(
         { email: 'test@example.com' },
-        { locale: 'uk', theme: 'dark' },
+        { locale: 'uk', theme: 'dark' }
       )
     })
 
@@ -79,7 +82,7 @@ describe('Request Password Reset Endpoint', () => {
         { email: 'test@example.com' }, // missing captcha
         { email: 'test@example.com', captcha: {} }, // empty captcha object
         { email: 'test@example.com', captcha: { token: '' } }, // empty captcha token
-        { email: 'test@example.com', captcha: { token: 'invalid-token' } }, // invalid captcha token
+        { email: 'test@example.com', captcha: { token: 'invalid-token' } } // invalid captcha token
       ]
 
       for (const body of invalidRequests) {
@@ -92,11 +95,34 @@ describe('Request Password Reset Endpoint', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{ name: string, headers?: Record<string, string>, body?: any }> = [
-        { name: 'missing Content-Type header', headers: {}, body: { email: 'test@example.com', captcha: { token: VALID_CAPTCHA_TOKEN } } },
-        { name: 'undefined body', headers: { 'Content-Type': 'application/json' }, body: undefined },
-        { name: 'empty body', headers: { 'Content-Type': 'application/json' }, body: {} },
-        { name: 'malformed JSON body', headers: { 'Content-Type': 'application/json' }, body: '{ invalid json' },
+      const scenarios: Array<{
+        name: string
+        headers?: Record<string, string>
+        body?: any
+      }> = [
+        {
+          name: 'missing Content-Type header',
+          headers: {},
+          body: {
+            email: 'test@example.com',
+            captcha: { token: VALID_CAPTCHA_TOKEN }
+          }
+        },
+        {
+          name: 'undefined body',
+          headers: { 'Content-Type': 'application/json' },
+          body: undefined
+        },
+        {
+          name: 'empty body',
+          headers: { 'Content-Type': 'application/json' },
+          body: {}
+        },
+        {
+          name: 'malformed JSON body',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{ invalid json'
+        }
       ]
 
       for (const { headers, body } of scenarios) {

@@ -22,7 +22,7 @@ describe('notFound handler', () => {
       code: ErrorCode.NotFound,
       error: ErrorRegistry[ErrorCode.NotFound].error,
       name: APP_ERROR_NAME,
-      path: '/unknown/path',
+      path: '/unknown/path'
     })
   })
 })

@@ -4,7 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { getUsersHandler } from '../handler'
 
@@ -27,10 +27,10 @@ describe('getUsersHandler', () => {
         lastName: 'Doe',
         email: 'john@example.com',
         role: Role.User,
-        status: Status.Active,
+        status: UserStatus.Active,
         createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-      },
+        updatedAt: new Date('2024-01-01')
+      }
     ]
 
     mockJson = mock((data: any, status: number) => ({ data, status }))
@@ -40,17 +40,19 @@ describe('getUsersHandler', () => {
           roles: [Role.User],
           statuses: undefined,
           page: 1,
-          limit: DEFAULT_LIMIT,
-        })),
+          limit: DEFAULT_LIMIT
+        }))
       },
-      json: mockJson,
+      json: mockJson
     }
     mockSearchUsers = mock(async () => ({
       data: { users: mockUsers },
-      pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 },
+      pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 }
     }))
 
-    await moduleMocker.mock('@/use-cases/admin', () => ({ searchUsers: mockSearchUsers }))
+    await moduleMocker.mock('@/use-cases/admin', () => ({
+      searchUsers: mockSearchUsers
+    }))
   })
 
   afterEach(async () => {
@@ -62,11 +64,14 @@ describe('getUsersHandler', () => {
 
     expect(mockSearchUsers).toHaveBeenCalledWith(
       { search: undefined, roles: [Role.User], statuses: undefined },
-      { page: 1, limit: DEFAULT_LIMIT },
+      { page: 1, limit: DEFAULT_LIMIT }
     )
     expect(mockJson).toHaveBeenCalledWith(
-      { users: mockUsers, pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 } },
-      HttpStatus.OK,
+      {
+        users: mockUsers,
+        pagination: { page: 1, limit: DEFAULT_LIMIT, total: 1, totalPages: 1 }
+      },
+      HttpStatus.OK
     )
     expect(result.status).toBe(HttpStatus.OK)
   })
@@ -76,6 +81,8 @@ describe('getUsersHandler', () => {
       throw new Error('Database connection failed')
     })
 
-    expect(getUsersHandler(mockContext)).rejects.toThrow('Database connection failed')
+    expect(getUsersHandler(mockContext)).rejects.toThrow(
+      'Database connection failed'
+    )
   })
 })

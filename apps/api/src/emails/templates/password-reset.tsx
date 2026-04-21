@@ -1,9 +1,6 @@
 /** @jsxImportSource react */
 
-import {
-  Link,
-  Text,
-} from '@react-email/components'
+import { Link, Text } from '@react-email/components'
 
 import type { PasswordResetEmailContent } from '../content'
 import type { Metadata } from '../metadata'
@@ -28,7 +25,7 @@ const PasswordResetEmail = ({
   data,
   content: c,
   styles: s,
-  metadata,
+  metadata
 }: Props) => {
   const { firstName, resetUrl } = data
 
@@ -39,13 +36,9 @@ const PasswordResetEmail = ({
       styles={s}
       metadata={metadata}
     >
-      <Text style={s.text.body}>
-        {c.greeting(firstName)}
-      </Text>
+      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 
-      <Text style={s.text.body}>
-        {c.body}
-      </Text>
+      <Text style={s.text.body}>{c.body}</Text>
 
       <Link href={resetUrl} style={s.link}>
         {c.ctaText}
@@ -65,10 +58,10 @@ const PasswordResetEmail = ({
 PasswordResetEmail.PreviewProps = {
   data: {
     firstName: 'Jason',
-    resetUrl: `http://localhost:5173/reset-password?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
+    resetUrl: `http://localhost:5173/reset-password?token=eb6a0c90a8e75d4c9d5a93def2911d7b`
   },
   content: getContent('en').passwordReset,
-  styles: getThemeStyles('light'),
+  styles: getThemeStyles('light')
 } as Props
 
 export default PasswordResetEmail

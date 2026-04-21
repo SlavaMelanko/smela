@@ -8,7 +8,7 @@ describe('ErrorTracker interface', () => {
     captureError: mock(() => {}),
     captureMessage: mock(() => {}),
     setUser: mock(() => {}),
-    clearUser: mock(() => {}),
+    clearUser: mock(() => {})
   })
 
   describe('init', () => {
@@ -67,9 +67,16 @@ describe('ErrorTracker interface', () => {
 
     it('should accept all severity levels', () => {
       const tracker = createMockErrorTracker()
-      const levels: SeverityLevel[] = ['fatal', 'error', 'warning', 'log', 'info', 'debug']
+      const levels: SeverityLevel[] = [
+        'fatal',
+        'error',
+        'warning',
+        'log',
+        'info',
+        'debug'
+      ]
 
-      levels.forEach((level) => {
+      levels.forEach(level => {
         tracker.captureMessage(`Message at ${level}`, level)
       })
 

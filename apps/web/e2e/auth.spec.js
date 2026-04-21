@@ -1,7 +1,15 @@
 import { faker } from '@faker-js/faker'
-
-import { HttpStatus } from '../src/lib/net'
-import { Role, UserStatus } from '../src/lib/types'
+import {
+  fillLoginFormAndSubmit,
+  fillNewPasswordFormAndSubmit,
+  fillRequestPasswordResetFormAndSubmit,
+  fillSignupFormAndSubmit,
+  logOut
+} from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { generateEmailAddress } from '@smela/e2e/email'
+import { HttpStatus } from '@smela/ui/lib/net'
+import { Role, UserStatus } from '@smela/ui/lib/types'
 import {
   LOGIN_PATH,
   ME_PATH,
@@ -10,17 +18,9 @@ import {
   RESET_PASSWORD_PATH,
   SIGNUP_PATH,
   VERIFY_EMAIL_PATH
-} from '../src/services/backend/paths'
-import { auth } from '../src/tests/data'
+} from '@smela/ui/services/backend/paths'
+
 import { expect, test } from './config/fixtures'
-import {
-  fillLoginFormAndSubmit,
-  fillNewPasswordFormAndSubmit,
-  fillRequestPasswordResetFormAndSubmit,
-  fillSignupFormAndSubmit,
-  logOut
-} from './scenarios'
-import { generateEmail, waitForApiCall, waitForApiCalls } from './utils'
 
 /**
  * Serial tests - User lifecycle flow
@@ -36,9 +36,9 @@ test.describe.serial('Authentication: User Lifecycle', () => {
   const user = {
     firstName,
     lastName,
-    email: generateEmail({ prefix: firstName }),
-    initialPassword: auth.password.strong,
-    newPassword: auth.password.withSpecialChars
+    email: generateEmailAddress({ prefix: firstName }),
+    initialPassword: process.env.VITE_E2E_DEFAULT_PASSWORD,
+    newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
 
   test('signup: creates account and verifies email', async ({
@@ -89,8 +89,8 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             fn === user.firstName &&
             ln === user.lastName &&
             email === user.email &&
-            status === UserStatus.NEW &&
-            role === Role.USER
+            status === UserStatus.New &&
+            role === Role.User
           )
         }
       },
@@ -108,8 +108,8 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             fn === user.firstName &&
             ln === user.lastName &&
             email === user.email &&
-            status === UserStatus.VERIFIED &&
-            role === Role.USER
+            status === UserStatus.Verified &&
+            role === Role.User
           )
         }
       }
@@ -199,7 +199,7 @@ test.describe('Authentication: General', () => {
   // Pre-seeded user credentials from environment variables
   const seededUser = {
     email: process.env.VITE_E2E_USER_EMAIL,
-    password: process.env.VITE_E2E_USER_PASSWORD
+    password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
   test('signup: validates required fields', async ({ page, t }) => {
@@ -239,7 +239,7 @@ test.describe('Authentication: General', () => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: process.env.VITE_E2E_ADMIN_EMAIL,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -260,7 +260,7 @@ test.describe('Authentication: General', () => {
 
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
-    const testEmail = generateEmail({ prefix: firstName })
+    const testEmail = generateEmailAddress({ prefix: firstName })
 
     let signupCaptchaToken = null
 
@@ -287,8 +287,8 @@ test.describe('Authentication: General', () => {
           fn === firstName &&
           ln === lastName &&
           email === testEmail &&
-          status === UserStatus.NEW &&
-          role === Role.USER
+          status === UserStatus.New &&
+          role === Role.User
         )
       }
     })
@@ -299,7 +299,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -380,7 +380,7 @@ test.describe('Authentication: General', () => {
 
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
-    const testEmail = generateEmail({ prefix: firstName })
+    const testEmail = generateEmailAddress({ prefix: firstName })
 
     const apiPromise = waitForApiCall(page, {
       path: SIGNUP_PATH,
@@ -393,7 +393,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       },
       t
     )
@@ -460,11 +460,11 @@ test.describe('Authentication: General', () => {
     const testCases = [
       {
         email: seededUser.email,
-        password: auth.password.mismatch
+        password: 'Mismatch1!'
       },
       {
         email: 'nonexistent@example.com',
-        password: auth.password.strong
+        password: process.env.VITE_E2E_DEFAULT_PASSWORD
       }
     ]
 

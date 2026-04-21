@@ -8,7 +8,7 @@ import type { UserClaims } from '@/security/jwt'
 import { createTestApp, ModuleMocker, patch, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
-import { Role, Status } from '@/types'
+import { Role, UserStatus } from '@/types'
 
 import { meRoute } from '../index'
 
@@ -32,9 +32,9 @@ describe('Me Endpoint', () => {
       lastName: 'Doe',
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     }
     mockGetUser = mock(async () => ({ user: mockFullUser }))
     mockUpdatedUser = {
@@ -43,22 +43,22 @@ describe('Me Endpoint', () => {
       lastName: 'Smith',
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-02'),
+      updatedAt: new Date('2024-01-02')
     }
     mockUpdateUser = mock(async () => ({ user: mockUpdatedUser }))
 
     await moduleMocker.mock('@/use-cases/user/me', () => ({
       getUser: mockGetUser,
-      updateUser: mockUpdateUser,
+      updateUser: mockUpdateUser
     }))
 
     mockUserClaims = {
       id: testUuids.USER_1,
       email: 'test@example.com',
       role: Role.User,
-      status: Status.Active,
+      status: UserStatus.Active
     }
 
     const userMiddleware: any = async (c: any, next: any) => {
@@ -87,10 +87,10 @@ describe('Me Endpoint', () => {
           lastName: 'Doe',
           email: 'test@example.com',
           role: Role.User,
-          status: Status.Active,
+          status: UserStatus.Active,
           createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
-        },
+          updatedAt: '2024-01-01T00:00:00.000Z'
+        }
       })
       expect(data.user).not.toHaveProperty('tokenVersion')
 
@@ -112,9 +112,14 @@ describe('Me Endpoint', () => {
 
   describe('PATCH /me', () => {
     it('should update user profile successfully', async () => {
-      const res = await patch(app, ME_URL, { firstName: 'Jane', lastName: 'Smith' }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: 'Jane', lastName: 'Smith' },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
 
@@ -124,7 +129,10 @@ describe('Me Endpoint', () => {
       expect(data.user).not.toHaveProperty('tokenVersion')
 
       const { updateUser } = await import('@/use-cases/user/me')
-      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, { firstName: 'Jane', lastName: 'Smith' })
+      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        firstName: 'Jane',
+        lastName: 'Smith'
+      })
     })
 
     it('should handle update failure', async () => {
@@ -132,50 +140,81 @@ describe('Me Endpoint', () => {
         throw new AppError(ErrorCode.InternalError, 'Failed to update user.')
       })
 
-      const res = await patch(app, ME_URL, { firstName: 'Jane', lastName: 'Smith' }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: 'Jane', lastName: 'Smith' },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
       expect((await res.json()).error).toBe('Failed to update user.')
     })
 
     it('should reject empty strings', async () => {
-      const res = await patch(app, ME_URL, { firstName: '', lastName: '' }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: '', lastName: '' },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
     it('should trim strings and reject whitespace-only values', async () => {
-      const res = await patch(app, ME_URL, { firstName: '   ', lastName: 'Smith' }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: '   ', lastName: 'Smith' },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
     it('should trim valid strings at validation layer', async () => {
-      const res = await patch(app, ME_URL, { firstName: '  Jane  ', lastName: '  Smith  ' }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: '  Jane  ', lastName: '  Smith  ' },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
 
       const { updateUser } = await import('@/use-cases/user/me')
-      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, { firstName: 'Jane', lastName: 'Smith' })
+      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        firstName: 'Jane',
+        lastName: 'Smith'
+      })
     })
 
     it('should normalize null lastName to empty string', async () => {
-      const res = await patch(app, ME_URL, { firstName: 'Jane', lastName: null }, {
-        'Content-Type': 'application/json',
-      })
+      const res = await patch(
+        app,
+        ME_URL,
+        { firstName: 'Jane', lastName: null },
+        {
+          'Content-Type': 'application/json'
+        }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
 
       const { updateUser } = await import('@/use-cases/user/me')
-      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, { firstName: 'Jane', lastName: '' })
+      expect(updateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        firstName: 'Jane',
+        lastName: ''
+      })
     })
   })
 })

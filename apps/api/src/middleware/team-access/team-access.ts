@@ -16,21 +16,23 @@ import { isAdmin } from '@/types'
  * With Redis cache: 80-95% hit rate, 20-50x faster response time.
  * See: https://github.com/SlavaMelanko/smela-back/issues/58
  */
-export const teamAccessMiddleware = createMiddleware<AppContext>(async (c, next) => {
-  const teamId = c.req.param('teamId')!
-  const { id: userId, role } = c.get('user')
+export const teamAccessMiddleware = createMiddleware<AppContext>(
+  async (c, next) => {
+    const teamId = c.req.param('teamId')!
+    const { id: userId, role } = c.get('user')
 
-  // Admins and owners have access to all teams
-  if (isAdmin(role)) {
+    // Admins and owners have access to all teams
+    if (isAdmin(role)) {
+      return next()
+    }
+
+    // Regular users must be team members
+    const membership = await teamRepo.findMember(teamId, userId)
+
+    if (!membership) {
+      throw new AppError(ErrorCode.Forbidden)
+    }
+
     return next()
   }
-
-  // Regular users must be team members
-  const membership = await teamRepo.findMember(teamId, userId)
-
-  if (!membership) {
-    throw new AppError(ErrorCode.Forbidden)
-  }
-
-  return next()
-})
+)

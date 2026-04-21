@@ -32,21 +32,24 @@ const validateToken = async (refreshToken: string | undefined) => {
 }
 
 const validateDevice = (
-  storedToken: { ipAddress: string | null, userAgent: string | null },
+  storedToken: { ipAddress: string | null; userAgent: string | null },
   deviceInfo: DeviceInfo,
-  userId: string,
+  userId: string
 ) => {
   const ipChanged = storedToken.ipAddress !== deviceInfo.ipAddress
   const userAgentChanged = storedToken.userAgent !== deviceInfo.userAgent
 
   if (ipChanged || userAgentChanged) {
-    logger.warn({
-      userId,
-      oldIp: storedToken.ipAddress,
-      newIp: deviceInfo.ipAddress,
-      oldUserAgent: storedToken.userAgent,
-      newUserAgent: deviceInfo.userAgent,
-    }, 'Device change detected during token refresh')
+    logger.warn(
+      {
+        userId,
+        oldIp: storedToken.ipAddress,
+        newIp: deviceInfo.ipAddress,
+        oldUserAgent: storedToken.userAgent,
+        newUserAgent: deviceInfo.userAgent
+      },
+      'Device change detected during token refresh'
+    )
   }
 }
 
@@ -56,13 +59,13 @@ export interface RefreshAuthTokensInput {
 
 export const refreshAuthTokens = async (
   { refreshToken }: RefreshAuthTokensInput,
-  deviceInfo: DeviceInfo,
+  deviceInfo: DeviceInfo
 ) => {
   const { storedToken, hashedToken } = await validateToken(refreshToken)
 
   const [user, team] = await Promise.all([
     userRepo.findById(storedToken.userId),
-    teamRepo.findUserTeam(storedToken.userId),
+    teamRepo.findUserTeam(storedToken.userId)
   ])
 
   if (!user) {
@@ -75,18 +78,18 @@ export const refreshAuthTokens = async (
 
   const [accessToken, newRefreshToken] = await Promise.all([
     createAccessToken(user, permissions),
-    db.transaction(async (tx) => {
+    db.transaction(async tx => {
       // Create new refresh token first (OAuth 2.0 best practice)
       const newRefreshToken = await createRefreshToken(user.id, deviceInfo, tx)
       // Revoke old token last to prevent user lockout on failures
       await refreshTokenRepo.revokeByHash(hashedToken, tx)
 
       return newRefreshToken
-    }),
+    })
   ])
 
   return {
     data: { user, team, permissions, accessToken },
-    refreshToken: newRefreshToken,
+    refreshToken: newRefreshToken
   }
 }

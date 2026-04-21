@@ -5,9 +5,9 @@ code in this repository.
 
 ## Project Overview
 
-This is a frontend application built with React 19, Vite, React Compiler, and
-TanStack Query. The project uses a custom backend API and emphasizes clear
-architecture, easy maintenance, and simple UX.
+This is the user version of the frontend application built with React 19, Vite,
+React Compiler, and TanStack Query. The project uses a custom backend API and
+emphasizes clear architecture, easy maintenance, and simple UX.
 
 ## Technology Stack
 
@@ -21,7 +21,6 @@ architecture, easy maintenance, and simple UX.
 - **Tailwind CSS v4** - Utility-first CSS framework with shadcn/ui components
 - **Storybook** - Component development and documentation
 - **i18n** - Internationalization (English/Ukrainian)
-- **Jest** - Unit testing framework
 - **Playwright** - E2E testing framework
 
 ## Essential Commands
@@ -33,23 +32,11 @@ All script commands are defined in [package.json](package.json). Key workflows:
 - Development server, production builds, and preview: `dev`, `build`, `preview`
 - Build analysis: `bundle:analyze` opens bundle visualization
 
-### Testing
-
-- Unit tests: `test` (all tests), `coverage` (with coverage)
-- E2E tests: `e2e` (headless), `e2e:ui` (interactive mode)
-- Run single test: `bun run test -- path/to/test.spec.js`
-- E2E tests require running backend, database, and pre-registered admin/user
-  accounts
-
 ### Code Quality
 
 - Linting: `lint` (check only), `lint:fix` (fix issues)
 - Formatting: `format` (check only), `format:fix` (fix formatting)
-- Check everything: `check` (runs format:fix, lint:fix, and test)
-
-### Storybook
-
-- Component library: `stories` (opens browser on port 6006)
+- Check everything: `check` (runs format:fix and lint:fix)
 
 ## Architecture Overview
 
@@ -95,12 +82,6 @@ custom backend API:
 - **Query hooks** - Custom hooks for data fetching with caching and
   synchronization
 - **Mutations** - Optimistic updates and error handling for data modifications
-
-### Testing Strategy
-
-- **Unit tests** in `__tests__` folders near components
-- **E2E tests** in `/e2e/` directory
-- Test utilities available in `/src/lib/tests/`
 
 ## Key Development Patterns
 

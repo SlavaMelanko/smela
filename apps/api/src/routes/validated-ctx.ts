@@ -50,7 +50,11 @@ interface ParamInput<Param> {
  *   const { id } = c.req.valid('param') // typed as { id: number }
  * }
  */
-export type ValidatedParamCtx<Param> = Context<AppContext, string, ParamInput<Param>>
+export type ValidatedParamCtx<Param> = Context<
+  AppContext,
+  string,
+  ParamInput<Param>
+>
 
 interface QueryInput<Query> {
   in: { query: Query }
@@ -64,7 +68,11 @@ interface QueryInput<Query> {
  *   const query = c.req.valid('query') // typed as ListQuery
  * }
  */
-export type ValidatedQueryCtx<Query> = Context<AppContext, string, QueryInput<Query>>
+export type ValidatedQueryCtx<Query> = Context<
+  AppContext,
+  string,
+  QueryInput<Query>
+>
 
 interface JsonInput<Body> {
   in: { json: Body }
@@ -78,11 +86,15 @@ interface JsonInput<Body> {
  *   const payload = c.req.valid('json') // typed as SignupBody
  * }
  */
-export type ValidatedJsonCtx<Body> = Context<AppContext, string, JsonInput<Body>>
+export type ValidatedJsonCtx<Body> = Context<
+  AppContext,
+  string,
+  JsonInput<Body>
+>
 
 interface ParamJsonInput<Param, Body> {
-  in: { param: Param, json: Body }
-  out: { param: Param, json: Body }
+  in: { param: Param; json: Body }
+  out: { param: Param; json: Body }
 }
 
 /**
@@ -93,5 +105,8 @@ interface ParamJsonInput<Param, Body> {
  *   const body = c.req.valid('json') // typed as UpdateBody
  * }
  */
-export type ValidatedParamJsonCtx<Param, Body>
-  = Context<AppContext, string, ParamJsonInput<Param, Body>>
+export type ValidatedParamJsonCtx<Param, Body> = Context<
+  AppContext,
+  string,
+  ParamJsonInput<Param, Body>
+>

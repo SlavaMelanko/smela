@@ -26,14 +26,17 @@ export class ResendEmailProvider implements EmailProvider {
         to: Array.isArray(payload.to) ? payload.to : [payload.to],
         subject: payload.subject,
         html: payload.html,
-        text: payload.text,
+        text: payload.text
       })
 
       if (!error) {
         if (attempt > 0) {
-          logger.info({
-            subject: payload.subject,
-          }, `Email sent successfully after ${attempt + 1} attempts`)
+          logger.info(
+            {
+              subject: payload.subject
+            },
+            `Email sent successfully after ${attempt + 1} attempts`
+          )
         }
 
         return
@@ -43,15 +46,19 @@ export class ResendEmailProvider implements EmailProvider {
         logger.error(
           error,
           `Failed to send email after ${attempt + 1}/${maxRetries + 1} attempts`,
-          { subject: payload.subject },
+          { subject: payload.subject }
         )
 
         return
       }
 
-      logger.warn(error, `Email attempt ${attempt + 1}/${maxRetries + 1} failed, retrying...`, {
-        subject: payload.subject,
-      })
+      logger.warn(
+        error,
+        `Email attempt ${attempt + 1}/${maxRetries + 1} failed, retrying...`,
+        {
+          subject: payload.subject
+        }
+      )
 
       await sleepFor(exponentialBackoffDelay(1000, attempt))
     }

@@ -11,9 +11,15 @@ interface GeneratedToken {
   expiresAt: Date
 }
 
-export const generateToken = (type: TokenType, options?: Options): GeneratedToken => {
+export const generateToken = (
+  type: TokenType,
+  options?: Options
+): GeneratedToken => {
   const defaultOptions = getDefaultOptions(type)
-  const tokenGenerator = new CryptoTokenGenerator({ ...defaultOptions, ...options })
+  const tokenGenerator = new CryptoTokenGenerator({
+    ...defaultOptions,
+    ...options
+  })
   const { token, expiresAt } = tokenGenerator.generateWithExpiry()
 
   return { type, token, expiresAt }
@@ -30,7 +36,7 @@ interface HashedToken {
 
 export const generateHashedToken = async (
   type: TokenType,
-  options?: Options,
+  options?: Options
 ): Promise<HashedToken> => {
   const { token: raw, expiresAt } = generateToken(type, options)
   const hashed = await hashToken(raw)
@@ -39,8 +45,8 @@ export const generateHashedToken = async (
     type,
     token: {
       raw,
-      hashed,
+      hashed
     },
-    expiresAt,
+    expiresAt
   }
 }

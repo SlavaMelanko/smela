@@ -21,11 +21,11 @@ describe('Check Invite Endpoint', () => {
   beforeEach(async () => {
     mockCheckInvite = mock(async () => ({
       type: 'member',
-      teamName: 'Acme Corp',
+      teamName: 'Acme Corp'
     }))
 
     await moduleMocker.mock('@/use-cases/auth/check-invite', () => ({
-      checkInvite: mockCheckInvite,
+      checkInvite: mockCheckInvite
     }))
 
     app = createTestApp('/api/v1/auth', checkInviteRoute)
@@ -62,11 +62,14 @@ describe('Check Invite Endpoint', () => {
     it('should validate token requirements', async () => {
       const invalidTokens = [
         { name: 'short token', token: 'short-token' },
-        { name: 'long token', token: 'a'.repeat(100) },
+        { name: 'long token', token: 'a'.repeat(100) }
       ]
 
       for (const testCase of invalidTokens) {
-        const res = await get(app, `${CHECK_INVITE_URL}?token=${testCase.token}`)
+        const res = await get(
+          app,
+          `${CHECK_INVITE_URL}?token=${testCase.token}`
+        )
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)
         expect(mockCheckInvite).not.toHaveBeenCalled()

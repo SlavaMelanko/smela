@@ -15,11 +15,11 @@ describe('Logout Use Case', () => {
   beforeEach(async () => {
     // @/data module group
     mockRefreshTokenRepo = {
-      revokeByHash: mock(async () => {}),
+      revokeByHash: mock(async () => {})
     }
 
     await moduleMocker.mock('@/data', () => ({
-      refreshTokenRepo: mockRefreshTokenRepo,
+      refreshTokenRepo: mockRefreshTokenRepo
     }))
 
     // @/security/token module group
@@ -27,7 +27,7 @@ describe('Logout Use Case', () => {
     mockHashToken = mock(async () => mockTokenHash)
 
     await moduleMocker.mock('@/security/token', () => ({
-      hashToken: mockHashToken,
+      hashToken: mockHashToken
     }))
   })
 
@@ -42,7 +42,9 @@ describe('Logout Use Case', () => {
       await logout(refreshToken)
 
       expect(mockHashToken).toHaveBeenCalledWith(refreshToken)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+        mockTokenHash
+      )
     })
 
     it('should handle different token formats', async () => {
@@ -56,18 +58,22 @@ describe('Logout Use Case', () => {
         'MiXeD_CaSe_ToKeN',
         'token123456789',
         'a'.repeat(100), // very long token
-        'special!@#$%^&*()token',
+        'special!@#$%^&*()token'
       ]
 
       for (const token of tokenFormats) {
         await logout(token)
 
         expect(mockHashToken).toHaveBeenCalledWith(token)
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+          mockTokenHash
+        )
       }
 
       expect(mockHashToken).toHaveBeenCalledTimes(tokenFormats.length)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(tokenFormats.length)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
+        tokenFormats.length
+      )
     })
   })
 
@@ -101,11 +107,15 @@ describe('Logout Use Case', () => {
 
         // These should not trigger early return since they are truthy strings
         expect(mockHashToken).toHaveBeenCalledWith(token)
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+          mockTokenHash
+        )
       }
 
       expect(mockHashToken).toHaveBeenCalledTimes(whitespaceTokens.length)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(whitespaceTokens.length)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
+        whitespaceTokens.length
+      )
     })
   })
 
@@ -135,7 +145,9 @@ describe('Logout Use Case', () => {
       expect(logout(refreshToken)).rejects.toThrow('Database revocation failed')
 
       expect(mockHashToken).toHaveBeenCalledWith(refreshToken)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+        mockTokenHash
+      )
     })
 
     it('should handle repository timeout errors', async () => {
@@ -149,7 +161,9 @@ describe('Logout Use Case', () => {
       expect(logout(refreshToken)).rejects.toThrow('Connection timeout')
 
       expect(mockHashToken).toHaveBeenCalledWith(refreshToken)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+        mockTokenHash
+      )
     })
 
     it('should handle hash function returning invalid result', async () => {
@@ -174,9 +188,11 @@ describe('Logout Use Case', () => {
         return mockTokenHash
       })
 
-      mockRefreshTokenRepo.revokeByHash.mockImplementation(async (_hash: string) => {
-        callOrder.push('revokeByHash')
-      })
+      mockRefreshTokenRepo.revokeByHash.mockImplementation(
+        async (_hash: string) => {
+          callOrder.push('revokeByHash')
+        }
+      )
 
       const refreshToken = 'valid_refresh_token'
       await logout(refreshToken)
@@ -222,7 +238,9 @@ describe('Logout Use Case', () => {
       await logout(longToken)
 
       expect(mockHashToken).toHaveBeenCalledWith(longToken)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+        mockTokenHash
+      )
     })
 
     it('should handle tokens with special characters', async () => {
@@ -232,22 +250,26 @@ describe('Logout Use Case', () => {
         'token\twith\ttabs',
         'token with spaces',
         'token"with"quotes',
-        'token\'with\'quotes',
+        "token'with'quotes",
         'token\\with\\backslashes',
         '😀🔑💻🚀', // emojis
         'токен_кириллица', // cyrillic
-        '令牌中文', // chinese
+        '令牌中文' // chinese
       ]
 
       for (const token of specialTokens) {
         await logout(token)
 
         expect(mockHashToken).toHaveBeenCalledWith(token)
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+          mockTokenHash
+        )
       }
 
       expect(mockHashToken).toHaveBeenCalledTimes(specialTokens.length)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(specialTokens.length)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
+        specialTokens.length
+      )
     })
 
     it('should handle concurrent logout calls', async () => {
@@ -267,7 +289,10 @@ describe('Logout Use Case', () => {
       // Verify all calls were made with the same parameters
       for (let i = 0; i < numCalls; i++) {
         expect(mockHashToken).toHaveBeenNthCalledWith(i + 1, refreshToken)
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenNthCalledWith(i + 1, mockTokenHash)
+        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenNthCalledWith(
+          i + 1,
+          mockTokenHash
+        )
       }
     })
   })
@@ -311,11 +336,15 @@ describe('Logout Use Case', () => {
 
         // These are truthy values, so should not trigger early return
         expect(mockHashToken).toHaveBeenCalledWith(value)
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(mockTokenHash)
+        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+          mockTokenHash
+        )
       }
 
       expect(mockHashToken).toHaveBeenCalledTimes(truthyValues.length)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(truthyValues.length)
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
+        truthyValues.length
+      )
     })
   })
 })

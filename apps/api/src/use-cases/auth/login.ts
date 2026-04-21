@@ -14,7 +14,7 @@ export interface LoginInput {
 
 export const logInWithEmail = async (
   { email, password }: LoginInput,
-  deviceInfo: DeviceInfo,
+  deviceInfo: DeviceInfo
 ) => {
   const user = await userRepo.findByEmail(email)
 
@@ -28,7 +28,10 @@ export const logInWithEmail = async (
     throw new AppError(ErrorCode.InvalidCredentials)
   }
 
-  const isPasswordValid = await comparePasswordHashes(password, auth.passwordHash)
+  const isPasswordValid = await comparePasswordHashes(
+    password,
+    auth.passwordHash
+  )
 
   if (!isPasswordValid) {
     throw new AppError(ErrorCode.InvalidCredentials)
@@ -36,13 +39,17 @@ export const logInWithEmail = async (
 
   const [team, permissions] = await Promise.all([
     teamRepo.findUserTeam(user.id),
-    resolvePermissionList(user.id),
+    resolvePermissionList(user.id)
   ])
 
-  const [accessToken, refreshToken] = await createAuthTokens(user, deviceInfo, permissions)
+  const [accessToken, refreshToken] = await createAuthTokens(
+    user,
+    deviceInfo,
+    permissions
+  )
 
   return {
     data: { user, team, permissions, accessToken },
-    refreshToken,
+    refreshToken
   }
 }

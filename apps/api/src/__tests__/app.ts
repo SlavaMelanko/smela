@@ -8,7 +8,7 @@ import { loggerMiddleware } from '@/middleware'
 export const createTestApp = (
   basePath: string,
   route: any,
-  additionalMiddleware: MiddlewareHandler[] = [],
+  additionalMiddleware: MiddlewareHandler[] = []
 ): Hono => {
   const app = new Hono()
 
