@@ -8,7 +8,7 @@ Starter kit for full-stack web apps
 | ![main](https://img.shields.io/badge/%2F_main-blue?style=flat&logo=GitHub) | [![GitHub Release](https://img.shields.io/github/v/release/SlavaMelanko/smela?display_name=release&style=flat&logo=rocket&logoColor=white&color=blue)](https://github.com/SlavaMelanko/smela/releases?q=api) | [![Ubuntu](https://img.shields.io/github/actions/workflow/status/SlavaMelanko/smela/api-ci-ubuntu.yml?branch=main&label=api&logo=ubuntu)](https://github.com/SlavaMelanko/smela/actions/workflows/api-ci-ubuntu.yml) [![Ubuntu](https://img.shields.io/github/actions/workflow/status/SlavaMelanko/smela/web-ci-ubuntu.yml?branch=main&label=web&logo=ubuntu)](https://github.com/SlavaMelanko/smela/actions/workflows/web-ci-ubuntu.yml) | [![sonar](https://img.shields.io/sonar/quality_gate/SlavaMelanko_smela?server=https%3A%2F%2Fsonarcloud.io&branch=main&logo=sonarqubecloud&label=sonar)](https://sonarcloud.io/summary/new_code?id=SlavaMelanko_smela) |   [![codecov](https://codecov.io/github/SlavaMelanko/smela/branch/main/graph/badge.svg?token=LDY1C7havD&flag=api&label=api)](https://codecov.io/github/SlavaMelanko/smela)   |
 
 - \* Quality Gate applies to the entire monorepo
-- \*\* Code Coverage applies to the [api](apps/api)
+- \*\* Code Coverage applies to [api](apps/api)
 
 ## 📋 Prerequisites
 
