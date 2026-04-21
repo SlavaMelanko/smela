@@ -522,6 +522,18 @@ test.describe('Authentication: General', () => {
     await logOut(page, t)
   })
 
+  test('verify-email / accept-invite: redirects unauthenticated users without token to login', async ({
+    page
+  }) => {
+    const paths = ['/verify-email', '/accept-invite']
+
+    for (const path of paths) {
+      await page.goto(path)
+      await page.waitForURL('/login')
+      await expect(page).toHaveURL(/\/login/)
+    }
+  })
+
   test('authorization: shows 404 for unauthorized and unknown routes', async ({
     page,
     t,
