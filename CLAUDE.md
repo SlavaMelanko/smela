@@ -19,6 +19,14 @@
 
 ## Dev Notes
 
+### Prerequisites
+
+- [Git](https://git-scm.com/)
+- [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
+- [tmux](https://github.com/tmux/tmux/wiki)
+
+### Notes
+
 - When upgrading React, update the `version` field in
   `packages/eslint/src/react.js` → `settings.react.version`.
 

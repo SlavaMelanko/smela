@@ -10,11 +10,6 @@ Starter kit for full-stack web apps
 - \* Quality Gate applies to the entire monorepo
 - \*\* Code Coverage applies to [api](apps/api)
 
-## 📋 Prerequisites
+## Prerequisites
 
-- [Git](https://git-scm.com/)
-- [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
-- [tmux](https://github.com/tmux/tmux/wiki)
-
-![Git](https://shields.io) ![Bun](https://shields.io)
-![Tmux](https://shields.io)
+![Stack](https://go-skill-icons.vercel.app/api/icons?i=git,bun,tmux&theme=dark&titles=true)
