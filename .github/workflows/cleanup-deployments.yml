@@ -19,7 +19,7 @@ jobs:
             const cutoff = new Date();
             cutoff.setDate(cutoff.getDate() - 7);
 
-            const { data: deployments } = await github.rest.repos.listDeployments({
+            const deployments = await github.paginate(github.rest.repos.listDeployments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
@@ -28,20 +28,30 @@ jobs:
             const old = deployments.filter(d => new Date(d.created_at) < cutoff);
             console.log(`Found ${old.length} deployments older than 7 days`);
 
+            let deleted = 0;
+            let failed = 0;
+
             for (const deployment of old) {
-              // Mark inactive before deletion (required by GitHub API)
-              await github.rest.repos.createDeploymentStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: deployment.id,
-                state: 'inactive',
-              });
+              try {
+                await github.rest.repos.createDeploymentStatus({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: deployment.id,
+                  state: 'inactive',
+                });
 
-              await github.rest.repos.deleteDeployment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: deployment.id,
-              });
+                await github.rest.repos.deleteDeployment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: deployment.id,
+                });
 
-              console.log(`Deleted deployment ${deployment.id} (${deployment.environment}, ${deployment.created_at})`);
+                console.log(`Deleted deployment ${deployment.id} (${deployment.environment}, ${deployment.created_at})`);
+                deleted++;
+              } catch (err) {
+                console.error(`Failed to delete deployment ${deployment.id}: ${err.message}`);
+                failed++;
+              }
             }
+
+            console.log(`Done: ${deleted} deleted, ${failed} failed`);
