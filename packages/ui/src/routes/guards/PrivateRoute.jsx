@@ -7,11 +7,13 @@ import { NotFoundErrorPage } from '@ui/pages/errors'
 export const PrivateRoute = ({
   children,
   requireStatuses = [],
-  requireRoles = []
+  requireRoles = [],
+  requirePermissions = []
 }) => {
   const { isFetching, isAuthenticated, hasAccess } = useHasAccess({
     requireStatuses,
-    requireRoles
+    requireRoles,
+    requirePermissions
   })
 
   if (isFetching) {
