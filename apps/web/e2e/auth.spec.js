@@ -521,10 +521,10 @@ test.describe('Authentication: General', () => {
     await logOut(page, t)
   })
 
-  test('verify-email / accept-invite: redirects unauthenticated users without token to login', async ({
+  test('verify-email / accept-invite / email-confirmation: redirects unauthenticated users without required context to login', async ({
     page
   }) => {
-    const paths = ['/verify-email', '/accept-invite']
+    const paths = ['/verify-email', '/accept-invite', '/email-confirmation']
 
     for (const path of paths) {
       await page.goto(path)
