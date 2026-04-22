@@ -7,7 +7,8 @@
 - `apps/api` — Bun/Hono backend (see [apps/api/CLAUDE.md](apps/api/CLAUDE.md))
 - `apps/web` — React/Vite frontend (see
   [apps/web/CLAUDE.md](apps/web/CLAUDE.md))
-- `apps/admin` — Admin interface
+- `apps/admin` — Admin interface (see
+  [apps/admin/CLAUDE.md](apps/admin/CLAUDE.md))
 
 ### Packages
 
@@ -24,6 +25,7 @@
 - [Git](https://git-scm.com/)
 - [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
 - [tmux](https://github.com/tmux/tmux/wiki)
+- [Docker](https://www.docker.com/) for running PostgreSQL
 
 ### Notes
 
