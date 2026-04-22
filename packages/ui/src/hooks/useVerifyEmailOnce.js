@@ -13,7 +13,7 @@ export const useVerifyEmailOnce = (token, { onSettled }) => {
   const hasVerified = useRef(false)
 
   useEffect(() => {
-    if (hasVerified.current) {
+    if (!token || hasVerified.current) {
       return
     }
 
