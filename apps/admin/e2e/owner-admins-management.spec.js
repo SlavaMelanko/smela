@@ -105,7 +105,7 @@ test.describe('Owner: Admins Page', () => {
   })
 })
 
-test.describe.serial('Owner: Admin Invitation', () => {
+test.describe.serial('Owner: Invite admin with full access', () => {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
 
@@ -116,11 +116,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
     password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
-  test('owner invites admin via modal form with default permissions (full access)', async ({
-    page,
-    t,
-    login
-  }) => {
+  test('owner invites admin via modal form', async ({ page, t, login }) => {
     await login(ownerCredentials)
 
     const apiPromise = waitForApiCall(page, {
@@ -180,11 +176,20 @@ test.describe.serial('Owner: Admin Invitation', () => {
     const apiPromise = waitForApiCall(page, {
       path: ACCEPT_INVITE_PATH,
       status: HttpStatus.OK,
-      validateResponse: body =>
-        Array.isArray(body.permissions) &&
-        ['manage:users', 'manage:teams', 'view:users', 'view:teams'].every(p =>
-          body.permissions.includes(p)
+      validateResponse: body => {
+        const expected = [
+          'manage:users',
+          'manage:teams',
+          'view:users',
+          'view:teams'
+        ]
+
+        return (
+          Array.isArray(body.permissions) &&
+          body.permissions.length === expected.length &&
+          expected.every(p => body.permissions.includes(p))
         )
+      }
     })
 
     await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
@@ -198,14 +203,13 @@ test.describe.serial('Owner: Admin Invitation', () => {
     await logOut(page, t)
   })
 
-  test('invited admin has full access to teams and users resources', async ({
+  test('invited admin can manage teams resource', async ({
     page,
     t,
     login
   }) => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
-    // --- Teams: view + manage ---
     const teamsLoadPromise = waitForApiCall(page, {
       path: ADMIN_TEAMS_PATH,
       status: HttpStatus.OK
@@ -237,7 +241,16 @@ test.describe.serial('Owner: Admin Invitation', () => {
     await expect(page.getByLabel(t.team.name.label)).not.toBeDisabled()
     await expect(page.getByLabel(t.team.name.label)).toHaveValue(firstTeamName)
 
-    // --- Users: view + manage ---
+    await logOut(page, t)
+  })
+
+  test('invited admin can manage users resource', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login({ email: newAdmin.email, password: newAdmin.password })
+
     const usersLoadPromise = waitForApiCall(page, {
       path: ADMIN_USERS_PATH,
       status: HttpStatus.OK
