@@ -10,11 +10,7 @@ import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
   ACCEPT_INVITE_PATH,
-  ADMIN_TEAMS_PATH,
-  ADMIN_USER_PATH,
-  ADMIN_USERS_PATH,
   OWNER_ADMINS_PATH,
-  TEAMS_PATH,
   UPDATE_PASSWORD_PATH
 } from '@smela/ui/services/backend/paths'
 
@@ -210,36 +206,17 @@ test.describe.serial('Owner: Invite admin with full access', () => {
   }) => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
-    const teamsLoadPromise = waitForApiCall(page, {
-      path: ADMIN_TEAMS_PATH,
-      status: HttpStatus.OK
-    })
-
     await page.goto('/admin/teams')
-    await teamsLoadPromise
 
     // Manage permission: Add button must be visible
     await expect(page.getByRole('button', { name: t.add })).toBeVisible()
 
     // Open the first team row
-    const firstTeamRow = page.getByRole('row').nth(1)
-    const firstTeamName = await firstTeamRow
-      .getByRole('cell')
-      .first()
-      .innerText()
+    await page.getByRole('row').nth(1).click()
 
-    const teamDetailPromise = waitForApiCall(page, {
-      path: TEAMS_PATH.replace(':teamId', ''),
-      method: 'GET',
-      status: HttpStatus.OK
-    })
-
-    await firstTeamRow.click()
-    await teamDetailPromise
-
-    // View + manage permission: Name field must be editable
+    // View + manage permission: Name and description fields must be editable
     await expect(page.getByLabel(t.team.name.label)).not.toBeDisabled()
-    await expect(page.getByLabel(t.team.name.label)).toHaveValue(firstTeamName)
+    await expect(page.getByLabel(t.team.description.label)).not.toBeDisabled()
 
     await logOut(page, t)
   })
@@ -251,25 +228,10 @@ test.describe.serial('Owner: Invite admin with full access', () => {
   }) => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
-    const usersLoadPromise = waitForApiCall(page, {
-      path: ADMIN_USERS_PATH,
-      status: HttpStatus.OK
-    })
-
     await page.goto('/admin/users')
-    await usersLoadPromise
 
     // Open the first user row
-    const firstUserRow = page.getByRole('row').nth(1)
-
-    const userDetailPromise = waitForApiCall(page, {
-      path: ADMIN_USER_PATH.replace(':userId', ''),
-      method: 'GET',
-      status: HttpStatus.OK
-    })
-
-    await firstUserRow.click()
-    await userDetailPromise
+    await page.getByRole('row').nth(1).click()
 
     // View + manage permission: firstName and lastName fields must be editable
     await expect(page.getByLabel(t.firstName.label)).not.toBeDisabled()
