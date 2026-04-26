@@ -101,7 +101,7 @@ test.describe('Owner: Admins Page', () => {
   })
 })
 
-test.describe.serial('Owner: Admin Invitation', () => {
+test.describe.serial('Owner: Invite admin with full access', () => {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
 
@@ -171,7 +171,21 @@ test.describe.serial('Owner: Admin Invitation', () => {
 
     const apiPromise = waitForApiCall(page, {
       path: ACCEPT_INVITE_PATH,
-      status: HttpStatus.OK
+      status: HttpStatus.OK,
+      validateResponse: body => {
+        const expected = [
+          'manage:users',
+          'manage:teams',
+          'view:users',
+          'view:teams'
+        ]
+
+        return (
+          Array.isArray(body.permissions) &&
+          body.permissions.length === expected.length &&
+          expected.every(p => body.permissions.includes(p))
+        )
+      }
     })
 
     await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
@@ -181,6 +195,47 @@ test.describe.serial('Owner: Admin Invitation', () => {
     await expect(page.getByText(t.invite.accept.success)).toBeVisible()
 
     await page.waitForURL('/admin/dashboard')
+
+    await logOut(page, t)
+  })
+
+  test('invited admin can manage teams resource', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login({ email: newAdmin.email, password: newAdmin.password })
+
+    await page.goto('/admin/teams')
+
+    // Manage permission: Add button must be visible
+    await expect(page.getByRole('button', { name: t.add })).toBeVisible()
+
+    // Open the first team row
+    await page.getByRole('row').nth(1).click()
+
+    // View + manage permission: Name and description fields must be editable
+    await expect(page.getByLabel(t.team.name.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.team.description.label)).not.toBeDisabled()
+
+    await logOut(page, t)
+  })
+
+  test('invited admin can manage users resource', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login({ email: newAdmin.email, password: newAdmin.password })
+
+    await page.goto('/admin/users')
+
+    // Open the first user row
+    await page.getByRole('row').nth(1).click()
+
+    // View + manage permission: firstName and lastName fields must be editable
+    await expect(page.getByLabel(t.firstName.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.lastName.label)).not.toBeDisabled()
 
     await logOut(page, t)
   })
