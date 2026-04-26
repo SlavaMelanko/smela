@@ -112,7 +112,11 @@ test.describe.serial('Owner: Admin Invitation', () => {
     password: process.env.VITE_E2E_DEFAULT_PASSWORD
   }
 
-  test('owner invites admin via modal form', async ({ page, t, login }) => {
+  test('owner invites admin via modal form with default permissions (full access)', async ({
+    page,
+    t,
+    login
+  }) => {
     await login(ownerCredentials)
 
     const apiPromise = waitForApiCall(page, {
@@ -171,7 +175,12 @@ test.describe.serial('Owner: Admin Invitation', () => {
 
     const apiPromise = waitForApiCall(page, {
       path: ACCEPT_INVITE_PATH,
-      status: HttpStatus.OK
+      status: HttpStatus.OK,
+      validateResponse: body =>
+        Array.isArray(body.permissions) &&
+        ['manage:users', 'manage:teams', 'view:users', 'view:teams'].every(p =>
+          body.permissions.includes(p)
+        )
     })
 
     await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
