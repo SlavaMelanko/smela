@@ -2,7 +2,7 @@ import { Spinner } from '@ui/components/Spinner'
 import { useHasAccess } from '@ui/hooks/useHasAccess'
 import { Navigate } from '@ui/hooks/useRouter'
 import { ErrorLayout } from '@ui/layouts'
-import { NotFoundErrorPage } from '@ui/pages/errors'
+import { ForbiddenErrorPage } from '@ui/pages/errors'
 
 export const PrivateRoute = ({
   children,
@@ -24,12 +24,10 @@ export const PrivateRoute = ({
     return <Navigate to='/' replace />
   }
 
-  // Render 404 inline to preserve URL and prevent route enumeration attacks.
-  // ErrorLayout ensures consistent styling with the catch-all route.
   if (!hasAccess) {
     return (
       <ErrorLayout>
-        <NotFoundErrorPage />
+        <ForbiddenErrorPage />
       </ErrorLayout>
     )
   }

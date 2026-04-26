@@ -5,13 +5,13 @@ import { useHasAccess } from '../useHasAccess'
 
 vi.mock('../useAuth')
 
-const authenticated = (overrides = {}) => ({
+const authenticated = ({ permissions = [], ...overrides } = {}) => ({
   isFetching: false,
   isAuthenticated: true,
+  permissions,
   user: {
     status: 'active',
     role: 'user',
-    permissions: [],
     ...overrides
   }
 })

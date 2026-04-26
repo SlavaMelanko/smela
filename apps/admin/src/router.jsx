@@ -26,7 +26,7 @@ import {
   PublicRoute,
   RootRedirect
 } from '@smela/ui/routes'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 
 export const router = createBrowserRouter([
   {
@@ -68,8 +68,17 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'users/:id', element: <UserPage /> },
-      { path: 'teams', element: <TeamsPage /> },
-      { path: 'teams/:id', element: <TeamPage /> },
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:teams']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'teams', element: <TeamsPage /> },
+          { path: 'teams/:id', element: <TeamPage /> }
+        ]
+      },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'settings', element: <AdminSettingsPage /> }
     ]

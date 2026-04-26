@@ -72,6 +72,11 @@
     }
   },
   "error": {
+    "forbidden": {
+      "cta": "Go home",
+      "message": "You don't have permission to view this page.",
+      "title": "Access denied"
+    },
     "general": {
       "cta": "Go home",
       "message": "Something went wrong on our end. If it keeps happening, feel free to contact us. In the meantime, try refreshing.",
