@@ -30,6 +30,7 @@ export const useCurrentUser = (options = {}) => {
     isSuccess: hasAccessToken ? query.isSuccess : false,
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
+    permissions: query.data?.permissions ?? [],
     isAuthenticated: !!query.data?.user
   }
 }

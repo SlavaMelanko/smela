@@ -1,4 +1,3 @@
-import { Role } from '@ui/lib/types'
 import {
   BookOpen,
   Home,
@@ -10,7 +9,7 @@ import {
   Users
 } from 'lucide-react'
 
-export const userMenuItems = [
+export const getUserMenuItems = () => [
   {
     title: 'sidebar.home',
     url: '/home',
@@ -38,7 +37,10 @@ export const userMenuItems = [
   }
 ]
 
-export const adminMenuItems = [
+export const getAdminMenuItems = ({
+  canViewTeams = false,
+  canViewAdmins = false
+} = {}) => [
   {
     title: 'sidebar.dashboard',
     url: '/admin/dashboard',
@@ -49,48 +51,15 @@ export const adminMenuItems = [
     url: '/admin/users',
     icon: User
   },
-  {
-    title: 'sidebar.teams',
-    url: '/admin/teams',
-    icon: Users
-  },
-  {
-    title: 'sidebar.settings',
-    url: '/admin/settings',
-    icon: Settings
-  }
-]
-
-export const ownerMenuItems = [
-  {
-    title: 'sidebar.dashboard',
-    url: '/admin/dashboard',
-    icon: LayoutDashboard
-  },
-  {
-    title: 'sidebar.users',
-    url: '/admin/users',
-    icon: User
-  },
-  {
-    title: 'sidebar.teams',
-    url: '/admin/teams',
-    icon: Users
-  },
-  {
-    title: 'sidebar.admins',
-    url: '/owner/admins',
-    icon: ShieldCheck
-  },
+  ...(canViewTeams
+    ? [{ title: 'sidebar.teams', url: '/admin/teams', icon: Users }]
+    : []),
+  ...(canViewAdmins
+    ? [{ title: 'sidebar.admins', url: '/owner/admins', icon: ShieldCheck }]
+    : []),
   {
     title: 'sidebar.settings',
     url: '/admin/settings',
     icon: Settings
   }
 ]
-
-export const menuByRole = {
-  [Role.User]: userMenuItems,
-  [Role.Admin]: adminMenuItems,
-  [Role.Owner]: ownerMenuItems
-}
