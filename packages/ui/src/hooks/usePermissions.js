@@ -5,6 +5,7 @@ export const usePermissions = () => {
 
   return {
     can: p => permissions.includes(p),
-    canAll: perms => perms.every(p => permissions.includes(p))
+    canAll: perms => perms.every(p => permissions.includes(p)),
+    canAny: perms => perms.some(p => permissions.includes(p))
   }
 }
