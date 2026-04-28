@@ -49,9 +49,9 @@ export const useLogin = () => {
       accessTokenStorage.set(data.accessToken)
 
       if (data?.user) {
-        const { user, team } = data
+        const { user, team, permissions } = data
 
-        queryClient.setQueryData(authKeys.user(), { user, team })
+        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
 
         setErrorTrackerUser(user)
       } else {
@@ -83,9 +83,9 @@ export const useUserSignupWithEmail = () => {
       accessTokenStorage.set(data.accessToken)
 
       if (data?.user) {
-        const { user, team } = data
+        const { user, team, permissions } = data
 
-        queryClient.setQueryData(authKeys.user(), { user, team })
+        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
 
         setErrorTrackerUser(user)
       } else {
@@ -135,9 +135,9 @@ export const useVerifyEmail = ({ onSettled }) => {
       accessTokenStorage.set(data.accessToken)
 
       if (data?.user) {
-        const { user, team } = data
+        const { user, team, permissions } = data
 
-        queryClient.setQueryData(authKeys.user(), { user, team })
+        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
 
         setErrorTrackerUser(user)
       } else {
@@ -168,9 +168,9 @@ export const useResetPassword = () => {
       accessTokenStorage.set(data.accessToken)
 
       if (data?.user) {
-        const { user, team } = data
+        const { user, team, permissions } = data
 
-        queryClient.setQueryData(authKeys.user(), { user, team })
+        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
 
         setErrorTrackerUser(user)
       } else {
@@ -201,9 +201,9 @@ export const useAcceptInvite = () => {
       accessTokenStorage.set(data.accessToken)
 
       if (data?.user) {
-        const { user, team } = data
+        const { user, team, permissions } = data
 
-        queryClient.setQueryData(authKeys.user(), { user, team })
+        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
 
         setErrorTrackerUser(user)
       } else {
