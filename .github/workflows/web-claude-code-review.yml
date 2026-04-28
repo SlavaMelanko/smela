@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
       issues: read
       id-token: write
 
@@ -42,12 +42,16 @@ jobs:
           # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4.1)
           # model: "claude-opus-4-1-20250805"
 
-          # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
-          # use_sticky_comment: true
+          use_sticky_comment: true
 
           # Direct prompt for automated review (no @claude mention needed)
           direct_prompt: |
             Please review this pull request. It may touch one or more of: apps/web, apps/admin (Vite + React JS apps), packages/ui (shared React component library), or packages/i18n (i18n/translation resources — no components, focus on key naming and missing translations).
+
+            If a previous review comment exists on this PR, use it as the baseline:
+            - Mark items that have been fixed since the last push with ~~strikethrough~~ and a ✅ suffix.
+            - Keep unresolved items as-is.
+            - Add any new issues introduced by the latest push.
 
             Review areas:
             1. Code quality and best practices
