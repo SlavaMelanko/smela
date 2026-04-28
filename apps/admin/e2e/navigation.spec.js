@@ -25,7 +25,10 @@ test.describe('Owner: Sidebar Navigation', () => {
     ]
 
     for (const { label, url } of items) {
-      await page.getByRole('button', { name: label }).click()
+      const item = page.getByRole('button', { name: label })
+
+      await expect(item).toBeVisible()
+      await item.click()
       await expect(page).toHaveURL(url)
     }
 
@@ -45,13 +48,20 @@ test.describe('Admin: Sidebar Navigation', () => {
     ]
 
     for (const { label, url } of items) {
-      await page.getByRole('button', { name: label }).click()
+      const item = page.getByRole('button', { name: label })
+
+      await expect(item).toBeVisible()
+      await item.click()
       await expect(page).toHaveURL(url)
     }
 
-    await expect(
-      page.getByRole('button', { name: t.sidebar.admins })
-    ).not.toBeVisible()
+    const forbiddenItems = [t.sidebar.admins]
+
+    for (const label of forbiddenItems) {
+      const item = page.getByRole('button', { name: label })
+
+      await expect(item).not.toBeVisible()
+    }
 
     await logOut(page, t)
   })
