@@ -1,11 +1,9 @@
 import { getAdminMenuItems, getUserMenuItems } from '@ui/components/Sidebar'
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { usePermissions } from '@ui/hooks/usePermissions'
 import { isAdmin, isUser } from '@ui/lib/types'
 
 export const useSidebarMenu = () => {
-  const { user: me, team } = useCurrentUser()
-  const { can } = usePermissions()
+  const { user: me, team, can } = useCurrentUser()
 
   let items = []
 

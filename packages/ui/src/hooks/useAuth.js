@@ -22,6 +22,8 @@ export const useCurrentUser = (options = {}) => {
     ...options
   })
 
+  const permissions = query.data?.permissions ?? []
+
   return {
     isPending: hasAccessToken ? query.isPending : false,
     isFetching: query.isFetching,
@@ -30,8 +32,11 @@ export const useCurrentUser = (options = {}) => {
     isSuccess: hasAccessToken ? query.isSuccess : false,
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
-    permissions: query.data?.permissions ?? [],
-    isAuthenticated: !!query.data?.user
+    permissions,
+    isAuthenticated: !!query.data?.user,
+    can: p => permissions.includes(p),
+    canAll: perms => perms.every(p => permissions.includes(p)),
+    canAny: perms => perms.some(p => permissions.includes(p))
   }
 }
 

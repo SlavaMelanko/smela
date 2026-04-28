@@ -1,13 +1,11 @@
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { usePermissions } from '@ui/hooks/usePermissions'
 
 export const useHasAccess = ({
   requireStatuses = [],
   requireRoles = [],
   requirePermissions = []
 } = {}) => {
-  const { isFetching, isAuthenticated, user: me } = useCurrentUser()
-  const { canAll } = usePermissions()
+  const { isFetching, isAuthenticated, user: me, canAll } = useCurrentUser()
 
   const hasRequiredStatus =
     requireStatuses.length === 0 || requireStatuses.includes(me?.status)

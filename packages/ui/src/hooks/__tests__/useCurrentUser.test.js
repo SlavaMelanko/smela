@@ -12,7 +12,7 @@ const withPermissions = (permissions = []) =>
     canAny: perms => perms.some(p => permissions.includes(p))
   })
 
-describe('useCurrentUser permission helpers', () => {
+describe('useCurrentUser: permission', () => {
   beforeEach(() => {
     useCurrentUser.mockClear()
   })
@@ -66,6 +66,34 @@ describe('useCurrentUser permission helpers', () => {
       const { result } = renderHook(() => useCurrentUser())
 
       expect(result.current.canAll([])).toBe(true)
+    })
+  })
+
+  describe('canAny', () => {
+    it('returns true when at least one permission is present', () => {
+      withPermissions(['view:teams'])
+
+      const { result } = renderHook(() => useCurrentUser())
+
+      expect(result.current.canAny(['view:teams', 'manage:users'])).toBe(true)
+    })
+
+    it('returns false when no permissions match', () => {
+      withPermissions(['view:teams'])
+
+      const { result } = renderHook(() => useCurrentUser())
+
+      expect(result.current.canAny(['manage:users', 'manage:billing'])).toBe(
+        false
+      )
+    })
+
+    it('returns false for empty list', () => {
+      withPermissions(['view:teams'])
+
+      const { result } = renderHook(() => useCurrentUser())
+
+      expect(result.current.canAny([])).toBe(false)
     })
   })
 })
