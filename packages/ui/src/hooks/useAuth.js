@@ -12,6 +12,21 @@ export const authKeys = {
   invitation: token => [...authKeys.all(), 'invitation', token]
 }
 
+const cacheAuthResponse = (queryClient, data) => {
+  accessTokenStorage.set(data.accessToken)
+
+  if (data?.user) {
+    const { user, team, permissions } = data
+
+    queryClient.setQueryData(authKeys.user(), { user, team, permissions })
+
+    setErrorTrackerUser(user)
+  } else {
+    // No user in response, fetch from /me endpoint
+    queryClient.invalidateQueries({ queryKey: authKeys.user() })
+  }
+}
+
 export const useCurrentUser = (options = {}) => {
   const hasAccessToken = !!accessTokenStorage.get()
 
@@ -45,20 +60,7 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: authApi.logIn,
-    onSuccess: data => {
-      accessTokenStorage.set(data.accessToken)
-
-      if (data?.user) {
-        const { user, team, permissions } = data
-
-        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
-
-        setErrorTrackerUser(user)
-      } else {
-        // No user in response, fetch from /me endpoint
-        queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      }
-    }
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 
@@ -79,20 +81,7 @@ export const useUserSignupWithEmail = () => {
 
   return useMutation({
     mutationFn: authApi.signUp,
-    onSuccess: data => {
-      accessTokenStorage.set(data.accessToken)
-
-      if (data?.user) {
-        const { user, team, permissions } = data
-
-        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
-
-        setErrorTrackerUser(user)
-      } else {
-        // No user in response, fetch from /me endpoint
-        queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      }
-    }
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 
@@ -131,20 +120,7 @@ export const useVerifyEmail = ({ onSettled }) => {
 
   return useMutation({
     mutationFn: authApi.verifyEmail,
-    onSuccess: data => {
-      accessTokenStorage.set(data.accessToken)
-
-      if (data?.user) {
-        const { user, team, permissions } = data
-
-        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
-
-        setErrorTrackerUser(user)
-      } else {
-        // No user in response, fetch from /me endpoint
-        queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      }
-    },
+    onSuccess: data => cacheAuthResponse(queryClient, data),
     onSettled
   })
 }
@@ -164,20 +140,7 @@ export const useResetPassword = () => {
 
   return useMutation({
     mutationFn: authApi.resetPassword,
-    onSuccess: data => {
-      accessTokenStorage.set(data.accessToken)
-
-      if (data?.user) {
-        const { user, team, permissions } = data
-
-        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
-
-        setErrorTrackerUser(user)
-      } else {
-        // No user in response, fetch from /me endpoint
-        queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      }
-    }
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 
@@ -197,19 +160,7 @@ export const useAcceptInvite = () => {
 
   return useMutation({
     mutationFn: authApi.acceptInvite,
-    onSuccess: data => {
-      accessTokenStorage.set(data.accessToken)
-
-      if (data?.user) {
-        const { user, team, permissions } = data
-
-        queryClient.setQueryData(authKeys.user(), { user, team, permissions })
-
-        setErrorTrackerUser(user)
-      } else {
-        queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      }
-    }
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 
