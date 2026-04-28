@@ -9,6 +9,7 @@ const authenticated = ({ permissions = [], ...overrides } = {}) => ({
   isFetching: false,
   isAuthenticated: true,
   permissions,
+  canAll: perms => perms.every(p => permissions.includes(p)),
   user: {
     status: 'active',
     role: 'user',
