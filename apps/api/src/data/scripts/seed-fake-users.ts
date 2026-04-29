@@ -35,9 +35,13 @@ import { authTable, usersTable } from '../schema'
 const BATCH_SIZE = 500
 const DEFAULT_COUNT = 5000
 
-// Pre-computed bcrypt hash for "FakeUser123!" to avoid slow hashing
-const DUMMY_PASSWORD_HASH =
-  '$2b$10$QKxGzLHk1BrFb7YrLsLnZuvEw3K.vUqhD4TxCPDdKFfqsHVqoA3lC'
+// Pre-computed bcrypt hash to avoid slow hashing
+const SEED_USER_PASSWORD_HASH = process.env['SEED_USER_PASSWORD_HASH']
+
+if (!SEED_USER_PASSWORD_HASH) {
+  console.error('❌ SEED_USER_PASSWORD_HASH is not set')
+  process.exit(1)
+}
 
 const NON_ALPHA_RE = /[^a-z]/g
 
@@ -90,7 +94,7 @@ const seedFakeUsers = async (count: number) => {
         userId: user.id,
         provider: AuthProvider.Local,
         identifier: users[j].email,
-        passwordHash: DUMMY_PASSWORD_HASH
+        passwordHash: SEED_USER_PASSWORD_HASH
       }))
 
       await tx.insert(authTable).values(authRecords)
