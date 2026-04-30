@@ -10,30 +10,26 @@
  *   # Seed custom count
  *   NODE_ENV=development bun src/data/scripts/seed-fake-users.ts 10000
  *
- *   # Clear all fake users
- *   NODE_ENV=development bun src/data/scripts/seed-fake-users.ts --clear
- *
  * Usage (Windows PowerShell):
  *   # Seed 5000 users (default)
  *   $env:NODE_ENV="development"; bun src/data/scripts/seed-fake-users.ts
  *
  *   # Seed custom count
  *   $env:NODE_ENV="development"; bun src/data/scripts/seed-fake-users.ts 10000
- *
- *   # Clear all fake users
- *   $env:NODE_ENV="development"; bun src/data/scripts/seed-fake-users.ts --clear
  */
 
 import { faker } from '@faker-js/faker'
-import { like } from 'drizzle-orm'
 
 import { AuthProvider, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
-import { authTable, usersTable } from '../schema'
+import { authTable, teamMembersTable, teamsTable, usersTable } from '../schema'
 
 const BATCH_SIZE = 500
 const DEFAULT_COUNT = 5000
+const TEAM_MEMBER_RATIO = 0.33
+const MIN_TEAM_SIZE = 3
+const MAX_TEAM_SIZE = 10
 
 // Pre-computed bcrypt hash to avoid slow hashing
 const SEED_USER_PASSWORD_HASH = process.env['SEED_USER_PASSWORD_HASH']
@@ -68,28 +64,25 @@ const generateUser = (index: number) => {
   }
 }
 
-const seedFakeUsers = async (count: number) => {
-  console.log(`Seeding fake users...`)
-  console.log(`Config: ${count} users, batch size ${BATCH_SIZE}`)
+const seedFakeUsers = async (count: number): Promise<string[]> => {
+  console.log(`Seeding ${count} fake users (batch size ${BATCH_SIZE})...`)
 
   const startTime = performance.now()
+  const allInsertedIds: string[] = []
 
   for (let i = 0; i < count; i += BATCH_SIZE) {
     const batchSize = Math.min(BATCH_SIZE, count - i)
 
     await db.transaction(async tx => {
-      // Generate batch of users
       const users = Array.from({ length: batchSize }, (_, j) =>
         generateUser(i + j)
       )
 
-      // Insert users, get IDs
       const inserted = await tx
         .insert(usersTable)
         .values(users)
         .returning({ id: usersTable.id })
 
-      // Insert auth records (local provider, dummy password hash)
       const authRecords = inserted.map((user, j) => ({
         userId: user.id,
         provider: AuthProvider.Local,
@@ -98,6 +91,10 @@ const seedFakeUsers = async (count: number) => {
       }))
 
       await tx.insert(authTable).values(authRecords)
+
+      for (const { id } of inserted) {
+        allInsertedIds.push(id)
+      }
     })
 
     const progress = i + batchSize
@@ -108,18 +105,54 @@ const seedFakeUsers = async (count: number) => {
 
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(2)
   console.log(`Done! Inserted ${count} users with auth records in ${elapsed}s`)
+
+  return allInsertedIds
 }
 
-const clearFakeUsers = async () => {
-  console.log('Clearing existing fake users...')
+const seedFakeTeams = async (userIds: string[]) => {
+  // Shuffle all user IDs and take 33% as the pool for team assignment
+  const pool = faker.helpers
+    .shuffle([...userIds])
+    .slice(0, Math.floor(userIds.length * TEAM_MEMBER_RATIO))
 
-  // Delete users with *@test.local emails (auth records cascade automatically)
-  const result = await db
-    .delete(usersTable)
-    .where(like(usersTable.email, '%@test.local'))
-    .returning({ id: usersTable.id })
+  // Greedily pack pool into groups of random size [MIN_TEAM_SIZE, MAX_TEAM_SIZE]
+  const groups: string[][] = []
+  let i = 0
 
-  console.log(`Deleted ${result.length} fake users`)
+  while (i < pool.length) {
+    const size = faker.number.int({ min: MIN_TEAM_SIZE, max: MAX_TEAM_SIZE })
+    groups.push(pool.slice(i, i + size))
+    i += size
+  }
+
+  const startTime = performance.now()
+
+  for (const members of groups) {
+    const [team] = await db
+      .insert(teamsTable)
+      .values({
+        name: faker.company.name(),
+        website: faker.internet.url(),
+        description:
+          faker.helpers.maybe(() => faker.company.catchPhrase(), {
+            probability: 0.5
+          }) ?? null
+      })
+      .returning({ id: teamsTable.id })
+
+    await db.insert(teamMembersTable).values(
+      members.map(userId => ({
+        userId,
+        teamId: team.id,
+        position: faker.person.jobTitle()
+      }))
+    )
+  }
+
+  const elapsed = ((performance.now() - startTime) / 1000).toFixed(2)
+  console.log(
+    `Done! Inserted ${groups.length} teams for ${pool.length} users (~${Math.round(TEAM_MEMBER_RATIO * 100)}% of total) in ${elapsed}s`
+  )
 }
 
 const ALLOWED_ENVS = ['development', 'test', 'staging']
@@ -132,13 +165,6 @@ const main = async () => {
   }
 
   const args = process.argv.slice(2)
-
-  // Handle --clear flag
-  if (args.includes('--clear')) {
-    await clearFakeUsers()
-
-    return
-  }
 
   // Parse count from CLI arg
   const countArg = args[0]
@@ -154,10 +180,11 @@ const main = async () => {
   // Seed faker for reproducible data
   faker.seed(12345)
 
-  await seedFakeUsers(count)
+  const allInsertedIds = await seedFakeUsers(count)
+  await seedFakeTeams(allInsertedIds)
 }
 
 main().catch(err => {
-  console.error('Failed to seed fake users:', err)
+  console.error('Failed to seed data:', err)
   process.exit(1)
 })
