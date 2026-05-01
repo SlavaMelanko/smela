@@ -110,4 +110,43 @@ test.describe('Read-Only Admin: Teams', () => {
 
     await logOut(page, t)
   })
+
+  test('Member row context menu shows only Open action', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(supportCredentials)
+
+    await page.goto('/admin/teams')
+
+    await page.getByRole('searchbox', { name: 'Search' }).fill('Wisozk - Sipes')
+    await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
+    await page.getByRole('row').nth(1).click()
+    await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
+
+    const memberRow = page.getByRole('row').nth(1)
+
+    await expect(memberRow).toBeVisible()
+
+    // Right-click first member row to open context menu
+    await memberRow.click({ button: 'right' })
+
+    await expect(
+      page.getByRole('menuitem', { name: t.contextMenu.open })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('menuitem', { name: t.contextMenu.invite })
+    ).not.toBeVisible()
+
+    await expect(
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
+    ).not.toBeVisible()
+
+    // Close context menu
+    await page.keyboard.press('Escape')
+
+    await logOut(page, t)
+  })
 })
