@@ -64,9 +64,7 @@ export const FormInputWrapper = ({ children }) => (
 )
 
 export const FormReadOnly = ({ children }) => (
-  <div className='flex h-11 items-center text-base text-muted-foreground'>
-    {children}
-  </div>
+  <div className='flex h-11 items-center text-base'>{children}</div>
 )
 
 export const FormError = ({ message, className }) => (
