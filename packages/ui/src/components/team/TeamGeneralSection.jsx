@@ -3,7 +3,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useUpdateTeam } from '@ui/hooks/useTeam'
 import { useToast } from '@ui/hooks/useToast'
 
-export const TeamGeneralSection = ({ team }) => {
+export const TeamGeneralSection = ({ team, readOnly = false }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
   const { mutate: updateTeam, isPending: isUpdating } = useUpdateTeam(team.id)
@@ -24,6 +24,7 @@ export const TeamGeneralSection = ({ team }) => {
       team={team}
       isSubmitting={isUpdating}
       onSubmit={handleUpdateTeam}
+      readOnly={readOnly}
     />
   )
 }
