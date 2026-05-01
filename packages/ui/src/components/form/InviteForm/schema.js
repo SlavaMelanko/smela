@@ -22,6 +22,6 @@ export const resolver = createResolver({
   [FieldName.POSITION]: rules.position
 })
 
-export const defaultFieldsConfig = Object.fromEntries(
+export const defaultFields = Object.fromEntries(
   Object.values(FieldName).map(name => [name, true])
 )

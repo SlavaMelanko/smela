@@ -149,13 +149,13 @@ describe('UserInfoForm', () => {
       expect(screen.getByText(en.status.name)).toBeInTheDocument()
     })
 
-    it('hides status field when fieldsConfig.status is false', () => {
+    it('hides status field when formFields.status is false', () => {
       renderWithProviders(
         <UserInfoForm
           user={mockUser}
           isSubmitting={false}
           onSubmit={vi.fn()}
-          fieldsConfig={{ [FieldName.STATUS]: false }}
+          formFields={{ [FieldName.STATUS]: false }}
         />
       )
 
@@ -175,7 +175,7 @@ describe('UserInfoForm', () => {
           user={mockUser}
           isSubmitting={false}
           onSubmit={onSubmit}
-          fieldsConfig={{ [FieldName.STATUS]: false }}
+          formFields={{ [FieldName.STATUS]: false }}
         />
       )
 

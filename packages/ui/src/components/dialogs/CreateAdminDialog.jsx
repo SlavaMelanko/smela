@@ -18,7 +18,7 @@ export const CreateAdminDialog = ({ onClose, onSubmit }) => {
           onSubmit={onSubmit}
           defaultPermissions={defaultPermissions}
           isPermissionsLoading={isPermissionsLoading}
-          fieldsConfig={{ [FieldName.POSITION]: false }}
+          formFields={{ [FieldName.POSITION]: false }}
         />
       </DialogBody>
     </>
