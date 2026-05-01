@@ -22,11 +22,12 @@ export const TeamPage = () => {
   const navigate = useNavigate()
   const { t } = useLocale()
   const { can } = useCurrentUser()
-  const readOnly = !can('manage:teams')
   const [activeTab, setActiveTab] = useHashTab(
     Object.values(TeamTab),
     TeamTab.GENERAL
   )
+
+  const readOnly = !can('manage:teams')
 
   const {
     data: team,
