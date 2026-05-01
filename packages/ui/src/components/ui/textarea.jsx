@@ -2,7 +2,7 @@ import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
 
 const textareaVariants = cva(
-  'w-full rounded-md border border-border bg-background px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-[1px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50 read-only:opacity-50 read-only:cursor-text resize-none',
+  'w-full rounded-md border border-border bg-background px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus-visible:ring-[1px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:pointer-events-none disabled:opacity-50 read-only:cursor-text resize-none',
   {
     variants: {
       state: {
