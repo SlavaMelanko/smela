@@ -12,21 +12,16 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import {
-  defaultFieldsConfig,
-  FieldName,
-  getDefaultValues,
-  resolver
-} from './schema'
+import { defaultFields, FieldName, getDefaultValues, resolver } from './schema'
 
 export const InviteForm = ({
   isPermissionsLoading,
   onSubmit,
   defaultPermissions,
-  fieldsConfig = {}
+  formFields = {}
 }) => {
   const { t } = useLocale()
-  const fields = { ...defaultFieldsConfig, ...fieldsConfig }
+  const fields = { ...defaultFields, ...formFields }
 
   const {
     register,

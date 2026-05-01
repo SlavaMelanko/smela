@@ -30,7 +30,8 @@ const TeamMembersToolbar = ({ children }) => (
 export const TeamMembersSection = ({
   teamId,
   onRowClick,
-  queryOptions = {}
+  queryOptions = {},
+  readOnly = false
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()
@@ -54,13 +55,21 @@ export const TeamMembersSection = ({
 
   const contextMenu = [
     createOpenItem(t, openMemberProfile),
-    createInviteItem(t, {
-      handleResendInvite,
-      isResending,
-      handleCancelInvite,
-      isCancelling
-    }),
-    createRemoveMemberItem(t, { handleRemoveMember, isDeleting, meId: me?.id })
+    ...(readOnly
+      ? [] // don't show invite and remove options in context menu
+      : [
+          createInviteItem(t, {
+            handleResendInvite,
+            isResending,
+            handleCancelInvite,
+            isCancelling
+          }),
+          createRemoveMemberItem(t, {
+            handleRemoveMember,
+            isDeleting,
+            meId: me?.id
+          })
+        ])
   ]
 
   const columns = getColumns(t, formatDate, me?.id)
@@ -89,11 +98,13 @@ export const TeamMembersSection = ({
   if (!members.length) {
     return (
       <EmptyState text={t('team.members.empty')}>
-        <InviteButton
-          label={t('invite.cta')}
-          onClick={openInviteDialog}
-          hideTextOnMobile={false}
-        />
+        {!readOnly && (
+          <InviteButton
+            label={t('invite.cta')}
+            onClick={openInviteDialog}
+            hideTextOnMobile={false}
+          />
+        )}
       </EmptyState>
     )
   }
@@ -105,7 +116,9 @@ export const TeamMembersSection = ({
           config={config}
           createLabel={id => t(`table.members.${id}`)}
         />
-        <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        {!readOnly && (
+          <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        )}
       </TeamMembersToolbar>
 
       <Table

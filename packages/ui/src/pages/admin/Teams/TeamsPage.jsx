@@ -11,6 +11,7 @@ import { Spinner } from '@ui/components/Spinner'
 import { ErrorState } from '@ui/components/states'
 import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
+import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
@@ -32,11 +33,14 @@ const Toolbar = ({ children }) => (
 export const TeamsPage = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
+  const { can } = useCurrentUser()
 
   const { apiParams, setParams, searchValue, setSearchValue } = useTableState()
   const { teams, pagination, isPending, isError, error, refetch } =
     useTeams(apiParams)
   const { openCreateTeamDialog } = useManageTeams()
+
+  const readOnly = !can('manage:teams')
 
   const columns = getColumns(t, formatDate)
   const [columnVisibility, setColumnVisibility] = useColumnVisibility(
@@ -94,7 +98,9 @@ export const TeamsPage = () => {
           config={config}
           createLabel={id => t(`table.teams.${id}`)}
         />
-        <AddButton label={t('add')} onClick={openCreateTeamDialog} />
+        {!readOnly && (
+          <AddButton label={t('add')} onClick={openCreateTeamDialog} />
+        )}
       </Toolbar>
 
       <Table config={config} onRowClick={viewTeam} contextMenu={contextMenu} />

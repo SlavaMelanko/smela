@@ -19,7 +19,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
-  defaultFieldsConfig,
+  defaultFields,
   FieldName,
   getDefaultValues,
   getValues,
@@ -30,9 +30,9 @@ export const UserInfoForm = ({
   user,
   isSubmitting,
   onSubmit,
-  fieldsConfig = {}
+  formFields = {}
 }) => {
-  const fields = { ...defaultFieldsConfig, ...fieldsConfig }
+  const fields = { ...defaultFields, ...formFields }
   const { t, formatDate } = useLocale()
 
   const {

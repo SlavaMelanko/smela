@@ -9,7 +9,7 @@ export const ProfileTab = ({ user }) => {
       user={user}
       update={mutate}
       isUpdating={isPending}
-      fieldsConfig={{ [FieldName.STATUS]: false }}
+      formFields={{ [FieldName.STATUS]: false }}
     />
   )
 }

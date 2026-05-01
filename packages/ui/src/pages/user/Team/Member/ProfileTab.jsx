@@ -16,7 +16,7 @@ export const ProfileTab = ({ team, member }) => {
       user={member}
       update={update}
       isUpdating={isUpdating}
-      fieldsConfig={{ [FieldName.STATUS]: false }}
+      formFields={{ [FieldName.STATUS]: false }}
     />
   )
 }

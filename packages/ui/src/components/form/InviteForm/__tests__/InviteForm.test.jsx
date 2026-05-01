@@ -11,11 +11,11 @@ const defaultPermissions = {
   teams: { view: true, manage: false }
 }
 
-const renderForm = ({ onSubmit = vi.fn(), fieldsConfig } = {}) => {
+const renderForm = ({ onSubmit = vi.fn(), formFields } = {}) => {
   renderWithProviders(
     <InviteForm
       onSubmit={onSubmit}
-      fieldsConfig={fieldsConfig}
+      formFields={formFields}
       defaultPermissions={defaultPermissions}
     />
   )
@@ -44,9 +44,9 @@ describe('InviteForm', () => {
       expect(positionInput).toBeInTheDocument()
     })
 
-    it('hides position field when fieldsConfig.position is false', () => {
+    it('hides position field when formFields.position is false', () => {
       const { positionInput } = renderForm({
-        fieldsConfig: { position: false }
+        formFields: { position: false }
       })
 
       expect(positionInput).not.toBeInTheDocument()
@@ -58,9 +58,9 @@ describe('InviteForm', () => {
       expect(permissionsSection).toBeInTheDocument()
     })
 
-    it('hides permissions section when fieldsConfig.permissions is false', () => {
+    it('hides permissions section when formFields.permissions is false', () => {
       const { permissionsSection } = renderForm({
-        fieldsConfig: { permissions: false }
+        formFields: { permissions: false }
       })
 
       expect(permissionsSection).not.toBeInTheDocument()
@@ -100,7 +100,7 @@ describe('InviteForm', () => {
       const onSubmit = vi.fn()
       const { firstNameInput, emailInput, submitButton } = renderForm({
         onSubmit,
-        fieldsConfig: { position: false }
+        formFields: { position: false }
       })
 
       await user.type(firstNameInput, 'John')

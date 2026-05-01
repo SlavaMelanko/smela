@@ -17,7 +17,12 @@ import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, getValues, resolver } from './schema'
 
-export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
+export const TeamGeneralForm = ({
+  team,
+  isSubmitting,
+  onSubmit,
+  readOnly = false
+}) => {
   const { t, formatDate } = useLocale()
 
   const {
@@ -45,7 +50,7 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
             name={FieldName.NAME}
             error={errors[FieldName.NAME]}
           >
-            <Input {...register(FieldName.NAME)} />
+            <Input {...register(FieldName.NAME)} readOnly={readOnly} />
           </FormField>
 
           <FormField
@@ -54,7 +59,11 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
             error={errors[FieldName.WEBSITE]}
             optional
           >
-            <Input {...register(FieldName.WEBSITE)} placeholder='https://' />
+            <Input
+              {...register(FieldName.WEBSITE)}
+              placeholder='https://'
+              readOnly={readOnly}
+            />
           </FormField>
         </FormRow>
 
@@ -64,7 +73,7 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
           error={errors[FieldName.DESCRIPTION]}
           optional
         >
-          <Textarea {...register(FieldName.DESCRIPTION)} />
+          <Textarea {...register(FieldName.DESCRIPTION)} readOnly={readOnly} />
         </FormField>
 
         <FormRow forceColumns>
@@ -76,9 +85,11 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
           </FormField>
         </FormRow>
 
-        <FormActions isDirty={isDirty}>
-          <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
-        </FormActions>
+        {!readOnly && (
+          <FormActions isDirty={isDirty}>
+            <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
+          </FormActions>
+        )}
       </FormFields>
     </FormRoot>
   )

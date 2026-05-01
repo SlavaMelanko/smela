@@ -10,6 +10,7 @@ import {
   TeamTab
 } from '@ui/components/team'
 import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
+import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useLocation, useNavigate, useParams } from '@ui/hooks/useRouter'
@@ -20,10 +21,13 @@ export const TeamPage = () => {
   const { state } = useLocation()
   const navigate = useNavigate()
   const { t } = useLocale()
+  const { can } = useCurrentUser()
   const [activeTab, setActiveTab] = useHashTab(
     Object.values(TeamTab),
     TeamTab.GENERAL
   )
+
+  const readOnly = !can('manage:teams')
 
   const {
     data: team,
@@ -52,11 +56,12 @@ export const TeamPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getTeamTabs(team, t)} />
         <TabsContent value={TeamTab.GENERAL}>
-          <TeamGeneralSection team={team} />
+          <TeamGeneralSection team={team} readOnly={readOnly} />
         </TabsContent>
         <TabsContent value={TeamTab.MEMBERS}>
           <TeamMembersSection
             teamId={teamId}
+            readOnly={readOnly}
             onRowClick={member =>
               navigate(`/admin/users/${member.id}`, { state: { user: member } })
             }
