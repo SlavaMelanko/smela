@@ -10,6 +10,12 @@ const supportCredentials = {
   password: process.env.VITE_E2E_SUPPORT_PASSWORD
 }
 
+const searchAndOpen = async (page, query) => {
+  await page.getByRole('searchbox', { name: 'Search' }).fill(query)
+  await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
+  await page.getByRole('row').nth(1).click()
+}
+
 test.describe('Read-Only Admin: Authentication', () => {
   test('Login returns only view:teams and view:users permissions', async ({
     page,
@@ -53,15 +59,9 @@ test.describe('Read-Only Admin: Users', () => {
     await page.getByRole('row').nth(1).click()
 
     // Profile tab: fields must be read-only, Save button hidden
-    await expect(page.getByLabel(t.firstName.label)).toHaveAttribute(
-      'readonly',
-      ''
-    )
-
-    await expect(page.getByLabel(t.lastName.label)).toHaveAttribute(
-      'readonly',
-      ''
-    )
+    for (const label of [t.firstName.label, t.lastName.label]) {
+      await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
+    }
 
     await expect(page.getByLabel(t.status.name)).toHaveAttribute(
       'aria-readonly',
@@ -77,9 +77,7 @@ test.describe('Read-Only Admin: Users', () => {
   }) => {
     // Navigate via the team members list to get a user with a membership
     await page.goto('/admin/teams')
-    await page.getByRole('searchbox', { name: 'Search' }).fill('Wisozk - Sipes')
-    await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
-    await page.getByRole('row').nth(1).click()
+    await searchAndOpen(page, 'Wisozk - Sipes')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
@@ -127,20 +125,13 @@ test.describe('Read-Only Admin: Teams', () => {
     await page.getByRole('row').nth(1).click()
 
     // General tab: fields must be read-only, Save button hidden
-    await expect(page.getByLabel(t.team.name.label)).toHaveAttribute(
-      'readonly',
-      ''
-    )
-
-    await expect(page.getByLabel(t.team.website.label)).toHaveAttribute(
-      'readonly',
-      ''
-    )
-
-    await expect(page.getByLabel(t.team.description.label)).toHaveAttribute(
-      'readonly',
-      ''
-    )
+    for (const label of [
+      t.team.name.label,
+      t.team.website.label,
+      t.team.description.label
+    ]) {
+      await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
+    }
 
     await expect(page.getByRole('button', { name: t.save })).not.toBeVisible()
 
@@ -156,30 +147,24 @@ test.describe('Read-Only Admin: Teams', () => {
     t
   }) => {
     await page.goto('/admin/teams')
-
-    await page.getByRole('searchbox', { name: 'Search' }).fill('Wisozk - Sipes')
-    await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
-    await page.getByRole('row').nth(1).click()
+    await searchAndOpen(page, 'Wisozk - Sipes')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
 
     await expect(memberRow).toBeVisible()
-
     // Right-click first member row to open context menu
     await memberRow.click({ button: 'right' })
 
-    await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.open })
-    ).toBeVisible()
+    // Check visible menu items
+    for (const name of [t.contextMenu.open]) {
+      await expect(page.getByRole('menuitem', { name })).toBeVisible()
+    }
 
-    await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.invite })
-    ).not.toBeVisible()
-
-    await expect(
-      page.getByRole('menuitem', { name: t.contextMenu.remove })
-    ).not.toBeVisible()
+    // Check hidden menu items
+    for (const name of [t.contextMenu.invite, t.contextMenu.remove]) {
+      await expect(page.getByRole('menuitem', { name })).not.toBeVisible()
+    }
 
     // Close context menu
     await page.keyboard.press('Escape')

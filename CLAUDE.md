@@ -31,6 +31,10 @@
 
 - When upgrading React, update the `version` field in
   `packages/eslint/src/react.js` → `settings.react.version`.
+- Keep comments general — describe intent, not current values or enumerated
+  items. Specific comments become stale when lists change and nobody remembers
+  to update them. Prefer `// Check hidden menu items` over
+  `// Invite and Remove actions must be hidden`.
 
 ## Skills
 
