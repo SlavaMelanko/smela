@@ -2,7 +2,8 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@ui/*": ["../../packages/ui/src/*"]
+      "@smela/ui/*": ["../../packages/ui/src/*"],
+      "@smela/i18n": ["../../packages/i18n/src/index.js"]
     }
   },
   "include": ["src"]
