@@ -65,7 +65,7 @@ Routes are defined in `/src/routes/router.jsx` with layout-based organization:
 | `PublicLayout` | None           | `/` (redirect), `/pricing`                   |
 | `AuthLayout`   | `PublicRoute`  | `/login`, `/signup`, `/reset-password`, etc. |
 | `LegalLayout`  | None           | `/terms`, `/privacy`                         |
-| `UserLayout`   | `PrivateRoute` | `/home` (user), `/admin/*` (admin)           |
+| `UserLayout`   | `PrivateRoute` | `/home`, `/team/*`, `/profile`, `/settings`  |
 | `ErrorLayout`  | None           | `/errors/*`, `*` (404)                       |
 
 Route guards:

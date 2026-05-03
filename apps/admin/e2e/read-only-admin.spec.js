@@ -55,7 +55,7 @@ test.describe('Read-Only Admin: Users', () => {
     page,
     t
   }) => {
-    await page.goto('/admin/users')
+    await page.goto('/users')
     await page.getByRole('row').nth(1).click()
 
     // Profile tab: fields must be read-only, Save button hidden
@@ -76,7 +76,7 @@ test.describe('Read-Only Admin: Users', () => {
     t
   }) => {
     // Navigate via the team members list to get a user with a membership
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     await searchAndOpen(page, 'Wisozk - Sipes')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
@@ -111,7 +111,7 @@ test.describe('Read-Only Admin: Teams', () => {
   })
 
   test('Add team button is not visible', async ({ page, t }) => {
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
 
     await expect(page.getByRole('button', { name: t.add })).not.toBeVisible()
   })
@@ -120,7 +120,7 @@ test.describe('Read-Only Admin: Teams', () => {
     page,
     t
   }) => {
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     // Open first team row
     await page.getByRole('row').nth(1).click()
 
@@ -146,7 +146,7 @@ test.describe('Read-Only Admin: Teams', () => {
     page,
     t
   }) => {
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     await searchAndOpen(page, 'Wisozk - Sipes')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 

@@ -1,17 +1,8 @@
 import { useLogout } from '@ui/hooks/useAuth'
 import { useNavigate } from '@ui/hooks/useRouter'
-import { isAdmin } from '@ui/lib/types'
 import { LogOut, MessageCircleQuestion, User } from 'lucide-react'
 
 import { ProfileDropdown } from './ProfileDropdown'
-
-const getProfilePath = role => {
-  if (isAdmin(role)) {
-    return '/admin/profile'
-  }
-
-  return '/profile'
-}
 
 export const UserProfileDropdown = ({ user }) => {
   const navigate = useNavigate()
@@ -30,7 +21,7 @@ export const UserProfileDropdown = ({ user }) => {
       label: 'profile.title',
       icon: <User className='size-4' />,
       onClick: () => {
-        navigate(getProfilePath(user?.role))
+        navigate('/profile')
       }
     },
     {

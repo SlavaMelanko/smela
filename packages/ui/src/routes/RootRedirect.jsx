@@ -41,7 +41,7 @@ export const RootRedirect = () => {
     isAdmin(role) &&
     adminActiveStatuses.includes(status)
   ) {
-    return <Navigate to='/admin/dashboard' replace />
+    return <Navigate to='/dashboard' replace />
   }
 
   return <Navigate to='/login' replace />

@@ -17,11 +17,11 @@ test.describe('Owner: Sidebar Navigation', () => {
     await login(ownerCredentials)
 
     const items = [
-      { label: t.sidebar.dashboard, url: '/admin/dashboard' },
-      { label: t.sidebar.users, url: '/admin/users' },
-      { label: t.sidebar.teams, url: '/admin/teams' },
+      { label: t.sidebar.dashboard, url: '/dashboard' },
+      { label: t.sidebar.users, url: '/users' },
+      { label: t.sidebar.teams, url: '/teams' },
       { label: t.sidebar.admins, url: '/owner/admins' },
-      { label: t.sidebar.settings, url: '/admin/settings' }
+      { label: t.sidebar.settings, url: '/settings' }
     ]
 
     for (const { label, url } of items) {
@@ -41,10 +41,10 @@ test.describe('Admin: Sidebar Navigation', () => {
     await login(adminCredentials)
 
     const items = [
-      { label: t.sidebar.dashboard, url: '/admin/dashboard' },
-      { label: t.sidebar.users, url: '/admin/users' },
-      { label: t.sidebar.teams, url: '/admin/teams' },
-      { label: t.sidebar.settings, url: '/admin/settings' }
+      { label: t.sidebar.dashboard, url: '/dashboard' },
+      { label: t.sidebar.users, url: '/users' },
+      { label: t.sidebar.teams, url: '/teams' },
+      { label: t.sidebar.settings, url: '/settings' }
     ]
 
     for (const { label, url } of items) {

@@ -13,7 +13,7 @@ export const MembershipTab = ({ user, team, readOnly = false }) => {
     <MembershipSection
       member={member}
       team={team}
-      teamLink={`/admin/teams/${team.id}`}
+      teamLink={`/teams/${team.id}`}
       update={update}
       isUpdating={isUpdating}
       readOnly={readOnly}

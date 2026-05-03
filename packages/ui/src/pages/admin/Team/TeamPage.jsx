@@ -63,7 +63,7 @@ export const TeamPage = () => {
             teamId={teamId}
             readOnly={readOnly}
             onRowClick={member =>
-              navigate(`/admin/users/${member.id}`, { state: { user: member } })
+              navigate(`/users/${member.id}`, { state: { user: member } })
             }
           />
         </TabsContent>

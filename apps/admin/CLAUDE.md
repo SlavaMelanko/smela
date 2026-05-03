@@ -59,12 +59,12 @@ The app uses React Context API for global state:
 
 Routes are defined in `/src/routes/router.jsx` with admin-focused organization:
 
-| Layout        | Guard          | Routes                                       |
-| ------------- | -------------- | -------------------------------------------- |
-| Root          | None           | `/` (redirect to login or admin)             |
-| `AuthLayout`  | `PublicRoute`  | `/login`, `/signup`, `/reset-password`, etc. |
-| `UserLayout`  | `PrivateRoute` | `/admin/*` (admin), `/owner/*` (owner)       |
-| `ErrorLayout` | None           | `/errors/*`, `*` (404)                       |
+| Layout        | Guard          | Routes                                                                 |
+| ------------- | -------------- | ---------------------------------------------------------------------- |
+| Root          | None           | `/` (redirect to login or admin)                                       |
+| `AuthLayout`  | `PublicRoute`  | `/login`, `/signup`, `/reset-password`, etc.                           |
+| `UserLayout`  | `PrivateRoute` | `/dashboard`, `/users/*`, `/teams/*`, etc. (admin), `/owner/*` (owner) |
+| `ErrorLayout` | None           | `/errors/*`, `*` (404)                                                 |
 
 Route guards:
 

@@ -43,23 +43,23 @@ export const getAdminMenuItems = ({
 } = {}) => [
   {
     title: 'sidebar.dashboard',
-    url: '/admin/dashboard',
+    url: '/dashboard',
     icon: LayoutDashboard
   },
   {
     title: 'sidebar.users',
-    url: '/admin/users',
+    url: '/users',
     icon: User
   },
   ...(canViewTeams
-    ? [{ title: 'sidebar.teams', url: '/admin/teams', icon: Users }]
+    ? [{ title: 'sidebar.teams', url: '/teams', icon: Users }]
     : []),
   ...(canViewAdmins
     ? [{ title: 'sidebar.admins', url: '/owner/admins', icon: ShieldCheck }]
     : []),
   {
     title: 'sidebar.settings',
-    url: '/admin/settings',
+    url: '/settings',
     icon: Settings
   }
 ]

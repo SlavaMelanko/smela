@@ -542,7 +542,7 @@ test.describe('Authentication: General', () => {
 
     await page.waitForURL('/home')
 
-    const unauthorizedPaths = ['/unknown', '/admin/users', '/owner/admins']
+    const unauthorizedPaths = ['/unknown', '/owner/admins']
 
     for (const path of unauthorizedPaths) {
       await page.goto(path)

@@ -16,6 +16,7 @@ import {
   VerifyEmailPage
 } from '@smela/ui/pages/auth'
 import {
+  ForbiddenErrorPage,
   GeneralErrorPage,
   NetworkErrorPage,
   NotFoundErrorPage
@@ -101,6 +102,7 @@ export const router = createBrowserRouter([
     path: 'errors',
     element: <ErrorLayout />,
     children: [
+      { path: 'forbidden', element: <ForbiddenErrorPage /> },
       { path: 'general', element: <GeneralErrorPage /> },
       { path: 'network', element: <NetworkErrorPage /> }
     ]
