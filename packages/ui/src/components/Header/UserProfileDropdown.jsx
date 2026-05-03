@@ -7,7 +7,7 @@ import { ProfileDropdown } from './ProfileDropdown'
 
 const getProfilePath = role => {
   if (isAdmin(role)) {
-    return '/admin/profile'
+    return '/profile'
   }
 
   return '/profile'

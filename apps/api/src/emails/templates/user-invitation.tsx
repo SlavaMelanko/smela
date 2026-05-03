@@ -58,7 +58,7 @@ const UserInvitationEmail = ({
 UserInvitationEmail.PreviewProps = {
   data: {
     firstName: 'Jason',
-    inviteUrl: `http://localhost:5173/auth/accept-invite?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
+    inviteUrl: `http://localhost:5173/accept-invite?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
     inviterName: 'Alice',
     teamName: 'Acme Inc'
   },

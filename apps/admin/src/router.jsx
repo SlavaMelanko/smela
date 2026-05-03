@@ -14,6 +14,7 @@ import {
   ResetPasswordPage
 } from '@smela/ui/pages/auth'
 import {
+  ForbiddenErrorPage,
   GeneralErrorPage,
   NetworkErrorPage,
   NotFoundErrorPage
@@ -30,8 +31,8 @@ import { createBrowserRouter, Outlet } from 'react-router-dom'
 
 export const router = createBrowserRouter([
   {
-    element: <RootRedirect />,
-    path: '/'
+    errorElement: <ErrorBoundary />,
+    children: [{ path: '/', element: <RootRedirect /> }]
   },
   {
     element: (
@@ -54,7 +55,7 @@ export const router = createBrowserRouter([
     ]
   },
   {
-    path: '/admin',
+    path: '/',
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
@@ -112,6 +113,7 @@ export const router = createBrowserRouter([
     path: 'errors',
     element: <ErrorLayout />,
     children: [
+      { path: 'forbidden', element: <ForbiddenErrorPage /> },
       { path: 'general', element: <GeneralErrorPage /> },
       { path: 'network', element: <NetworkErrorPage /> }
     ]

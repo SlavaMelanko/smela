@@ -56,7 +56,7 @@ describe('useHashTab', () => {
   })
 
   it('preserves pathname when setting new hash', () => {
-    mockLocation = { pathname: '/admin/users', search: '', hash: '#tab1' }
+    mockLocation = { pathname: '/users', search: '', hash: '#tab1' }
     const { result } = renderHook(() => useHashTab(validValues, defaultValue))
 
     act(() => {
@@ -64,7 +64,7 @@ describe('useHashTab', () => {
     })
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      { pathname: '/admin/users', search: '', hash: '#tab2' },
+      { pathname: '/users', search: '', hash: '#tab2' },
       { replace: true }
     )
   })
@@ -85,7 +85,7 @@ describe('useHashTab', () => {
 
   it('preserves both pathname and search when setting new hash', () => {
     mockLocation = {
-      pathname: '/admin/teams',
+      pathname: '/teams',
       search: '?filter=active',
       hash: '#tab1'
     }
@@ -97,7 +97,7 @@ describe('useHashTab', () => {
     })
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      { pathname: '/admin/teams', search: '?filter=active', hash: '#tab3' },
+      { pathname: '/teams', search: '?filter=active', hash: '#tab3' },
       { replace: true }
     )
   })

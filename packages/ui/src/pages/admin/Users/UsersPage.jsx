@@ -45,7 +45,7 @@ export const UsersPage = () => {
   const toggleFilters = () => setShowFilters(prev => !prev)
 
   const openUserProfile = user =>
-    navigate(`/admin/users/${user.id}`, { state: { user } })
+    navigate(`/users/${user.id}`, { state: { user } })
 
   const contextMenu = [createOpenItem(t, openUserProfile)]
 

@@ -194,7 +194,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     // Verify success toast
     await expect(page.getByText(t.invite.accept.success)).toBeVisible()
 
-    await page.waitForURL('/admin/dashboard')
+    await page.waitForURL('/dashboard')
 
     await logOut(page, t)
   })
@@ -206,7 +206,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
   }) => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
 
     // Manage permission: Add button must be visible
     await expect(page.getByRole('button', { name: t.add })).toBeVisible()
@@ -228,7 +228,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
   }) => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
-    await page.goto('/admin/users')
+    await page.goto('/users')
 
     // Open the first user row
     await page.getByRole('row').nth(1).click()

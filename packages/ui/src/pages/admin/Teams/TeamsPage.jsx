@@ -49,8 +49,7 @@ export const TeamsPage = () => {
   )
   const [sorting, setSorting] = useState([])
 
-  const viewTeam = team =>
-    navigate(`/admin/teams/${team.id}`, { state: { team } })
+  const viewTeam = team => navigate(`/teams/${team.id}`, { state: { team } })
 
   const contextMenu = [createOpenItem(t, viewTeam, Users)]
 
