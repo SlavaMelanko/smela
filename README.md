@@ -9,7 +9,3 @@ Starter kit for full-stack web apps
 
 - \* Quality Gate applies to the entire monorepo
 - \*\* Code Coverage applies to [api](apps/api)
-
-## Prerequisites
-
-![Stack](https://go-skill-icons.vercel.app/api/icons?i=git,bun,tmux,docker&theme=dark&titles=true)
