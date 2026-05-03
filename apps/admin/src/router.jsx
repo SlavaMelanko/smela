@@ -66,8 +66,17 @@ export const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'users', element: <UsersPage /> },
-      { path: 'users/:id', element: <UserPage /> },
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:users']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'users', element: <UsersPage /> },
+          { path: 'users/:id', element: <UserPage /> }
+        ]
+      },
       {
         element: (
           <PrivateRoute requirePermissions={['view:teams']}>

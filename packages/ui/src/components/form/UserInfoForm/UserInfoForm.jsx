@@ -30,7 +30,8 @@ export const UserInfoForm = ({
   user,
   isSubmitting,
   onSubmit,
-  formFields = {}
+  formFields = {},
+  readOnly = false
 }) => {
   const fields = { ...defaultFields, ...formFields }
   const { t, formatDate } = useLocale()
@@ -64,7 +65,7 @@ export const UserInfoForm = ({
             name={FieldName.FIRST_NAME}
             error={errors[FieldName.FIRST_NAME]}
           >
-            <Input {...register(FieldName.FIRST_NAME)} />
+            <Input {...register(FieldName.FIRST_NAME)} readOnly={readOnly} />
           </FormField>
 
           <FormField
@@ -73,7 +74,7 @@ export const UserInfoForm = ({
             error={errors[FieldName.LAST_NAME]}
             optional
           >
-            <Input {...register(FieldName.LAST_NAME)} />
+            <Input {...register(FieldName.LAST_NAME)} readOnly={readOnly} />
           </FormField>
         </FormRow>
 
@@ -83,8 +84,13 @@ export const UserInfoForm = ({
               name={FieldName.STATUS}
               label={t('status.name')}
               control={control}
-              render={({ field }) => (
-                <StatusDropdown value={field.value} onChange={field.onChange} />
+              render={({ field, id }) => (
+                <StatusDropdown
+                  id={id}
+                  value={field.value}
+                  onChange={field.onChange}
+                  readOnly={readOnly}
+                />
               )}
             />
           </FormRow>
@@ -99,9 +105,11 @@ export const UserInfoForm = ({
           </FormField>
         </FormRow>
 
-        <FormActions isDirty={isDirty}>
-          <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
-        </FormActions>
+        {!readOnly && (
+          <FormActions isDirty={isDirty}>
+            <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
+          </FormActions>
+        )}
       </FormFields>
     </FormRoot>
   )

@@ -12,7 +12,8 @@ export const MembershipSection = ({
   team,
   teamLink,
   update,
-  isUpdating
+  isUpdating,
+  readOnly = false
 }) => {
   const { t, te } = useLocale()
   const { user: me } = useCurrentUser()
@@ -37,8 +38,9 @@ export const MembershipSection = ({
         teamLink={teamLink}
         isSubmitting={isUpdating}
         onSubmit={handleUpdate}
+        readOnly={readOnly}
       />
-      {me?.id !== member?.id && (
+      {!readOnly && me?.id !== member?.id && (
         <>
           <TextSeparator />
           <RemoveMemberItem member={member} teamId={team?.id} />

@@ -2,7 +2,13 @@ import { UserInfoForm } from '@ui/components/form'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useToast } from '@ui/hooks/useToast'
 
-export const ProfileSection = ({ user, update, isUpdating, formFields }) => {
+export const ProfileSection = ({
+  user,
+  update,
+  isUpdating,
+  formFields,
+  readOnly = false
+}) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
 
@@ -23,6 +29,7 @@ export const ProfileSection = ({ user, update, isUpdating, formFields }) => {
       isSubmitting={isUpdating}
       onSubmit={handleUpdate}
       formFields={formFields}
+      readOnly={readOnly}
     />
   )
 }
