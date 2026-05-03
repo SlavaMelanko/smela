@@ -1,5 +1,5 @@
 import { useLocale } from '@ui/hooks/useLocale'
-import { useLocation, useNavigate } from '@ui/hooks/useRouter'
+import { useLocation } from '@ui/hooks/useRouter'
 import { captureMessage } from '@ui/services/errorTracker'
 import { SearchX } from 'lucide-react'
 import { useEffect } from 'react'
@@ -15,7 +15,6 @@ import {
 
 export const NotFoundErrorPage = () => {
   const { t } = useLocale()
-  const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export const NotFoundErrorPage = () => {
         <ErrorTitle>{t('error.notFound.title')}</ErrorTitle>
         <ErrorDescription>{t('error.notFound.message')}</ErrorDescription>
       </ErrorContent>
-      <ErrorButton onClick={() => navigate('/')}>
+      <ErrorButton onClick={() => (window.location.href = '/')}>
         {t('error.notFound.cta')}
       </ErrorButton>
     </ErrorRoot>

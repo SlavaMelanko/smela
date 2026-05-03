@@ -8,10 +8,6 @@ const en = resources.en.translation
 import { ForbiddenErrorPage } from '../index'
 
 describe('ForbiddenErrorPage', () => {
-  beforeEach(() => {
-    globalThis.mockNavigate.mockClear()
-  })
-
   it('renders title, message, and button', () => {
     renderWithProviders(<ForbiddenErrorPage />)
 
@@ -28,7 +24,7 @@ describe('ForbiddenErrorPage', () => {
     ).toBeVisible()
   })
 
-  it('navigates to home when button is clicked', async () => {
+  it('hard reloads to home when button is clicked', async () => {
     const user = userEvent.setup()
 
     renderWithProviders(<ForbiddenErrorPage />)
@@ -37,7 +33,6 @@ describe('ForbiddenErrorPage', () => {
       screen.getByRole('button', { name: en.error.forbidden.cta })
     )
 
-    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/')
-    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(window.location.href).toBe('http://localhost:3000/')
   })
 })

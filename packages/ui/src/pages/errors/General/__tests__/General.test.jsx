@@ -7,10 +7,6 @@ const en = resources.en.translation
 import { GeneralErrorPage } from '../index'
 
 describe('GeneralErrorPage', () => {
-  beforeEach(() => {
-    globalThis.mockNavigate.mockClear()
-  })
-
   it('renders error icon, title, message, and button', () => {
     renderWithProviders(<GeneralErrorPage />)
 
@@ -27,14 +23,13 @@ describe('GeneralErrorPage', () => {
     ).toBeVisible()
   })
 
-  it('navigates to home when button is clicked', async () => {
+  it('hard reloads to home when button is clicked', async () => {
     const user = userEvent.setup()
 
     renderWithProviders(<GeneralErrorPage />)
 
     await user.click(screen.getByRole('button', { name: en.error.general.cta }))
 
-    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/')
-    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(window.location.href).toBe('http://localhost:3000/')
   })
 })
