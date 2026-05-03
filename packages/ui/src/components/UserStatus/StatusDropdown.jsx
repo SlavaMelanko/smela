@@ -25,6 +25,7 @@ export const StatusDropdown = ({
         <Button
           id={id}
           variant='outline'
+          aria-readonly={readOnly || undefined}
           className={cn(
             'min-w-36 justify-between',
             readOnly && 'cursor-text select-text',

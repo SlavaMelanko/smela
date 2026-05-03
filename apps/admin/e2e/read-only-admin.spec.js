@@ -57,6 +57,11 @@ test.describe('Read-Only Admin: Users', () => {
       ''
     )
 
+    await expect(page.getByLabel(t.status.name)).toHaveAttribute(
+      'aria-readonly',
+      'true'
+    )
+
     await expect(page.getByRole('button', { name: t.save })).not.toBeVisible()
 
     await logOut(page, t)
