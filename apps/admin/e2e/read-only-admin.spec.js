@@ -1,11 +1,7 @@
 import { logOut } from '@smela/e2e/actions'
 import { waitForApiCall } from '@smela/e2e/api'
 import { HttpStatus } from '@smela/ui/lib/net'
-import {
-  ADMIN_TEAMS_PATH,
-  ME_PATH,
-  TEAMS_PATH
-} from '@smela/ui/services/backend/paths'
+import { ME_PATH } from '@smela/ui/services/backend/paths'
 
 import { expect, test } from './config/fixtures'
 
@@ -40,17 +36,73 @@ test.describe('Read-Only Admin: Authentication', () => {
   })
 })
 
+test.describe('Read-Only Admin: Users', () => {
+  test('User profile form fields are read-only and Save button is hidden', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(supportCredentials)
+
+    await page.goto('/admin/users')
+    await page.getByRole('row').nth(1).click()
+
+    await expect(page.getByLabel(t.firstName.label)).toHaveAttribute(
+      'readonly',
+      ''
+    )
+
+    await expect(page.getByLabel(t.lastName.label)).toHaveAttribute(
+      'readonly',
+      ''
+    )
+
+    await expect(page.getByRole('button', { name: t.save })).not.toBeVisible()
+
+    await logOut(page, t)
+  })
+
+  test('User membership form fields are read-only and Remove button is hidden', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(supportCredentials)
+
+    // Navigate via the team members list to get a user with a membership
+    await page.goto('/admin/teams')
+    await page.getByRole('searchbox', { name: 'Search' }).fill('Wisozk - Sipes')
+    await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
+    await page.getByRole('row').nth(1).click()
+    await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
+
+    const memberRow = page.getByRole('row').nth(1)
+
+    await expect(memberRow).toBeVisible()
+    await memberRow.click()
+
+    await page.getByRole('tab', { name: t.membership }).click()
+
+    await expect(page.getByLabel(t.position.label)).toHaveAttribute(
+      'readonly',
+      ''
+    )
+
+    await expect(page.getByRole('button', { name: t.save })).not.toBeVisible()
+
+    await expect(
+      page.getByRole('button', { name: t.team.members.remove.cta })
+    ).not.toBeVisible()
+
+    await logOut(page, t)
+  })
+})
+
 test.describe('Read-Only Admin: Teams', () => {
   test('Add team button is not visible', async ({ page, t, login }) => {
     await login(supportCredentials)
 
-    const apiPromise = waitForApiCall(page, {
-      path: ADMIN_TEAMS_PATH,
-      status: HttpStatus.OK
-    })
-
     await page.goto('/admin/teams')
-    await apiPromise
 
     await expect(page.getByRole('button', { name: t.add })).not.toBeVisible()
 
@@ -64,27 +116,10 @@ test.describe('Read-Only Admin: Teams', () => {
   }) => {
     await login(supportCredentials)
 
-    const pageLoadPromise = waitForApiCall(page, {
-      path: ADMIN_TEAMS_PATH,
-      status: HttpStatus.OK
-    })
-
     await page.goto('/admin/teams')
-    await pageLoadPromise
-
     // Open first team row
-    const firstRow = page.getByRole('row').nth(1)
+    await page.getByRole('row').nth(1).click()
 
-    const detailPromise = waitForApiCall(page, {
-      path: TEAMS_PATH.replace(':teamId', ''),
-      method: 'GET',
-      status: HttpStatus.OK
-    })
-
-    await firstRow.click()
-    await detailPromise
-
-    // General tab: fields must be read-only (not editable), Save button hidden
     await expect(page.getByLabel(t.team.name.label)).toHaveAttribute(
       'readonly',
       ''

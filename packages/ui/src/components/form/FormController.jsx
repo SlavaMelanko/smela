@@ -51,7 +51,7 @@ export const FormController = ({
           control={control}
           defaultValue={defaultValue}
           rules={rules}
-          render={({ field }) => render({ field, error })}
+          render={({ field }) => render({ field, error, id: name })}
         />
       </FormInputWrapper>
       {/* Always rendered for smooth enter/exit CSS transitions */}
