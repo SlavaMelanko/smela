@@ -1,5 +1,4 @@
 import { useLocale } from '@ui/hooks/useLocale'
-import { useNavigate } from '@ui/hooks/useRouter'
 import { ShieldX } from 'lucide-react'
 
 import {
@@ -13,7 +12,6 @@ import {
 
 export const ForbiddenErrorPage = () => {
   const { t } = useLocale()
-  const navigate = useNavigate()
 
   return (
     <ErrorRoot data-testid='forbidden-error-page'>
@@ -22,7 +20,7 @@ export const ForbiddenErrorPage = () => {
         <ErrorTitle>{t('error.forbidden.title')}</ErrorTitle>
         <ErrorDescription>{t('error.forbidden.message')}</ErrorDescription>
       </ErrorContent>
-      <ErrorButton onClick={() => navigate('/')}>
+      <ErrorButton onClick={() => (window.location.href = '/')}>
         {t('error.forbidden.cta')}
       </ErrorButton>
     </ErrorRoot>
