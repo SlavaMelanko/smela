@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
+    "format": "prettier --cache --check .",
+    "format:fix": "prettier --cache --write .",
     "lint": "eslint --cache src scripts",
     "lint:fix": "eslint --cache src scripts --fix",
     "lint:staged": "lint-staged",
