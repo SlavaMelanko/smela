@@ -34,7 +34,7 @@ const Toolbar = ({ children }) => (
 
 export const AdminsPage = () => {
   const { t, formatDate } = useLocale()
-  const { user: me } = useCurrentUser()
+  const { user: me, can } = useCurrentUser()
   const navigate = useNavigate()
 
   const { apiParams, setParams, searchValue, setSearchValue } = useTableState()
@@ -54,6 +54,8 @@ export const AdminsPage = () => {
     columns
   )
   const [sorting, setSorting] = useState([])
+
+  const readOnly = !can('manage:admins')
 
   const openAdminProfile = admin => navigate(`/admins/${admin.id}`)
 
@@ -111,7 +113,9 @@ export const AdminsPage = () => {
           config={config}
           createLabel={id => t(`table.users.${id}`)}
         />
-        <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        {!readOnly && (
+          <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        )}
       </Toolbar>
 
       <Table
