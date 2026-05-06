@@ -40,7 +40,7 @@ export const TeamsPage = () => {
     useTeams(apiParams)
   const { openCreateTeamDialog } = useManageTeams()
 
-  const readOnly = !can('manage:teams')
+  const canManageTeams = can('manage:teams')
 
   const columns = getColumns(t, formatDate)
   const [columnVisibility, setColumnVisibility] = useColumnVisibility(
@@ -97,7 +97,7 @@ export const TeamsPage = () => {
           config={config}
           createLabel={id => t(`table.teams.${id}`)}
         />
-        {!readOnly && (
+        {canManageTeams && (
           <AddButton label={t('add')} onClick={openCreateTeamDialog} />
         )}
       </Toolbar>

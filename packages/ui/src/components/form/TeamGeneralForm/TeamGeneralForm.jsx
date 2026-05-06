@@ -21,7 +21,7 @@ export const TeamGeneralForm = ({
   team,
   isSubmitting,
   onSubmit,
-  readOnly = false
+  canManageTeams = true
 }) => {
   const { t, formatDate } = useLocale()
 
@@ -50,7 +50,7 @@ export const TeamGeneralForm = ({
             name={FieldName.NAME}
             error={errors[FieldName.NAME]}
           >
-            <Input {...register(FieldName.NAME)} readOnly={readOnly} />
+            <Input {...register(FieldName.NAME)} readOnly={!canManageTeams} />
           </FormField>
 
           <FormField
@@ -62,7 +62,7 @@ export const TeamGeneralForm = ({
             <Input
               {...register(FieldName.WEBSITE)}
               placeholder='https://'
-              readOnly={readOnly}
+              readOnly={!canManageTeams}
             />
           </FormField>
         </FormRow>
@@ -73,7 +73,10 @@ export const TeamGeneralForm = ({
           error={errors[FieldName.DESCRIPTION]}
           optional
         >
-          <Textarea {...register(FieldName.DESCRIPTION)} readOnly={readOnly} />
+          <Textarea
+            {...register(FieldName.DESCRIPTION)}
+            readOnly={!canManageTeams}
+          />
         </FormField>
 
         <FormRow forceColumns>
@@ -85,7 +88,7 @@ export const TeamGeneralForm = ({
           </FormField>
         </FormRow>
 
-        {!readOnly && (
+        {canManageTeams && (
           <FormActions isDirty={isDirty}>
             <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
           </FormActions>

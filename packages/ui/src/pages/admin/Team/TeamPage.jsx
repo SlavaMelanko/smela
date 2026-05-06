@@ -27,7 +27,7 @@ export const TeamPage = () => {
     TeamTab.GENERAL
   )
 
-  const readOnly = !can('manage:teams')
+  const canManageTeams = can('manage:teams')
 
   const {
     data: team,
@@ -56,12 +56,12 @@ export const TeamPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getTeamTabs(team, t)} />
         <TabsContent value={TeamTab.GENERAL}>
-          <TeamGeneralSection team={team} readOnly={readOnly} />
+          <TeamGeneralSection team={team} canManageTeams={canManageTeams} />
         </TabsContent>
         <TabsContent value={TeamTab.MEMBERS}>
           <TeamMembersSection
             teamId={teamId}
-            readOnly={readOnly}
+            canManageTeams={canManageTeams}
             onRowClick={member =>
               navigate(`/users/${member.id}`, { state: { user: member } })
             }

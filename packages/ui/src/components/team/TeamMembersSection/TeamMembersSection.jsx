@@ -31,7 +31,7 @@ export const TeamMembersSection = ({
   teamId,
   onRowClick,
   queryOptions = {},
-  readOnly = false
+  canManageTeams = true
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()
@@ -55,7 +55,7 @@ export const TeamMembersSection = ({
 
   const contextMenu = [
     createOpenItem(t, openMemberProfile),
-    ...(readOnly
+    ...(canManageTeams
       ? [] // don't show invite and remove options in context menu
       : [
           createInviteItem(t, {
@@ -98,7 +98,7 @@ export const TeamMembersSection = ({
   if (!members.length) {
     return (
       <EmptyState text={t('team.members.empty')}>
-        {!readOnly && (
+        {canManageTeams && (
           <InviteButton
             label={t('invite.cta')}
             onClick={openInviteDialog}
@@ -116,7 +116,7 @@ export const TeamMembersSection = ({
           config={config}
           createLabel={id => t(`table.members.${id}`)}
         />
-        {!readOnly && (
+        {canManageTeams && (
           <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
         )}
       </TeamMembersToolbar>
