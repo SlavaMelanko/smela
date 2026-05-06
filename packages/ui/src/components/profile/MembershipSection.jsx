@@ -13,7 +13,7 @@ export const MembershipSection = ({
   teamLink,
   update,
   isUpdating,
-  readOnly = false
+  canManageTeams = true
 }) => {
   const { t, te } = useLocale()
   const { user: me } = useCurrentUser()
@@ -38,9 +38,9 @@ export const MembershipSection = ({
         teamLink={teamLink}
         isSubmitting={isUpdating}
         onSubmit={handleUpdate}
-        readOnly={readOnly}
+        canManageTeams={canManageTeams}
       />
-      {!readOnly && me?.id !== member?.id && (
+      {canManageTeams && me?.id !== member?.id && (
         <>
           <TextSeparator />
           <RemoveMemberItem member={member} teamId={team?.id} />
