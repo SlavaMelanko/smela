@@ -56,8 +56,7 @@ export const TeamMembersSection = ({
   const contextMenu = [
     createOpenItem(t, openMemberProfile),
     ...(canManageTeams
-      ? [] // don't show invite and remove options in context menu
-      : [
+      ? [
           createInviteItem(t, {
             handleResendInvite,
             isResending,
@@ -69,7 +68,8 @@ export const TeamMembersSection = ({
             isDeleting,
             meId: me?.id
           })
-        ])
+        ]
+      : [])
   ]
 
   const columns = getColumns(t, formatDate, me?.id)

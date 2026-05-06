@@ -55,7 +55,7 @@ export const AdminsPage = () => {
   )
   const [sorting, setSorting] = useState([])
 
-  const readOnly = !can('manage:admins')
+  const canManageAdmins = can('manage:admins')
 
   const openAdminProfile = admin => navigate(`/admins/${admin.id}`)
 
@@ -113,7 +113,7 @@ export const AdminsPage = () => {
           config={config}
           createLabel={id => t(`table.users.${id}`)}
         />
-        {!readOnly && (
+        {canManageAdmins && (
           <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
         )}
       </Toolbar>
