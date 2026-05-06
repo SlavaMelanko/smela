@@ -7,7 +7,7 @@ export const ProfileSection = ({
   update,
   isUpdating,
   formFields,
-  readOnly = false
+  canManageUsers = true
 }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
@@ -29,7 +29,7 @@ export const ProfileSection = ({
       isSubmitting={isUpdating}
       onSubmit={handleUpdate}
       formFields={formFields}
-      readOnly={readOnly}
+      canManageUsers={canManageUsers}
     />
   )
 }

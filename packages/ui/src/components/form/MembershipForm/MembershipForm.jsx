@@ -25,7 +25,7 @@ export const MembershipForm = ({
   teamLink,
   isSubmitting,
   onSubmit,
-  readOnly = false
+  canManageTeams = true
 }) => {
   const { t, formatDate } = useLocale()
 
@@ -61,7 +61,10 @@ export const MembershipForm = ({
             error={errors[FieldName.POSITION]}
             optional
           >
-            <Input {...register(FieldName.POSITION)} readOnly={readOnly} />
+            <Input
+              {...register(FieldName.POSITION)}
+              readOnly={!canManageTeams}
+            />
           </FormField>
         </FormRow>
 
@@ -77,7 +80,7 @@ export const MembershipForm = ({
           )}
         </FormRow>
 
-        {!readOnly && (
+        {canManageTeams && (
           <FormActions isDirty={isDirty}>
             <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
           </FormActions>

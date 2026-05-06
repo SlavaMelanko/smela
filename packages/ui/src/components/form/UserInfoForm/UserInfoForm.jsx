@@ -31,7 +31,7 @@ export const UserInfoForm = ({
   isSubmitting,
   onSubmit,
   formFields = {},
-  readOnly = false
+  canManageUsers = true
 }) => {
   const fields = { ...defaultFields, ...formFields }
   const { t, formatDate } = useLocale()
@@ -65,7 +65,10 @@ export const UserInfoForm = ({
             name={FieldName.FIRST_NAME}
             error={errors[FieldName.FIRST_NAME]}
           >
-            <Input {...register(FieldName.FIRST_NAME)} readOnly={readOnly} />
+            <Input
+              {...register(FieldName.FIRST_NAME)}
+              readOnly={!canManageUsers}
+            />
           </FormField>
 
           <FormField
@@ -74,7 +77,10 @@ export const UserInfoForm = ({
             error={errors[FieldName.LAST_NAME]}
             optional
           >
-            <Input {...register(FieldName.LAST_NAME)} readOnly={readOnly} />
+            <Input
+              {...register(FieldName.LAST_NAME)}
+              readOnly={!canManageUsers}
+            />
           </FormField>
         </FormRow>
 
@@ -89,7 +95,7 @@ export const UserInfoForm = ({
                   id={id}
                   value={field.value}
                   onChange={field.onChange}
-                  readOnly={readOnly}
+                  readOnly={!canManageUsers}
                 />
               )}
             />
@@ -105,7 +111,7 @@ export const UserInfoForm = ({
           </FormField>
         </FormRow>
 
-        {!readOnly && (
+        {canManageUsers && (
           <FormActions isDirty={isDirty}>
             <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
           </FormActions>

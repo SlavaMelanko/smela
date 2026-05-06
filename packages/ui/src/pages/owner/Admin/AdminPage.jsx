@@ -25,7 +25,7 @@ export const AdminPage = () => {
   const [activeTab, setActiveTab] = useHashTab(getAdminTabValues(), Tab.PROFILE)
   const { data: admin, isPending, isError, error, refetch } = useAdmin(id)
 
-  const readOnly = !can('manage:admins')
+  const canManageAdmins = can('manage:admins')
 
   if (isError) {
     return <ErrorState error={error} onRetry={refetch} />
@@ -44,10 +44,10 @@ export const AdminPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getAdminTabs(t)} />
         <TabsContent value={Tab.PROFILE}>
-          <ProfileTab admin={admin} readOnly={readOnly} />
+          <ProfileTab admin={admin} canManageAdmins={canManageAdmins} />
         </TabsContent>
         <TabsContent value={Tab.PERMISSIONS}>
-          <PermissionsTab adminId={id} readOnly={readOnly} />
+          <PermissionsTab adminId={id} canManageAdmins={canManageAdmins} />
         </TabsContent>
       </Tabs>
     </PageContent>
