@@ -94,7 +94,7 @@ export const router = createBrowserRouter([
     ]
   },
   {
-    path: '/owner',
+    path: '/',
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
@@ -105,8 +105,17 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'admins', element: <AdminsPage /> },
-      { path: 'admins/:id', element: <AdminPage /> }
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:admins']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'admins', element: <AdminsPage /> },
+          { path: 'admins/:id', element: <AdminPage /> }
+        ]
+      }
     ]
   },
   {
