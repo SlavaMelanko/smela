@@ -55,7 +55,7 @@ export const getAdminMenuItems = ({
     ? [{ title: 'sidebar.teams', url: '/teams', icon: Users }]
     : []),
   ...(canViewAdmins
-    ? [{ title: 'sidebar.admins', url: '/owner/admins', icon: ShieldCheck }]
+    ? [{ title: 'sidebar.admins', url: '/admins', icon: ShieldCheck }]
     : []),
   {
     title: 'sidebar.settings',

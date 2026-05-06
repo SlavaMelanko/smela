@@ -34,7 +34,7 @@ test.describe('Owner: Admins Page', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     const columnsButton = page.getByRole('button', {
@@ -88,7 +88,7 @@ test.describe('Owner: Admins Page', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     const searchInput = page.getByRole('searchbox', { name: 'Search' })
@@ -120,7 +120,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     // Click Invite button to open modal
@@ -252,7 +252,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     // Find the invited admin row and verify status is Active
@@ -329,7 +329,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
       })
     )
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
 
     await expect(
       page.getByText(t.backend['system/internal-error'])
@@ -353,7 +353,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
       })
     )
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
 
     // Verify table header is visible but no data rows exist
     await expect(

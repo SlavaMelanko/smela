@@ -55,7 +55,7 @@ export const AdminsPage = () => {
   )
   const [sorting, setSorting] = useState([])
 
-  const openAdminProfile = admin => navigate(`/owner/admins/${admin.id}`)
+  const openAdminProfile = admin => navigate(`/admins/${admin.id}`)
 
   const contextMenu = [
     createOpenItem(t, openAdminProfile),
