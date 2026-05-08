@@ -20,6 +20,7 @@
 
 import { faker } from '@faker-js/faker'
 
+import { hashPassword } from '@/security/password'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
@@ -31,11 +32,10 @@ const TEAM_MEMBER_RATIO = 0.33
 const MIN_TEAM_SIZE = 3
 const MAX_TEAM_SIZE = 10
 
-// Pre-computed bcrypt hash to avoid slow hashing
-const SEED_USER_PASSWORD_HASH = process.env['SEED_USER_PASSWORD_HASH']
+const SEED_USER_PASSWORD = process.env['SEED_USER_PASSWORD']
 
-if (!SEED_USER_PASSWORD_HASH) {
-  console.error('❌ SEED_USER_PASSWORD_HASH is not set')
+if (!SEED_USER_PASSWORD) {
+  console.error('❌ SEED_USER_PASSWORD is not set')
   process.exit(1)
 }
 
@@ -64,7 +64,10 @@ const generateUser = (index: number) => {
   }
 }
 
-const seedFakeUsers = async (count: number): Promise<string[]> => {
+const seedFakeUsers = async (
+  count: number,
+  passwordHash: string
+): Promise<string[]> => {
   console.log(`Seeding ${count} fake users (batch size ${BATCH_SIZE})...`)
 
   const startTime = performance.now()
@@ -87,7 +90,7 @@ const seedFakeUsers = async (count: number): Promise<string[]> => {
         userId: user.id,
         provider: AuthProvider.Local,
         identifier: users[j].email,
-        passwordHash: SEED_USER_PASSWORD_HASH
+        passwordHash
       }))
 
       await tx.insert(authTable).values(authRecords)
@@ -180,7 +183,9 @@ const main = async () => {
   // Seed faker for reproducible data
   faker.seed(12345)
 
-  const allInsertedIds = await seedFakeUsers(count)
+  const passwordHash = await hashPassword(SEED_USER_PASSWORD)
+
+  const allInsertedIds = await seedFakeUsers(count, passwordHash)
   await seedFakeTeams(allInsertedIds)
 }
 

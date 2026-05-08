@@ -16,7 +16,7 @@ import { expect, test } from './config/fixtures'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,
-  password: process.env.VITE_E2E_DEFAULT_PASSWORD
+  password: process.env.VITE_E2E_USER_PASSWORD
 }
 
 test.describe.serial('User: Team Members', () => {
@@ -31,7 +31,7 @@ test.describe.serial('User: Team Members', () => {
     firstName,
     lastName,
     email: generateEmailAddress({ prefix: firstName }),
-    password: process.env.VITE_E2E_DEFAULT_PASSWORD,
+    password: process.env.VITE_E2E_USER_PASSWORD,
     position: faker.person.jobTitle()
   }
 

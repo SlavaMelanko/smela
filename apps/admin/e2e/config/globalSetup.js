@@ -8,27 +8,6 @@ export const loadTestEnv = () => {
 
 const globalSetup = () => {
   loadTestEnv()
-
-  const requiredVars = [
-    'VITE_MAILISK_API_KEY',
-    'VITE_MAILISK_NAMESPACE',
-    'VITE_E2E_OWNER_EMAIL',
-    'VITE_E2E_OWNER_PASSWORD',
-    'VITE_E2E_ADMIN_EMAIL',
-    'VITE_E2E_ADMIN_PASSWORD',
-    'VITE_E2E_DEFAULT_PASSWORD',
-    'VITE_E2E_STRONG_PASSWORD'
-  ]
-
-  const missing = requiredVars.filter(v => !process.env[v])
-
-  if (missing.length > 0) {
-    const list = missing.map(v => `  - ${v}`).join('\n')
-
-    throw new Error(
-      `Missing required environment variables:\n${list}\n\nCheck your .env.test file.`
-    )
-  }
 }
 
 export default globalSetup
