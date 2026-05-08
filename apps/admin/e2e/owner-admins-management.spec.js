@@ -109,7 +109,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     firstName,
     lastName,
     email: generateEmailAddress({ prefix: firstName }),
-    password: process.env.VITE_E2E_DEFAULT_PASSWORD
+    password: process.env.VITE_E2E_ADMIN_PASSWORD
   }
 
   test('owner invites admin via modal form', async ({ page, t, login }) => {

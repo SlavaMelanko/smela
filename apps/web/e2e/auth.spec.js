@@ -37,7 +37,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     firstName,
     lastName,
     email: generateEmailAddress({ prefix: firstName }),
-    initialPassword: process.env.VITE_E2E_DEFAULT_PASSWORD,
+    initialPassword: process.env.VITE_E2E_USER_PASSWORD,
     newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
 
@@ -199,7 +199,7 @@ test.describe('Authentication: General', () => {
   // Pre-seeded user credentials from environment variables
   const seededUser = {
     email: process.env.VITE_E2E_USER_EMAIL,
-    password: process.env.VITE_E2E_DEFAULT_PASSWORD
+    password: process.env.VITE_E2E_USER_PASSWORD
   }
 
   test('signup: validates required fields', async ({ page, t }) => {
@@ -238,8 +238,8 @@ test.describe('Authentication: General', () => {
       {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
-        email: process.env.VITE_E2E_ADMIN_EMAIL,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        email: process.env.VITE_E2E_USER_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -299,7 +299,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -393,7 +393,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -463,7 +463,7 @@ test.describe('Authentication: General', () => {
       },
       {
         email: 'nonexistent@example.com',
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       }
     ]
 
