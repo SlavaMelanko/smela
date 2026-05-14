@@ -9,7 +9,7 @@ import {
   TeamNameConstraint
 } from './constants'
 
-const requiredStr = errorMessage => z.string().trim().min(1, errorMessage)
+const requiredStr = errorMessage => z.string().trim().nonempty(errorMessage)
 
 const optionalStr = () =>
   z
@@ -28,11 +28,7 @@ export const lastName = {
     .max(NameConstraint.MAX_LENGTH, 'lastName.error.max'),
 
   // Optional version - validates when provided but not required
-  optional: z
-    .string()
-    .trim()
-    .transform(value => (value === '' ? undefined : value))
-    .optional()
+  optional: optionalStr()
     .refine(
       value => value === undefined || value.length >= NameConstraint.MIN_LENGTH,
       'lastName.error.min'
@@ -59,15 +55,10 @@ export const password = {
 }
 
 export const url = errorMessage =>
-  z
-    .string()
-    .trim()
-    .transform(value => (value === '' ? undefined : value))
-    .optional()
-    .refine(
-      value => value === undefined || z.url().safeParse(value).success,
-      errorMessage
-    )
+  optionalStr().refine(
+    value => value === undefined || z.url().safeParse(value).success,
+    errorMessage
+  )
 
 export const teamName = errors =>
   requiredStr(errors.required)
@@ -81,11 +72,7 @@ export const description = errorMessage =>
     errorMessage
   )
 
-export const position = z
-  .string()
-  .trim()
-  .transform(value => (value === '' ? undefined : value))
-  .optional()
+export const position = optionalStr()
   .refine(
     value => value === undefined || value.length >= NameConstraint.MIN_LENGTH,
     'position.error.min'
@@ -95,10 +82,10 @@ export const position = z
     'position.error.max'
   )
 
-export const status = z
-  .string()
-  .min(1, 'status.error.required')
-  .refine(value => allUserStatuses.includes(value), 'status.error.invalid')
+export const status = requiredStr('status.error.required').refine(
+  value => allUserStatuses.includes(value),
+  'status.error.invalid'
+)
 
 export const permissions = z
   .record(z.string(), z.record(z.string(), z.boolean()))
