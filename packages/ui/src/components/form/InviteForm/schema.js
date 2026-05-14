@@ -1,5 +1,4 @@
 import { createResolver, rules } from '@ui/lib/validation'
-import { z } from 'zod'
 
 export const FieldName = {
   FIRST_NAME: 'firstName',
@@ -21,9 +20,7 @@ export const resolver = createResolver({
   [FieldName.LAST_NAME]: rules.lastName.optional,
   [FieldName.EMAIL]: rules.email.new,
   [FieldName.POSITION]: rules.position,
-  [FieldName.PERMISSIONS]: z
-    .record(z.string(), z.record(z.string(), z.boolean()))
-    .optional()
+  [FieldName.PERMISSIONS]: rules.permissions
 })
 
 export const defaultFields = Object.fromEntries(

@@ -99,3 +99,7 @@ export const status = z
   .string()
   .min(1, 'status.error.required')
   .refine(value => allUserStatuses.includes(value), 'status.error.invalid')
+
+export const permissions = z
+  .record(z.string(), z.record(z.string(), z.boolean()))
+  .optional()
