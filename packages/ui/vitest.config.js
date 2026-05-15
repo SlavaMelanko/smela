@@ -31,6 +31,8 @@ export default defineConfig({
         'src/devtools/**'
       ]
     },
+    // Zod v4 ESM init races with istanbul instrumentation — bundling it through
+    // Vite first produces a stable module that istanbul can safely instrument.
     server: {
       deps: {
         inline: ['zod']
