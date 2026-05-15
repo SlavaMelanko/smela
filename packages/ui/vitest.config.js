@@ -31,6 +31,11 @@ export default defineConfig({
         'src/devtools/**'
       ]
     },
+    server: {
+      deps: {
+        inline: ['zod']
+      }
+    },
     testTimeout: 10000,
     clearMocks: true,
     restoreMocks: true
