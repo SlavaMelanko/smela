@@ -23,7 +23,7 @@ import { useTableState } from '@ui/hooks/useTableState'
 import { useState } from 'react'
 
 import { getColumns } from './columns'
-import { useInvite } from './useInvite'
+import { useInvite } from './useAdminInvite'
 
 const coreRowModel = getCoreRowModel()
 const sortedRowModel = getSortedRowModel()
