@@ -15,8 +15,8 @@ const optionalStr = () =>
   z
     .string()
     .trim()
-    .transform(value => (value === '' ? undefined : value))
-    .optional()
+    .transform(v => v || undefined)
+    .pipe(z.string().optional())
 
 export const firstName = requiredStr('firstName.error.required')
   .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')
@@ -30,11 +30,11 @@ export const lastName = {
   // Optional version - validates when provided but not required
   optional: optionalStr()
     .refine(
-      value => value === undefined || value.length >= NameConstraint.MIN_LENGTH,
+      value => !value || value.length >= NameConstraint.MIN_LENGTH,
       'lastName.error.min'
     )
     .refine(
-      value => value === undefined || value.length <= NameConstraint.MAX_LENGTH,
+      value => !value || value.length <= NameConstraint.MAX_LENGTH,
       'lastName.error.max'
     )
 }
@@ -74,11 +74,11 @@ export const description = errorMessage =>
 
 export const position = optionalStr()
   .refine(
-    value => value === undefined || value.length >= NameConstraint.MIN_LENGTH,
+    value => !value || value.length >= NameConstraint.MIN_LENGTH,
     'position.error.min'
   )
   .refine(
-    value => value === undefined || value.length <= NameConstraint.MAX_LENGTH,
+    value => !value || value.length <= NameConstraint.MAX_LENGTH,
     'position.error.max'
   )
 
