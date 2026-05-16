@@ -21,7 +21,6 @@ import {
   NetworkErrorPage,
   NotFoundErrorPage
 } from '@smela/ui/pages/errors'
-import { PrivacyPage, TermsPage } from '@smela/ui/pages/legal'
 import { PricingPage } from '@smela/ui/pages/public'
 import {
   HomePage,
@@ -68,8 +67,20 @@ export const router = createBrowserRouter([
     element: <LegalLayout />,
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'privacy', element: <PrivacyPage /> }
+      {
+        path: 'terms',
+        lazy: () =>
+          import('@smela/ui/pages/legal').then(m => ({
+            Component: m.TermsPage
+          }))
+      },
+      {
+        path: 'privacy',
+        lazy: () =>
+          import('@smela/ui/pages/legal').then(m => ({
+            Component: m.PrivacyPage
+          }))
+      }
     ]
   },
   {
