@@ -7,14 +7,7 @@ import {
   UserLayout
 } from '@smela/ui/layouts'
 import { Role, userActiveStatuses } from '@smela/ui/lib/types'
-import {
-  AcceptInvitePage,
-  EmailConfirmationPage,
-  LoginPage,
-  ResetPasswordPage,
-  SignupPage,
-  VerifyEmailPage
-} from '@smela/ui/pages/auth'
+import { LoginPage } from '@smela/ui/pages/auth'
 import {
   ForbiddenErrorPage,
   GeneralErrorPage,
@@ -56,11 +49,41 @@ export const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { path: 'login', element: <LoginPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'accept-invite', element: <AcceptInvitePage /> },
-      { path: 'email-confirmation', element: <EmailConfirmationPage /> },
-      { path: 'verify-email', element: <VerifyEmailPage /> }
+      {
+        path: 'signup',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.SignupPage
+          }))
+      },
+      {
+        path: 'reset-password',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.ResetPasswordPage
+          }))
+      },
+      {
+        path: 'accept-invite',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.AcceptInvitePage
+          }))
+      },
+      {
+        path: 'email-confirmation',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.EmailConfirmationPage
+          }))
+      },
+      {
+        path: 'verify-email',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.VerifyEmailPage
+          }))
+      }
     ]
   },
   {

@@ -8,11 +8,7 @@ import {
   UserPage,
   UsersPage
 } from '@smela/ui/pages/admin'
-import {
-  AcceptInvitePage,
-  LoginPage,
-  ResetPasswordPage
-} from '@smela/ui/pages/auth'
+import { LoginPage } from '@smela/ui/pages/auth'
 import {
   ForbiddenErrorPage,
   GeneralErrorPage,
@@ -50,8 +46,20 @@ export const router = createBrowserRouter([
           />
         )
       },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'accept-invite', element: <AcceptInvitePage /> }
+      {
+        path: 'reset-password',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.ResetPasswordPage
+          }))
+      },
+      {
+        path: 'accept-invite',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.AcceptInvitePage
+          }))
+      }
     ]
   },
   {
