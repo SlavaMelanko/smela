@@ -19,7 +19,8 @@ export const resolver = createResolver({
   [FieldName.FIRST_NAME]: rules.firstName,
   [FieldName.LAST_NAME]: rules.lastName.optional,
   [FieldName.EMAIL]: rules.email.new,
-  [FieldName.POSITION]: rules.position
+  [FieldName.POSITION]: rules.position,
+  [FieldName.PERMISSIONS]: rules.permissions
 })
 
 export const defaultFields = Object.fromEntries(
