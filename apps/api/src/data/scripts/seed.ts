@@ -165,7 +165,8 @@ const seedSystemUsers = async () => {
       permissions: [
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
       ]
     },
     {
@@ -177,7 +178,8 @@ const seedSystemUsers = async () => {
       status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
       ]
     },
     {
@@ -189,7 +191,8 @@ const seedSystemUsers = async () => {
       status: UserStatus.Active,
       permissions: [
         { action: Action.View, resource: Resource.Users },
-        { action: Action.View, resource: Resource.Teams }
+        { action: Action.View, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Dashboard }
       ]
     }
   ]
@@ -245,7 +248,10 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Active,
       position: 'Developer',
-      permissions: [{ action: Action.Manage, resource: Resource.Teams }]
+      permissions: [
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
+      ]
     },
     {
       firstName: faker.person.firstName(),
@@ -254,7 +260,10 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Pending,
       position: 'Designer',
-      permissions: [{ action: Action.View, resource: Resource.Teams }]
+      permissions: [
+        { action: Action.View, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Dashboard }
+      ]
     }
   ]
 
