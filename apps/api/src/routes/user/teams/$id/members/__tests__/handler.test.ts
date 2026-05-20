@@ -25,7 +25,6 @@ describe('getMemberDefaultPermissionsHandler', () => {
     expect(mockJson).toHaveBeenCalledWith(
       {
         permissions: {
-          [Resource.Users]: { view: true },
           [Resource.Teams]: { view: true }
         }
       },

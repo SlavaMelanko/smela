@@ -245,10 +245,7 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Active,
       position: 'Developer',
-      permissions: [
-        { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
-      ]
+      permissions: [{ action: Action.Manage, resource: Resource.Teams }]
     },
     {
       firstName: faker.person.firstName(),
@@ -257,10 +254,7 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Pending,
       position: 'Designer',
-      permissions: [
-        { action: Action.View, resource: Resource.Users },
-        { action: Action.View, resource: Resource.Teams }
-      ]
+      permissions: [{ action: Action.View, resource: Resource.Teams }]
     }
   ]
 

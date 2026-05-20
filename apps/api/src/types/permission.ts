@@ -38,7 +38,6 @@ export const getAdminDefaultPermissions = (): AdminPermissionMap => ({
 })
 
 export const getMemberDefaultPermissions = () => ({
-  [Resource.Users]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
 })
 

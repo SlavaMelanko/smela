@@ -28,22 +28,15 @@ describe('getAdminDefaultPermissions', () => {
 })
 
 describe('getMemberDefaultPermissions', () => {
-  it('should grant view but not manage for users', () => {
-    const permissions = getMemberDefaultPermissions()
-
-    expect(permissions[Resource.Users]).toEqual({ view: true })
-  })
-
   it('should grant view but not manage for teams', () => {
     const permissions = getMemberDefaultPermissions()
 
     expect(permissions[Resource.Teams]).toEqual({ view: true })
   })
 
-  it('should cover all expected resources', () => {
+  it('should only include teams resource', () => {
     const permissions = getMemberDefaultPermissions()
 
-    expect(Object.keys(permissions)).toContain(Resource.Users)
-    expect(Object.keys(permissions)).toContain(Resource.Teams)
+    expect(Object.keys(permissions)).toEqual([Resource.Teams])
   })
 })
