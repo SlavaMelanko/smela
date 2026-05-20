@@ -131,7 +131,14 @@ export const router = createBrowserRouter([
           { path: 'members', element: <TeamMembersPage /> }
         ]
       },
-      { path: 'team/members/:id', element: <TeamMemberPage /> },
+      {
+        path: 'team/members/:id',
+        element: (
+          <PrivateRoute requirePermissions={['view:teams']}>
+            <TeamMemberPage />
+          </PrivateRoute>
+        )
+      },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'settings', element: <UserSettingsPage /> }
     ]
