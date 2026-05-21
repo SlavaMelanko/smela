@@ -237,6 +237,7 @@
     "resources": {
       "name": "Resources",
       "values": {
+        "dashboard": "Dashboard",
         "teams": "Teams",
         "users": "Users"
       }

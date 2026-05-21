@@ -54,8 +54,8 @@ describe('getMemberDefaultPermissions', () => {
     const permissions = getMemberDefaultPermissions()
 
     expect(Object.keys(permissions)).toEqual([
-      Resource.Teams,
-      Resource.Dashboard
+      Resource.Dashboard,
+      Resource.Teams
     ])
   })
 })

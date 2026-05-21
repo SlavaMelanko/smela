@@ -16,34 +16,34 @@ export type AdminPermissionMap = Omit<
 >
 
 enum Permission {
-  ViewUsers = 'view:users',
-  ViewAdmins = 'view:admins',
-  ViewTeams = 'view:teams',
   ViewDashboard = 'view:dashboard',
+  ViewUsers = 'view:users',
+  ViewTeams = 'view:teams',
+  ViewAdmins = 'view:admins',
+  ManageDashboard = 'manage:dashboard',
   ManageUsers = 'manage:users',
-  ManageAdmins = 'manage:admins',
   ManageTeams = 'manage:teams',
-  ManageDashboard = 'manage:dashboard'
+  ManageAdmins = 'manage:admins'
 }
 
 // All resources and actions an admin can have, all set to false.
 // Used as a baseline before merging stored permissions so frontend always gets a full map
 export const getAdminBasePermissions = (): AdminPermissionMap => ({
+  [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false },
   [Resource.Users]: { [Action.View]: false, [Action.Manage]: false },
-  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false },
-  [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false }
+  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false }
 })
 
 export const getAdminDefaultPermissions = (): AdminPermissionMap => ({
   ...getAdminBasePermissions(),
+  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
   [Resource.Users]: { [Action.View]: true, [Action.Manage]: true },
-  [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true },
-  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true }
+  [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
 export const getMemberDefaultPermissions = () => ({
-  [Resource.Teams]: { [Action.View]: true },
-  [Resource.Dashboard]: { [Action.View]: true }
+  [Resource.Dashboard]: { [Action.View]: true },
+  [Resource.Teams]: { [Action.View]: true }
 })
 
 export default Permission
