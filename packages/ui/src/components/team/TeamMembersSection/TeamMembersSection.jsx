@@ -15,7 +15,7 @@ import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
-import { useInvite } from './useTeamMembersInvite'
+import { useInvite } from './useMemberInvite'
 
 const coreRowModel = getCoreRowModel()
 
