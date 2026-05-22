@@ -17,7 +17,7 @@ const searchAndOpen = async (page, query) => {
 }
 
 test.describe('Read-Only Admin: Authentication', () => {
-  test('Login returns only view:teams and view:users permissions', async ({
+  test('Login returns only view:dashboard, view:teams and view:users permissions', async ({
     page,
     login
   }) => {
@@ -27,7 +27,7 @@ test.describe('Read-Only Admin: Authentication', () => {
       path: ME_PATH,
       status: HttpStatus.OK,
       validateResponse: body => {
-        const expected = ['view:teams', 'view:users']
+        const expected = ['view:dashboard', 'view:teams', 'view:users']
 
         return (
           Array.isArray(body.permissions) &&
