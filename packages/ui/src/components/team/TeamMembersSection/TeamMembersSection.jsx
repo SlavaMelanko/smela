@@ -48,7 +48,7 @@ export const TeamMembersSection = ({
     isResending,
     handleCancelInvite,
     isCancelling
-  } = useInvite(teamId)
+  } = useInvite(teamId, !members?.length)
   const { handleRemoveMember, isDeleting } = useRemoveTeamMember(teamId)
 
   const openMemberProfile = onRowClick

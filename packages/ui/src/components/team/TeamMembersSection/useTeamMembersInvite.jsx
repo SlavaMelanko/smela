@@ -8,7 +8,7 @@ import {
 } from '@ui/hooks/useTeam'
 import { useToast } from '@ui/hooks/useToast'
 
-export const useInvite = teamId => {
+export const useInvite = (teamId, isFirstMember = false) => {
   const { t, te } = useLocale()
   const { openModal } = useModal()
   const { showSuccessToast, showErrorToast } = useToast()
@@ -23,6 +23,7 @@ export const useInvite = teamId => {
       children: (
         <CreateMemberDialog
           teamId={teamId}
+          isFirstMember={isFirstMember}
           onClose={() => close()}
           onSubmit={data => {
             close()
