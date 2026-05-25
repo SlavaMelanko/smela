@@ -1,7 +1,7 @@
 import { ProfileSection } from '@ui/components/profile'
 import { useUpdateAdmin } from '@ui/hooks/useOwner'
 
-export const ProfileTab = ({ admin, canManageAdmins = true }) => {
+export const ProfileTab = ({ admin, canManageAdmins = false }) => {
   const { mutate, isPending } = useUpdateAdmin(admin.id)
 
   return (

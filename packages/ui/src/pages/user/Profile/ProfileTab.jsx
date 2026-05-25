@@ -10,6 +10,7 @@ export const ProfileTab = ({ user }) => {
       update={mutate}
       isUpdating={isPending}
       formFields={{ [FieldName.STATUS]: false }}
+      canManageUsers
     />
   )
 }

@@ -31,7 +31,7 @@ export const TeamMembersSection = ({
   teamId,
   onRowClick,
   queryOptions = {},
-  canManageTeams = true
+  canManageTeams = false
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()

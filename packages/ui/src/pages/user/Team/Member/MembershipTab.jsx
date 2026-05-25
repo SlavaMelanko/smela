@@ -3,12 +3,15 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useUpdateTeamMember } from '@ui/hooks/useTeam'
 
 export const MembershipTab = ({ team, member }) => {
-  const { user: me } = useCurrentUser()
+  const { user: me, can } = useCurrentUser()
   const { mutate, isPending: isUpdating } = useUpdateTeamMember(
     team?.id,
     member?.id,
     me?.id
   )
+
+  const canManageTeams = can('manage:teams')
+
   const update = (data, options) => mutate({ membership: data }, options)
 
   return (
@@ -18,6 +21,7 @@ export const MembershipTab = ({ team, member }) => {
       teamLink='/team/general'
       update={update}
       isUpdating={isUpdating}
+      canManageTeams={canManageTeams}
     />
   )
 }

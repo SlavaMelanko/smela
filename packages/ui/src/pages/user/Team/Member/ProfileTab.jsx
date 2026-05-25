@@ -3,12 +3,15 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useUpdateTeamMember } from '@ui/hooks/useTeam'
 
 export const ProfileTab = ({ team, member }) => {
-  const { user: me } = useCurrentUser()
+  const { user: me, can } = useCurrentUser()
   const { mutate, isPending: isUpdating } = useUpdateTeamMember(
     team?.id,
     member?.id,
     me?.id
   )
+
+  const canManageTeams = can('manage:teams')
+
   const update = (data, options) => mutate({ member: data }, options)
 
   return (
@@ -17,6 +20,7 @@ export const ProfileTab = ({ team, member }) => {
       update={update}
       isUpdating={isUpdating}
       formFields={{ [FieldName.STATUS]: false }}
+      canManageUsers={canManageTeams}
     />
   )
 }

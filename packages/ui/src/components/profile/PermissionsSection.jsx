@@ -14,7 +14,7 @@ export const PermissionsSection = ({
   permissions,
   update,
   isUpdating,
-  canManageAdmins = true
+  canManageAdmins = false
 }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()

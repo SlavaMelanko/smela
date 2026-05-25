@@ -31,7 +31,7 @@ export const UserInfoForm = ({
   isSubmitting,
   onSubmit,
   formFields = {},
-  canManageUsers = true
+  canManageUsers = false
 }) => {
   const fields = { ...defaultFields, ...formFields }
   const { t, formatDate } = useLocale()
