@@ -10,6 +10,7 @@ export const ProfileTab = ({ team, member }) => {
     me?.id
   )
 
+  const isOwnProfile = me?.id === member?.id
   const canManageTeams = can('manage:teams')
 
   const update = (data, options) => mutate({ member: data }, options)
@@ -20,7 +21,7 @@ export const ProfileTab = ({ team, member }) => {
       update={update}
       isUpdating={isUpdating}
       formFields={{ [FieldName.STATUS]: false }}
-      canManageUsers={canManageTeams}
+      canManageUsers={isOwnProfile || canManageTeams}
     />
   )
 }
