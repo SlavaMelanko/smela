@@ -21,7 +21,12 @@ const renderForm = ({
   onSubmit = vi.fn()
 } = {}) => {
   renderWithProviders(
-    <UserInfoForm user={user} isSubmitting={isSubmitting} onSubmit={onSubmit} />
+    <UserInfoForm
+      user={user}
+      isSubmitting={isSubmitting}
+      onSubmit={onSubmit}
+      canManageUsers
+    />
   )
 
   return {
@@ -135,7 +140,12 @@ describe('UserInfoForm', () => {
   describe('field visibility', () => {
     it('shows all fields by default', () => {
       renderWithProviders(
-        <UserInfoForm user={mockUser} isSubmitting={false} onSubmit={vi.fn()} />
+        <UserInfoForm
+          user={mockUser}
+          isSubmitting={false}
+          onSubmit={vi.fn()}
+          canManageUsers
+        />
       )
 
       expect(
@@ -156,6 +166,7 @@ describe('UserInfoForm', () => {
           isSubmitting={false}
           onSubmit={vi.fn()}
           formFields={{ [FieldName.STATUS]: false }}
+          canManageUsers
         />
       )
 
@@ -176,6 +187,7 @@ describe('UserInfoForm', () => {
           isSubmitting={false}
           onSubmit={onSubmit}
           formFields={{ [FieldName.STATUS]: false }}
+          canManageUsers
         />
       )
 
@@ -200,10 +212,33 @@ describe('UserInfoForm', () => {
     })
   })
 
+  it('renders read-only fields and no save button when canManageUsers is false', () => {
+    renderWithProviders(
+      <UserInfoForm user={mockUser} isSubmitting={false} onSubmit={vi.fn()} />
+    )
+
+    expect(
+      screen.getByLabelText(en.firstName.label, { exact: false })
+    ).toHaveAttribute('readonly')
+
+    expect(
+      screen.getByLabelText(en.lastName.label, { exact: false })
+    ).toHaveAttribute('readonly')
+
+    expect(
+      screen.queryByRole('button', { name: en.save })
+    ).not.toBeInTheDocument()
+  })
+
   it('disables save button when isSubmitting is true', () => {
     // With isSubmitting=true the button renders as "Processing..." and is disabled
     renderWithProviders(
-      <UserInfoForm user={mockUser} isSubmitting={true} onSubmit={vi.fn()} />
+      <UserInfoForm
+        user={mockUser}
+        isSubmitting={true}
+        onSubmit={vi.fn()}
+        canManageUsers
+      />
     )
 
     const submitButton = screen.getByRole('button', { name: en.processing })

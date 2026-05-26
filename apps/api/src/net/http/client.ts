@@ -19,8 +19,8 @@ export interface HttpClientOptions {
 }
 
 export class HttpClient {
-  private baseUrl: string
-  private defaultOptions: Required<HttpClientOptions>
+  private readonly baseUrl: string
+  private readonly defaultOptions: Required<HttpClientOptions>
 
   constructor(baseUrl: string, defaultOptions: HttpClientOptions = {}) {
     this.baseUrl = removeTrailingSlash(baseUrl)

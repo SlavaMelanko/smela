@@ -13,7 +13,7 @@ export const MembershipSection = ({
   teamLink,
   update,
   isUpdating,
-  canManageTeams = true
+  canManageTeams = false
 }) => {
   const { t, te } = useLocale()
   const { user: me } = useCurrentUser()

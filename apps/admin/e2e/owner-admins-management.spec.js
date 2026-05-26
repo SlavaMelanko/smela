@@ -174,8 +174,10 @@ test.describe.serial('Owner: Invite admin with full access', () => {
       status: HttpStatus.OK,
       validateResponse: body => {
         const expected = [
+          'manage:dashboard',
           'manage:users',
           'manage:teams',
+          'view:dashboard',
           'view:users',
           'view:teams'
         ]

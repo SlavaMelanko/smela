@@ -7,7 +7,7 @@ export const ProfileSection = ({
   update,
   isUpdating,
   formFields,
-  canManageUsers = true
+  canManageUsers = false
 }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()

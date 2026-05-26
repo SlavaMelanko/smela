@@ -32,7 +32,7 @@ export interface MockResult {
  */
 export class ModuleMocker {
   private mocks: MockResult[] = []
-  private callerPath: string
+  private readonly callerPath: string
 
   constructor(callerUrl: string) {
     // Convert import.meta.url to file path and get directory

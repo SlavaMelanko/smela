@@ -25,7 +25,7 @@ export const MembershipForm = ({
   teamLink,
   isSubmitting,
   onSubmit,
-  canManageTeams = true
+  canManageTeams = false
 }) => {
   const { t, formatDate } = useLocale()
 

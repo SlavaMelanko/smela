@@ -15,7 +15,7 @@ import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
-import { useInvite } from './useTeamMembersInvite'
+import { useInvite } from './useMemberInvite'
 
 const coreRowModel = getCoreRowModel()
 
@@ -31,7 +31,7 @@ export const TeamMembersSection = ({
   teamId,
   onRowClick,
   queryOptions = {},
-  canManageTeams = true
+  canManageTeams = false
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()
@@ -48,7 +48,7 @@ export const TeamMembersSection = ({
     isResending,
     handleCancelInvite,
     isCancelling
-  } = useInvite(teamId)
+  } = useInvite(teamId, !members?.length)
   const { handleRemoveMember, isDeleting } = useRemoveTeamMember(teamId)
 
   const openMemberProfile = onRowClick

@@ -243,6 +243,7 @@
     "resources": {
       "name": "Ресурси",
       "values": {
+        "dashboard": "Дашборд",
         "teams": "Команди",
         "users": "Користувачі"
       }

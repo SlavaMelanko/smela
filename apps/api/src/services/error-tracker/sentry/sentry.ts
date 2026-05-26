@@ -11,7 +11,7 @@ import type { ErrorTracker, SeverityLevel } from '../error-tracker'
  * Implements the ErrorTracker interface for Sentry's error tracking service.
  */
 export class SentryErrorTracker implements ErrorTracker {
-  private config: Config
+  private readonly config: Config
   private initialized = false
 
   constructor(config: Config) {

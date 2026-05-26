@@ -21,7 +21,7 @@ export const TeamGeneralForm = ({
   team,
   isSubmitting,
   onSubmit,
-  canManageTeams = true
+  canManageTeams = false
 }) => {
   const { t, formatDate } = useLocale()
 

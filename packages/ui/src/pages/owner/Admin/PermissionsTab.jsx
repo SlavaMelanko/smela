@@ -4,7 +4,7 @@ import {
   useUpdateAdminPermissions
 } from '@ui/hooks/useOwner'
 
-export const PermissionsTab = ({ adminId, canManageAdmins = true }) => {
+export const PermissionsTab = ({ adminId, canManageAdmins = false }) => {
   const { data: permissions, isPending: isLoading } =
     useAdminPermissions(adminId)
   const { mutate: update, isPending: isUpdating } =

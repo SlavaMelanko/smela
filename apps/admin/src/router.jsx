@@ -74,7 +74,14 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'dashboard', element: <DashboardPage /> },
+      {
+        path: 'dashboard',
+        element: (
+          <PrivateRoute requirePermissions={['view:dashboard']}>
+            <DashboardPage />
+          </PrivateRoute>
+        )
+      },
       {
         element: (
           <PrivateRoute requirePermissions={['view:users']}>
