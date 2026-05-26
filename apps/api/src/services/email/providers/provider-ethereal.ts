@@ -9,7 +9,7 @@ import type { EmailPayload } from './payload'
 import type { EmailProvider } from './provider'
 
 export class EtherealEmailProvider implements EmailProvider {
-  private transporter: Transporter<SMTPTransport.SentMessageInfo>
+  private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>
 
   constructor(
     host: string | undefined,

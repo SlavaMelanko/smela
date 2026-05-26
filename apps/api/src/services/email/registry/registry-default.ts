@@ -3,7 +3,7 @@ import type { EmailType } from '../email-type'
 import type { EmailRegistry } from './registry'
 
 export class DefaultEmailRegistry implements EmailRegistry {
-  private configs = new Map<EmailType, EmailConfig>()
+  private readonly configs = new Map<EmailType, EmailConfig>()
 
   add<T>(config: EmailConfig<T>): void {
     this.configs.set(config.getType(), config)

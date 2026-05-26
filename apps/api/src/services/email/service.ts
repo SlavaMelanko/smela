@@ -21,8 +21,8 @@ const mergeWithDefaultPreferences = (
 
 export class EmailService {
   constructor(
-    private provider: EmailProvider,
-    private registry: EmailRegistry
+    private readonly provider: EmailProvider,
+    private readonly registry: EmailRegistry
   ) {}
 
   async send<T>(
