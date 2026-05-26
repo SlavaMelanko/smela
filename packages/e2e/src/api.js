@@ -2,8 +2,9 @@ import { test } from '@playwright/test'
 
 export const waitForApiCall = async (page, options, timeout = 30000) => {
   const { path, status, method, validateResponse, validateRequest } = options
+  const label = `${method ?? 'ANY'} ${path}`
 
-  return test.step(`Waiting for ${method} ${path}`, async () => {
+  return test.step(`Waiting for ${label}`, async () => {
     const response = await page.waitForResponse(
       async response => {
         let matches = response.url().includes(path)
@@ -17,25 +18,22 @@ export const waitForApiCall = async (page, options, timeout = 30000) => {
         }
 
         if (matches && validateRequest) {
-          try {
-            const request = response.request()
-            const body = JSON.parse(request.postData())
+          const body = JSON.parse(response.request().postData())
+          const valid = await validateRequest(body)
 
-            matches = matches && (await validateRequest(body))
-          } catch (error) {
-            console.error(`Request validation failed for ${path}:`, error)
-            matches = false
+          if (!valid) {
+            throw new Error(`Request check failed for ${response.url()}`)
           }
         }
 
         if (matches && validateResponse) {
-          try {
-            const body = await response.json()
+          const body = await response.json()
+          const valid = await validateResponse(body)
 
-            matches = matches && (await validateResponse(body))
-          } catch (error) {
-            console.error(`Response validation failed for ${path}:`, error)
-            matches = false
+          if (!valid) {
+            throw new Error(
+              `Response check failed for ${response.url()} (${response.status()})`
+            )
           }
         }
 
