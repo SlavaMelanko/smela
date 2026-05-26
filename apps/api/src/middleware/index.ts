@@ -19,6 +19,8 @@ export {
 
 export { requestValidator } from './request-validator'
 
+export { requirePermission } from './require-permission'
+
 export { secureHeadersMiddleware } from './secure-headers'
 
 export {
