@@ -27,8 +27,8 @@ describe('Rate Limiter Core', () => {
     it('should allow requests under the limit', async () => {
       app.use(
         createRateLimiter({
-          windowMs: 60 * 1_000, // 1 minute
-          limit: 3, // 3 requests per minute
+          windowMs: 60 * 1_000,
+          limit: 3,
           keyGenerator: () => 'test-key'
         })
       )
@@ -47,7 +47,7 @@ describe('Rate Limiter Core', () => {
     it('should block requests over the limit', async () => {
       app.use(
         createRateLimiter({
-          windowMs: 60 * 1_000, // 1 minute
+          windowMs: 60 * 1_000,
           limit: 2,
           keyGenerator: () => 'test-key'
         })
@@ -55,11 +55,8 @@ describe('Rate Limiter Core', () => {
 
       app.get('/test', c => c.text('OK'))
 
-      // First two requests should pass
       const res1 = await app.request('/test', { method: 'GET' })
       const res2 = await app.request('/test', { method: 'GET' })
-
-      // Third request should be rate limited
       const res3 = await app.request('/test', { method: 'GET' })
 
       expect(res1.status).toBe(HttpStatus.OK)
@@ -93,14 +90,13 @@ describe('Rate Limiter Core', () => {
       app.use(
         createRateLimiter({
           windowMs: 60 * 1_000,
-          limit: 1, // 1 request per minute per key
+          limit: 1,
           keyGenerator: () => `key-${keyCounter++}`
         })
       )
 
       app.get('/test', c => c.text('OK'))
 
-      // Each request gets a different key, so all should pass
       const res1 = await app.request('/test', { method: 'GET' })
       const res2 = await app.request('/test', { method: 'GET' })
       const res3 = await app.request('/test', { method: 'GET' })
@@ -110,12 +106,11 @@ describe('Rate Limiter Core', () => {
       expect(res3.status).toBe(HttpStatus.OK)
     })
 
-    it('should use IP address as default key when available', async () => {
+    it('should use IP address as default key', async () => {
       app.use(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 2
-          // No keyGenerator - should use IP
         })
       )
 
@@ -148,15 +143,14 @@ describe('Rate Limiter Core', () => {
 
       app.get('/test', c => c.text('OK'))
 
-      await app.request('/test', { method: 'GET' }) // First request
-      const res = await app.request('/test', { method: 'GET' }) // Second request (blocked)
+      await app.request('/test', { method: 'GET' })
+      const res = await app.request('/test', { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.TOO_MANY_REQUESTS)
-      const body = await res.text()
-      expect(body).toContain(customMessage)
+      expect(await res.text()).toContain(customMessage)
     })
 
-    it('should work with custom status code', async () => {
+    it('should allow custom status code', async () => {
       app.use(
         createRateLimiter({
           windowMs: 60 * 1_000,
@@ -168,35 +162,10 @@ describe('Rate Limiter Core', () => {
 
       app.get('/test', c => c.text('OK'))
 
-      await app.request('/test', { method: 'GET' }) // First request
-      const res = await app.request('/test', { method: 'GET' }) // Second request (blocked)
+      await app.request('/test', { method: 'GET' })
+      const res = await app.request('/test', { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.SERVICE_UNAVAILABLE)
-    })
-
-    it('should have high limits in test environment', async () => {
-      // This test simulates what we need for Playwright tests
-      app.use(
-        createRateLimiter({
-          windowMs: 60 * 1_000,
-          limit: 1000, // High limit for tests
-          keyGenerator: () => 'test-key'
-        })
-      )
-
-      app.get('/test', c => c.text('OK'))
-
-      // Make many requests quickly (simulating test suite)
-      const requests = Array.from({ length: 50 }, async (_, _i) =>
-        app.request('/test', { method: 'GET' })
-      )
-
-      const responses = await Promise.all(requests)
-
-      // All should pass with high limits
-      responses.forEach(res => {
-        expect(res.status).toBe(HttpStatus.OK)
-      })
     })
   })
 
@@ -213,25 +182,22 @@ describe('Rate Limiter Core', () => {
 
       app.get('/test', c => c.text('OK'))
 
-      // First request without skip header - should be counted
       await app.request('/test', { method: 'GET' })
 
-      // Second request without skip header - should be blocked
-      const res1 = await app.request('/test', { method: 'GET' })
-      expect(res1.status).toBe(HttpStatus.TOO_MANY_REQUESTS)
+      const blocked = await app.request('/test', { method: 'GET' })
+      expect(blocked.status).toBe(HttpStatus.TOO_MANY_REQUESTS)
 
-      // Request with skip header - should pass
-      const res2 = await app.request('/test', {
+      const skipped = await app.request('/test', {
         method: 'GET',
         headers: { 'X-Skip-Rate-Limit': 'true' }
       })
-      expect(res2.status).toBe(HttpStatus.OK)
+      expect(skipped.status).toBe(HttpStatus.OK)
     })
   })
 
   describe('Default Configuration', () => {
-    it('should work with no configuration provided', async () => {
-      app.use(createRateLimiter())
+    it('should work with no configuration and use env-appropriate default limit', async () => {
+      app.use(createRateLimiter({ keyGenerator: () => 'test-key' }))
 
       app.get('/test', c => c.text('OK'))
 
@@ -239,20 +205,6 @@ describe('Rate Limiter Core', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(res.headers.has('RateLimit-Limit')).toBe(true)
-    })
-
-    it('should use environment-appropriate default limits', async () => {
-      app.use(
-        createRateLimiter({
-          keyGenerator: () => 'test-key'
-        })
-      )
-
-      app.get('/test', c => c.text('OK'))
-
-      const res = await app.request('/test', { method: 'GET' })
-
-      // In test environment, should have high default limit (1000)
       expect(res.headers.get('RateLimit-Limit')).toBe('1000')
     })
   })

@@ -343,7 +343,7 @@ export { createCaptchaVerifier } from './factory'
 import type { MiddlewareHandler } from 'hono'
 import { createCaptchaVerifier } from '@/services/captcha'
 
-const captchaMiddleware = (): MiddlewareHandler => {
+const verifyCaptcha = (): MiddlewareHandler => {
   // Create single instance for performance
   const captchaVerifier = createCaptchaVerifier()
 
@@ -354,7 +354,7 @@ const captchaMiddleware = (): MiddlewareHandler => {
   }
 }
 
-export default captchaMiddleware
+export default verifyCaptcha
 ```
 
 **Singleton Facade Pattern (Advanced):**

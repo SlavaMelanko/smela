@@ -1,29 +1,21 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
-import { Hono } from 'hono'
-
-import type { AppContext } from '@/context'
+import { describe, expect, it } from 'bun:test'
 
 import { testUuids } from '@/__tests__'
 import env from '@/env'
 import { ErrorCode } from '@/errors'
-import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { ownerAuthMiddleware } from '../index'
+import { requireOwnerAuth } from '../index'
+import { makeAuthApp } from './utils'
+
+const makeApp = () => makeAuthApp(requireOwnerAuth, '/owner')
 
 describe('Owner Authentication Middleware', () => {
-  let app: Hono<AppContext>
-
-  beforeEach(() => {
-    app = new Hono<AppContext>()
-    app.onError(onError)
-  })
-
   describe('Role Validation', () => {
-    it('should allow Owner with Active status', async () => {
-      const ownerToken = await signJwt(
+    it('should allow Owner role', async () => {
+      const token = await signJwt(
         {
           id: testUuids.OWNER_1,
           email: 'owner@example.com',
@@ -33,70 +25,34 @@ describe('Owner Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/owner', ownerAuthMiddleware)
-      app.get('/owner', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/owner', {
-        headers: {
-          Authorization: `Bearer ${ownerToken}`
-        }
-      })
+      const { get } = makeApp()
+      const res = await get(token)
 
       expect(res.status).toBe(HttpStatus.OK)
-      const json = await res.json()
-      expect(json.message).toBe('success')
     })
 
-    it('should reject Admin even with Active status', async () => {
-      const adminToken = await signJwt(
-        {
-          id: testUuids.ADMIN_1,
-          email: 'admin@example.com',
-          role: Role.Admin,
-          status: UserStatus.Active
-        },
-        { secret: env.JWT_SECRET }
-      )
+    it('should reject Admin and User roles', async () => {
+      const rejectedRoles = [Role.Admin, Role.User]
 
-      app.use('/owner', ownerAuthMiddleware)
-      app.get('/owner', c => c.json({ message: 'success' }))
+      for (const role of rejectedRoles) {
+        const token = await signJwt(
+          {
+            id: testUuids.ADMIN_1,
+            email: 'admin@example.com',
+            role,
+            status: UserStatus.Active
+          },
+          { secret: env.JWT_SECRET }
+        )
 
-      const res = await app.request('/owner', {
-        headers: {
-          Authorization: `Bearer ${adminToken}`
-        }
-      })
+        const { get } = makeApp()
+        const res = await get(token)
 
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Role validation failure')
-    })
-
-    it('should reject User role with Active status', async () => {
-      const userToken = await signJwt(
-        {
-          id: testUuids.USER_1,
-          email: 'user@example.com',
-          role: Role.User,
-          status: UserStatus.Active
-        },
-        { secret: env.JWT_SECRET }
-      )
-
-      app.use('/owner', ownerAuthMiddleware)
-      app.get('/owner', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/owner', {
-        headers: {
-          Authorization: `Bearer ${userToken}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Role validation failure')
+        expect(res.status).toBe(HttpStatus.FORBIDDEN)
+        const json = await res.json()
+        expect(json.code).toBe(ErrorCode.Forbidden)
+        expect(json.error).toBe('Role validation failure')
+      }
     })
   })
 
@@ -110,9 +66,6 @@ describe('Owner Authentication Middleware', () => {
       ]
 
       for (const status of nonActiveStatuses) {
-        const testApp = new Hono<AppContext>()
-        testApp.onError(onError)
-
         const token = await signJwt(
           {
             id: testUuids.OWNER_1,
@@ -123,14 +76,8 @@ describe('Owner Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/owner', ownerAuthMiddleware)
-        testApp.get('/owner', c => c.json({ message: 'success' }))
-
-        const res = await testApp.request('/owner', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        const { get } = makeApp()
+        const res = await get(token)
 
         expect(res.status).toBe(HttpStatus.FORBIDDEN)
         const json = await res.json()

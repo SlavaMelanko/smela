@@ -20,4 +20,4 @@ const getCorsMiddleware = (): MiddlewareHandler => {
   return fallback()
 }
 
-export const corsMiddleware = getCorsMiddleware()
+export const cors = getCorsMiddleware()

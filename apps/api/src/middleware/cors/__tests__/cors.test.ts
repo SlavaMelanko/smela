@@ -10,49 +10,27 @@ describe('CORS Middleware', () => {
     app.get('/test', c => c.json({ success: true }))
 
     it('should allow localhost origins', async () => {
-      const response = await app.request('/test', {
-        headers: {
-          Origin: 'http://localhost:3000'
-        }
-      })
-
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
-        'http://localhost:3000'
-      )
-      expect(response.headers.get('Access-Control-Allow-Credentials')).toBe(
-        'true'
-      )
-    })
-
-    it('should allow 127.0.0.1 origins', async () => {
-      const response = await app.request('/test', {
-        headers: {
-          Origin: 'http://127.0.0.1:5173'
-        }
-      })
-
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
-        'http://127.0.0.1:5173'
-      )
-    })
-
-    it('should allow https localhost', async () => {
-      const response = await app.request('/test', {
-        headers: {
-          Origin: 'https://localhost:8080'
-        }
-      })
-
-      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
         'https://localhost:8080'
-      )
+      ]
+
+      for (const origin of allowedOrigins) {
+        const response = await app.request('/test', {
+          headers: { Origin: origin }
+        })
+
+        expect(response.headers.get('Access-Control-Allow-Origin')).toBe(origin)
+        expect(response.headers.get('Access-Control-Allow-Credentials')).toBe(
+          'true'
+        )
+      }
     })
 
     it('should reject non-localhost origins', async () => {
       const response = await app.request('/test', {
-        headers: {
-          Origin: 'https://example.com'
-        }
+        headers: { Origin: 'https://example.com' }
       })
 
       expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull()
@@ -89,23 +67,12 @@ describe('CORS Middleware', () => {
     app.use('*', test())
     app.get('/test', c => c.json({ success: true }))
 
-    it('should allow all origins', async () => {
+    it('should allow all origins without credentials', async () => {
       const response = await app.request('/test', {
-        headers: {
-          Origin: 'https://any-domain.com'
-        }
+        headers: { Origin: 'https://any-domain.com' }
       })
 
       expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
-    })
-
-    it('should not send credentials', async () => {
-      const response = await app.request('/test', {
-        headers: {
-          Origin: 'https://any-domain.com'
-        }
-      })
-
       expect(
         response.headers.get('Access-Control-Allow-Credentials')
       ).toBeNull()
