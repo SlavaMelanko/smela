@@ -11,7 +11,7 @@ import { HttpStatus } from '@/net/http'
 import { captchaMiddleware } from '../captcha'
 import { invalidCaptchaTokens } from './captcha.mock'
 
-// Simple schema for test validation (mirrors what requestValidator would validate)
+// Simple schema for test validation (mirrors what validateBody would validate)
 const captchaSchema = z.object({
   captcha: z.object({
     token: z.string()

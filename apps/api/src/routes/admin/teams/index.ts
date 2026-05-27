@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator } from '@/middleware'
+import { validateBody, validateQuery } from '@/middleware'
 
 import { createTeamHandler, getTeamsHandler } from './handler'
 import { createTeamBodySchema, getTeamsQuerySchema } from './schema'
@@ -11,12 +11,12 @@ export const adminTeamsRoute = new Hono<AppContext>()
 
 adminTeamsRoute.get(
   '/teams',
-  requestValidator('query', getTeamsQuerySchema),
+  validateQuery(getTeamsQuerySchema),
   getTeamsHandler
 )
 
 adminTeamsRoute.post(
   '/teams',
-  requestValidator('json', createTeamBodySchema),
+  validateBody(createTeamBodySchema),
   createTeamHandler
 )

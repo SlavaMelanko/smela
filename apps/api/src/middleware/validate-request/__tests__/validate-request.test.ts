@@ -8,7 +8,7 @@ import { onError } from '@/handlers'
 import { HttpStatus } from '@/net/http'
 import { TOKEN_LENGTH } from '@/security/token'
 
-import { requestValidator } from '../request-validator'
+import { validateBody } from '../validate-request'
 
 describe('Request Validator Middleware', () => {
   it('should accept valid email and password together', async () => {
@@ -19,9 +19,7 @@ describe('Request Validator Middleware', () => {
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c =>
-      c.json({ success: true })
-    )
+    app.post('/test', validateBody(schema), c => c.json({ success: true }))
 
     const response = await post(app, '/test', {
       email: 'user@example.com',
@@ -42,9 +40,7 @@ describe('Request Validator Middleware', () => {
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c =>
-      c.json({ success: true })
-    )
+    app.post('/test', validateBody(schema), c => c.json({ success: true }))
 
     const response = await post(app, '/test', { email: 'user@example.com' })
 
@@ -72,9 +68,7 @@ describe('Request Validator Middleware', () => {
 
     const app = new Hono()
     app.onError(onError)
-    app.post('/test', requestValidator('json', schema), c =>
-      c.json({ success: true })
-    )
+    app.post('/test', validateBody(schema), c => c.json({ success: true }))
 
     const validToken = 'a'.repeat(TOKEN_LENGTH) // exactly 64 characters
     const tooLongToken = `${validToken}extra` // 69 characters

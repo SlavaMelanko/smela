@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, requirePermission } from '@/middleware'
+import { requirePermission, validateBody, validateQuery } from '@/middleware'
 import Permission from '@/types/permission'
 
 import { ownerAdminByIdRoute } from './$id'
@@ -17,14 +17,14 @@ export const ownerAdminsRoute = new Hono<AppContext>()
 
 ownerAdminsRoute.get(
   '/admins',
-  requestValidator('query', getAdminsQuerySchema),
+  validateQuery(getAdminsQuerySchema),
   requirePermission(Permission.ViewAdmins),
   getAdminsHandler
 )
 
 ownerAdminsRoute.post(
   '/admins',
-  requestValidator('json', createAdminBodySchema),
+  validateBody(createAdminBodySchema),
   requirePermission(Permission.ManageAdmins),
   createAdminHandler
 )

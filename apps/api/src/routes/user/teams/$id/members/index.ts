@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, teamAccessMiddleware } from '@/middleware'
+import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 
 import { teamsMemberByIdRoute } from './$id'
 import {
@@ -16,23 +16,23 @@ export const teamsMembersRoute = new Hono<AppContext>()
 
 teamsMembersRoute.get(
   '/',
-  requestValidator('param', teamIdParamsSchema),
-  teamAccessMiddleware,
+  validateParams(teamIdParamsSchema),
+  requireTeamAccess,
   getTeamMembersHandler
 )
 
 teamsMembersRoute.post(
   '/',
-  requestValidator('param', teamIdParamsSchema),
-  requestValidator('json', inviteMemberBodySchema),
-  teamAccessMiddleware,
+  validateParams(teamIdParamsSchema),
+  validateBody(inviteMemberBodySchema),
+  requireTeamAccess,
   createMemberHandler
 )
 
 teamsMembersRoute.get(
   '/default-permissions',
-  requestValidator('param', teamIdParamsSchema),
-  teamAccessMiddleware,
+  validateParams(teamIdParamsSchema),
+  requireTeamAccess,
   getMemberDefaultPermissionsHandler
 )
 

@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, teamAccessMiddleware } from '@/middleware'
+import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 
 import { getTeamHandler, updateTeamHandler } from './handler'
 import { teamsMembersRoute } from './members'
@@ -12,16 +12,16 @@ export const teamByIdRoute = new Hono<AppContext>()
 
 teamByIdRoute.get(
   '/',
-  requestValidator('param', teamIdParamsSchema),
-  teamAccessMiddleware,
+  validateParams(teamIdParamsSchema),
+  requireTeamAccess,
   getTeamHandler
 )
 
 teamByIdRoute.patch(
   '/',
-  requestValidator('param', teamIdParamsSchema),
-  requestValidator('json', updateTeamBodySchema),
-  teamAccessMiddleware,
+  validateParams(teamIdParamsSchema),
+  validateBody(updateTeamBodySchema),
+  requireTeamAccess,
   updateTeamHandler
 )
 
