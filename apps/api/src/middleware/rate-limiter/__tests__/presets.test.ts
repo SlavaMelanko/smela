@@ -11,101 +11,40 @@ describe('Rate Limiter Presets', () => {
   })
 
   describe('authRateLimiter', () => {
-    it('should have restrictive limits for authentication', async () => {
+    it('should apply env-appropriate limit and support skip header', async () => {
       app.use(authRateLimiter)
-      app.post('/api/v1/auth/login', c => c.json({ success: true }))
+      app.post('/login', c => c.json({ success: true }))
 
-      const res = await app.request('/api/v1/auth/login', { method: 'POST' })
+      const res = await app.request('/login', { method: 'POST' })
 
       expect(res.status).toBe(200)
-      // In test environment, should have high limit (1000)
       expect(res.headers.get('RateLimit-Limit')).toBe('1000')
-    })
 
-    it('should have custom authentication error message', async () => {
-      // Create a low-limit version for testing the message
-      app.use('/', async (c, next) => {
-        // Override the limit for this test
-        const mockAuthLimiter = authRateLimiter
-
-        return mockAuthLimiter(c, next)
-      })
-
-      app.post('/api/v1/auth/login', c => c.json({ success: true }))
-
-      // The custom message is "Too many authentication attempts, please try again later."
-      // This is tested indirectly by checking the preset exists and works
-      const res = await app.request('/api/v1/auth/login', { method: 'POST' })
-      expect(res.status).toBe(200)
-    })
-
-    it('should skip rate limiting with X-Skip-Rate-Limit header in test environment', async () => {
-      app.use(authRateLimiter)
-      app.post('/api/v1/auth/login', c => c.json({ success: true }))
-
-      const res = await app.request('/api/v1/auth/login', {
+      const skipped = await app.request('/login', {
         method: 'POST',
         headers: { 'X-Skip-Rate-Limit': 'true' }
       })
 
-      expect(res.status).toBe(200)
+      expect(skipped.status).toBe(200)
     })
   })
 
   describe('generalRateLimiter', () => {
-    it('should have moderate limits for general API usage', async () => {
+    it('should apply env-appropriate limit and support skip header', async () => {
       app.use(generalRateLimiter)
-      app.get('/api/users', c => c.json({ users: [] }))
+      app.get('/data', c => c.json({ data: 'test' }))
 
-      const res = await app.request('/api/users', { method: 'GET' })
+      const res = await app.request('/data', { method: 'GET' })
 
       expect(res.status).toBe(200)
-      // In test environment, should have high limit (1000)
       expect(res.headers.get('RateLimit-Limit')).toBe('1000')
-    })
 
-    it('should use default error message', async () => {
-      app.use(generalRateLimiter)
-      app.get('/api/data', c => c.json({ data: 'test' }))
-
-      const res = await app.request('/api/data', { method: 'GET' })
-      expect(res.status).toBe(200)
-    })
-
-    it('should skip rate limiting with X-Skip-Rate-Limit header in test environment', async () => {
-      app.use(generalRateLimiter)
-      app.get('/api/data', c => c.json({ data: 'test' }))
-
-      const res = await app.request('/api/data', {
+      const skipped = await app.request('/data', {
         method: 'GET',
         headers: { 'X-Skip-Rate-Limit': 'true' }
       })
 
-      expect(res.status).toBe(200)
-    })
-  })
-
-  describe('Preset Comparison', () => {
-    it('should have different configurations for different use cases', async () => {
-      const authApp = new Hono()
-      const generalApp = new Hono()
-
-      authApp.use(authRateLimiter)
-      generalApp.use(generalRateLimiter)
-
-      authApp.get('/test', c => c.text('auth'))
-      generalApp.get('/test', c => c.text('general'))
-
-      const authRes = await authApp.request('/test')
-      const generalRes = await generalApp.request('/test')
-
-      // All should work in test environment
-      expect(authRes.status).toBe(200)
-      expect(generalRes.status).toBe(200)
-
-      // All should have rate limit headers
-      expect(authRes.headers.has('RateLimit-Limit')).toBe(true)
-      expect(generalRes.headers.has('RateLimit-Limit')).toBe(true)
+      expect(skipped.status).toBe(200)
     })
   })
 })
