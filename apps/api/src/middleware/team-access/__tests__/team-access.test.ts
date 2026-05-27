@@ -9,7 +9,7 @@ import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { Role, UserStatus } from '@/types'
 
-import { teamAccessMiddleware } from '../team-access'
+import { requireTeamAccess } from '../team-access'
 
 const mockTeamRepoFindMember = mock()
 
@@ -47,7 +47,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -74,7 +74,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -101,7 +101,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_2}`)
@@ -125,7 +125,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -147,7 +147,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_2}`)
@@ -168,7 +168,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -190,7 +190,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_2}`)
@@ -211,7 +211,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -229,7 +229,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -252,7 +252,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -278,7 +278,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)
@@ -304,7 +304,7 @@ describe('Team Access Middleware', () => {
         })
         await next()
       })
-      app.use('/teams/:teamId', teamAccessMiddleware)
+      app.use('/teams/:teamId', requireTeamAccess)
       app.get('/teams/:teamId', c => c.json({ message: 'success' }))
 
       const res = await app.request(`/teams/${testUuids.TEAM_1}`)

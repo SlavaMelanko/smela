@@ -28,6 +28,6 @@ export {
   generalRequestSizeLimiter
 } from './size-limiter'
 
-export { teamAccessMiddleware } from './team-access'
+export { requireTeamAccess } from './team-access'
 
 export { validateBody, validateParams, validateQuery } from './validate-request'

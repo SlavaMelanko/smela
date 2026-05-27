@@ -16,7 +16,7 @@ import { isAdmin } from '@/types'
  * With Redis cache: 80-95% hit rate, 20-50x faster response time.
  * See: https://github.com/SlavaMelanko/smela-back/issues/58
  */
-export const teamAccessMiddleware = createMiddleware<AppContext>(
+export const requireTeamAccess = createMiddleware<AppContext>(
   async (c, next) => {
     const teamId = c.req.param('teamId')!
     const { id: userId, role } = c.get('user')
