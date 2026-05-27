@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator } from '@/middleware'
+import { validateQuery } from '@/middleware'
 
 import { adminUserByIdRoute } from './$id'
 import { getUsersHandler } from './handler'
@@ -12,7 +12,7 @@ export const adminUsersRoute = new Hono<AppContext>()
 
 adminUsersRoute.get(
   '/users',
-  requestValidator('query', getUsersQuerySchema),
+  validateQuery(getUsersQuerySchema),
   getUsersHandler
 )
 

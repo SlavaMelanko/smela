@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, requirePermission } from '@/middleware'
+import { requirePermission, validateBody, validateParams } from '@/middleware'
 import Permission from '@/types/permission'
 
 import {
@@ -15,15 +15,15 @@ export const ownerAdminPermissionsRoute = new Hono<AppContext>()
 
 ownerAdminPermissionsRoute.get(
   '/',
-  requestValidator('param', adminIdParamsSchema),
+  validateParams(adminIdParamsSchema),
   requirePermission(Permission.ViewAdmins),
   getAdminPermissionsHandler
 )
 
 ownerAdminPermissionsRoute.patch(
   '/',
-  requestValidator('param', adminIdParamsSchema),
-  requestValidator('json', updateAdminPermissionsBodySchema),
+  validateParams(adminIdParamsSchema),
+  validateBody(updateAdminPermissionsBodySchema),
   requirePermission(Permission.ManageAdmins),
   updateAdminPermissionsHandler
 )

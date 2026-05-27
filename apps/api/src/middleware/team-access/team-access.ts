@@ -9,7 +9,7 @@ import { isAdmin } from '@/types'
 /**
  * Team access middleware - ensures user has access to the team.
  *
- * Note: teamId is already validated by requestValidator middleware
+ * Note: teamId is already validated by validateParams middleware
  *
  * TODO: Add Redis caching for team membership queries
  * Currently queries database on every request (~1-5ms per query).

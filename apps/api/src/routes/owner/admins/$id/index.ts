@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, requirePermission } from '@/middleware'
+import { requirePermission, validateBody, validateParams } from '@/middleware'
 import Permission from '@/types/permission'
 
 import {
@@ -18,29 +18,29 @@ export const ownerAdminByIdRoute = new Hono<AppContext>()
 
 ownerAdminByIdRoute.get(
   '/',
-  requestValidator('param', adminIdParamsSchema),
+  validateParams(adminIdParamsSchema),
   requirePermission(Permission.ViewAdmins),
   getAdminHandler
 )
 
 ownerAdminByIdRoute.patch(
   '/',
-  requestValidator('param', adminIdParamsSchema),
-  requestValidator('json', updateAdminBodySchema),
+  validateParams(adminIdParamsSchema),
+  validateBody(updateAdminBodySchema),
   requirePermission(Permission.ManageAdmins),
   updateAdminHandler
 )
 
 ownerAdminByIdRoute.post(
   '/resend-invite',
-  requestValidator('param', adminIdParamsSchema),
+  validateParams(adminIdParamsSchema),
   requirePermission(Permission.ManageAdmins),
   resendAdminInviteHandler
 )
 
 ownerAdminByIdRoute.post(
   '/cancel-invite',
-  requestValidator('param', adminIdParamsSchema),
+  validateParams(adminIdParamsSchema),
   requirePermission(Permission.ManageAdmins),
   cancelAdminInviteHandler
 )

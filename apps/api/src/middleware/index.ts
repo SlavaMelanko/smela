@@ -17,8 +17,6 @@ export {
   generalRateLimiter
 } from './rate-limiter'
 
-export { requestValidator } from './request-validator'
-
 export { requirePermission } from './require-permission'
 
 export { secureHeadersMiddleware } from './secure-headers'
@@ -31,3 +29,5 @@ export {
 } from './size-limiter'
 
 export { teamAccessMiddleware } from './team-access'
+
+export { validateBody, validateParams, validateQuery } from './validate-request'

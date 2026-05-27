@@ -2,7 +2,11 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requestValidator, teamAccessMiddleware } from '@/middleware'
+import {
+  teamAccessMiddleware,
+  validateBody,
+  validateParams
+} from '@/middleware'
 
 import {
   cancelMemberInviteHandler,
@@ -17,36 +21,36 @@ export const teamsMemberByIdRoute = new Hono<AppContext>()
 
 teamsMemberByIdRoute.get(
   '/',
-  requestValidator('param', memberIdParamsSchema),
+  validateParams(memberIdParamsSchema),
   teamAccessMiddleware,
   getTeamMemberHandler
 )
 
 teamsMemberByIdRoute.patch(
   '/',
-  requestValidator('param', memberIdParamsSchema),
-  requestValidator('json', updateTeamMemberBodySchema),
+  validateParams(memberIdParamsSchema),
+  validateBody(updateTeamMemberBodySchema),
   teamAccessMiddleware,
   updateTeamMemberHandler
 )
 
 teamsMemberByIdRoute.delete(
   '/',
-  requestValidator('param', memberIdParamsSchema),
+  validateParams(memberIdParamsSchema),
   teamAccessMiddleware,
   removeTeamMemberHandler
 )
 
 teamsMemberByIdRoute.post(
   '/resend-invite',
-  requestValidator('param', memberIdParamsSchema),
+  validateParams(memberIdParamsSchema),
   teamAccessMiddleware,
   resendMemberInviteHandler
 )
 
 teamsMemberByIdRoute.post(
   '/cancel-invite',
-  requestValidator('param', memberIdParamsSchema),
+  validateParams(memberIdParamsSchema),
   teamAccessMiddleware,
   cancelMemberInviteHandler
 )

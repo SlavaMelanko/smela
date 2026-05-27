@@ -3,23 +3,23 @@
  *
  * When routes are inline, Hono infers types through the middleware chain:
  * ```typescript
- * route.post('/signup', requestValidator('json', schema), async (c) => {
+ * route.post('/signup', validateBody(schema), async (c) => {
  *   const payload = c.req.valid('json') // ✓ TypeScript infers 'json' is valid
  * })
  * ```
  *
  * When handlers are in separate files, the type chain breaks:
  * ```typescript
- * // handler.ts - TypeScript has no idea about requestValidator
+ * // handler.ts - TypeScript has no idea about validateBody
  * const handler = async (c) => {
  *   c.req.valid('json') // ✗ Error: 'json' not assignable to 'never'
  * }
  *
  * // index.ts - Type info doesn't flow back to handler.ts
- * route.post('/signup', requestValidator('json', schema), handler)
+ * route.post('/signup', validateBody(schema), handler)
  * ```
  *
- * These types manually declare what `requestValidator` would have inferred:
+ * These types manually declare what `validateBody` would have inferred:
  * ```typescript
  * const handler = async (c: ValidatedJsonCtx<SignupBody>) => {
  *   c.req.valid('json') // ✓ Now TypeScript knows 'json' is valid
