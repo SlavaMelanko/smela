@@ -11,17 +11,32 @@ import { HttpStatus } from '@/net/http'
 import { verifyCaptcha } from '../captcha'
 import { invalidCaptchaTokens } from './captcha.mock'
 
-// Simple schema for test validation (mirrors what validateBody would validate)
 const captchaSchema = z.object({
   captcha: z.object({
     token: z.string()
   })
 })
 
-// Extended schema to test passthrough of other fields
 const extendedSchema = captchaSchema.extend({
   otherField: z.string().optional()
 })
+
+const makeApp = (schema = captchaSchema) => {
+  const app = new Hono()
+  app.onError(onError)
+  app.post('/test', zValidator('json', schema), verifyCaptcha(), c =>
+    c.json({ success: true })
+  )
+
+  const post = async (body: unknown) =>
+    app.request('/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+
+  return { app, post }
+}
 
 describe('Captcha Middleware', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -44,17 +59,9 @@ describe('Captcha Middleware', () => {
     })
 
     it('should allow request to proceed when captcha is valid', async () => {
-      const app = new Hono()
-      app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
-        c.json({ success: true })
-      )
+      const { post } = makeApp()
 
-      const response = await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'valid-token-123' } })
-      })
+      const response = await post({ captcha: { token: 'valid-token-123' } })
 
       expect(response.status).toBe(HttpStatus.OK)
       expect(mockCaptchaValidate).toHaveBeenCalledWith('valid-token-123')
@@ -65,23 +72,9 @@ describe('Captcha Middleware', () => {
     })
 
     it('should extract captcha token from request body', async () => {
-      const app = new Hono()
-      app.onError(onError)
-      app.post(
-        '/test',
-        zValidator('json', extendedSchema),
-        verifyCaptcha(),
-        c => c.json({ success: true })
-      )
+      const { post } = makeApp(extendedSchema)
 
-      await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          captcha: { token: 'test-token' },
-          otherField: 'data'
-        })
-      })
+      await post({ captcha: { token: 'test-token' }, otherField: 'data' })
 
       expect(mockCaptchaValidate).toHaveBeenCalledWith('test-token')
     })
@@ -105,17 +98,9 @@ describe('Captcha Middleware', () => {
     })
 
     it('should reject request with BAD_REQUEST status', async () => {
-      const app = new Hono()
-      app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
-        c.json({ success: true })
-      )
+      const { post } = makeApp()
 
-      const response = await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
-      })
+      const response = await post({ captcha: { token: 'invalid-token' } })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCaptchaValidate).toHaveBeenCalledWith('invalid-token')
@@ -123,17 +108,9 @@ describe('Captcha Middleware', () => {
     })
 
     it('should return error response with correct error code', async () => {
-      const app = new Hono()
-      app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
-        c.json({ success: true })
-      )
+      const { post } = makeApp()
 
-      const response = await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
-      })
+      const response = await post({ captcha: { token: 'invalid-token' } })
 
       const json = await response.json()
       expect(json).toHaveProperty('code', ErrorCode.CaptchaValidationFailed)
@@ -155,11 +132,14 @@ describe('Captcha Middleware', () => {
         }
       )
 
-      await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'invalid-token' } })
-      })
+      const post = async (body: unknown) =>
+        app.request('/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+
+      await post({ captcha: { token: 'invalid-token' } })
 
       expect(mockHandler).not.toHaveBeenCalled()
     })
@@ -183,17 +163,9 @@ describe('Captcha Middleware', () => {
     })
 
     it('should convert unexpected errors to CaptchaValidationFailed', async () => {
-      const app = new Hono()
-      app.onError(onError)
-      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
-        c.json({ success: true })
-      )
+      const { post } = makeApp()
 
-      const response = await app.request('/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ captcha: { token: 'any-token' } })
-      })
+      const response = await post({ captcha: { token: 'any-token' } })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCaptchaValidate).toHaveBeenCalledTimes(1)
@@ -221,20 +193,9 @@ describe('Captcha Middleware', () => {
 
     for (const [name, token] of Object.entries(invalidCaptchaTokens)) {
       it(`should handle ${name} token`, async () => {
-        const app = new Hono()
-        app.onError(onError)
-        app.post(
-          '/test',
-          zValidator('json', captchaSchema),
-          verifyCaptcha(),
-          c => c.json({ success: true })
-        )
+        const { post } = makeApp()
 
-        await app.request('/test', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ captcha: { token } })
-        })
+        await post({ captcha: { token } })
 
         expect(mockCaptchaValidate).toHaveBeenCalledWith(token)
       })
