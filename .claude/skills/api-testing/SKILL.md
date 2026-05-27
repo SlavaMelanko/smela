@@ -29,7 +29,7 @@ Example:
 ```typescript
 import { createTestApp, post } from '@/__tests__'
 
-const app = createTestApp('/api/v1/auth', signupRoute, [captchaMiddleware()])
+const app = createTestApp('/api/v1/auth', signupRoute, [verifyCaptcha()])
 const response = await post(app, '/api/v1/auth/signup', {
   email: 'test@example.com',
   password: 'SecurePass123!',

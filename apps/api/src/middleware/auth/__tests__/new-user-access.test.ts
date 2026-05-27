@@ -11,7 +11,7 @@ import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { userRelaxedAuthMiddleware, userStrictAuthMiddleware } from '../index'
+import { requireUserAuth, requireVerifiedUserAuth } from '../index'
 
 describe('Auth Middleware - New User Access', () => {
   let app: Hono<AppContext>
@@ -33,7 +33,7 @@ describe('Auth Middleware - New User Access', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/strict', userStrictAuthMiddleware)
+      app.use('/strict', requireVerifiedUserAuth)
       app.get('/strict', c => c.json({ message: 'success' }))
 
       const res = await app.request('/strict', {
@@ -69,7 +69,7 @@ describe('Auth Middleware - New User Access', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/strict', userStrictAuthMiddleware)
+        testApp.use('/strict', requireVerifiedUserAuth)
         testApp.get('/strict', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/strict', {
@@ -108,7 +108,7 @@ describe('Auth Middleware - New User Access', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/relaxed', userRelaxedAuthMiddleware)
+        testApp.use('/relaxed', requireUserAuth)
         testApp.get('/relaxed', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/relaxed', {
@@ -134,7 +134,7 @@ describe('Auth Middleware - New User Access', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/relaxed', userRelaxedAuthMiddleware)
+      app.use('/relaxed', requireUserAuth)
       app.get('/relaxed', c => c.json({ message: 'success' }))
 
       const res = await app.request('/relaxed', {

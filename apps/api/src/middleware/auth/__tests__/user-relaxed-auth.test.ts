@@ -11,7 +11,7 @@ import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { userRelaxedAuthMiddleware } from '../index'
+import { requireUserAuth } from '../index'
 
 describe('User Relaxed Authentication Middleware', () => {
   let app: Hono<AppContext>
@@ -39,7 +39,7 @@ describe('User Relaxed Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/', userRelaxedAuthMiddleware)
+        testApp.use('/', requireUserAuth)
         testApp.get('/', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/', {
@@ -78,7 +78,7 @@ describe('User Relaxed Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/', userRelaxedAuthMiddleware)
+        testApp.use('/', requireUserAuth)
         testApp.get('/', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/', {
@@ -114,7 +114,7 @@ describe('User Relaxed Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/', userRelaxedAuthMiddleware)
+        testApp.use('/', requireUserAuth)
         testApp.get('/', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/', {
@@ -133,7 +133,7 @@ describe('User Relaxed Authentication Middleware', () => {
 
   describe('Authentication', () => {
     it('should reject unauthenticated requests', async () => {
-      app.use('/', userRelaxedAuthMiddleware)
+      app.use('/', requireUserAuth)
       app.get('/', c => c.json({ message: 'success' }))
 
       const res = await app.request('/')

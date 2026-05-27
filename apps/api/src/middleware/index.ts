@@ -1,15 +1,15 @@
 export {
-  adminAuthMiddleware,
-  ownerAuthMiddleware,
-  userRelaxedAuthMiddleware,
-  userStrictAuthMiddleware
+  requireAdminAuth,
+  requireOwnerAuth,
+  requireUserAuth,
+  requireVerifiedUserAuth
 } from './auth'
 
-export { captchaMiddleware } from './captcha/captcha'
+export { verifyCaptcha } from './captcha/captcha'
 
-export { corsMiddleware } from './cors'
+export { cors } from './cors'
 
-export { loggerMiddleware } from './logger'
+export { requestLogger } from './logger'
 
 export {
   authRateLimiter,
@@ -19,7 +19,7 @@ export {
 
 export { requirePermission } from './require-permission'
 
-export { secureHeadersMiddleware } from './secure-headers'
+export { secureHeaders } from './secure-headers'
 
 export {
   authRequestSizeLimiter,

@@ -3,14 +3,14 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { secureHeadersMiddleware } from '../index'
+import { secureHeaders } from '../index'
 
 describe('Secure Headers Middleware', () => {
   let app: Hono<AppContext>
 
   beforeEach(() => {
     app = new Hono<AppContext>()
-    app.use('*', secureHeadersMiddleware)
+    app.use('*', secureHeaders)
     app.get('/test', c => c.json({ success: true }))
   })
 
@@ -94,7 +94,7 @@ describe('Secure Headers Middleware', () => {
     describe('Environment Detection (Unit Tests)', () => {
       it('should correctly identify environment functions are imported', () => {
         // Just verify the functions are imported and used
-        expect(typeof secureHeadersMiddleware).toBe('function')
+        expect(typeof secureHeaders).toBe('function')
       })
 
       it('verifies CSP is configured properly in current environment', async () => {

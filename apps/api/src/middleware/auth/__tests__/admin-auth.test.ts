@@ -11,7 +11,7 @@ import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { adminAuthMiddleware } from '../index'
+import { requireAdminAuth } from '../index'
 
 describe('Admin Authentication Middleware', () => {
   let app: Hono<AppContext>
@@ -33,7 +33,7 @@ describe('Admin Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/admin', adminAuthMiddleware)
+      app.use('/admin', requireAdminAuth)
       app.get('/admin', c => c.json({ message: 'success' }))
 
       const res = await app.request('/admin', {
@@ -58,7 +58,7 @@ describe('Admin Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/admin', adminAuthMiddleware)
+      app.use('/admin', requireAdminAuth)
       app.get('/admin', c => c.json({ message: 'success' }))
 
       const res = await app.request('/admin', {
@@ -83,7 +83,7 @@ describe('Admin Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/admin', adminAuthMiddleware)
+      app.use('/admin', requireAdminAuth)
       app.get('/admin', c => c.json({ message: 'success' }))
 
       const res = await app.request('/admin', {
@@ -122,7 +122,7 @@ describe('Admin Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/admin', adminAuthMiddleware)
+        testApp.use('/admin', requireAdminAuth)
         testApp.get('/admin', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/admin', {

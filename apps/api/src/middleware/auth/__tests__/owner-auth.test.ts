@@ -11,7 +11,7 @@ import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { ownerAuthMiddleware } from '../index'
+import { requireOwnerAuth } from '../index'
 
 describe('Owner Authentication Middleware', () => {
   let app: Hono<AppContext>
@@ -33,7 +33,7 @@ describe('Owner Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/owner', ownerAuthMiddleware)
+      app.use('/owner', requireOwnerAuth)
       app.get('/owner', c => c.json({ message: 'success' }))
 
       const res = await app.request('/owner', {
@@ -58,7 +58,7 @@ describe('Owner Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/owner', ownerAuthMiddleware)
+      app.use('/owner', requireOwnerAuth)
       app.get('/owner', c => c.json({ message: 'success' }))
 
       const res = await app.request('/owner', {
@@ -84,7 +84,7 @@ describe('Owner Authentication Middleware', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/owner', ownerAuthMiddleware)
+      app.use('/owner', requireOwnerAuth)
       app.get('/owner', c => c.json({ message: 'success' }))
 
       const res = await app.request('/owner', {
@@ -123,7 +123,7 @@ describe('Owner Authentication Middleware', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/owner', ownerAuthMiddleware)
+        testApp.use('/owner', requireOwnerAuth)
         testApp.get('/owner', c => c.json({ message: 'success' }))
 
         const res = await testApp.request('/owner', {

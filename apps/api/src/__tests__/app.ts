@@ -3,7 +3,7 @@ import type { MiddlewareHandler } from 'hono'
 import { Hono } from 'hono'
 
 import { onError } from '@/handlers'
-import { loggerMiddleware } from '@/middleware'
+import { requestLogger } from '@/middleware'
 
 export const createTestApp = (
   basePath: string,
@@ -13,7 +13,7 @@ export const createTestApp = (
   const app = new Hono()
 
   app.onError(onError)
-  app.use(loggerMiddleware)
+  app.use(requestLogger)
 
   for (const middleware of additionalMiddleware) {
     app.use('*', middleware)

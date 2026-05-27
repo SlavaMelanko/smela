@@ -8,7 +8,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import { HttpStatus } from '@/net/http'
 
-import { captchaMiddleware } from '../captcha'
+import { verifyCaptcha } from '../captcha'
 import { invalidCaptchaTokens } from './captcha.mock'
 
 // Simple schema for test validation (mirrors what validateBody would validate)
@@ -46,11 +46,8 @@ describe('Captcha Middleware', () => {
     it('should allow request to proceed when captcha is valid', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post(
-        '/test',
-        zValidator('json', captchaSchema),
-        captchaMiddleware(),
-        c => c.json({ success: true })
+      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
+        c.json({ success: true })
       )
 
       const response = await app.request('/test', {
@@ -73,7 +70,7 @@ describe('Captcha Middleware', () => {
       app.post(
         '/test',
         zValidator('json', extendedSchema),
-        captchaMiddleware(),
+        verifyCaptcha(),
         c => c.json({ success: true })
       )
 
@@ -110,11 +107,8 @@ describe('Captcha Middleware', () => {
     it('should reject request with BAD_REQUEST status', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post(
-        '/test',
-        zValidator('json', captchaSchema),
-        captchaMiddleware(),
-        c => c.json({ success: true })
+      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
+        c.json({ success: true })
       )
 
       const response = await app.request('/test', {
@@ -131,11 +125,8 @@ describe('Captcha Middleware', () => {
     it('should return error response with correct error code', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post(
-        '/test',
-        zValidator('json', captchaSchema),
-        captchaMiddleware(),
-        c => c.json({ success: true })
+      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
+        c.json({ success: true })
       )
 
       const response = await app.request('/test', {
@@ -156,7 +147,7 @@ describe('Captcha Middleware', () => {
       app.post(
         '/test',
         zValidator('json', captchaSchema),
-        captchaMiddleware(),
+        verifyCaptcha(),
         c => {
           mockHandler()
 
@@ -194,11 +185,8 @@ describe('Captcha Middleware', () => {
     it('should convert unexpected errors to CaptchaValidationFailed', async () => {
       const app = new Hono()
       app.onError(onError)
-      app.post(
-        '/test',
-        zValidator('json', captchaSchema),
-        captchaMiddleware(),
-        c => c.json({ success: true })
+      app.post('/test', zValidator('json', captchaSchema), verifyCaptcha(), c =>
+        c.json({ success: true })
       )
 
       const response = await app.request('/test', {
@@ -238,7 +226,7 @@ describe('Captcha Middleware', () => {
         app.post(
           '/test',
           zValidator('json', captchaSchema),
-          captchaMiddleware(),
+          verifyCaptcha(),
           c => c.json({ success: true })
         )
 
