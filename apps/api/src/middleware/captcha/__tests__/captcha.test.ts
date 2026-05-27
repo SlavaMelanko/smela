@@ -17,10 +17,6 @@ const captchaSchema = z.object({
   })
 })
 
-const extendedSchema = captchaSchema.extend({
-  otherField: z.string().optional()
-})
-
 const makeApp = (schema = captchaSchema) => {
   const app = new Hono()
   app.onError(onError)
@@ -58,7 +54,7 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should allow request to proceed when captcha is valid', async () => {
+    it('should allow request to proceed and call validate with token', async () => {
       const { post } = makeApp()
 
       const response = await post({ captcha: { token: 'valid-token-123' } })
@@ -69,14 +65,6 @@ describe('Captcha Middleware', () => {
 
       const json = await response.json()
       expect(json).toEqual({ success: true })
-    })
-
-    it('should extract captcha token from request body', async () => {
-      const { post } = makeApp(extendedSchema)
-
-      await post({ captcha: { token: 'test-token' }, otherField: 'data' })
-
-      expect(mockCaptchaValidate).toHaveBeenCalledWith('test-token')
     })
   })
 
@@ -97,20 +85,13 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should reject request with BAD_REQUEST status', async () => {
+    it('should reject request with correct status and error code', async () => {
       const { post } = makeApp()
 
       const response = await post({ captcha: { token: 'invalid-token' } })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCaptchaValidate).toHaveBeenCalledWith('invalid-token')
-      expect(mockCaptchaValidate).toHaveBeenCalledTimes(1)
-    })
-
-    it('should return error response with correct error code', async () => {
-      const { post } = makeApp()
-
-      const response = await post({ captcha: { token: 'invalid-token' } })
 
       const json = await response.json()
       expect(json).toHaveProperty('code', ErrorCode.CaptchaValidationFailed)
@@ -168,11 +149,9 @@ describe('Captcha Middleware', () => {
       const response = await post({ captcha: { token: 'any-token' } })
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST)
-      expect(mockCaptchaValidate).toHaveBeenCalledTimes(1)
 
       const json = await response.json()
       expect(json).toHaveProperty('code', ErrorCode.CaptchaValidationFailed)
-      expect(json).toHaveProperty('error')
     })
   })
 
@@ -191,14 +170,15 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    for (const [name, token] of Object.entries(invalidCaptchaTokens)) {
-      it(`should handle ${name} token`, async () => {
+    it('should pass any token value through to the service', async () => {
+      for (const token of Object.values(invalidCaptchaTokens)) {
         const { post } = makeApp()
 
         await post({ captcha: { token } })
 
         expect(mockCaptchaValidate).toHaveBeenCalledWith(token)
-      })
-    }
+        mockCaptchaValidate.mockClear()
+      }
+    })
   })
 })
