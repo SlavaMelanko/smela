@@ -96,7 +96,7 @@ describe('requirePermission Middleware', () => {
     })
 
     it('should throw Forbidden when permissions is undefined', async () => {
-      app.use('/', setUser(undefined))
+      app.use('/', setUser())
       app.use('/', requirePermission(Permission.ViewAdmins))
       app.get('/', c => c.json({ message: 'success' }))
 
