@@ -2,7 +2,8 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { validateQuery } from '@/middleware'
+import { requirePermission, validateQuery } from '@/middleware'
+import Permission from '@/types/permission'
 
 import { adminUserByIdRoute } from './$id'
 import { getUsersHandler } from './handler'
@@ -13,6 +14,7 @@ export const adminUsersRoute = new Hono<AppContext>()
 adminUsersRoute.get(
   '/users',
   validateQuery(getUsersQuerySchema),
+  requirePermission(Permission.ViewUsers),
   getUsersHandler
 )
 
