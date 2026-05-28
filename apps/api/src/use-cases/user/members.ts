@@ -23,12 +23,6 @@ export const updateTeamMember = async (
   memberId: string,
   input: UpdateTeamMemberInput
 ) => {
-  const existing = await teamRepo.findMember(teamId, memberId)
-
-  if (!existing) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
   const updates: Array<Promise<unknown>> = []
 
   if (input.membership) {
