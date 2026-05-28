@@ -24,12 +24,11 @@ import { isAdmin } from '@/types'
  * Note: teamId is already validated by validateParams middleware
  */
 
-const resolveAdminContext = async (
+const handleAdminAccess = async (
   c: Context<AppContext>,
   teamId: string,
   memberId: string | undefined
 ) => {
-  c.set('currentUser', undefined)
   if (!memberId) {
     return
   }
@@ -38,10 +37,11 @@ const resolveAdminContext = async (
   if (!targetMember) {
     throw new AppError(ErrorCode.NotFound, 'Member not found')
   }
+
   c.set('targetMember', targetMember)
 }
 
-const resolveUserContext = async (
+const handleUserAccess = async (
   c: Context<AppContext>,
   teamId: string,
   currentUserId: string,
@@ -69,7 +69,6 @@ const resolveUserContext = async (
     }
 
     c.set('currentUser', currentUser)
-    c.set('targetMember', undefined)
   }
 }
 
@@ -87,9 +86,9 @@ export const requireTeamAccess = createMiddleware<AppContext>(
     c.set('team', team)
 
     if (isAdmin(role)) {
-      await resolveAdminContext(c, teamId, memberId)
+      await handleAdminAccess(c, teamId, memberId)
     } else {
-      await resolveUserContext(c, teamId, currentUserId, memberId)
+      await handleUserAccess(c, teamId, currentUserId, memberId)
     }
 
     return next()
