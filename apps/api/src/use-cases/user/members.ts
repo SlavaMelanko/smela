@@ -1,5 +1,4 @@
 import { db, teamRepo, userRepo } from '@/data'
-import { AppError, ErrorCode } from '@/errors'
 import { UserStatus } from '@/types'
 
 export const getTeamMembers = async (teamId: string) => {
@@ -41,12 +40,6 @@ export const updateTeamMember = async (
 }
 
 export const removeTeamMember = async (teamId: string, memberId: string) => {
-  const existing = await teamRepo.findMember(teamId, memberId)
-
-  if (!existing) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
   await db.transaction(async tx => {
     await teamRepo.deleteMember(memberId, teamId, tx)
     await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
