@@ -102,8 +102,12 @@ describe('createMemberHandler', () => {
         )
       },
       get: mock((key: string) => {
-        if (key === 'user') {return { id: testUuids.USER_1 }}
-        if (key === 'team') {return { id: testUuids.TEAM_1, name: 'Test Team' }}
+        if (key === 'user') {
+          return { id: testUuids.USER_1 }
+        }
+        if (key === 'team') {
+          return { id: testUuids.TEAM_1, name: 'Test Team' }
+        }
 
         return undefined
       }),
