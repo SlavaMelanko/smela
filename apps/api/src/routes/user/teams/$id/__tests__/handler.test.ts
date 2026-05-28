@@ -25,7 +25,9 @@ describe('getTeamHandler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockGet = mock((key: string) => {
-      if (key === 'team') {return mockTeam}
+      if (key === 'team') {
+        return mockTeam
+      }
 
       return undefined
     })
@@ -50,7 +52,9 @@ describe('getTeamHandler', () => {
 
   it('should handle undefined team from context', async () => {
     mockGet.mockImplementation((key: string) => {
-      if (key === 'team') {return undefined}
+      if (key === 'team') {
+        return undefined
+      }
 
       return undefined
     })
