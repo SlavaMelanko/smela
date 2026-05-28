@@ -1,11 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type {
-  TeamMember,
-  TeamMemberDetails,
-  TeamWithMemberCount,
-  User
-} from '@/data'
+import type { TeamMemberDetails, TeamWithMemberCount, User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
@@ -352,41 +347,31 @@ describe('resendMemberInvite', () => {
 describe('cancelMemberInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  let mockMember: User
-  let mockMembership: TeamMember
-  let mockUserRepoFindById: any
-  let mockTeamRepoFindMember: any
+  let mockTargetMember: TeamMemberDetails
   let mockTokenDeprecate: any
   let mockUserUpdate: any
   let mockTransaction: any
 
   beforeEach(async () => {
-    mockMember = {
+    mockTargetMember = {
       id: USER_1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Pending,
-      role: Role.User,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
-
-    mockMembership = {
-      id: 1,
-      userId: USER_1,
-      teamId: TEAM_1,
+      updatedAt: new Date('2024-01-01'),
+      lastActive: null,
       position: 'Developer',
-      invitedBy: USER_2,
+      inviter: null,
       joinedAt: new Date('2024-01-01')
     }
 
-    mockUserRepoFindById = mock(async () => mockMember)
-    mockTeamRepoFindMember = mock(async () => mockMembership)
     mockTokenDeprecate = mock(async () => {})
     mockUserUpdate = mock(async () => ({
-      ...mockMember,
-      status: UserStatus.Archived
+      ...mockTargetMember,
+      status: UserStatus.Archived,
+      updatedAt: new Date()
     }))
 
     mockTransaction = mock(
@@ -396,8 +381,7 @@ describe('cancelMemberInvite', () => {
     )
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findById: mockUserRepoFindById, update: mockUserUpdate },
-      teamRepo: { findMember: mockTeamRepoFindMember },
+      userRepo: { update: mockUserUpdate },
       tokenRepo: { deprecate: mockTokenDeprecate },
       db: { transaction: mockTransaction }
     }))
@@ -411,41 +395,18 @@ describe('cancelMemberInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw NotFound when member does not exist', async () => {
-    mockUserRepoFindById.mockImplementation(async () => undefined)
-
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toThrow(AppError)
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Member not found'
-    })
-  })
-
-  it('should throw NotFound when member is not in team', async () => {
-    mockTeamRepoFindMember.mockImplementation(async () => undefined)
-
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toThrow(AppError)
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Member not found'
-    })
-  })
-
   it('should throw BadRequest when member has already accepted invitation', async () => {
-    mockUserRepoFindById.mockImplementation(async () => ({
-      ...mockMember,
-      status: UserStatus.Active
-    }))
+    mockTargetMember.status = UserStatus.Active
 
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toThrow(AppError)
-    expect(cancelMemberInvite(TEAM_1, USER_1)).rejects.toMatchObject({
+    expect(cancelMemberInvite(mockTargetMember)).rejects.toThrow(AppError)
+    expect(cancelMemberInvite(mockTargetMember)).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
       message: 'Member has already accepted invitation'
     })
   })
 
   it('should deprecate token and archive user in a transaction', async () => {
-    const result = await cancelMemberInvite(TEAM_1, USER_1)
+    const result = await cancelMemberInvite(mockTargetMember)
 
     expect(mockTokenDeprecate).toHaveBeenCalledWith(
       USER_1,

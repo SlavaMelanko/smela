@@ -42,9 +42,9 @@ export const removeTeamMemberHandler = async (c: MemberIdCtx) => {
 }
 
 export const cancelMemberInviteHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const targetMember = c.get('targetMember')!
 
-  const result = await cancelMemberInvite(teamId, memberId)
+  const result = await cancelMemberInvite(targetMember)
 
   return c.json(result, HttpStatus.OK)
 }

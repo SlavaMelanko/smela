@@ -214,7 +214,11 @@ describe('cancelMemberInviteHandler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
+      get: mock(() => ({
+        id: testUuids.USER_1,
+        firstName: 'John',
+        email: 'john@example.com'
+      })),
       json: mockJson
     }
     mockCancelMemberInvite = mock(async () => ({ success: true }))
@@ -231,10 +235,11 @@ describe('cancelMemberInviteHandler', () => {
   it('should call cancelMemberInvite and return result with OK status', async () => {
     const result = await cancelMemberInviteHandler(mockContext)
 
-    expect(mockCancelMemberInvite).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1
-    )
+    expect(mockCancelMemberInvite).toHaveBeenCalledWith({
+      id: testUuids.USER_1,
+      firstName: 'John',
+      email: 'john@example.com'
+    })
     expect(mockJson).toHaveBeenCalledWith({ success: true }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
   })

@@ -151,16 +151,7 @@ export const resendMemberInvite = async (
   return { success: true }
 }
 
-export const cancelMemberInvite = async (teamId: string, memberId: string) => {
-  const [member, membership] = await Promise.all([
-    userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId)
-  ])
-
-  if (!member || !membership) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
+export const cancelMemberInvite = async (member: TeamMemberDetails) => {
   if (member.status !== UserStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
@@ -169,8 +160,8 @@ export const cancelMemberInvite = async (teamId: string, memberId: string) => {
   }
 
   await db.transaction(async tx => {
-    await tokenRepo.deprecate(memberId, TokenType.UserInvite, tx)
-    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
+    await tokenRepo.deprecate(member.id, TokenType.UserInvite, tx)
+    await userRepo.update(member.id, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }
