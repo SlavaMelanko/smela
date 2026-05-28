@@ -9,19 +9,18 @@ import { isAdmin } from '@/types'
 /**
  * Team access middleware - ensures user has access to the team.
  *
- * Note: teamId is already validated by validateParams middleware
+ * IMPORTANT: Must be used in strict chain with requirePermission middleware:
+ * 1. First: requirePermission with either Permission.ViewTeams or Permission.ManageTeams
+ * 2. Then: requireTeamAccess (this middleware)
  *
- * TODO: Add Redis caching for team membership queries
- * Currently queries database on every request (~1-5ms per query).
- * With Redis cache: 80-95% hit rate, 20-50x faster response time.
- * See: https://github.com/SlavaMelanko/smela-back/issues/58
+ * Note: teamId is already validated by validateParams middleware
  */
 export const requireTeamAccess = createMiddleware<AppContext>(
   async (c, next) => {
     const teamId = c.req.param('teamId')!
     const { id: userId, role } = c.get('user')
 
-    // Admins and owners have access to all teams
+    // Admins bypass team membership check
     if (isAdmin(role)) {
       return next()
     }

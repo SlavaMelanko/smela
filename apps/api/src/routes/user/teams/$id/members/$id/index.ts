@@ -2,7 +2,13 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
+import {
+  requirePermission,
+  requireTeamAccess,
+  validateBody,
+  validateParams
+} from '@/middleware'
+import { Permission } from '@/types'
 
 import {
   cancelMemberInviteHandler,
@@ -18,6 +24,7 @@ export const teamsMemberByIdRoute = new Hono<AppContext>()
 teamsMemberByIdRoute.get(
   '/',
   validateParams(memberIdParamsSchema),
+  requirePermission(Permission.ViewTeams),
   requireTeamAccess,
   getTeamMemberHandler
 )
@@ -26,6 +33,7 @@ teamsMemberByIdRoute.patch(
   '/',
   validateParams(memberIdParamsSchema),
   validateBody(updateTeamMemberBodySchema),
+  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
   updateTeamMemberHandler
 )
@@ -33,6 +41,7 @@ teamsMemberByIdRoute.patch(
 teamsMemberByIdRoute.delete(
   '/',
   validateParams(memberIdParamsSchema),
+  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
   removeTeamMemberHandler
 )
@@ -40,6 +49,7 @@ teamsMemberByIdRoute.delete(
 teamsMemberByIdRoute.post(
   '/resend-invite',
   validateParams(memberIdParamsSchema),
+  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
   resendMemberInviteHandler
 )
@@ -47,6 +57,7 @@ teamsMemberByIdRoute.post(
 teamsMemberByIdRoute.post(
   '/cancel-invite',
   validateParams(memberIdParamsSchema),
+  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
   cancelMemberInviteHandler
 )
