@@ -57,3 +57,9 @@
   writing with bun:test and mocking patterns
 - [service-integration](.claude/skills/service-integration/SKILL.md) — Modular
   design pattern for external service integrations
+
+### Shared
+
+- [rbac](.claude/skills/rbac/SKILL.md) — Role-based and permission-based access
+  control patterns across API and frontend (route guards, permission middleware,
+  JWT claims)
