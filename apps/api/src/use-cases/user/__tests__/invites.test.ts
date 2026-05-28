@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { Team, TeamMember, User } from '@/data'
+import type { TeamMember, TeamWithMemberCount, User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
@@ -18,7 +18,7 @@ const { TEAM_1, USER_1, USER_2 } = testUuids
 describe('inviteMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  let mockTeam: Team
+  let mockTeam: TeamWithMemberCount
   let mockInviter: User
   let mockTeamRepoFindById: any
   let mockUserRepoFindByEmail: any
@@ -50,7 +50,8 @@ describe('inviteMember', () => {
       website: 'https://acme.com',
       description: 'A test team',
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
+      updatedAt: new Date('2024-01-01'),
+      memberCount: 5
     }
 
     mockInviter = {
@@ -127,30 +128,22 @@ describe('inviteMember', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw NotFound when team does not exist', async () => {
-    mockTeamRepoFindById.mockImplementation(async () => undefined)
-
-    expect(inviteMember(TEAM_1, inviteParams, USER_2)).rejects.toThrow(AppError)
-    expect(inviteMember(TEAM_1, inviteParams, USER_2)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Team not found'
-    })
-  })
-
   it('should throw EmailAlreadyInUse when user email already exists', async () => {
     mockUserRepoFindByEmail.mockImplementation(async () => ({
       id: 'existing-user',
       email: 'john@example.com'
     }))
 
-    expect(inviteMember(TEAM_1, inviteParams, USER_2)).rejects.toThrow(AppError)
-    expect(inviteMember(TEAM_1, inviteParams, USER_2)).rejects.toMatchObject({
+    expect(inviteMember(mockTeam, inviteParams, USER_2)).rejects.toThrow(
+      AppError
+    )
+    expect(inviteMember(mockTeam, inviteParams, USER_2)).rejects.toMatchObject({
       code: ErrorCode.EmailAlreadyInUse
     })
   })
 
   it('should create user with pending status', async () => {
-    await inviteMember(TEAM_1, inviteParams, USER_2)
+    await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockUserRepoCreate).toHaveBeenCalledWith(
       {
@@ -164,7 +157,7 @@ describe('inviteMember', () => {
   })
 
   it('should add user to team with invitedBy', async () => {
-    await inviteMember(TEAM_1, inviteParams, USER_2)
+    await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoCreateMember).toHaveBeenCalledWith(
       {
@@ -178,7 +171,7 @@ describe('inviteMember', () => {
   })
 
   it('should send invitation email', async () => {
-    await inviteMember(TEAM_1, inviteParams, USER_2)
+    await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
       'John',
@@ -191,7 +184,7 @@ describe('inviteMember', () => {
   })
 
   it('should return member data with team details', async () => {
-    const result = await inviteMember(TEAM_1, inviteParams, USER_2)
+    const result = await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(result.member).toEqual({
       id: USER_1,
@@ -209,7 +202,7 @@ describe('inviteMember', () => {
 describe('resendMemberInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  let mockTeam: Team
+  let mockTeam: TeamWithMemberCount
   let mockMember: User
   let mockInviter: User
   let mockMembership: TeamMember
@@ -227,7 +220,8 @@ describe('resendMemberInvite', () => {
       website: 'https://acme.com',
       description: 'A test team',
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
+      updatedAt: new Date('2024-01-01'),
+      memberCount: 5
     }
 
     mockMember = {

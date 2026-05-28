@@ -1,3 +1,4 @@
+import type { TeamWithMemberCount } from '@/data'
 import type { PermissionsInput } from '@/types'
 
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
@@ -16,22 +17,17 @@ export interface InviteMemberInput {
 }
 
 export const inviteMember = async (
-  teamId: string,
+  team: TeamWithMemberCount,
   member: InviteMemberInput,
   inviterId: string
 ) => {
-  const [inviter, team, existingUser] = await Promise.all([
+  const [inviter, existingUser] = await Promise.all([
     userRepo.findById(inviterId),
-    teamRepo.findById(teamId),
     userRepo.findByEmail(member.email)
   ])
 
   if (!inviter) {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
-  if (!team) {
-    throw new AppError(ErrorCode.NotFound, 'Team not found')
   }
 
   if (existingUser) {
@@ -65,7 +61,7 @@ export const inviteMember = async (
     await teamRepo.createMember(
       {
         userId: newUser.id,
-        teamId,
+        teamId: team.id,
         position: member.position,
         invitedBy: inviterId
       },
