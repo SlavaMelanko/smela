@@ -20,48 +20,23 @@ const mockMember = {
 const mockParams = { teamId: testUuids.TEAM_1, memberId: testUuids.USER_1 }
 
 describe('getTeamMemberHandler', () => {
-  const moduleMocker = new ModuleMocker(import.meta.url)
-
   let mockContext: any
   let mockJson: any
-  let mockGetTeamMember: any
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
+      get: mock(() => mockMember),
       json: mockJson
     }
-    mockGetTeamMember = mock(async () => ({ member: mockMember }))
-
-    await moduleMocker.mock('@/use-cases/user', () => ({
-      getTeamMember: mockGetTeamMember
-    }))
   })
 
-  afterEach(async () => {
-    await moduleMocker.clear()
-  })
-
-  it('should call getTeamMember and return member with OK status', async () => {
+  it('should return targetMember from context with OK status', async () => {
     const result = await getTeamMemberHandler(mockContext)
 
-    expect(mockGetTeamMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1
-    )
+    expect(mockContext.get).toHaveBeenCalledWith('targetMember')
     expect(mockJson).toHaveBeenCalledWith({ member: mockMember }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
-  })
-
-  it('should propagate error when getTeamMember throws', async () => {
-    mockGetTeamMember.mockImplementation(async () => {
-      throw new Error('Member not found')
-    })
-
-    expect(getTeamMemberHandler(mockContext)).rejects.toThrow(
-      'Member not found'
-    )
   })
 })
 

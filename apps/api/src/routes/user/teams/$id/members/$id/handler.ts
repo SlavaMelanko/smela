@@ -1,7 +1,6 @@
 import { HttpStatus } from '@/net/http'
 import {
   cancelMemberInvite,
-  getTeamMember,
   removeTeamMember,
   resendMemberInvite,
   updateTeamMember
@@ -10,11 +9,9 @@ import {
 import type { MemberIdCtx, UpdateTeamMemberCtx } from './schema'
 
 export const getTeamMemberHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const targetMember = c.get('targetMember')!
 
-  const result = await getTeamMember(teamId, memberId)
-
-  return c.json(result, HttpStatus.OK)
+  return c.json({ member: targetMember }, HttpStatus.OK)
 }
 
 export const updateTeamMemberHandler = async (c: UpdateTeamMemberCtx) => {

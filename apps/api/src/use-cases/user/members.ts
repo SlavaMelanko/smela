@@ -8,16 +8,6 @@ export const getTeamMembers = async (teamId: string) => {
   return { members }
 }
 
-export const getTeamMember = async (teamId: string, memberId: string) => {
-  const member = await teamRepo.findMember(teamId, memberId)
-
-  if (!member) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
-  return { member }
-}
-
 export interface UpdateTeamMemberInput {
   membership?: {
     position?: string | null
