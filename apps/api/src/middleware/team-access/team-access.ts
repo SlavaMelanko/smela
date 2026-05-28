@@ -24,7 +24,7 @@ import { isAdmin } from '@/types'
 export const requireTeamAccess = createMiddleware<AppContext>(
   async (c, next) => {
     const teamId = c.req.param('teamId')!
-    const memberId = c.req.param('memberId') // Optional - only on member-specific routes
+    const memberId = c.req.param('memberId')
     const { id: currentUserId, role } = c.get('user')
 
     // Step 1: Always verify team exists (for all users)
@@ -32,6 +32,8 @@ export const requireTeamAccess = createMiddleware<AppContext>(
     if (!team) {
       throw new AppError(ErrorCode.NotFound, 'Team not found')
     }
+
+    c.set('team', team)
 
     // Step 2: Role-based member validation
     if (isAdmin(role)) {
@@ -41,31 +43,36 @@ export const requireTeamAccess = createMiddleware<AppContext>(
         if (!targetMember) {
           throw new AppError(ErrorCode.NotFound, 'Member not found')
         }
+        c.set('targetMember', targetMember)
       }
+      c.set('currentUser', undefined)
     } else {
       // Regular users: Must be team members + validate target member (if applicable)
       if (memberId) {
         // Member-specific routes: validate both current user and target member
-        const [currentUserMember, targetMember] = await Promise.all([
+        const [currentUser, targetMember] = await Promise.all([
           teamRepo.findMember(teamId, currentUserId),
           teamRepo.findMember(teamId, memberId)
         ])
 
-        if (!currentUserMember) {
+        if (!currentUser) {
           throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
         }
         if (!targetMember) {
           throw new AppError(ErrorCode.NotFound, 'Member not found')
         }
+
+        c.set('currentUser', currentUser)
+        c.set('targetMember', targetMember)
       } else {
         // Team-only routes: validate current user is team member
-        const currentUserMember = await teamRepo.findMember(
-          teamId,
-          currentUserId
-        )
-        if (!currentUserMember) {
+        const currentUser = await teamRepo.findMember(teamId, currentUserId)
+        if (!currentUser) {
           throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
         }
+
+        c.set('currentUser', currentUser)
+        c.set('targetMember', undefined)
       }
     }
 
