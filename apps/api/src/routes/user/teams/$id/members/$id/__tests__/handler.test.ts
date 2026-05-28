@@ -20,48 +20,23 @@ const mockMember = {
 const mockParams = { teamId: testUuids.TEAM_1, memberId: testUuids.USER_1 }
 
 describe('getTeamMemberHandler', () => {
-  const moduleMocker = new ModuleMocker(import.meta.url)
-
   let mockContext: any
   let mockJson: any
-  let mockGetTeamMember: any
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
+      get: mock(() => mockMember),
       json: mockJson
     }
-    mockGetTeamMember = mock(async () => ({ member: mockMember }))
-
-    await moduleMocker.mock('@/use-cases/user', () => ({
-      getTeamMember: mockGetTeamMember
-    }))
   })
 
-  afterEach(async () => {
-    await moduleMocker.clear()
-  })
-
-  it('should call getTeamMember and return member with OK status', async () => {
+  it('should return targetMember from context with OK status', async () => {
     const result = await getTeamMemberHandler(mockContext)
 
-    expect(mockGetTeamMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1
-    )
+    expect(mockContext.get).toHaveBeenCalledWith('targetMember')
     expect(mockJson).toHaveBeenCalledWith({ member: mockMember }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
-  })
-
-  it('should propagate error when getTeamMember throws', async () => {
-    mockGetTeamMember.mockImplementation(async () => {
-      throw new Error('Member not found')
-    })
-
-    expect(getTeamMemberHandler(mockContext)).rejects.toThrow(
-      'Member not found'
-    )
   })
 })
 
@@ -176,8 +151,23 @@ describe('resendMemberInviteHandler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
-      get: mock(() => ({ id: testUuids.USER_2 })),
+      get: mock((key: string) => {
+        if (key === 'team') {
+          return { id: testUuids.TEAM_1, name: 'Test Team' }
+        }
+        if (key === 'targetMember') {
+          return {
+            id: testUuids.USER_1,
+            firstName: 'John',
+            email: 'john@example.com'
+          }
+        }
+        if (key === 'user') {
+          return { id: testUuids.USER_2 }
+        }
+
+        return undefined
+      }),
       json: mockJson
     }
     mockResendMemberInvite = mock(async () => ({ success: true }))
@@ -195,8 +185,8 @@ describe('resendMemberInviteHandler', () => {
     const result = await resendMemberInviteHandler(mockContext)
 
     expect(mockResendMemberInvite).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1,
+      { id: testUuids.TEAM_1, name: 'Test Team' },
+      { id: testUuids.USER_1, firstName: 'John', email: 'john@example.com' },
       testUuids.USER_2
     )
     expect(mockJson).toHaveBeenCalledWith({ success: true }, HttpStatus.OK)
@@ -224,7 +214,11 @@ describe('cancelMemberInviteHandler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
+      get: mock(() => ({
+        id: testUuids.USER_1,
+        firstName: 'John',
+        email: 'john@example.com'
+      })),
       json: mockJson
     }
     mockCancelMemberInvite = mock(async () => ({ success: true }))
@@ -241,10 +235,11 @@ describe('cancelMemberInviteHandler', () => {
   it('should call cancelMemberInvite and return result with OK status', async () => {
     const result = await cancelMemberInviteHandler(mockContext)
 
-    expect(mockCancelMemberInvite).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1
-    )
+    expect(mockCancelMemberInvite).toHaveBeenCalledWith({
+      id: testUuids.USER_1,
+      firstName: 'John',
+      email: 'john@example.com'
+    })
     expect(mockJson).toHaveBeenCalledWith({ success: true }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
   })

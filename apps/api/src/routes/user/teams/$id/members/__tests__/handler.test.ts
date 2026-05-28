@@ -101,7 +101,16 @@ describe('createMemberHandler', () => {
           type === 'param' ? { teamId: testUuids.TEAM_1 } : body
         )
       },
-      get: mock(() => ({ id: testUuids.USER_1 })),
+      get: mock((key: string) => {
+        if (key === 'user') {
+          return { id: testUuids.USER_1 }
+        }
+        if (key === 'team') {
+          return { id: testUuids.TEAM_1, name: 'Test Team' }
+        }
+
+        return undefined
+      }),
       json: mockJson
     }
     mockInviteMember = mock(async () => ({
@@ -121,7 +130,7 @@ describe('createMemberHandler', () => {
     const result = await createMemberHandler(mockContext)
 
     expect(mockInviteMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
+      { id: testUuids.TEAM_1, name: 'Test Team' },
       body,
       testUuids.USER_1
     )

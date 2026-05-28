@@ -21,11 +21,11 @@ export const getTeamMembersHandler = async (c: TeamIdCtx) => {
 }
 
 export const createMemberHandler = async (c: InviteMemberCtx) => {
-  const { teamId } = c.req.valid('param')
+  const team = c.get('team')!
   const member = c.req.valid('json')
   const { id: inviterId } = c.get('user')
 
-  const result = await inviteMember(teamId, member, inviterId)
+  const result = await inviteMember(team, member, inviterId)
 
   return c.json(result, HttpStatus.CREATED)
 }

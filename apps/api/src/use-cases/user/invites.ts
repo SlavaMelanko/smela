@@ -1,3 +1,4 @@
+import type { TeamMemberDetails, TeamWithMemberCount } from '@/data'
 import type { PermissionsInput } from '@/types'
 
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
@@ -16,22 +17,17 @@ export interface InviteMemberInput {
 }
 
 export const inviteMember = async (
-  teamId: string,
+  team: TeamWithMemberCount,
   member: InviteMemberInput,
   inviterId: string
 ) => {
-  const [inviter, team, existingUser] = await Promise.all([
+  const [inviter, existingUser] = await Promise.all([
     userRepo.findById(inviterId),
-    teamRepo.findById(teamId),
     userRepo.findByEmail(member.email)
   ])
 
   if (!inviter) {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
-  if (!team) {
-    throw new AppError(ErrorCode.NotFound, 'Team not found')
   }
 
   if (existingUser) {
@@ -65,7 +61,7 @@ export const inviteMember = async (
     await teamRepo.createMember(
       {
         userId: newUser.id,
-        teamId,
+        teamId: team.id,
         position: member.position,
         invitedBy: inviterId
       },
@@ -115,31 +111,14 @@ export const inviteMember = async (
 }
 
 export const resendMemberInvite = async (
-  teamId: string,
-  memberId: string,
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
   inviterId: string
 ) => {
-  const [inviter, team, member, membership] = await Promise.all([
-    userRepo.findById(inviterId),
-    teamRepo.findById(teamId),
-    userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId)
-  ])
+  const inviter = await userRepo.findById(inviterId)
 
   if (!inviter) {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
-  if (!team) {
-    throw new AppError(ErrorCode.NotFound, 'Team not found')
-  }
-
-  if (!member) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
-  if (!membership) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found in this team')
   }
 
   if (member.status !== UserStatus.Pending) {
@@ -152,8 +131,8 @@ export const resendMemberInvite = async (
   const token = await db.transaction(async tx => {
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
     await tokenRepo.issue(
-      memberId,
-      { userId: memberId, type, token, expiresAt },
+      member.id,
+      { userId: member.id, type, token, expiresAt },
       tx
     )
 
@@ -172,16 +151,7 @@ export const resendMemberInvite = async (
   return { success: true }
 }
 
-export const cancelMemberInvite = async (teamId: string, memberId: string) => {
-  const [member, membership] = await Promise.all([
-    userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId)
-  ])
-
-  if (!member || !membership) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
+export const cancelMemberInvite = async (member: TeamMemberDetails) => {
   if (member.status !== UserStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
@@ -190,8 +160,8 @@ export const cancelMemberInvite = async (teamId: string, memberId: string) => {
   }
 
   await db.transaction(async tx => {
-    await tokenRepo.deprecate(memberId, TokenType.UserInvite, tx)
-    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
+    await tokenRepo.deprecate(member.id, TokenType.UserInvite, tx)
+    await userRepo.update(member.id, { status: UserStatus.Archived }, tx)
   })
 
   return { success: true }
