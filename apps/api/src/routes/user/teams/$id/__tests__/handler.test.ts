@@ -8,8 +8,11 @@ import { getTeamHandler, updateTeamHandler } from '../handler'
 const mockTeam = {
   id: testUuids.TEAM_1,
   name: 'Engineering',
+  website: 'https://example.com',
+  description: 'Engineering team',
   createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01')
+  updatedAt: new Date('2024-01-01'),
+  memberCount: 5
 }
 
 describe('getTeamHandler', () => {
@@ -17,39 +20,44 @@ describe('getTeamHandler', () => {
 
   let mockContext: any
   let mockJson: any
-  let mockGetTeam: any
+  let mockGet: any
 
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
+    mockGet = mock((key: string) => {
+      if (key === 'team') {return mockTeam}
+
+      return undefined
+    })
     mockContext = {
       req: { valid: mock(() => ({ teamId: testUuids.TEAM_1 })) },
-      json: mockJson
+      json: mockJson,
+      get: mockGet
     }
-    mockGetTeam = mock(async () => ({ team: mockTeam }))
-
-    await moduleMocker.mock('@/use-cases/user', () => ({
-      getTeam: mockGetTeam
-    }))
   })
 
   afterEach(async () => {
     await moduleMocker.clear()
   })
 
-  it('should call getTeam and return team with OK status', async () => {
+  it('should get team from context and return with OK status', async () => {
     const result = await getTeamHandler(mockContext)
 
-    expect(mockGetTeam).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockGet).toHaveBeenCalledWith('team')
     expect(mockJson).toHaveBeenCalledWith({ team: mockTeam }, HttpStatus.OK)
     expect(result.status).toBe(HttpStatus.OK)
   })
 
-  it('should propagate error when getTeam throws', async () => {
-    mockGetTeam.mockImplementation(async () => {
-      throw new Error('Team not found')
+  it('should handle undefined team from context', async () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'team') {return undefined}
+
+      return undefined
     })
 
-    expect(getTeamHandler(mockContext)).rejects.toThrow('Team not found')
+    await getTeamHandler(mockContext)
+
+    expect(mockJson).toHaveBeenCalledWith({ team: undefined }, HttpStatus.OK)
   })
 })
 
@@ -98,9 +106,9 @@ describe('updateTeamHandler', () => {
 
   it('should propagate error when updateTeam throws', async () => {
     mockUpdateTeam.mockImplementation(async () => {
-      throw new Error('Team not found')
+      throw new Error('Database error')
     })
 
-    expect(updateTeamHandler(mockContext)).rejects.toThrow('Team not found')
+    expect(updateTeamHandler(mockContext)).rejects.toThrow('Database error')
   })
 })

@@ -9,4 +9,4 @@ export {
   updateTeamMember
 } from './members'
 
-export { getTeam, updateTeam } from './teams'
+export { updateTeam } from './teams'
