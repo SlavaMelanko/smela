@@ -1,4 +1,4 @@
-import type { TeamWithMemberCount } from '@/data'
+import type { TeamMemberDetails, TeamWithMemberCount } from '@/data'
 import type { PermissionsInput } from '@/types'
 
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
@@ -111,31 +111,14 @@ export const inviteMember = async (
 }
 
 export const resendMemberInvite = async (
-  teamId: string,
-  memberId: string,
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
   inviterId: string
 ) => {
-  const [inviter, team, member, membership] = await Promise.all([
-    userRepo.findById(inviterId),
-    teamRepo.findById(teamId),
-    userRepo.findById(memberId),
-    teamRepo.findMember(teamId, memberId)
-  ])
+  const inviter = await userRepo.findById(inviterId)
 
   if (!inviter) {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
-  if (!team) {
-    throw new AppError(ErrorCode.NotFound, 'Team not found')
-  }
-
-  if (!member) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
-  if (!membership) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found in this team')
   }
 
   if (member.status !== UserStatus.Pending) {
@@ -148,8 +131,8 @@ export const resendMemberInvite = async (
   const token = await db.transaction(async tx => {
     const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
     await tokenRepo.issue(
-      memberId,
-      { userId: memberId, type, token, expiresAt },
+      member.id,
+      { userId: member.id, type, token, expiresAt },
       tx
     )
 

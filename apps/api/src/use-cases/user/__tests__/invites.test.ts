@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TeamMember, TeamWithMemberCount, User } from '@/data'
+import type {
+  TeamMember,
+  TeamMemberDetails,
+  TeamWithMemberCount,
+  User
+} from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
@@ -203,12 +208,9 @@ describe('resendMemberInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeam: TeamWithMemberCount
-  let mockMember: User
+  let mockTargetMember: TeamMemberDetails
   let mockInviter: User
-  let mockMembership: TeamMember
-  let mockTeamRepoFindById: any
   let mockUserRepoFindById: any
-  let mockTeamRepoFindMember: any
   let mockTokenRepoIssue: any
   let mockTransaction: any
   let mockEmailAgent: any
@@ -224,15 +226,18 @@ describe('resendMemberInvite', () => {
       memberCount: 5
     }
 
-    mockMember = {
+    mockTargetMember = {
       id: USER_1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Pending,
-      role: Role.User,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
+      updatedAt: new Date('2024-01-01'),
+      lastActive: null,
+      position: 'Developer',
+      inviter: null,
+      joinedAt: new Date('2024-01-01')
     }
 
     mockInviter = {
@@ -246,27 +251,7 @@ describe('resendMemberInvite', () => {
       updatedAt: new Date('2024-01-01')
     }
 
-    mockMembership = {
-      id: 1,
-      userId: USER_1,
-      teamId: TEAM_1,
-      position: 'Developer',
-      invitedBy: USER_2,
-      joinedAt: new Date('2024-01-01')
-    }
-
-    mockTeamRepoFindById = mock(async () => mockTeam)
-    mockUserRepoFindById = mock(async (id: string) => {
-      if (id === USER_1) {
-        return mockMember
-      }
-      if (id === USER_2) {
-        return mockInviter
-      }
-
-      return undefined
-    })
-    mockTeamRepoFindMember = mock(async () => mockMembership)
+    mockUserRepoFindById = mock(async () => mockInviter)
     mockTokenRepoIssue = mock(async () => {})
     mockTransaction = mock(
       async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
@@ -278,10 +263,6 @@ describe('resendMemberInvite', () => {
     }
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: {
-        findById: mockTeamRepoFindById,
-        findMember: mockTeamRepoFindMember
-      },
       userRepo: { findById: mockUserRepoFindById },
       tokenRepo: { issue: mockTokenRepoIssue },
       db: { transaction: mockTransaction }
@@ -305,79 +286,36 @@ describe('resendMemberInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw NotFound when team does not exist', async () => {
-    mockTeamRepoFindById.mockImplementation(async () => undefined)
-
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toThrow(AppError)
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Team not found'
-    })
-  })
-
-  it('should throw NotFound when member does not exist', async () => {
-    mockUserRepoFindById.mockImplementation(async (id: string) => {
-      if (id === USER_2) {
-        return mockInviter
-      }
-
-      return undefined
-    })
-
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toThrow(AppError)
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Member not found'
-    })
-  })
-
-  it('should throw NotFound when member not in team', async () => {
-    mockTeamRepoFindMember.mockImplementation(async () => undefined)
-
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toThrow(AppError)
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toMatchObject({
-      code: ErrorCode.NotFound,
-      message: 'Member not found in this team'
-    })
-  })
-
   it('should throw BadRequest when member already accepted invitation', async () => {
-    mockUserRepoFindById.mockImplementation(async (id: string) => {
-      if (id === USER_1) {
-        return { ...mockMember, status: UserStatus.Active }
-      }
-      if (id === USER_2) {
-        return mockInviter
-      }
+    mockTargetMember.status = UserStatus.Active
 
-      return undefined
-    })
-
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toThrow(AppError)
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toMatchObject({
+    expect(
+      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
+    ).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
       message: 'Member has already accepted invitation'
     })
   })
 
   it('should throw NotFound when inviter does not exist', async () => {
-    mockUserRepoFindById.mockImplementation(async (id: string) => {
-      if (id === USER_1) {
-        return mockMember
-      }
+    mockUserRepoFindById.mockImplementation(async () => undefined)
 
-      return undefined
-    })
-
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toThrow(AppError)
-    expect(resendMemberInvite(TEAM_1, USER_1, USER_2)).rejects.toMatchObject({
+    expect(
+      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
+    ).rejects.toThrow(AppError)
+    expect(
+      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
+    ).rejects.toMatchObject({
       code: ErrorCode.NotFound,
       message: 'Inviter not found'
     })
   })
 
   it('should issue new token', async () => {
-    await resendMemberInvite(TEAM_1, USER_1, USER_2)
+    await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockTokenRepoIssue).toHaveBeenCalledWith(
       USER_1,
@@ -392,7 +330,7 @@ describe('resendMemberInvite', () => {
   })
 
   it('should send invitation email with current inviter name', async () => {
-    await resendMemberInvite(TEAM_1, USER_1, USER_2)
+    await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
       'John',
@@ -405,7 +343,7 @@ describe('resendMemberInvite', () => {
   })
 
   it('should return success true', async () => {
-    const result = await resendMemberInvite(TEAM_1, USER_1, USER_2)
+    const result = await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(result).toEqual({ success: true })
   })

@@ -151,8 +151,23 @@ describe('resendMemberInviteHandler', () => {
   beforeEach(async () => {
     mockJson = mock((data: any, status: number) => ({ data, status }))
     mockContext = {
-      req: { valid: mock(() => mockParams) },
-      get: mock(() => ({ id: testUuids.USER_2 })),
+      get: mock((key: string) => {
+        if (key === 'team') {
+          return { id: testUuids.TEAM_1, name: 'Test Team' }
+        }
+        if (key === 'targetMember') {
+          return {
+            id: testUuids.USER_1,
+            firstName: 'John',
+            email: 'john@example.com'
+          }
+        }
+        if (key === 'user') {
+          return { id: testUuids.USER_2 }
+        }
+
+        return undefined
+      }),
       json: mockJson
     }
     mockResendMemberInvite = mock(async () => ({ success: true }))
@@ -170,8 +185,8 @@ describe('resendMemberInviteHandler', () => {
     const result = await resendMemberInviteHandler(mockContext)
 
     expect(mockResendMemberInvite).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
-      testUuids.USER_1,
+      { id: testUuids.TEAM_1, name: 'Test Team' },
+      { id: testUuids.USER_1, firstName: 'John', email: 'john@example.com' },
       testUuids.USER_2
     )
     expect(mockJson).toHaveBeenCalledWith({ success: true }, HttpStatus.OK)

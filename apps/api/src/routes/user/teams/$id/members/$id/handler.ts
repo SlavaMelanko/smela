@@ -24,10 +24,11 @@ export const updateTeamMemberHandler = async (c: UpdateTeamMemberCtx) => {
 }
 
 export const resendMemberInviteHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const team = c.get('team')!
+  const targetMember = c.get('targetMember')!
   const { id: inviterId } = c.get('user')
 
-  const result = await resendMemberInvite(teamId, memberId, inviterId)
+  const result = await resendMemberInvite(team, targetMember, inviterId)
 
   return c.json(result, HttpStatus.OK)
 }
