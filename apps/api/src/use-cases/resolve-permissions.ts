@@ -1,4 +1,5 @@
 import type { Permission, PermissionMap } from '@/types'
+import type Resource from '@/types/resource'
 
 import { rbacRepo } from '@/data'
 
@@ -40,7 +41,9 @@ export const resolvePermissionMap = async (
 ): Promise<PermissionMap> => {
   const rows = await rbacRepo.findUserPermissions(userId)
 
-  const result: PermissionMap = baseline ? structuredClone(baseline) : {}
+  const result: PermissionMap<Resource> = baseline
+    ? structuredClone(baseline)
+    : {}
 
   for (const row of rows) {
     const resource = result[row.resource] ?? {}

@@ -7,11 +7,7 @@ export {
   getMemberDefaultPermissions,
   default as Permission
 } from './permission'
-export type {
-  AdminPermissionMap,
-  PermissionMap,
-  PermissionsInput
-} from './permission'
+export type { PermissionMap, PermissionsInput } from './permission'
 export { default as Resource } from './resource'
 export {
   isAdmin,
