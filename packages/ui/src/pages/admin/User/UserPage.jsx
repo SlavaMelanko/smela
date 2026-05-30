@@ -23,7 +23,7 @@ export const UserPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
   const { t } = useLocale()
-  const { can } = useCurrentUser()
+  const { user: me, can } = useCurrentUser()
 
   const {
     data: user,
@@ -36,7 +36,7 @@ export const UserPage = () => {
   })
 
   const canViewTeams = can('view:teams')
-  const canManageTeams = can('manage:teams')
+  const canManageTeams = can('manage:teams') && me?.id !== id
   const hasMembership = !isPending && !!user?.team && canViewTeams
   const [activeTab, setActiveTab] = useHashTab(
     getUserTabValues(hasMembership, canManageTeams),

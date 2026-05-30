@@ -22,7 +22,7 @@ import { ProfileTab } from './ProfileTab'
 export const TeamMemberPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
-  const { team: myTeam, can } = useCurrentUser()
+  const { user: me, team: myTeam, can } = useCurrentUser()
   const { t } = useLocale()
 
   const {
@@ -36,7 +36,8 @@ export const TeamMemberPage = () => {
     initialData: state?.member ? { member: state.member } : undefined
   })
 
-  const canManageTeams = can('manage:teams')
+  const isOwnProfile = me?.id === id
+  const canManageTeams = can('manage:teams') && !isOwnProfile
 
   const [activeTab, setActiveTab] = useHashTab(
     getUserTabValues(true, canManageTeams),
