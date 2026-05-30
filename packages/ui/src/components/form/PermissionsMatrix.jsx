@@ -58,11 +58,7 @@ const ActionToggle = ({ action, checked, onCheckedChange, disabled }) => {
     <Switch
       checked={checked}
       disabled={disabled}
-      onClick={() => {
-        if (!disabled && onCheckedChange) {
-          onCheckedChange(!checked)
-        }
-      }}
+      onClick={() => onCheckedChange?.(!checked)}
       aria-label={t(`permissions.actions.values.${action}`)}
     />
   )
