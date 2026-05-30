@@ -235,6 +235,11 @@
     },
     "name": "Permissions",
     "resources": {
+      "hints": {
+        "dashboard": "Key metrics overview. View is always enabled to ensure root navigation works correctly.",
+        "teams": "Team details, members, and their access levels.",
+        "users": "Personal details of individual accounts."
+      },
       "name": "Resources",
       "values": {
         "dashboard": "Dashboard",
