@@ -3,6 +3,7 @@ export { default as AuthProvider } from './auth-providers'
 export {
   getAdminBasePermissions,
   getAdminDefaultPermissions,
+  getMemberBasePermissions,
   getMemberDefaultPermissions,
   default as Permission
 } from './permission'

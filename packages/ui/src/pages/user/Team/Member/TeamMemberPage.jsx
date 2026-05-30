@@ -16,12 +16,13 @@ import { Navigate, useLocation, useParams } from '@ui/hooks/useRouter'
 import { userTeamQueryOptions, useTeamMember } from '@ui/hooks/useTeam'
 
 import { MembershipTab } from './MembershipTab'
+import { PermissionsTab } from './PermissionsTab'
 import { ProfileTab } from './ProfileTab'
 
 export const TeamMemberPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
-  const { team: myTeam } = useCurrentUser()
+  const { team: myTeam, can } = useCurrentUser()
   const { t } = useLocale()
 
   const {
@@ -35,8 +36,10 @@ export const TeamMemberPage = () => {
     initialData: state?.member ? { member: state.member } : undefined
   })
 
+  const canManageTeams = can('manage:teams')
+
   const [activeTab, setActiveTab] = useHashTab(
-    getUserTabValues(true),
+    getUserTabValues(true, canManageTeams),
     Tab.PROFILE
   )
 
@@ -59,13 +62,22 @@ export const TeamMemberPage = () => {
       </div>
       <UserPageHeader user={member} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsLine tabs={getUserTabs(true, t)} />
+        <TabsLine tabs={getUserTabs(true, canManageTeams, t)} />
         <TabsContent value={Tab.PROFILE}>
           <ProfileTab member={member} team={myTeam} />
         </TabsContent>
         <TabsContent value={Tab.MEMBERSHIP}>
           <MembershipTab member={member} team={myTeam} />
         </TabsContent>
+        {canManageTeams && (
+          <TabsContent value={Tab.PERMISSIONS}>
+            <PermissionsTab
+              teamId={myTeam.id}
+              memberId={id}
+              canManageTeams={canManageTeams}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </PageContent>
   )

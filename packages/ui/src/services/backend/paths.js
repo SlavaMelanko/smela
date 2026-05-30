@@ -25,6 +25,7 @@ export const TEAMS_PATH = '/api/v1/user/verified/teams/:teamId'
 export const TEAM_MEMBERS_PATH = `${TEAMS_PATH}/members`
 export const TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH = `${TEAM_MEMBERS_PATH}/default-permissions`
 export const TEAM_MEMBER_PATH = `${TEAM_MEMBERS_PATH}/:memberId`
+export const TEAM_MEMBER_PERMISSIONS_PATH = `${TEAM_MEMBER_PATH}/permissions`
 export const TEAM_MEMBER_RESEND_INVITE_PATH = `${TEAM_MEMBER_PATH}/resend-invite`
 export const TEAM_MEMBER_CANCEL_INVITE_PATH = `${TEAM_MEMBER_PATH}/cancel-invite`
 

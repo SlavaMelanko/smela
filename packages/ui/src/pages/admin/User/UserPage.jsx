@@ -16,6 +16,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useLocation, useParams } from '@ui/hooks/useRouter'
 
 import { MembershipTab } from './MembershipTab'
+import { PermissionsTab } from './PermissionsTab'
 import { ProfileTab } from './ProfileTab'
 
 export const UserPage = () => {
@@ -38,7 +39,7 @@ export const UserPage = () => {
   const canManageTeams = can('manage:teams')
   const hasMembership = !isPending && !!user?.team && canViewTeams
   const [activeTab, setActiveTab] = useHashTab(
-    getUserTabValues(hasMembership),
+    getUserTabValues(hasMembership, canManageTeams),
     Tab.PROFILE
   )
 
@@ -59,7 +60,7 @@ export const UserPage = () => {
       </div>
       <UserPageHeader user={user} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsLine tabs={getUserTabs(hasMembership, t)} />
+        <TabsLine tabs={getUserTabs(hasMembership, canManageTeams, t)} />
         <TabsContent value={Tab.PROFILE}>
           <ProfileTab user={user} canManageUsers={canManageUsers} />
         </TabsContent>
@@ -68,6 +69,15 @@ export const UserPage = () => {
             <MembershipTab
               user={user}
               team={user?.team}
+              canManageTeams={canManageTeams}
+            />
+          </TabsContent>
+        )}
+        {hasMembership && canManageTeams && (
+          <TabsContent value={Tab.PERMISSIONS}>
+            <PermissionsTab
+              teamId={user?.team?.id}
+              memberId={id}
               canManageTeams={canManageTeams}
             />
           </TabsContent>

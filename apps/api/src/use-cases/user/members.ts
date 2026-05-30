@@ -1,5 +1,8 @@
-import { db, teamRepo, userRepo } from '@/data'
-import { UserStatus } from '@/types'
+import type { PermissionsInput } from '@/types'
+
+import { db, rbacRepo, teamRepo, userRepo } from '@/data'
+import { getMemberBasePermissions, UserStatus } from '@/types'
+import { resolvePermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
@@ -37,6 +40,29 @@ export const updateTeamMember = async (
   const member = await teamRepo.findMember(teamId, memberId)
 
   return { member }
+}
+
+export const getTeamMemberPermissions = async (memberId: string) => {
+  const permissions = await resolvePermissionMap(
+    memberId,
+    getMemberBasePermissions()
+  )
+
+  return { permissions }
+}
+
+export const updateTeamMemberPermissions = async (
+  memberId: string,
+  permissions: PermissionsInput
+) => {
+  await rbacRepo.setUserPermissions(memberId, permissions)
+
+  const updated = await resolvePermissionMap(
+    memberId,
+    getMemberBasePermissions()
+  )
+
+  return { permissions: updated }
 }
 
 export const removeTeamMember = async (teamId: string, memberId: string) => {

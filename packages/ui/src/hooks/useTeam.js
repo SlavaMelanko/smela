@@ -19,6 +19,10 @@ export const teamKeys = {
   memberDefaultPermissions: teamId => [
     ...teamKeys.members(teamId),
     'defaultPermissions'
+  ],
+  memberPermissions: (teamId, memberId) => [
+    ...teamKeys.member(teamId, memberId),
+    'permissions'
   ]
 }
 
@@ -141,16 +145,6 @@ export const useTeamMembers = (teamId, options = {}) => {
   })
 }
 
-export const useTeamMemberDefaultPermissions = teamId => {
-  return useQuery({
-    queryKey: teamKeys.memberDefaultPermissions(teamId),
-    queryFn: () => teamApi.getMemberDefaultPermissions(teamId),
-    select: data => data?.permissions,
-    enabled: !!teamId,
-    ...teamQueryOptions
-  })
-}
-
 export const useTeamMember = (teamId, memberId, options = {}) => {
   return useQuery({
     queryKey: teamKeys.member(teamId, memberId),
@@ -225,6 +219,50 @@ export const useUpdateTeamMember = (teamId, memberId, selfId) => {
           }
         })
       }
+    }
+  })
+}
+
+export const useTeamMemberDefaultPermissions = teamId => {
+  return useQuery({
+    queryKey: teamKeys.memberDefaultPermissions(teamId),
+    queryFn: () => teamApi.getMemberDefaultPermissions(teamId),
+    select: data => data?.permissions,
+    enabled: !!teamId,
+    ...teamQueryOptions
+  })
+}
+
+export const useTeamMemberPermissions = (teamId, memberId) => {
+  return useQuery({
+    queryKey: teamKeys.memberPermissions(teamId, memberId),
+    queryFn: () => teamApi.getMemberPermissions(teamId, memberId),
+    select: data => data?.permissions,
+    enabled: !!teamId && !!memberId,
+    ...userTeamQueryOptions
+  })
+}
+
+export const useUpdateTeamMemberPermissions = (teamId, memberId) => {
+  const queryClient = useQueryClient()
+  const queryKey = teamKeys.memberPermissions(teamId, memberId)
+
+  return useMutation({
+    mutationFn: data => teamApi.updateMemberPermissions(teamId, memberId, data),
+    onMutate: async data => {
+      await queryClient.cancelQueries({ queryKey })
+
+      const previous = queryClient.getQueryData(queryKey)
+
+      queryClient.setQueryData(queryKey, data)
+
+      return { previous }
+    },
+    onError: (_error, _data, context) => {
+      queryClient.setQueryData(queryKey, context.previous)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey })
     }
   })
 }

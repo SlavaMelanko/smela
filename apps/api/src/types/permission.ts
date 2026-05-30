@@ -26,8 +26,8 @@ enum Permission {
   ManageAdmins = 'manage:admins'
 }
 
-// All resources and actions an admin can have, all set to false.
-// Used as a baseline before merging stored permissions so frontend always gets a full map
+// Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
+// Default: permissions granted on creation.
 export const getAdminBasePermissions = (): AdminPermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false },
   [Resource.Users]: { [Action.View]: false, [Action.Manage]: false },
@@ -41,7 +41,14 @@ export const getAdminDefaultPermissions = (): AdminPermissionMap => ({
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
-export const getMemberDefaultPermissions = () => ({
+// Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
+// Default: permissions granted on creation.
+export const getMemberBasePermissions = (): PermissionMap => ({
+  [Resource.Dashboard]: { [Action.View]: false },
+  [Resource.Teams]: { [Action.View]: false }
+})
+
+export const getMemberDefaultPermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
 })

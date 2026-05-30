@@ -23,7 +23,7 @@ export const getAdminTabs = t => [
 
 export const getAdminTabValues = () => getAdminTabs(null).map(tab => tab.value)
 
-export const getUserTabs = (hasMembership, t) => {
+export const getUserTabs = (hasMembership, canManageTeams, t) => {
   const tabs = [
     {
       value: ProfileTab.PROFILE,
@@ -40,11 +40,19 @@ export const getUserTabs = (hasMembership, t) => {
     })
   }
 
+  if (hasMembership && canManageTeams) {
+    tabs.push({
+      value: ProfileTab.PERMISSIONS,
+      icon: Key,
+      label: () => t('permissions.name')
+    })
+  }
+
   return tabs
 }
 
-export const getUserTabValues = hasMembership =>
-  getUserTabs(hasMembership, null).map(tab => tab.value)
+export const getUserTabValues = (hasMembership, canManageTeams) =>
+  getUserTabs(hasMembership, canManageTeams, null).map(tab => tab.value)
 
 export const getProfileTabs = t => [
   {
