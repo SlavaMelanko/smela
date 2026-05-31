@@ -19,6 +19,7 @@ import { MembershipTab } from './MembershipTab'
 import { PermissionsTab } from './PermissionsTab'
 import { ProfileTab } from './ProfileTab'
 
+// Mirror: packages/ui/src/pages/user/Team/Member/TeamMemberPage.jsx
 export const UserPage = () => {
   const { id } = useParams()
   const { state } = useLocation()

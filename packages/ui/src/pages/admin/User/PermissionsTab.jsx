@@ -4,6 +4,7 @@ import {
   useUpdateTeamMemberPermissions
 } from '@ui/hooks/useTeam'
 
+// Identical: packages/ui/src/pages/user/Team/Member/PermissionsTab.jsx
 export const PermissionsTab = ({
   teamId,
   memberId,
