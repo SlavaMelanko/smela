@@ -37,10 +37,13 @@ export const TeamMemberPage = () => {
   })
 
   const isOwnProfile = me?.id === id
-  const canManageTeams = can('manage:teams') && !isOwnProfile
+  const canViewTeams = can('view:teams')
+  const canManageTeams = can('manage:teams')
+
+  const hasMembership = !isPending && !!myTeam && canViewTeams
 
   const [activeTab, setActiveTab] = useHashTab(
-    getUserTabValues(true, canManageTeams),
+    getUserTabValues(hasMembership, canManageTeams),
     Tab.PROFILE
   )
 
@@ -63,19 +66,29 @@ export const TeamMemberPage = () => {
       </div>
       <UserPageHeader user={member} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsLine tabs={getUserTabs(true, canManageTeams, t)} />
+        <TabsLine tabs={getUserTabs(hasMembership, canManageTeams, t)} />
         <TabsContent value={Tab.PROFILE}>
-          <ProfileTab member={member} team={myTeam} />
+          <ProfileTab
+            member={member}
+            team={myTeam}
+            canManageUsers={canManageTeams || isOwnProfile}
+          />
         </TabsContent>
-        <TabsContent value={Tab.MEMBERSHIP}>
-          <MembershipTab member={member} team={myTeam} />
-        </TabsContent>
-        {canManageTeams && (
+        {hasMembership && canViewTeams && (
+          <TabsContent value={Tab.MEMBERSHIP}>
+            <MembershipTab
+              member={member}
+              team={myTeam}
+              canManageTeams={canManageTeams && !isOwnProfile}
+            />
+          </TabsContent>
+        )}
+        {hasMembership && canManageTeams && (
           <TabsContent value={Tab.PERMISSIONS}>
             <PermissionsTab
-              teamId={myTeam.id}
               memberId={id}
-              canManageTeams={canManageTeams}
+              teamId={myTeam.id}
+              canManageTeams={canManageTeams && !isOwnProfile}
             />
           </TabsContent>
         )}

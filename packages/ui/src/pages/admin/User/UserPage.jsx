@@ -23,7 +23,7 @@ export const UserPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
   const { t } = useLocale()
-  const { user: me, can } = useCurrentUser()
+  const { can } = useCurrentUser()
 
   const {
     data: user,
@@ -36,14 +36,14 @@ export const UserPage = () => {
   })
 
   const canViewTeams = can('view:teams')
-  const canManageTeams = can('manage:teams') && me?.id !== id
-  const hasMembership = !isPending && !!user?.team && canViewTeams
+  const canManageTeams = can('manage:teams')
+
+  const hasUserMembership = !isPending && !!user?.team
+
   const [activeTab, setActiveTab] = useHashTab(
-    getUserTabValues(hasMembership, canManageTeams),
+    getUserTabValues(hasUserMembership, canManageTeams),
     Tab.PROFILE
   )
-
-  const canManageUsers = can('manage:users')
 
   if (isError) {
     return <ErrorState error={error} onRetry={refetch} />
@@ -60,11 +60,11 @@ export const UserPage = () => {
       </div>
       <UserPageHeader user={user} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsLine tabs={getUserTabs(hasMembership, canManageTeams, t)} />
+        <TabsLine tabs={getUserTabs(hasUserMembership, canManageTeams, t)} />
         <TabsContent value={Tab.PROFILE}>
-          <ProfileTab user={user} canManageUsers={canManageUsers} />
+          <ProfileTab user={user} />
         </TabsContent>
-        {hasMembership && (
+        {hasUserMembership && canViewTeams && (
           <TabsContent value={Tab.MEMBERSHIP}>
             <MembershipTab
               user={user}
@@ -73,7 +73,7 @@ export const UserPage = () => {
             />
           </TabsContent>
         )}
-        {hasMembership && canManageTeams && (
+        {hasUserMembership && canManageTeams && (
           <TabsContent value={Tab.PERMISSIONS}>
             <PermissionsTab
               teamId={user?.team?.id}
