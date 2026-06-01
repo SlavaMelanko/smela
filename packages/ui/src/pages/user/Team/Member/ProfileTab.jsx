@@ -2,16 +2,13 @@ import { FieldName, ProfileSection } from '@ui/components/profile'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useUpdateTeamMember } from '@ui/hooks/useTeam'
 
-export const ProfileTab = ({ team, member }) => {
-  const { user: me, can } = useCurrentUser()
+export const ProfileTab = ({ team, member, canManageUsers = false }) => {
+  const { user: me } = useCurrentUser()
   const { mutate, isPending: isUpdating } = useUpdateTeamMember(
     team?.id,
     member?.id,
     me?.id
   )
-
-  const isOwnProfile = me?.id === member?.id
-  const canManageTeams = can('manage:teams')
 
   const update = (data, options) => mutate({ member: data }, options)
 
@@ -22,7 +19,7 @@ export const ProfileTab = ({ team, member }) => {
       isUpdating={isUpdating}
       formFields={{ [FieldName.STATUS]: false }}
       // Allow editing own profile regardless of team permissions
-      canManageUsers={isOwnProfile || canManageTeams}
+      canManageUsers={canManageUsers}
     />
   )
 }

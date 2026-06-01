@@ -17,9 +17,12 @@ import {
   resendMemberInviteHandler,
   updateTeamMemberHandler
 } from './handler'
+import { teamMemberPermissionsRoute } from './permissions'
 import { memberIdParamsSchema, updateTeamMemberBodySchema } from './schema'
 
 export const teamsMemberByIdRoute = new Hono<AppContext>()
+
+teamsMemberByIdRoute.route('/permissions', teamMemberPermissionsRoute)
 
 teamsMemberByIdRoute.get(
   '/',
