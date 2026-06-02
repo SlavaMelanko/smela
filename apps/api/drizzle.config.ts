@@ -12,7 +12,7 @@ const createDbUrl = () => {
     POSTGRES_PASSWORD,
     POSTGRES_HOST,
     POSTGRES_PORT = '5432',
-    POSTGRES_DB,
+    POSTGRES_DB
     // eslint-disable-next-line node/no-process-env
   } = process.env
 
@@ -28,9 +28,9 @@ export default defineConfig({
   out: './src/data/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: createDbUrl(),
+    url: createDbUrl()
   },
   casing: 'snake_case',
   verbose: nodeEnv === 'development',
-  strict: true,
+  strict: true
 })
