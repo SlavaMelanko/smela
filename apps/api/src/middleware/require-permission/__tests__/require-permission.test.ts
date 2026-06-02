@@ -34,11 +34,7 @@ const makeApp = (permissions?: string[]) => {
   return app
 }
 
-const makeSelfOrPermissionApp = (
-  userId: string,
-  memberId: string,
-  permissions?: string[]
-) => {
+const makeSelfOrPermissionApp = (userId: string, permissions?: string[]) => {
   const app = new Hono<AppContext>()
   app.onError(onError)
   app.use('/teams/:teamId/members/:memberId', async (c, next) => {
@@ -97,21 +93,20 @@ describe('requireSelfOrPermission Middleware', () => {
 
   describe('Self access', () => {
     it('should allow when user id matches memberId', async () => {
-      const res = await makeSelfOrPermissionApp(
-        testUuids.USER_1,
-        testUuids.USER_1
-      ).request(path, { method: 'PATCH' })
+      const res = await makeSelfOrPermissionApp(testUuids.USER_1).request(
+        path,
+        { method: 'PATCH' }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
       expect((await res.json()).message).toBe('success')
     })
 
     it('should allow when user id matches memberId even without permissions', async () => {
-      const res = await makeSelfOrPermissionApp(
-        testUuids.USER_1,
-        testUuids.USER_1,
-        []
-      ).request(path, { method: 'PATCH' })
+      const res = await makeSelfOrPermissionApp(testUuids.USER_1, []).request(
+        path,
+        { method: 'PATCH' }
+      )
 
       expect(res.status).toBe(HttpStatus.OK)
     })
@@ -119,11 +114,9 @@ describe('requireSelfOrPermission Middleware', () => {
 
   describe('Permission access', () => {
     it('should allow when user has required permission and id differs', async () => {
-      const res = await makeSelfOrPermissionApp(
-        testUuids.USER_2,
-        testUuids.USER_1,
-        [Permission.ManageTeams]
-      ).request(path, { method: 'PATCH' })
+      const res = await makeSelfOrPermissionApp(testUuids.USER_2, [
+        Permission.ManageTeams
+      ]).request(path, { method: 'PATCH' })
 
       expect(res.status).toBe(HttpStatus.OK)
     })
@@ -131,21 +124,20 @@ describe('requireSelfOrPermission Middleware', () => {
 
   describe('Access denied', () => {
     it('should throw Forbidden when user is not self and lacks permission', async () => {
-      const res = await makeSelfOrPermissionApp(
-        testUuids.USER_2,
-        testUuids.USER_1,
-        []
-      ).request(path, { method: 'PATCH' })
+      const res = await makeSelfOrPermissionApp(testUuids.USER_2, []).request(
+        path,
+        { method: 'PATCH' }
+      )
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       expect((await res.json()).code).toBe(ErrorCode.Forbidden)
     })
 
     it('should throw Forbidden when user is not self and permissions is undefined', async () => {
-      const res = await makeSelfOrPermissionApp(
-        testUuids.USER_2,
-        testUuids.USER_1
-      ).request(path, { method: 'PATCH' })
+      const res = await makeSelfOrPermissionApp(testUuids.USER_2).request(
+        path,
+        { method: 'PATCH' }
+      )
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       expect((await res.json()).code).toBe(ErrorCode.Forbidden)
