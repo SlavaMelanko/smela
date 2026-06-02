@@ -56,6 +56,10 @@ describe('updateTeamMemberHandler', () => {
       req: {
         valid: mock((type: string) => (type === 'param' ? mockParams : body))
       },
+      get: mock(() => ({
+        id: testUuids.USER_2,
+        permissions: ['manage:teams']
+      })),
       json: mockJson
     }
     mockUpdateTeamMember = mock(async () => ({ member: updatedMember }))

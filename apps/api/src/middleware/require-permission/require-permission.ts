@@ -15,3 +15,15 @@ export const requirePermission = (permission: Permission) =>
 
     return next()
   })
+
+export const requireSelfOrPermission = (permission: Permission) =>
+  createMiddleware<AppContext>(async (c, next) => {
+    const { id, permissions } = c.get('user')
+    const memberId = c.req.param('memberId')
+
+    if (id !== memberId && !permissions?.includes(permission)) {
+      throw new AppError(ErrorCode.Forbidden)
+    }
+
+    return next()
+  })
