@@ -97,6 +97,36 @@ describe('updateTeamMemberHandler', () => {
       'Member not found'
     )
   })
+
+  it('should allow self-update of member fields', async () => {
+    const selfBody = { member: { firstName: 'Dentoni', lastName: 'Camacho' } }
+    mockContext.req.valid = mock((type: string) =>
+      type === 'param' ? mockParams : selfBody
+    )
+    mockContext.get = mock(() => ({ id: testUuids.USER_1, permissions: [] }))
+
+    const result = await updateTeamMemberHandler(mockContext)
+
+    expect(mockUpdateTeamMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      testUuids.USER_1,
+      selfBody
+    )
+    expect(result.status).toBe(HttpStatus.OK)
+  })
+
+  it('should forbid self-update when membership fields are included', async () => {
+    const selfBodyWithMembership = {
+      member: { firstName: 'Dentoni' },
+      membership: { position: 'Lead' }
+    }
+    mockContext.req.valid = mock((type: string) =>
+      type === 'param' ? mockParams : selfBodyWithMembership
+    )
+    mockContext.get = mock(() => ({ id: testUuids.USER_1, permissions: [] }))
+
+    expect(updateTeamMemberHandler(mockContext)).rejects.toThrow('Forbidden.')
+  })
 })
 
 describe('removeTeamMemberHandler', () => {
