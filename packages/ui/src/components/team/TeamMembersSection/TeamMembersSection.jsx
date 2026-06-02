@@ -15,7 +15,7 @@ import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
-import { useInvite } from './useTeamMembersInvite'
+import { useInvite } from './useMemberInvite'
 
 const coreRowModel = getCoreRowModel()
 
@@ -30,7 +30,8 @@ const TeamMembersToolbar = ({ children }) => (
 export const TeamMembersSection = ({
   teamId,
   onRowClick,
-  queryOptions = {}
+  queryOptions = {},
+  canManageTeams = false
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()
@@ -47,20 +48,28 @@ export const TeamMembersSection = ({
     isResending,
     handleCancelInvite,
     isCancelling
-  } = useInvite(teamId)
+  } = useInvite(teamId, !members?.length)
   const { handleRemoveMember, isDeleting } = useRemoveTeamMember(teamId)
 
   const openMemberProfile = onRowClick
 
   const contextMenu = [
     createOpenItem(t, openMemberProfile),
-    createInviteItem(t, {
-      handleResendInvite,
-      isResending,
-      handleCancelInvite,
-      isCancelling
-    }),
-    createRemoveMemberItem(t, { handleRemoveMember, isDeleting, meId: me?.id })
+    ...(canManageTeams
+      ? [
+          createInviteItem(t, {
+            handleResendInvite,
+            isResending,
+            handleCancelInvite,
+            isCancelling
+          }),
+          createRemoveMemberItem(t, {
+            handleRemoveMember,
+            isDeleting,
+            meId: me?.id
+          })
+        ]
+      : [])
   ]
 
   const columns = getColumns(t, formatDate, me?.id)
@@ -89,11 +98,13 @@ export const TeamMembersSection = ({
   if (!members.length) {
     return (
       <EmptyState text={t('team.members.empty')}>
-        <InviteButton
-          label={t('invite.cta')}
-          onClick={openInviteDialog}
-          hideTextOnMobile={false}
-        />
+        {canManageTeams && (
+          <InviteButton
+            label={t('invite.cta')}
+            onClick={openInviteDialog}
+            hideTextOnMobile={false}
+          />
+        )}
       </EmptyState>
     )
   }
@@ -105,7 +116,9 @@ export const TeamMembersSection = ({
           config={config}
           createLabel={id => t(`table.members.${id}`)}
         />
-        <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        {canManageTeams && (
+          <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        )}
       </TeamMembersToolbar>
 
       <Table

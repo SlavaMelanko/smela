@@ -1,0 +1,1 @@
+export { ForbiddenErrorPage } from './ForbiddenErrorPage'

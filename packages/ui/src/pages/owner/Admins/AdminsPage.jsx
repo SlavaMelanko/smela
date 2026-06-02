@@ -23,7 +23,7 @@ import { useTableState } from '@ui/hooks/useTableState'
 import { useState } from 'react'
 
 import { getColumns } from './columns'
-import { useInvite } from './useInvite'
+import { useInvite } from './useAdminInvite'
 
 const coreRowModel = getCoreRowModel()
 const sortedRowModel = getSortedRowModel()
@@ -34,7 +34,7 @@ const Toolbar = ({ children }) => (
 
 export const AdminsPage = () => {
   const { t, formatDate } = useLocale()
-  const { user: me } = useCurrentUser()
+  const { user: me, can } = useCurrentUser()
   const navigate = useNavigate()
 
   const { apiParams, setParams, searchValue, setSearchValue } = useTableState()
@@ -55,7 +55,9 @@ export const AdminsPage = () => {
   )
   const [sorting, setSorting] = useState([])
 
-  const openAdminProfile = admin => navigate(`/owner/admins/${admin.id}`)
+  const canManageAdmins = can('manage:admins')
+
+  const openAdminProfile = admin => navigate(`/admins/${admin.id}`)
 
   const contextMenu = [
     createOpenItem(t, openAdminProfile),
@@ -111,7 +113,9 @@ export const AdminsPage = () => {
           config={config}
           createLabel={id => t(`table.users.${id}`)}
         />
-        <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        {canManageAdmins && (
+          <InviteButton label={t('invite.cta')} onClick={openInviteDialog} />
+        )}
       </Toolbar>
 
       <Table

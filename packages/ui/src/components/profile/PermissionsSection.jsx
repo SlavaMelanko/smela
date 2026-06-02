@@ -13,7 +13,8 @@ export const PermissionsSection = ({
   isLoading,
   permissions,
   update,
-  isUpdating
+  isUpdating,
+  canManageAdmins = false
 }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
@@ -49,9 +50,11 @@ export const PermissionsSection = ({
         permissions={permissions}
         isLoading={isLoading}
       />
-      <FormActions isDirty={isDirty}>
-        <SubmitButton isLoading={isUpdating}>{t('save')}</SubmitButton>
-      </FormActions>
+      {canManageAdmins && (
+        <FormActions isDirty={isDirty}>
+          <SubmitButton isLoading={isUpdating}>{t('save')}</SubmitButton>
+        </FormActions>
+      )}
     </FormRoot>
   )
 }

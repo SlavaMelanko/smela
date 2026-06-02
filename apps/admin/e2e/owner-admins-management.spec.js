@@ -34,7 +34,7 @@ test.describe('Owner: Admins Page', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     const columnsButton = page.getByRole('button', {
@@ -88,7 +88,7 @@ test.describe('Owner: Admins Page', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     const searchInput = page.getByRole('searchbox', { name: 'Search' })
@@ -101,7 +101,7 @@ test.describe('Owner: Admins Page', () => {
   })
 })
 
-test.describe.serial('Owner: Admin Invitation', () => {
+test.describe.serial('Owner: Invite admin with full access', () => {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
 
@@ -109,7 +109,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
     firstName,
     lastName,
     email: generateEmailAddress({ prefix: firstName }),
-    password: process.env.VITE_E2E_DEFAULT_PASSWORD
+    password: process.env.VITE_E2E_ADMIN_PASSWORD
   }
 
   test('owner invites admin via modal form', async ({ page, t, login }) => {
@@ -120,7 +120,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     // Click Invite button to open modal
@@ -171,7 +171,23 @@ test.describe.serial('Owner: Admin Invitation', () => {
 
     const apiPromise = waitForApiCall(page, {
       path: ACCEPT_INVITE_PATH,
-      status: HttpStatus.OK
+      status: HttpStatus.OK,
+      validateResponse: body => {
+        const expected = [
+          'manage:dashboard',
+          'manage:users',
+          'manage:teams',
+          'view:dashboard',
+          'view:users',
+          'view:teams'
+        ]
+
+        return (
+          Array.isArray(body.permissions) &&
+          body.permissions.length === expected.length &&
+          expected.every(p => body.permissions.includes(p))
+        )
+      }
     })
 
     await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
@@ -180,7 +196,48 @@ test.describe.serial('Owner: Admin Invitation', () => {
     // Verify success toast
     await expect(page.getByText(t.invite.accept.success)).toBeVisible()
 
-    await page.waitForURL('/admin/dashboard')
+    await page.waitForURL('/dashboard')
+
+    await logOut(page, t)
+  })
+
+  test('invited admin can manage teams resource', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login({ email: newAdmin.email, password: newAdmin.password })
+
+    await page.goto('/teams')
+
+    // Manage permission: Add button must be visible
+    await expect(page.getByRole('button', { name: t.add })).toBeVisible()
+
+    // Open the first team row
+    await page.getByRole('row').nth(1).click()
+
+    // View + manage permission: Name and description fields must be editable
+    await expect(page.getByLabel(t.team.name.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.team.description.label)).not.toBeDisabled()
+
+    await logOut(page, t)
+  })
+
+  test('invited admin can manage users resource', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login({ email: newAdmin.email, password: newAdmin.password })
+
+    await page.goto('/users')
+
+    // Open the first user row
+    await page.getByRole('row').nth(1).click()
+
+    // View + manage permission: firstName and lastName fields must be editable
+    await expect(page.getByLabel(t.firstName.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.lastName.label)).not.toBeDisabled()
 
     await logOut(page, t)
   })
@@ -197,7 +254,7 @@ test.describe.serial('Owner: Admin Invitation', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
     await apiPromise
 
     // Find the invited admin row and verify status is Active
@@ -274,7 +331,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
       })
     )
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
 
     await expect(
       page.getByText(t.backend['system/internal-error'])
@@ -298,7 +355,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
       })
     )
 
-    await page.goto('/owner/admins')
+    await page.goto('/admins')
 
     // Verify table header is visible but no data rows exist
     await expect(

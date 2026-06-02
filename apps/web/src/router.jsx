@@ -7,20 +7,13 @@ import {
   UserLayout
 } from '@smela/ui/layouts'
 import { Role, userActiveStatuses } from '@smela/ui/lib/types'
+import { LoginPage } from '@smela/ui/pages/auth'
 import {
-  AcceptInvitePage,
-  EmailConfirmationPage,
-  LoginPage,
-  ResetPasswordPage,
-  SignupPage,
-  VerifyEmailPage
-} from '@smela/ui/pages/auth'
-import {
+  ForbiddenErrorPage,
   GeneralErrorPage,
   NetworkErrorPage,
   NotFoundErrorPage
 } from '@smela/ui/pages/errors'
-import { PrivacyPage, TermsPage } from '@smela/ui/pages/legal'
 import { PricingPage } from '@smela/ui/pages/public'
 import {
   HomePage,
@@ -56,19 +49,61 @@ export const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { path: 'login', element: <LoginPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'accept-invite', element: <AcceptInvitePage /> },
-      { path: 'email-confirmation', element: <EmailConfirmationPage /> },
-      { path: 'verify-email', element: <VerifyEmailPage /> }
+      {
+        path: 'signup',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.SignupPage
+          }))
+      },
+      {
+        path: 'reset-password',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.ResetPasswordPage
+          }))
+      },
+      {
+        path: 'accept-invite',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.AcceptInvitePage
+          }))
+      },
+      {
+        path: 'email-confirmation',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.EmailConfirmationPage
+          }))
+      },
+      {
+        path: 'verify-email',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.VerifyEmailPage
+          }))
+      }
     ]
   },
   {
     element: <LegalLayout />,
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'privacy', element: <PrivacyPage /> }
+      {
+        path: 'terms',
+        lazy: () =>
+          import('@smela/ui/pages/legal').then(m => ({
+            Component: m.TermsPage
+          }))
+      },
+      {
+        path: 'privacy',
+        lazy: () =>
+          import('@smela/ui/pages/legal').then(m => ({
+            Component: m.PrivacyPage
+          }))
+      }
     ]
   },
   {
@@ -82,17 +117,35 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'home', element: <HomePage /> },
+      {
+        path: 'home',
+        element: (
+          <PrivateRoute requirePermissions={['view:dashboard']}>
+            <HomePage />
+          </PrivateRoute>
+        )
+      },
       {
         path: 'team',
-        element: <TeamLayout />,
+        element: (
+          <PrivateRoute requirePermissions={['view:teams']}>
+            <TeamLayout />
+          </PrivateRoute>
+        ),
         children: [
           { index: true, element: <Navigate to='general' replace /> },
           { path: 'general', element: <TeamGeneralPage /> },
           { path: 'members', element: <TeamMembersPage /> }
         ]
       },
-      { path: 'team/members/:id', element: <TeamMemberPage /> },
+      {
+        path: 'team/members/:id',
+        element: (
+          <PrivateRoute requirePermissions={['view:teams']}>
+            <TeamMemberPage />
+          </PrivateRoute>
+        )
+      },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'settings', element: <UserSettingsPage /> }
     ]
@@ -101,6 +154,7 @@ export const router = createBrowserRouter([
     path: 'errors',
     element: <ErrorLayout />,
     children: [
+      { path: 'forbidden', element: <ForbiddenErrorPage /> },
       { path: 'general', element: <GeneralErrorPage /> },
       { path: 'network', element: <NetworkErrorPage /> }
     ]

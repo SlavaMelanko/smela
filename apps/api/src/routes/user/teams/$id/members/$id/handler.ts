@@ -1,7 +1,8 @@
+import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
+import { Permission } from '@/types'
 import {
   cancelMemberInvite,
-  getTeamMember,
   removeTeamMember,
   resendMemberInvite,
   updateTeamMember
@@ -10,16 +11,23 @@ import {
 import type { MemberIdCtx, UpdateTeamMemberCtx } from './schema'
 
 export const getTeamMemberHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const targetMember = c.get('targetMember')!
 
-  const result = await getTeamMember(teamId, memberId)
-
-  return c.json(result, HttpStatus.OK)
+  return c.json({ member: targetMember }, HttpStatus.OK)
 }
 
 export const updateTeamMemberHandler = async (c: UpdateTeamMemberCtx) => {
   const { teamId, memberId } = c.req.valid('param')
   const body = c.req.valid('json')
+  const { id: currentUserId, permissions } = c.get('user')
+
+  const isSelf = currentUserId === memberId
+  const canManage = permissions?.includes(Permission.ManageTeams) ?? false
+
+  // Prevent self-updating users from changing membership fields (e.g. position)
+  if (isSelf && !canManage && body.membership) {
+    throw new AppError(ErrorCode.Forbidden)
+  }
 
   const result = await updateTeamMember(teamId, memberId, body)
 
@@ -27,10 +35,11 @@ export const updateTeamMemberHandler = async (c: UpdateTeamMemberCtx) => {
 }
 
 export const resendMemberInviteHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const team = c.get('team')!
+  const targetMember = c.get('targetMember')!
   const { id: inviterId } = c.get('user')
 
-  const result = await resendMemberInvite(teamId, memberId, inviterId)
+  const result = await resendMemberInvite(team, targetMember, inviterId)
 
   return c.json(result, HttpStatus.OK)
 }
@@ -44,9 +53,9 @@ export const removeTeamMemberHandler = async (c: MemberIdCtx) => {
 }
 
 export const cancelMemberInviteHandler = async (c: MemberIdCtx) => {
-  const { teamId, memberId } = c.req.valid('param')
+  const targetMember = c.get('targetMember')!
 
-  const result = await cancelMemberInvite(teamId, memberId)
+  const result = await cancelMemberInvite(targetMember)
 
   return c.json(result, HttpStatus.OK)
 }

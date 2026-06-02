@@ -1,10 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-TypeScript backend API built with Bun runtime and Hono framework. It provides authentication, user management, and role-based access control using PostgreSQL with Drizzle ORM.
+TypeScript backend API built with Bun runtime and Hono framework. It provides
+authentication, user management, and role-based access control using PostgreSQL
+with Drizzle ORM.
 
 - **Runtime**: Bun with TypeScript
 - **Framework**: Hono web framework
@@ -20,18 +23,26 @@ TypeScript backend API built with Bun runtime and Hono framework. It provides au
 
 ## Key Commands
 
-All available commands are defined in [package.json](package.json). Key commands include:
+All available commands are defined in [package.json](package.json). Key commands
+include:
 
 - **Development**: `bun run dev` (hot reload on port 3000)
-- **Build**: `bun run build` (production, minified), `bun run build:staging` (staging, with source maps)
-- **Testing**: `bun test` (all tests), `bun test [file]` (specific test file), `bun run coverage`
-- **Database Dev**: `bun run db:dev:up` (start dev DB), `bun run db:dev:down` (stop dev DB), `bun run db:dev:reset` (reset dev DB), `bun run db:init` (generate + migrate + seed), `bun run db:ui` (Drizzle Studio)
-- **Code Quality**: `bun run lint`, `bun run lint:fix`, `bun run check` (lint + tsc + test)
+- **Build**: `bun run build` (production, minified), `bun run build:staging`
+  (staging, with source maps)
+- **Testing**: `bun test` (all tests), `bun test [file]` (specific test file),
+  `bun run coverage`
+- **Database Dev**: `bun run db:dev:up` (start dev DB), `bun run db:dev:down`
+  (stop dev DB), `bun run db:dev:reset` (reset dev DB), `bun run db:init`
+  (generate + migrate + seed), `bun run db:ui` (Drizzle Studio)
+- **Code Quality**: `bun run lint`, `bun run lint:fix`, `bun run check` (lint +
+  tsc + test)
 - **Email Dev**: `bun run emails` (React Email dev server on port 3001)
 
 ## Architecture Overview
 
-**For detailed architecture documentation, see [src/README.md](src/README.md)** - Describes the layered architecture, module organization, and dependency rules.
+**For detailed architecture documentation, see
+[src/README.md](src/README.md)** - Describes the layered architecture, module
+organization, and dependency rules.
 
 ### Directory Structure
 
@@ -66,11 +77,13 @@ All available commands are defined in [package.json](package.json). Key commands
   - `/request-validator/` - Request validation middleware
 - `/src/routes/` - API endpoint handlers organized by domain
   - `/@shared/` - Shared route utilities (data validation rules)
-  - `/auth/` - Authentication routes (login, signup, password reset, email verification)
+  - `/auth/` - Authentication routes (login, signup, password reset, email
+    verification)
   - `/user/` - User-specific routes (profile management)
 - `/src/lib/` - Shared utilities (email sender)
 - `/src/utils/` - Generic, reusable utilities
-  - `/async.ts` - Async/promise utilities (withTimeout, sleepFor, exponentialBackoffDelay)
+  - `/async.ts` - Async/promise utilities (withTimeout, sleepFor,
+    exponentialBackoffDelay)
 - `/src/net/http/` - HTTP utilities (cookie handling, status codes)
 - `/src/env/` - Environment variable configuration and validation
 - `/src/errors/` - Custom error classes
@@ -81,15 +94,18 @@ All available commands are defined in [package.json](package.json). Key commands
 ### Route Organization
 
 - Public routes: `/` (currently empty)
-- Auth routes: `/api/v1/auth/*` (login, signup, email verification, resend verification, password reset)
+- Auth routes: `/api/v1/auth/*` (login, signup, email verification, resend
+  verification, password reset)
 - User routes: `/api/v1/user/*` (JWT-protected endpoints, allows new users)
-- User verified routes: `/api/v1/user/verified/*` (JWT-protected endpoints, requires verified users)
+- User verified routes: `/api/v1/user/verified/*` (JWT-protected endpoints,
+  requires verified users)
 - Admin routes: `/api/v1/admin/*` (JWT-protected endpoints, admin roles only)
 - Owner routes: `/api/v1/owner/*` (JWT-protected endpoints, owner role only)
 
 ### API Routes Reference
 
-See [postman.json](postman.json) for all API endpoints (import into Postman or read directly).
+See [postman.json](postman.json) for all API endpoints (import into Postman or
+read directly).
 
 ### Database Schema
 
@@ -98,33 +114,42 @@ Tables: auth, users, companies, tokens, etc.
 
 ### Search Implementation
 
-ILIKE with GIN index (`gin_trgm_ops`). See [src/data/migrations/custom/README.md](src/data/migrations/custom/README.md) for details on index-query coupling, capabilities, and limitations.
+ILIKE with GIN index (`gin_trgm_ops`). See
+[src/data/migrations/custom/README.md](src/data/migrations/custom/README.md) for
+details on index-query coupling, capabilities, and limitations.
 
 ### Database Connection
 
-The project uses **PostgreSQL running in Docker** with connection pooling via postgres.js (2 connections for dev/test, 10 for staging/prod). Database client is configured in [src/data/clients/db.ts](src/data/clients/db.ts) using Drizzle ORM with full transaction support.
+The project uses **PostgreSQL running in Docker** with connection pooling via
+postgres.js (2 connections for dev/test, 10 for staging/prod). Database client
+is configured in [src/data/clients/db.ts](src/data/clients/db.ts) using Drizzle
+ORM with full transaction support.
 
 ### Authentication Flow
 
 1. Signup creates user + auth record + verification token
-2. Email verification required before login (frontend handles email link, makes POST to backend)
+2. Email verification required before login (frontend handles email link, makes
+   POST to backend)
 3. JWT tokens used for authenticated requests (returned in Set-Cookie header)
 4. Password reset flow with one-time use tokens
 5. Rate limiting applied to auth endpoints
 
 ### Frontend-Backend Architecture
 
-- Email links point to frontend URLs (e.g., `https://app.example.com/auth/verify-email?token=...`)
+- Email links point to frontend URLs (e.g.,
+  `https://app.example.com/auth/verify-email?token=...`)
 - Frontend extracts tokens from URL and makes POST requests to backend API
 - Backend API validates tokens sent in JSON body (not URL parameters)
-- This approach prevents tokens from appearing in server logs and provides better security
+- This approach prevents tokens from appearing in server logs and provides
+  better security
 
 ### Testing
 
 **Read the testing skill before writing or modifying tests:**
 `../../.claude/skills/api-testing/SKILL.md`
 
-For detailed mocking patterns: `../../.claude/skills/api-testing/references/mocking-patterns.md`
+For detailed mocking patterns:
+`../../.claude/skills/api-testing/references/mocking-patterns.md`
 
 ### Security Considerations
 
@@ -132,14 +157,18 @@ For detailed mocking patterns: `../../.claude/skills/api-testing/references/mock
 
 - JWT tokens with role-based access control (User, Admin, Owner)
 - **Token Expiration Strategy**:
-  - Access tokens: 15 minutes (configurable via JWT_EXPIRATION) - Short-lived for security
-  - Refresh tokens: 30 days (configurable via COOKIE_REFRESH_TOKEN_EXPIRATION) - Stored in httpOnly cookies
+  - Access tokens: 15 minutes (configurable via JWT_EXPIRATION) - Short-lived
+    for security
+  - Refresh tokens: 30 days (configurable via COOKIE_REFRESH_TOKEN_EXPIRATION) -
+    Stored in httpOnly cookies
   - Token rotation: New refresh token generated on each use, old token revoked
   - Rationale: Reduces attack surface, aligns with OAuth 2.0 best practices
 - **JWT Secret Rotation Strategy**:
-  - Two-secret pattern: `JWT_SECRET` (current) and `JWT_SECRET_PREVIOUS` (optional)
+  - Two-secret pattern: `JWT_SECRET` (current) and `JWT_SECRET_PREVIOUS`
+    (optional)
   - Signing: Always uses current secret (`JWT_SECRET`)
-  - Verification: Tries current secret first, falls back to previous secret if set
+  - Verification: Tries current secret first, falls back to previous secret if
+    set
   - Recommended rotation period: 90 days (2-3x longest token lifetime)
   - Grace period: 37 days (30 days max refresh token lifetime + 7 day buffer)
   - Rotation process:
@@ -148,8 +177,10 @@ For detailed mocking patterns: `../../.claude/skills/api-testing/references/mock
     3. Deploy changes
     4. Wait grace period (37 days)
     5. Remove `JWT_SECRET_PREVIOUS`
-  - Zero breaking changes: System works without `JWT_SECRET_PREVIOUS` for backward compatibility
-- Flexible authentication support (cookies for web, Bearer tokens for API/mobile)
+  - Zero breaking changes: System works without `JWT_SECRET_PREVIOUS` for
+    backward compatibility
+- Flexible authentication support (cookies for web, Bearer tokens for
+  API/mobile)
 - bcrypt password hashing with configurable salt rounds (default: 10 rounds)
 - Email verification and secure password reset flows
 - One-time use tokens for password reset with expiration
@@ -158,14 +189,17 @@ For detailed mocking patterns: `../../.claude/skills/api-testing/references/mock
 
 #### Request Protection
 
-- Rate limiting: 5 auth attempts/15min (production), 100 requests/15min (general)
+- Rate limiting: 5 auth attempts/15min (production), 100 requests/15min
+  (general)
 - Request size limits: 10KB (auth), 100KB (general), 5MB (uploads)
 - CORS with environment-specific origin validation
 - Input validation using Zod schemas
 - CAPTCHA protection: Google reCAPTCHA v2 (invisible) on auth endpoints
 - **Zod schema strictness rule**:
-  - Use `.strict()` on body schemas for: auth routes, payment endpoints, internal APIs (owner/admin)
-  - Use default strip behavior for: public APIs, webhooks, backward-compatible endpoints
+  - Use `.strict()` on body schemas for: auth routes, payment endpoints,
+    internal APIs (owner/admin)
+  - Use default strip behavior for: public APIs, webhooks, backward-compatible
+    endpoints
   - Query and param schemas intentionally omit `.strict()`
 
 #### Security Headers
@@ -185,14 +219,18 @@ For detailed mocking patterns: `../../.claude/skills/api-testing/references/mock
 
 ### Service Architecture Patterns
 
-For external service integrations (CAPTCHA, payment, SMS, file storage, analytics), use the **Modular Service Design Pattern**. This pattern provides feature isolation, interface abstraction, and factory-based instantiation.
+For external service integrations (CAPTCHA, payment, SMS, file storage,
+analytics), use the **Modular Service Design Pattern**. This pattern provides
+feature isolation, interface abstraction, and factory-based instantiation.
 
-**See:** `.claude/skills/service-integration/SKILL.md` for complete pattern guide with real examples from the codebase.
+**See:** `.claude/skills/service-integration/SKILL.md` for complete pattern
+guide with real examples from the codebase.
 
 **Real implementations:**
 
 - Simple example: `/src/services/captcha/` (single provider - Google reCAPTCHA)
-- Advanced example: `/src/services/email/` (multiple providers - Ethereal + Resend with registry pattern)
+- Advanced example: `/src/services/email/` (multiple providers - Ethereal +
+  Resend with registry pattern)
 
 ### Coding Standards
 
@@ -204,42 +242,56 @@ For external service integrations (CAPTCHA, payment, SMS, file storage, analytic
 - **Curly Braces**: Always required, even for single-line blocks
 - **Environment Variables**: Access via `env` object, not `process.env` directly
 - **Variable Naming Conventions**:
-  - **camelCase**: Objects, arrays, and complex data structures (e.g., `tokenTypeOptions`, `userConfig`)
-  - **SCREAMING_SNAKE_CASE**: Primitives and simple constants (e.g., `MAX_RETRY_COUNT`, `API_TIMEOUT`)
-  - **PascalCase**: Classes, types, interfaces, and enums (e.g., `UserService`, `Status`, `EmailRenderer`)
-- **Export Style**: Use direct exports on declarations instead of collecting exports at the bottom of files
-  - Prefer `export interface MyInterface` over `interface MyInterface` + `export { MyInterface }`
-  - Prefer `export const myFunction = () => {}` over `const myFunction = () => {}` + `export { myFunction }`
-  - Prefer `export default class MyClass` over `class MyClass` + `export { MyClass as default }`
-  - Use direct re-exports like `export type { default as TypeName } from './module'` when possible
+  - **camelCase**: Objects, arrays, and complex data structures (e.g.,
+    `tokenTypeOptions`, `userConfig`)
+  - **SCREAMING_SNAKE_CASE**: Primitives and simple constants (e.g.,
+    `MAX_RETRY_COUNT`, `API_TIMEOUT`)
+  - **PascalCase**: Classes, types, interfaces, and enums (e.g., `UserService`,
+    `Status`, `EmailRenderer`)
+- **Export Style**: Use direct exports on declarations instead of collecting
+  exports at the bottom of files
+  - Prefer `export interface MyInterface` over `interface MyInterface` +
+    `export { MyInterface }`
+  - Prefer `export const myFunction = () => {}` over
+    `const myFunction = () => {}` + `export { myFunction }`
+  - Prefer `export default class MyClass` over `class MyClass` +
+    `export { MyClass as default }`
+  - Use direct re-exports like
+    `export type { default as TypeName } from './module'` when possible
   - ESLint rule enforces blank lines between export statements for readability
-- **Class Member Ordering**: Enforced via `@typescript-eslint/member-ordering` (see `eslint.config.mjs` for exact ordering)
-- **Return Types**: Lean on TypeScript inference for simple functions. Add explicit return types when:
+- **Class Member Ordering**: Enforced via `@typescript-eslint/member-ordering`
+  (see `eslint.config.mjs` for exact ordering)
+- **Return Types**: Lean on TypeScript inference for simple functions. Add
+  explicit return types when:
   - The function has complex conditional returns
   - You want compile-time protection against accidental contract changes
   - The inferred type is less clear than an explicit annotation
 
 #### Comment Formatting Standards
 
-**Primary Rule**: Prefer descriptive and meaningful names for variables, functions, and classes instead of comments.
+**Primary Rule**: Prefer descriptive and meaningful names for variables,
+functions, and classes instead of comments.
 
 **When comments are necessary:**
 
-- **Trailing Comments**: Keep short, no uppercase letter at beginning, no dot at end
+- **Trailing Comments**: Keep short, no uppercase letter at beginning, no dot at
+  end
 
   ```typescript
   const timeout = 5000 // milliseconds
   const isValid = checkAuth() // validates JWT token
   ```
 
-- **Full-Line Comments (Single Sentence)**: Start with uppercase letter, no dot at end
+- **Full-Line Comments (Single Sentence)**: Start with uppercase letter, no dot
+  at end
 
   ```typescript
   // Validate user permissions before processing request
   const hasPermission = await checkUserRole(userId)
   ```
 
-- **Full-Line Comments (Multiple Sentences)**: Start with uppercase letter, use dots between sentences but not at the end:
+- **Full-Line Comments (Multiple Sentences)**: Start with uppercase letter, use
+  dots between sentences but not at the end:
 
   ```typescript
   // Initialize database connection pool. This ensures optimal performance
@@ -249,17 +301,22 @@ For external service integrations (CAPTCHA, payment, SMS, file storage, analytic
 
 #### Interface Implementation Naming Convention
 
-When creating interfaces with multiple implementations, follow this naming pattern:
+When creating interfaces with multiple implementations, follow this naming
+pattern:
 
 **Interface Files:**
 
-- **Filename**: Use kebab-case ending with the interface concept (e.g., `email-renderer.ts`)
-- **Interface Name**: Use PascalCase matching the concept (e.g., `EmailRenderer`)
+- **Filename**: Use kebab-case ending with the interface concept (e.g.,
+  `email-renderer.ts`)
+- **Interface Name**: Use PascalCase matching the concept (e.g.,
+  `EmailRenderer`)
 
 **Implementation Files:**
 
-- **Filename**: Start with interface filename + implementation name (e.g., `email-renderer-password-reset.ts`, `email-renderer-welcome.ts`)
-- **Class Name**: Use PascalCase ending with interface name (e.g., `PasswordResetEmailRenderer`, `WelcomeEmailRenderer`)
+- **Filename**: Start with interface filename + implementation name (e.g.,
+  `email-renderer-password-reset.ts`, `email-renderer-welcome.ts`)
+- **Class Name**: Use PascalCase ending with interface name (e.g.,
+  `PasswordResetEmailRenderer`, `WelcomeEmailRenderer`)
 
 **Example Structures:**
 
@@ -285,34 +342,42 @@ src/services/email/providers/
 └── index.ts                             # Public exports
 ```
 
-This convention groups implementations together alphabetically and makes the relationship to the interface explicit.
+This convention groups implementations together alphabetically and makes the
+relationship to the interface explicit.
 
 #### Utils Directory Guidelines
 
-The `/src/utils/` directory is for **generic, reusable utilities** that meet strict acceptance criteria to prevent it from becoming a dumping ground.
+The `/src/utils/` directory is for **generic, reusable utilities** that meet
+strict acceptance criteria to prevent it from becoming a dumping ground.
 
 **Acceptance Criteria for New Utilities:**
 
 1. **Genuinely Generic**: Must not be domain-specific or tied to business logic
 2. **Multiple Usage**: Must be used in 2+ places across different modules
-3. **Single Responsibility**: Each utility file must have a clear, focused purpose
-4. **Well-Documented**: Must include JSDoc with examples and clear parameter descriptions
+3. **Single Responsibility**: Each utility file must have a clear, focused
+   purpose
+4. **Well-Documented**: Must include JSDoc with examples and clear parameter
+   descriptions
 
 **Organization Rules:**
 
 - Name files by specific domain: `async.ts`, `string.ts`, `date.ts`
 - Avoid vague names like `helpers.ts`, `common.ts`, or `utils.ts`
 - One file per utility domain (e.g., all async/promise utilities in `async.ts`)
-- Reject utilities that are only used once - co-locate with primary usage instead
+- Reject utilities that are only used once - co-locate with primary usage
+  instead
 
 **Current Utilities:**
 
-- `async.ts` - Async/promise utilities (`withTimeout`, `sleepFor`, `exponentialBackoffDelay`)
+- `async.ts` - Async/promise utilities (`withTimeout`, `sleepFor`,
+  `exponentialBackoffDelay`)
 
 ### Environment Configuration
 
-**Bun Native Environment Loading:**
-Bun automatically loads environment files based on `NODE_ENV` without requiring the `dotenv` package. See `.env.example` for complete environment variable documentation, supported environments, and configuration examples.
+**Bun Native Environment Loading:** Bun automatically loads environment files
+based on `NODE_ENV` without requiring the `dotenv` package. See `.env.example`
+for complete environment variable documentation, supported environments, and
+configuration examples.
 
 ### Email Configuration
 
@@ -320,7 +385,8 @@ Bun automatically loads environment files based on `NODE_ENV` without requiring 
 
 - Uses Ethereal email service for development to avoid sending real emails
 - All emails are captured and can be viewed via preview URLs logged to console
-- Preview URLs are generated for each sent email (e.g., `https://ethereal.email/message/...`)
+- Preview URLs are generated for each sent email (e.g.,
+  `https://ethereal.email/message/...`)
 - No real emails are sent, perfect for testing email flows
 
 **Production/Staging (Resend):**
@@ -356,20 +422,26 @@ Middleware is applied in this specific order in `server.ts`:
    - Size Limiter: 10KB for auth endpoints
    - Rate Limiter: 5 attempts per 15 minutes
 8. **User route auth** (for `/api/v1/user/*`): JWT validation, allows new users
-9. **User verified route auth** (for `/api/v1/user/verified/*`): JWT validation, requires verified users
-10. **Admin route auth** (for `/api/v1/admin/*`): JWT validation, admin roles only
+9. **User verified route auth** (for `/api/v1/user/verified/*`): JWT validation,
+   requires verified users
+10. **Admin route auth** (for `/api/v1/admin/*`): JWT validation, admin roles
+    only
 
 ### CORS Configuration
 
-- **Development**: Automatically allows all localhost ports (`http://localhost:*`, `http://127.0.0.1:*`)
+- **Development**: Automatically allows all localhost ports
+  (`http://localhost:*`, `http://127.0.0.1:*`)
 - **Test**: All origins allowed with credentials disabled
-- **Staging/Production**: Strict validation requiring `ALLOWED_ORIGINS` environment variable
-- **Important**: In production/staging, `ALLOWED_ORIGINS` must be a comma-separated list of allowed frontend URLs
+- **Staging/Production**: Strict validation requiring `ALLOWED_ORIGINS`
+  environment variable
+- **Important**: In production/staging, `ALLOWED_ORIGINS` must be a
+  comma-separated list of allowed frontend URLs
 
 ## Important Instruction Reminders
 
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
-ALWAYS remember our specified rules about trailing vs full-line comments formatting
+Do what has been asked; nothing more, nothing less. NEVER create files unless
+they're absolutely necessary for achieving your goal. ALWAYS prefer editing an
+existing file to creating a new one. NEVER proactively create documentation
+files (\*.md) or README files. Only create documentation files if explicitly
+requested by the User. ALWAYS remember our specified rules about trailing vs
+full-line comments formatting

@@ -1,15 +1,15 @@
 export {
-  adminAuthMiddleware,
-  ownerAuthMiddleware,
-  userRelaxedAuthMiddleware,
-  userStrictAuthMiddleware
+  requireAdminAuth,
+  requireOwnerAuth,
+  requireUserAuth,
+  requireVerifiedUserAuth
 } from './auth'
 
-export { captchaMiddleware } from './captcha/captcha'
+export { verifyCaptcha } from './captcha/captcha'
 
-export { corsMiddleware } from './cors'
+export { cors } from './cors'
 
-export { loggerMiddleware } from './logger'
+export { requestLogger } from './logger'
 
 export {
   authRateLimiter,
@@ -17,9 +17,12 @@ export {
   generalRateLimiter
 } from './rate-limiter'
 
-export { requestValidator } from './request-validator'
+export {
+  requirePermission,
+  requireSelfOrPermission
+} from './require-permission'
 
-export { secureHeadersMiddleware } from './secure-headers'
+export { secureHeaders } from './secure-headers'
 
 export {
   authRequestSizeLimiter,
@@ -28,4 +31,6 @@ export {
   generalRequestSizeLimiter
 } from './size-limiter'
 
-export { teamAccessMiddleware } from './team-access'
+export { requireTeamAccess } from './team-access'
+
+export { validateBody, validateParams, validateQuery } from './validate-request'

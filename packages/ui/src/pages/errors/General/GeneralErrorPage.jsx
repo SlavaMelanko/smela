@@ -1,5 +1,4 @@
 import { useLocale } from '@ui/hooks/useLocale'
-import { useNavigate } from '@ui/hooks/useRouter'
 import { ServerCrash } from 'lucide-react'
 
 import {
@@ -13,7 +12,6 @@ import {
 
 export const GeneralErrorPage = () => {
   const { t } = useLocale()
-  const navigate = useNavigate()
 
   return (
     <ErrorRoot data-testid='general-error-page'>
@@ -22,7 +20,7 @@ export const GeneralErrorPage = () => {
         <ErrorTitle>{t('error.general.title')}</ErrorTitle>
         <ErrorDescription>{t('error.general.message')}</ErrorDescription>
       </ErrorContent>
-      <ErrorButton onClick={() => navigate('/')}>
+      <ErrorButton onClick={() => (window.location.href = '/')}>
         {t('error.general.cta')}
       </ErrorButton>
     </ErrorRoot>

@@ -19,7 +19,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
-  defaultFieldsConfig,
+  defaultFields,
   FieldName,
   getDefaultValues,
   getValues,
@@ -30,9 +30,10 @@ export const UserInfoForm = ({
   user,
   isSubmitting,
   onSubmit,
-  fieldsConfig = {}
+  formFields = {},
+  canManageUsers = false
 }) => {
-  const fields = { ...defaultFieldsConfig, ...fieldsConfig }
+  const fields = { ...defaultFields, ...formFields }
   const { t, formatDate } = useLocale()
 
   const {
@@ -64,7 +65,10 @@ export const UserInfoForm = ({
             name={FieldName.FIRST_NAME}
             error={errors[FieldName.FIRST_NAME]}
           >
-            <Input {...register(FieldName.FIRST_NAME)} />
+            <Input
+              {...register(FieldName.FIRST_NAME)}
+              readOnly={!canManageUsers}
+            />
           </FormField>
 
           <FormField
@@ -73,7 +77,10 @@ export const UserInfoForm = ({
             error={errors[FieldName.LAST_NAME]}
             optional
           >
-            <Input {...register(FieldName.LAST_NAME)} />
+            <Input
+              {...register(FieldName.LAST_NAME)}
+              readOnly={!canManageUsers}
+            />
           </FormField>
         </FormRow>
 
@@ -83,8 +90,13 @@ export const UserInfoForm = ({
               name={FieldName.STATUS}
               label={t('status.name')}
               control={control}
-              render={({ field }) => (
-                <StatusDropdown value={field.value} onChange={field.onChange} />
+              render={({ field, id }) => (
+                <StatusDropdown
+                  id={id}
+                  value={field.value}
+                  onChange={field.onChange}
+                  readOnly={!canManageUsers}
+                />
               )}
             />
           </FormRow>
@@ -99,9 +111,11 @@ export const UserInfoForm = ({
           </FormField>
         </FormRow>
 
-        <FormActions isDirty={isDirty}>
-          <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
-        </FormActions>
+        {canManageUsers && (
+          <FormActions isDirty={isDirty}>
+            <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
+          </FormActions>
+        )}
       </FormFields>
     </FormRoot>
   )

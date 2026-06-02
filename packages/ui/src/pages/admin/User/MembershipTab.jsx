@@ -1,7 +1,7 @@
 import { MembershipSection } from '@ui/components/profile'
 import { useTeamMember, useUpdateTeamMember } from '@ui/hooks/useTeam'
 
-export const MembershipTab = ({ user, team }) => {
+export const MembershipTab = ({ user, team, canManageTeams = false }) => {
   const { data: member } = useTeamMember(team.id, user.id)
   const { mutate, isPending: isUpdating } = useUpdateTeamMember(
     team.id,
@@ -13,9 +13,10 @@ export const MembershipTab = ({ user, team }) => {
     <MembershipSection
       member={member}
       team={team}
-      teamLink={`/admin/teams/${team.id}`}
+      teamLink={`/teams/${team.id}`}
       update={update}
       isUpdating={isUpdating}
+      canManageTeams={canManageTeams}
     />
   )
 }

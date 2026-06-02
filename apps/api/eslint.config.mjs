@@ -4,7 +4,7 @@ export default antfu(
   {
     type: 'app',
     typescript: {
-      tsconfigPath: './tsconfig.json',
+      tsconfigPath: './tsconfig.json'
     },
     formatters: false,
     stylistic: false,
@@ -13,7 +13,7 @@ export default antfu(
       'scripts/**',
       '**/*.md',
       'coverage/**',
-      '.env*',
+      '.env*'
     ],
     rules: {
       'antfu/top-level-function': ['off'],
@@ -27,13 +27,13 @@ export default antfu(
       'node/prefer-global/process': ['off'],
       'padding-line-between-statements': [
         'error',
-        { blankLine: 'always', prev: '*', next: 'return' },
+        { blankLine: 'always', prev: '*', next: 'return' }
       ],
       'perfectionist/sort-imports': [
         'error',
         {
-          internalPattern: ['^@/'],
-        },
+          internalPattern: ['^@/']
+        }
       ],
       'prefer-arrow-callback': ['error'],
       'ts/member-ordering': [
@@ -57,9 +57,9 @@ export default antfu(
             // Instance methods
             'public-instance-method',
             'protected-instance-method',
-            'private-instance-method',
-          ],
-        },
+            'private-instance-method'
+          ]
+        }
       ],
       'ts/no-unsafe-argument': ['error'],
       'ts/no-unsafe-assignment': ['error'],
@@ -71,10 +71,10 @@ export default antfu(
         'error',
         {
           case: 'kebabCase',
-          ignore: ['README.md', 'CLAUDE.md', 'WARP.md'],
-        },
-      ],
-    },
+          ignore: ['README.md', 'CLAUDE.md', 'WARP.md']
+        }
+      ]
+    }
   },
   {
     files: ['**/*.test.ts', '**/__tests__/**'],
@@ -82,7 +82,7 @@ export default antfu(
       'ts/no-unsafe-argument': ['off'],
       'ts/no-unsafe-assignment': ['off'],
       'ts/no-unsafe-call': ['off'],
-      'ts/no-unsafe-member-access': ['off'],
-    },
-  },
+      'ts/no-unsafe-member-access': ['off']
+    }
+  }
 )

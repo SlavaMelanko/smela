@@ -40,7 +40,7 @@ test.describe.serial('Admin: Teams Management', () => {
         )
     })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     await pageLoadPromise
 
     // Open Add Team dialog
@@ -82,7 +82,7 @@ test.describe.serial('Admin: Teams Management', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     await pageLoadPromise
 
     // Click on the team row to open details, wait for team detail to load
@@ -140,7 +140,7 @@ test.describe.serial('Admin: Teams Management', () => {
       status: HttpStatus.OK
     })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
     await pageLoadPromise
 
     // Open the team
@@ -178,7 +178,7 @@ test.describe('Admin: Teams Edge Cases', () => {
       })
     })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
 
     // Verify table header is visible but no data rows
     await expect(page.getByRole('table')).toBeVisible()
@@ -199,7 +199,7 @@ test.describe('Admin: Teams Edge Cases', () => {
       })
     })
 
-    await page.goto('/admin/teams')
+    await page.goto('/teams')
 
     // Verify error state
     await expect(

@@ -1,4 +1,4 @@
-import * as yup from 'yup'
+import { z } from 'zod'
 
 import { allUserStatuses } from '../types/index.js'
 import {
@@ -9,13 +9,14 @@ import {
   TeamNameConstraint
 } from './constants'
 
-const requiredStr = errorMessage => yup.string().trim().required(errorMessage)
+const requiredStr = errorMessage => z.string().trim().nonempty(errorMessage)
 
 const optionalStr = () =>
-  yup
+  z
     .string()
     .trim()
-    .transform(value => (value === '' ? undefined : value))
+    .transform(v => v || undefined)
+    .pipe(z.string().optional())
 
 export const firstName = requiredStr('firstName.error.required')
   .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')
@@ -27,16 +28,19 @@ export const lastName = {
     .max(NameConstraint.MAX_LENGTH, 'lastName.error.max'),
 
   // Optional version - validates when provided but not required
-  optional: yup
-    .string()
-    .trim()
-    .transform(value => (value === '' ? undefined : value))
-    .min(NameConstraint.MIN_LENGTH, 'lastName.error.min')
-    .max(NameConstraint.MAX_LENGTH, 'lastName.error.max')
+  optional: optionalStr()
+    .refine(
+      value => !value || value.length >= NameConstraint.MIN_LENGTH,
+      'lastName.error.min'
+    )
+    .refine(
+      value => !value || value.length <= NameConstraint.MAX_LENGTH,
+      'lastName.error.max'
+    )
 }
 
 export const email = {
-  new: requiredStr('email.error.required').matches(
+  new: requiredStr('email.error.required').regex(
     EmailConstraint.STANDARD,
     'email.error.format'
   )
@@ -47,18 +51,14 @@ export const captcha = requiredStr('captcha.error')
 export const password = {
   new: requiredStr('password.error.required')
     .min(PasswordConstraint.MIN_LENGTH, 'password.error.min')
-    .matches(PasswordConstraint.STRONG, {
-      message: 'password.error.strong',
-      excludeEmptyString: true
-    })
+    .regex(PasswordConstraint.STRONG, 'password.error.strong')
 }
 
 export const url = errorMessage =>
-  yup
-    .string()
-    .trim()
-    .transform(value => (value === '' ? undefined : value))
-    .url(errorMessage)
+  optionalStr().refine(
+    value => value === undefined || z.url().safeParse(value).success,
+    errorMessage
+  )
 
 export const teamName = errors =>
   requiredStr(errors.required)
@@ -66,13 +66,27 @@ export const teamName = errors =>
     .max(TeamNameConstraint.MAX_LENGTH, errors.max)
 
 export const description = errorMessage =>
-  optionalStr().max(DescriptionConstraint.MAX_LENGTH, errorMessage)
+  optionalStr().refine(
+    value =>
+      value === undefined || value.length <= DescriptionConstraint.MAX_LENGTH,
+    errorMessage
+  )
 
 export const position = optionalStr()
-  .min(NameConstraint.MIN_LENGTH, 'position.error.min')
-  .max(NameConstraint.MAX_LENGTH, 'position.error.max')
+  .refine(
+    value => !value || value.length >= NameConstraint.MIN_LENGTH,
+    'position.error.min'
+  )
+  .refine(
+    value => !value || value.length <= NameConstraint.MAX_LENGTH,
+    'position.error.max'
+  )
 
-export const status = yup
-  .string()
-  .required('status.error.required')
-  .oneOf(allUserStatuses, 'status.error.invalid')
+export const status = requiredStr('status.error.required').refine(
+  value => allUserStatuses.includes(value),
+  'status.error.invalid'
+)
+
+export const permissions = z
+  .record(z.string(), z.record(z.string(), z.boolean()))
+  .optional()

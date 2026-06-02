@@ -1,15 +1,15 @@
 {
   "name": "@smela/admin",
   "private": true,
-  "version": "2026.04.20",
+  "version": "2026.06.02",
   "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules",
     "dev": "vite --mode development --port 5175",
     "preview": "vite preview --mode production --port 5175",
     "build": "vite build --mode production",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
+    "format": "prettier --cache --check .",
+    "format:fix": "prettier --cache --write .",
     "lint": "eslint --cache src e2e",
     "lint:fix": "eslint --cache src e2e --fix",
     "lint:staged": "lint-staged",

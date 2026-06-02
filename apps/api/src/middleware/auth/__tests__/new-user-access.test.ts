@@ -1,26 +1,20 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
-import { Hono } from 'hono'
-
-import type { AppContext } from '@/context'
+import { describe, expect, it } from 'bun:test'
 
 import { testUuids } from '@/__tests__'
 import env from '@/env'
 import { ErrorCode } from '@/errors'
-import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'
 import { Role, UserStatus } from '@/types'
 
-import { userRelaxedAuthMiddleware, userStrictAuthMiddleware } from '../index'
+import { requireUserAuth, requireVerifiedUserAuth } from '../index'
+import { makeAuthApp } from './utils'
+
+const makeAppWithStrictAuth = () =>
+  makeAuthApp(requireVerifiedUserAuth, '/strict')
+const makeAppWithRelaxedAuth = () => makeAuthApp(requireUserAuth, '/relaxed')
 
 describe('Auth Middleware - New User Access', () => {
-  let app: Hono<AppContext>
-
-  beforeEach(() => {
-    app = new Hono<AppContext>()
-    app.onError(onError)
-  })
-
   describe('Strict Auth - UserStatus Validation', () => {
     it('should reject New status', async () => {
       const token = await signJwt(
@@ -33,14 +27,8 @@ describe('Auth Middleware - New User Access', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/strict', userStrictAuthMiddleware)
-      app.get('/strict', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/strict', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const { get } = makeAppWithStrictAuth()
+      const res = await get(token)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()
@@ -56,9 +44,6 @@ describe('Auth Middleware - New User Access', () => {
       ]
 
       for (const status of activeStatuses) {
-        const testApp = new Hono<AppContext>()
-        testApp.onError(onError)
-
         const token = await signJwt(
           {
             id: testUuids.USER_1,
@@ -69,14 +54,8 @@ describe('Auth Middleware - New User Access', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/strict', userStrictAuthMiddleware)
-        testApp.get('/strict', c => c.json({ message: 'success' }))
-
-        const res = await testApp.request('/strict', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        const { get } = makeAppWithStrictAuth()
+        const res = await get(token)
 
         expect(res.status).toBe(HttpStatus.OK)
         const json = await res.json()
@@ -95,9 +74,6 @@ describe('Auth Middleware - New User Access', () => {
       ]
 
       for (const status of allowedStatuses) {
-        const testApp = new Hono<AppContext>()
-        testApp.onError(onError)
-
         const token = await signJwt(
           {
             id: testUuids.USER_2,
@@ -108,14 +84,8 @@ describe('Auth Middleware - New User Access', () => {
           { secret: env.JWT_SECRET }
         )
 
-        testApp.use('/relaxed', userRelaxedAuthMiddleware)
-        testApp.get('/relaxed', c => c.json({ message: 'success' }))
-
-        const res = await testApp.request('/relaxed', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        const { get } = makeAppWithRelaxedAuth()
+        const res = await get(token)
 
         expect(res.status).toBe(HttpStatus.OK)
         const json = await res.json()
@@ -134,14 +104,8 @@ describe('Auth Middleware - New User Access', () => {
         { secret: env.JWT_SECRET }
       )
 
-      app.use('/relaxed', userRelaxedAuthMiddleware)
-      app.get('/relaxed', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/relaxed', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const { get } = makeAppWithRelaxedAuth()
+      const res = await get(token)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       const json = await res.json()

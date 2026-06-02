@@ -1,21 +1,13 @@
-import { db, teamRepo, userRepo } from '@/data'
-import { AppError, ErrorCode } from '@/errors'
-import { UserStatus } from '@/types'
+import type { PermissionsInput } from '@/types'
+
+import { db, rbacRepo, teamRepo, userRepo } from '@/data'
+import { getMemberBasePermissions, UserStatus } from '@/types'
+import { resolvePermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
 
   return { members }
-}
-
-export const getTeamMember = async (teamId: string, memberId: string) => {
-  const member = await teamRepo.findMember(teamId, memberId)
-
-  if (!member) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
-  return { member }
 }
 
 export interface UpdateTeamMemberInput {
@@ -33,12 +25,6 @@ export const updateTeamMember = async (
   memberId: string,
   input: UpdateTeamMemberInput
 ) => {
-  const existing = await teamRepo.findMember(teamId, memberId)
-
-  if (!existing) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
   const updates: Array<Promise<unknown>> = []
 
   if (input.membership) {
@@ -56,13 +42,30 @@ export const updateTeamMember = async (
   return { member }
 }
 
+export const getTeamMemberPermissions = async (memberId: string) => {
+  const permissions = await resolvePermissionMap(
+    memberId,
+    getMemberBasePermissions()
+  )
+
+  return { permissions }
+}
+
+export const updateTeamMemberPermissions = async (
+  memberId: string,
+  permissions: PermissionsInput
+) => {
+  await rbacRepo.setUserPermissions(memberId, permissions)
+
+  const updated = await resolvePermissionMap(
+    memberId,
+    getMemberBasePermissions()
+  )
+
+  return { permissions: updated }
+}
+
 export const removeTeamMember = async (teamId: string, memberId: string) => {
-  const existing = await teamRepo.findMember(teamId, memberId)
-
-  if (!existing) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
   await db.transaction(async tx => {
     await teamRepo.deleteMember(memberId, teamId, tx)
     await userRepo.update(memberId, { status: UserStatus.Archived }, tx)

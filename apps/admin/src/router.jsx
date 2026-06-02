@@ -8,12 +8,9 @@ import {
   UserPage,
   UsersPage
 } from '@smela/ui/pages/admin'
+import { LoginPage } from '@smela/ui/pages/auth'
 import {
-  AcceptInvitePage,
-  LoginPage,
-  ResetPasswordPage
-} from '@smela/ui/pages/auth'
-import {
+  ForbiddenErrorPage,
   GeneralErrorPage,
   NetworkErrorPage,
   NotFoundErrorPage
@@ -26,12 +23,12 @@ import {
   PublicRoute,
   RootRedirect
 } from '@smela/ui/routes'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 
 export const router = createBrowserRouter([
   {
-    element: <RootRedirect />,
-    path: '/'
+    errorElement: <ErrorBoundary />,
+    children: [{ path: '/', element: <RootRedirect /> }]
   },
   {
     element: (
@@ -49,12 +46,24 @@ export const router = createBrowserRouter([
           />
         )
       },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
-      { path: 'accept-invite', element: <AcceptInvitePage /> }
+      {
+        path: 'reset-password',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.ResetPasswordPage
+          }))
+      },
+      {
+        path: 'accept-invite',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.AcceptInvitePage
+          }))
+      }
     ]
   },
   {
-    path: '/admin',
+    path: '/',
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
@@ -65,17 +74,42 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'users', element: <UsersPage /> },
-      { path: 'users/:id', element: <UserPage /> },
-      { path: 'teams', element: <TeamsPage /> },
-      { path: 'teams/:id', element: <TeamPage /> },
+      {
+        path: 'dashboard',
+        element: (
+          <PrivateRoute requirePermissions={['view:dashboard']}>
+            <DashboardPage />
+          </PrivateRoute>
+        )
+      },
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:users']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'users', element: <UsersPage /> },
+          { path: 'users/:id', element: <UserPage /> }
+        ]
+      },
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:teams']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'teams', element: <TeamsPage /> },
+          { path: 'teams/:id', element: <TeamPage /> }
+        ]
+      },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'settings', element: <AdminSettingsPage /> }
     ]
   },
   {
-    path: '/owner',
+    path: '/',
     element: (
       <PrivateRoute
         requireStatuses={adminActiveStatuses}
@@ -86,14 +120,24 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { path: 'admins', element: <AdminsPage /> },
-      { path: 'admins/:id', element: <AdminPage /> }
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:admins']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'admins', element: <AdminsPage /> },
+          { path: 'admins/:id', element: <AdminPage /> }
+        ]
+      }
     ]
   },
   {
     path: 'errors',
     element: <ErrorLayout />,
     children: [
+      { path: 'forbidden', element: <ForbiddenErrorPage /> },
       { path: 'general', element: <GeneralErrorPage /> },
       { path: 'network', element: <NetworkErrorPage /> }
     ]

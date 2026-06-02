@@ -1,15 +1,18 @@
-import { Spinner, Switch } from '@ui/components/ui'
+import {
+  Spinner,
+  Switch,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
+import { Info } from 'lucide-react'
 import { useController } from 'react-hook-form'
 
 const PermissionRoot = ({ children }) => (
   <div className='grid grid-cols-3 items-center justify-items-center gap-4'>
     {children}
   </div>
-)
-
-const PermissionAction = ({ children }) => (
-  <div className='flex items-center gap-2'>{children}</div>
 )
 
 const PermissionHeader = () => {
@@ -29,37 +32,53 @@ const PermissionHeader = () => {
   )
 }
 
-const PermissionState = ({ action, checked, onCheckedChange }) => {
+const ResourceName = ({ name }) => {
   const { t } = useLocale()
+  const hint = t(`permissions.resources.hints.${name}`, { defaultValue: null })
 
   return (
-    <PermissionAction>
-      <Switch
-        checked={checked}
-        onClick={() => {
-          if (onCheckedChange) {
-            onCheckedChange(!checked)
-          }
-        }}
-        aria-label={t(`permissions.actions.values.${action}`)}
-      />
-    </PermissionAction>
+    <div className='justify-self-start flex items-center gap-1.5 font-medium'>
+      {t(`permissions.resources.values.${name}`)}
+      {hint && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info className='size-3.5 text-muted-foreground cursor-help shrink-0' />
+          </TooltipTrigger>
+          <TooltipContent>{hint}</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
   )
 }
 
-const PermissionRow = ({ resourceName, resourceData, control }) => {
+const ActionToggle = ({ action, checked, onCheckedChange, disabled }) => {
   const { t } = useLocale()
+
+  return (
+    <Switch
+      checked={checked}
+      disabled={disabled}
+      onClick={() => onCheckedChange?.(!checked)}
+      aria-label={t(`permissions.actions.values.${action}`)}
+    />
+  )
+}
+
+const LOCKED_VIEW_RESOURCES = new Set(['dashboard'])
+
+const PermissionRow = ({ resourceName, resourceData, control }) => {
+  const viewLocked = LOCKED_VIEW_RESOURCES.has(resourceName)
 
   const { field: viewField } = useController({
     name: `permissions.${resourceName}.view`,
     control,
-    defaultValue: resourceData.view
+    defaultValue: resourceData.view ?? false
   })
 
   const { field: manageField } = useController({
     name: `permissions.${resourceName}.manage`,
     control,
-    defaultValue: resourceData.manage
+    defaultValue: resourceData.manage ?? false
   })
 
   const handleViewChange = checked => {
@@ -82,17 +101,16 @@ const PermissionRow = ({ resourceName, resourceData, control }) => {
 
   return (
     <PermissionRoot>
-      <div className='justify-self-start font-medium'>
-        {t(`permissions.resources.values.${resourceName}`)}
-      </div>
+      <ResourceName name={resourceName} />
 
-      <PermissionState
+      <ActionToggle
         action='view'
         checked={viewField.value}
         onCheckedChange={handleViewChange}
+        disabled={viewLocked}
       />
 
-      <PermissionState
+      <ActionToggle
         action='manage'
         checked={manageField.value}
         onCheckedChange={handleManageChange}
@@ -103,7 +121,11 @@ const PermissionRow = ({ resourceName, resourceData, control }) => {
 
 export const PermissionsMatrix = ({ control, permissions, isLoading }) => {
   if (isLoading && !permissions) {
-    return <Spinner />
+    return (
+      <div className='flex justify-center'>
+        <Spinner />
+      </div>
+    )
   }
 
   const resources = permissions ? Object.keys(permissions) : []

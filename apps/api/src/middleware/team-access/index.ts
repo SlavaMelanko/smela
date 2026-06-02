@@ -1,1 +1,1 @@
-export { teamAccessMiddleware } from './team-access'
+export { requireTeamAccess } from './team-access'

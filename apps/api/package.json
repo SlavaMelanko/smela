@@ -1,6 +1,6 @@
 {
   "name": "@smela/api",
-  "version": "2026.04.20",
+  "version": "2026.06.02",
   "scripts": {
     "clean": "rm -rf node_modules",
     "dev": "bun --watch src/app.ts",
@@ -12,10 +12,10 @@
     "db:init": "bun run db:generate && bun run db:migrate && bun run db:migrate:custom && bun run db:seed",
     "db:dev:up": "docker compose -f docker-compose-dev.yml --env-file .env.development up -d --wait",
     "db:dev:down": "docker compose -f docker-compose-dev.yml --env-file .env.development down -v",
-    "db:dev:reset": "bun run db:dev:down && bun run db:dev:up && NODE_ENV=development bun run db:init",
+    "db:dev:reset": "bun run db:dev:down && bun run db:dev:up && bun run db:init",
     "db:ui": "drizzle-kit studio",
-    "format": "bunx prettier --check src",
-    "format:fix": "bunx prettier --write src",
+    "format": "bunx prettier --cache --check src",
+    "format:fix": "bunx prettier --cache --write src",
     "lint": "bunx eslint --cache src",
     "lint:fix": "bunx eslint --cache --fix src",
     "lint:staged": "lint-staged",
@@ -46,7 +46,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "resend": "^6.5.2",
-    "zod": "^4"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.1.0",

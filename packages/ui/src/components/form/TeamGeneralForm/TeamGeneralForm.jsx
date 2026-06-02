@@ -17,7 +17,12 @@ import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, getValues, resolver } from './schema'
 
-export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
+export const TeamGeneralForm = ({
+  team,
+  isSubmitting,
+  onSubmit,
+  canManageTeams = false
+}) => {
   const { t, formatDate } = useLocale()
 
   const {
@@ -45,7 +50,7 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
             name={FieldName.NAME}
             error={errors[FieldName.NAME]}
           >
-            <Input {...register(FieldName.NAME)} />
+            <Input {...register(FieldName.NAME)} readOnly={!canManageTeams} />
           </FormField>
 
           <FormField
@@ -54,7 +59,11 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
             error={errors[FieldName.WEBSITE]}
             optional
           >
-            <Input {...register(FieldName.WEBSITE)} placeholder='https://' />
+            <Input
+              {...register(FieldName.WEBSITE)}
+              placeholder='https://'
+              readOnly={!canManageTeams}
+            />
           </FormField>
         </FormRow>
 
@@ -64,7 +73,10 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
           error={errors[FieldName.DESCRIPTION]}
           optional
         >
-          <Textarea {...register(FieldName.DESCRIPTION)} />
+          <Textarea
+            {...register(FieldName.DESCRIPTION)}
+            readOnly={!canManageTeams}
+          />
         </FormField>
 
         <FormRow forceColumns>
@@ -76,9 +88,11 @@ export const TeamGeneralForm = ({ team, isSubmitting, onSubmit }) => {
           </FormField>
         </FormRow>
 
-        <FormActions isDirty={isDirty}>
-          <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
-        </FormActions>
+        {canManageTeams && (
+          <FormActions isDirty={isDirty}>
+            <SubmitButton isLoading={isSubmitting}>{t('save')}</SubmitButton>
+          </FormActions>
+        )}
       </FormFields>
     </FormRoot>
   )

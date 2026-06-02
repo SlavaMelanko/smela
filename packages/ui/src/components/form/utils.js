@@ -1,7 +1,7 @@
-export const removeHiddenFields = (data, fieldsConfig) => {
+export const removeHiddenFields = (data, formFields) => {
   const result = { ...data }
 
-  Object.entries(fieldsConfig).forEach(([key, visible]) => {
+  Object.entries(formFields).forEach(([key, visible]) => {
     if (!visible) {
       delete result[key]
     }

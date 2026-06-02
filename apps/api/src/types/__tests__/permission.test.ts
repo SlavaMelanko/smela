@@ -19,31 +19,43 @@ describe('getAdminDefaultPermissions', () => {
     expect(permissions[Resource.Teams]).toEqual({ view: true, manage: true })
   })
 
+  it('should grant view and manage for dashboard', () => {
+    const permissions = getAdminDefaultPermissions()
+
+    expect(permissions[Resource.Dashboard]).toEqual({
+      view: true,
+      manage: true
+    })
+  })
+
   it('should cover all expected resources', () => {
     const permissions = getAdminDefaultPermissions()
 
     expect(Object.keys(permissions)).toContain(Resource.Users)
     expect(Object.keys(permissions)).toContain(Resource.Teams)
+    expect(Object.keys(permissions)).toContain(Resource.Dashboard)
   })
 })
 
 describe('getMemberDefaultPermissions', () => {
-  it('should grant view but not manage for users', () => {
-    const permissions = getMemberDefaultPermissions()
-
-    expect(permissions[Resource.Users]).toEqual({ view: true })
-  })
-
   it('should grant view but not manage for teams', () => {
     const permissions = getMemberDefaultPermissions()
 
     expect(permissions[Resource.Teams]).toEqual({ view: true })
   })
 
-  it('should cover all expected resources', () => {
+  it('should grant view but not manage for dashboard', () => {
     const permissions = getMemberDefaultPermissions()
 
-    expect(Object.keys(permissions)).toContain(Resource.Users)
-    expect(Object.keys(permissions)).toContain(Resource.Teams)
+    expect(permissions[Resource.Dashboard]).toEqual({ view: true })
+  })
+
+  it('should only include teams and dashboard resources', () => {
+    const permissions = getMemberDefaultPermissions()
+
+    expect(Object.keys(permissions)).toEqual([
+      Resource.Dashboard,
+      Resource.Teams
+    ])
   })
 })

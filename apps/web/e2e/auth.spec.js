@@ -37,7 +37,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     firstName,
     lastName,
     email: generateEmailAddress({ prefix: firstName }),
-    initialPassword: process.env.VITE_E2E_DEFAULT_PASSWORD,
+    initialPassword: process.env.VITE_E2E_USER_PASSWORD,
     newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
 
@@ -199,7 +199,7 @@ test.describe('Authentication: General', () => {
   // Pre-seeded user credentials from environment variables
   const seededUser = {
     email: process.env.VITE_E2E_USER_EMAIL,
-    password: process.env.VITE_E2E_DEFAULT_PASSWORD
+    password: process.env.VITE_E2E_USER_PASSWORD
   }
 
   test('signup: validates required fields', async ({ page, t }) => {
@@ -238,8 +238,8 @@ test.describe('Authentication: General', () => {
       {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
-        email: process.env.VITE_E2E_ADMIN_EMAIL,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        email: process.env.VITE_E2E_USER_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -299,7 +299,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -393,7 +393,7 @@ test.describe('Authentication: General', () => {
         firstName,
         lastName,
         email: testEmail,
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       },
       t
     )
@@ -409,11 +409,10 @@ test.describe('Authentication: General', () => {
     const url = new URL(link)
     const originalToken = url.searchParams.get('token')
 
-    // 1: Empty token
+    // 1: Empty token — frontend silently redirects to / without API call,
+    // then status guard redirects new user back to /email-confirmation
     await page.goto(`${url.origin}${url.pathname}?token=`)
-    // No API call is made for empty token - frontend handles it
-
-    await expect(page.getByText(t.backend['validation/error'])).toBeVisible()
+    await page.waitForURL(/email-confirmation/)
 
     // 2: Malformed token (replace last char with underscore)
     const malformedToken = originalToken.slice(0, -1) + '_'
@@ -464,7 +463,7 @@ test.describe('Authentication: General', () => {
       },
       {
         email: 'nonexistent@example.com',
-        password: process.env.VITE_E2E_DEFAULT_PASSWORD
+        password: process.env.VITE_E2E_USER_PASSWORD
       }
     ]
 
@@ -522,6 +521,18 @@ test.describe('Authentication: General', () => {
     await logOut(page, t)
   })
 
+  test('verify-email / accept-invite / email-confirmation: redirects unauthenticated users without required context to login', async ({
+    page
+  }) => {
+    const paths = ['/verify-email', '/accept-invite', '/email-confirmation']
+
+    for (const path of paths) {
+      await page.goto(path)
+      await page.waitForURL('/login')
+      await expect(page).toHaveURL(/\/login/)
+    }
+  })
+
   test('authorization: shows 404 for unauthorized and unknown routes', async ({
     page,
     t,
@@ -531,7 +542,7 @@ test.describe('Authentication: General', () => {
 
     await page.waitForURL('/home')
 
-    const unauthorizedPaths = ['/unknown', '/admin/users', '/owner/admins']
+    const unauthorizedPaths = ['/unknown', '/admins']
 
     for (const path of unauthorizedPaths) {
       await page.goto(path)

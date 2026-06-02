@@ -1,33 +1,49 @@
 ---
 name: tailwind-shadcn
 description:
-  Styling conventions for apps/web (Vite + React + Tailwind CSS + shadcn/ui).
-  Use when creating, styling, or refactoring React components, pages, or UI
-  elements. Enforces clean component hierarchy with shadcn primitives in
-  apps/web/src/components/ui composed into custom components in
-  apps/web/src/components and apps/web/src/pages.
+  Styling conventions for apps/web and apps/admin (Vite + React + Tailwind CSS +
+  shadcn/ui). All components, pages, and UI building blocks live in packages/ui.
+  Apps are thin shells that import from @smela/ui subpath exports. Enforces
+  clean component hierarchy with shadcn primitives in
+  packages/ui/src/components/ui composed into domain components in
+  packages/ui/src/components and pages in packages/ui/src/pages.
 ---
 
-# Tailwind + shadcn/ui Styling Structure (apps/web)
+# Tailwind + shadcn/ui Styling Structure
 
-## Folder Structure
+## Where Code Lives
+
+All components, pages, and UI building blocks live in **`packages/ui`**, not in
+the apps. Both `apps/web` and `apps/admin` are thin shells — they contain only
+`App.jsx`, `router.jsx`, `main.jsx`, `i18n.js`, and `index.css`. Never create
+components or pages inside an app.
 
 ```zsh
-apps/web/src/
+packages/ui/src/
 ├── components/
 │   ├── ui/           # shadcn primitives (Button, Card, Dialog, etc.)
 │   │   └── index.js  # barrel exports
 │   └── [feature]/    # Domain components composed from ui/ primitives
-├── pages/            # Page components, compose from components/
-└── index.css         # Global styles, Tailwind imports, theme variables
+├── pages/            # Page components, exported via @smela/ui subpaths
+│   ├── auth/
+│   ├── admin/
+│   ├── user/
+│   ├── owner/
+│   ├── public/
+│   ├── legal/
+│   └── errors/
+└── index.css         # (per-app) Global styles, Tailwind imports, theme variables
 ```
 
-Keep styles in a single `index.css` until it exceeds ~300 lines. Light/dark
-themes belong together as CSS variable swaps — no need for separate theme files.
+Path alias inside `packages/ui`: `@ui/*` → `packages/ui/src/*`
+
+Keep styles in a single `index.css` per app until it exceeds ~300 lines.
+Light/dark themes belong together as CSS variable swaps — no need for separate
+theme files.
 
 ## Component Hierarchy
 
-### Layer 1: `apps/web/src/components/ui/` — Design System Primitives
+### Layer 1: `packages/ui/src/components/ui/` — Design System Primitives
 
 - Install via `npx shadcn@latest add <component>`
 - **Modify directly** for project-wide design decisions (colors, spacing,
@@ -36,17 +52,19 @@ themes belong together as CSS variable swaps — no need for separate theme file
 - **No unit tests** — primitives are tested upstream by shadcn/Base UI
 - **No Storybook stories** — document usage in domain components instead
 
-### Layer 2: `apps/web/src/components/` — Domain Components
+### Layer 2: `packages/ui/src/components/` — Domain Components
 
 - Compose ui/ primitives into domain-specific components
 - Create wrappers only when adding **behavior or composition**, not just styling
 - Group by feature when >3 related components exist
 
-### Layer 3: `apps/web/src/pages/` — Page Components
+### Layer 3: `packages/ui/src/pages/` — Page Components
 
 - Compose custom components into full pages
 - Minimal direct Tailwind; prefer component composition
 - Handle layout concerns (grid, spacing between sections)
+- Export from the appropriate `pages/[domain]/index.js` so apps can import via
+  `@smela/ui/pages/[domain]`
 
 ## When to Modify ui/ vs. Create Wrapper
 
@@ -57,7 +75,7 @@ themes belong together as CSS variable swaps — no need for separate theme file
 - Adjusting base styles for consistency
 
 ```jsx
-// apps/web/src/components/ui/button.jsx — modify directly
+// packages/ui/src/components/ui/button.jsx — modify directly
 const buttonVariants = cva(
   'cursor-pointer active:cursor-grabbing ...', // project cursor rules
   {
@@ -77,8 +95,8 @@ const buttonVariants = cva(
 - Creating contextual variations (MenuButton, SubmitButton with loading state)
 
 ```jsx
-// apps/web/src/components/SubmitButton.jsx — wrapper for behavior
-import { Button } from '@/components/ui/button'
+// packages/ui/src/components/buttons/SubmitButton.jsx — wrapper for behavior
+import { Button } from '@ui/components/ui'
 import { Loader2 } from 'lucide-react'
 
 export function SubmitButton({ loading, children, ...props }) {
@@ -97,27 +115,26 @@ Use an index file to consolidate ui/ imports. Export only components, not CVA
 variants (keep variants as internal implementation details):
 
 ```js
-// apps/web/src/components/ui/index.js
+// packages/ui/src/components/ui/index.js
 export { Button } from './button' // not buttonVariants
-export { Badge } from './badge' // not badgeVariants
-export { Input } from './input' // not inputVariants
+export { Badge } from './badge'
+export { Input } from './input'
 export { Card, CardHeader, CardTitle, CardContent, CardFooter } from './card'
 // ... add as you install components
 ```
 
-Then import from a single path:
+Then import from a single path inside packages/ui:
 
 ```jsx
 // Before: multiple lines
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
+import { Button } from '@ui/components/ui/button'
+import { Badge } from '@ui/components/ui/badge'
 
 // After: single line
-import { Button, Badge, Card } from '@/components/ui'
+import { Button, Badge, Card } from '@ui/components/ui'
 
 // If you need variants for extending styles, import directly:
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@ui/components/ui/button'
 ```
 
 Update `index.js` each time you add a new shadcn component.
@@ -126,9 +143,33 @@ Update `index.js` each time you add a new shadcn component.
 `sidebar.jsx` importing `button`), use relative paths:
 
 ```jsx
-// Inside apps/web/src/components/ui/sidebar.jsx
-import { Button } from './button' // not '@/components/ui/button'
+// Inside packages/ui/src/components/ui/sidebar.jsx
+import { Button } from './button' // not '@ui/components/ui/button'
 import { Sheet, SheetContent } from './sheet'
+```
+
+## App Imports via @smela/ui
+
+Apps never import component internals directly. They use the package's subpath
+exports defined in `packages/ui/package.json`:
+
+```jsx
+// apps/web/src/router.jsx
+import { LoginPage, EmailConfirmationPage } from '@smela/ui/pages/auth'
+import { AuthLayout, UserLayout } from '@smela/ui/layouts'
+
+// apps/admin/src/router.jsx
+import { DashboardPage } from '@smela/ui/pages/admin'
+```
+
+When adding a new page or layout, register its export in
+`packages/ui/package.json`:
+
+```json
+"exports": {
+  "./pages/auth": "./src/pages/auth/index.js",
+  "./layouts": "./src/layouts/index.js"
+}
 ```
 
 ## Tailwind Best Practices
@@ -154,7 +195,7 @@ Extract repeated **behavioral** patterns into wrapper components:
 </Button>
 
 // Prefer: wrapper for repeated composition + behavior
-// apps/web/src/components/MenuItem.jsx
+// packages/ui/src/components/MenuItem.jsx
 export const MenuItem = ({ icon: Icon, children, ...props }) => (
   <Button variant='ghost' className='w-full justify-start gap-2' {...props}>
     {Icon && <Icon className='h-4 w-4' />}
@@ -168,7 +209,7 @@ export const MenuItem = ({ icon: Icon, children, ...props }) => (
 Extend variants via `cva` when the variant applies project-wide:
 
 ```jsx
-// apps/web/src/components/ui/button.jsx - add new variant
+// packages/ui/src/components/ui/button.jsx - add new variant
 const buttonVariants = cva('...', {
   variants: {
     variant: {
@@ -181,7 +222,8 @@ const buttonVariants = cva('...', {
 
 ### Design Tokens via CSS Variables
 
-Define project tokens in `apps/web/src/index.css` alongside shadcn variables:
+Define project tokens in `apps/web/src/index.css` (or
+`apps/admin/src/index.css`) alongside shadcn variables:
 
 ```css
 :root {
@@ -201,12 +243,17 @@ Reference via Tailwind: `bg-brand`, `text-brand-foreground`
 ## Component Composition Pattern
 
 ```jsx
-// apps/web/src/components/ui/card.jsx - shadcn primitive (don't modify)
-// apps/web/src/components/ui/button.jsx - shadcn primitive (don't modify)
+// packages/ui/src/components/ui/card.jsx - shadcn primitive
+// packages/ui/src/components/ui/button.jsx - shadcn primitive
 
-// apps/web/src/components/FeatureCard.jsx - custom composition
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+// packages/ui/src/components/FeatureCard.jsx - custom composition
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button
+} from '@ui/components/ui'
 
 export const FeatureCard = ({ title, description, onAction }) => (
   <Card>
@@ -220,8 +267,8 @@ export const FeatureCard = ({ title, description, onAction }) => (
   </Card>
 )
 
-// apps/web/src/pages/Features.jsx - page composition
-import { FeatureCard } from '@/components/FeatureCard'
+// packages/ui/src/pages/public/FeaturesPage.jsx - page composition
+import { FeatureCard } from '@ui/components/FeatureCard'
 
 export const FeaturesPage = () => (
   <main className='container py-12'>

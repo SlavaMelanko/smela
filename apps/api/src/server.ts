@@ -8,17 +8,17 @@ import type { AppContext } from '@/context'
 
 import { notFound, onError } from '@/handlers'
 import {
-  adminAuthMiddleware,
   authRateLimiter,
   authRequestSizeLimiter,
-  corsMiddleware,
+  cors,
   generalRateLimiter,
   generalRequestSizeLimiter,
-  loggerMiddleware,
-  ownerAuthMiddleware,
-  secureHeadersMiddleware,
-  userRelaxedAuthMiddleware,
-  userStrictAuthMiddleware
+  requestLogger,
+  requireAdminAuth,
+  requireOwnerAuth,
+  requireUserAuth,
+  requireVerifiedUserAuth,
+  secureHeaders
 } from '@/middleware'
 import {
   adminRoutes,
@@ -44,10 +44,10 @@ class Server {
 
   private setupMiddleware() {
     this.app
-      .use(secureHeadersMiddleware)
-      .use(corsMiddleware)
+      .use(secureHeaders)
+      .use(cors)
       .use(requestId())
-      .use(loggerMiddleware)
+      .use(requestLogger)
       .use(generalRequestSizeLimiter)
       .use(generalRateLimiter)
       .use('/static/*', serveStatic({ root: './' }))
@@ -58,18 +58,14 @@ class Server {
       authRequestSizeLimiter,
       authRateLimiter
     ])
-    this.createRouteGroup(
-      '/api/v1/user',
-      userRoutesAllowNew,
-      userRelaxedAuthMiddleware
-    )
+    this.createRouteGroup('/api/v1/user', userRoutesAllowNew, requireUserAuth)
     this.createRouteGroup(
       '/api/v1/user/verified',
       userRoutesVerifiedOnly,
-      userStrictAuthMiddleware
+      requireVerifiedUserAuth
     )
-    this.createRouteGroup('/api/v1/admin', adminRoutes, adminAuthMiddleware)
-    this.createRouteGroup('/api/v1/owner', ownerRoutes, ownerAuthMiddleware)
+    this.createRouteGroup('/api/v1/admin', adminRoutes, requireAdminAuth)
+    this.createRouteGroup('/api/v1/owner', ownerRoutes, requireOwnerAuth)
   }
 
   private setupHandlers() {

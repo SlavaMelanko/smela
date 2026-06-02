@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
       issues: read
       id-token: write
 
@@ -38,12 +38,16 @@ jobs:
           # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
           # model: "claude-opus-4-20250514"
 
-          # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
-          # use_sticky_comment: true
+          use_sticky_comment: true
 
           # Direct prompt for automated review (no @claude mention needed)
           direct_prompt: |
             Review this pull request (Bun + Hono + TypeScript API). Score each area 1–10. Be concise — one short justification per section, max 3 actionable issues if any.
+
+            If a previous review comment exists on this PR, use it as the baseline:
+            - Mark items that have been fixed since the last push with ~~strikethrough~~ and a ✅ suffix.
+            - Keep unresolved items and their scores as-is.
+            - Adjust scores and add new issues introduced by the latest push.
 
             Scoring criteria:
             - **🏗️ Architecture**: DRY, SOLID, modularity, low coupling. Adjust ±1 for data layer (schema, transactions, indexing) or infra (cache, queues, retries) if relevant.

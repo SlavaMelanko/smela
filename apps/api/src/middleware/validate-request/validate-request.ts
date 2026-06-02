@@ -6,7 +6,7 @@ import { zValidator } from '@hono/zod-validator'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 
-export const requestValidator = <
+const validate = <
   Target extends keyof ValidationTargets,
   Schema extends ZodType
 >(
@@ -22,3 +22,12 @@ export const requestValidator = <
       throw new AppError(ErrorCode.ValidationError, JSON.stringify(issues))
     }
   })
+
+export const validateBody = <Schema extends ZodType>(schema: Schema) =>
+  validate('json', schema)
+
+export const validateParams = <Schema extends ZodType>(schema: Schema) =>
+  validate('param', schema)
+
+export const validateQuery = <Schema extends ZodType>(schema: Schema) =>
+  validate('query', schema)

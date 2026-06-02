@@ -16,12 +16,14 @@ import { Navigate, useLocation, useParams } from '@ui/hooks/useRouter'
 import { userTeamQueryOptions, useTeamMember } from '@ui/hooks/useTeam'
 
 import { MembershipTab } from './MembershipTab'
+import { PermissionsTab } from './PermissionsTab'
 import { ProfileTab } from './ProfileTab'
 
+// Mirror: packages/ui/src/pages/admin/User/UserPage.jsx
 export const TeamMemberPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
-  const { team: myTeam } = useCurrentUser()
+  const { user: me, team: myTeam, can } = useCurrentUser()
   const { t } = useLocale()
 
   const {
@@ -35,8 +37,14 @@ export const TeamMemberPage = () => {
     initialData: state?.member ? { member: state.member } : undefined
   })
 
+  const isOwnProfile = me?.id === id
+  const canViewTeams = can('view:teams')
+  const canManageTeams = can('manage:teams')
+
+  const hasMembership = !isPending && !!myTeam && canViewTeams
+
   const [activeTab, setActiveTab] = useHashTab(
-    getUserTabValues(true),
+    getUserTabValues(hasMembership, canManageTeams),
     Tab.PROFILE
   )
 
@@ -59,13 +67,32 @@ export const TeamMemberPage = () => {
       </div>
       <UserPageHeader user={member} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsLine tabs={getUserTabs(true, t)} />
+        <TabsLine tabs={getUserTabs(hasMembership, canManageTeams, t)} />
         <TabsContent value={Tab.PROFILE}>
-          <ProfileTab member={member} team={myTeam} />
+          <ProfileTab
+            member={member}
+            team={myTeam}
+            canManageUsers={canManageTeams || isOwnProfile}
+          />
         </TabsContent>
-        <TabsContent value={Tab.MEMBERSHIP}>
-          <MembershipTab member={member} team={myTeam} />
-        </TabsContent>
+        {hasMembership && canViewTeams && (
+          <TabsContent value={Tab.MEMBERSHIP}>
+            <MembershipTab
+              member={member}
+              team={myTeam}
+              canManageTeams={canManageTeams && !isOwnProfile}
+            />
+          </TabsContent>
+        )}
+        {hasMembership && canManageTeams && (
+          <TabsContent value={Tab.PERMISSIONS}>
+            <PermissionsTab
+              memberId={id}
+              teamId={myTeam.id}
+              canManageTeams={canManageTeams && !isOwnProfile}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </PageContent>
   )

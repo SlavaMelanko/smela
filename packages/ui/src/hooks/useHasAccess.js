@@ -2,9 +2,10 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 
 export const useHasAccess = ({
   requireStatuses = [],
-  requireRoles = []
+  requireRoles = [],
+  requirePermissions = []
 } = {}) => {
-  const { isFetching, isAuthenticated, user: me } = useCurrentUser()
+  const { isFetching, isAuthenticated, user: me, canAll } = useCurrentUser()
 
   const hasRequiredStatus =
     requireStatuses.length === 0 || requireStatuses.includes(me?.status)
@@ -12,13 +13,14 @@ export const useHasAccess = ({
   const hasRequiredRole =
     requireRoles.length === 0 || requireRoles.includes(me?.role)
 
-  const hasAccess = isAuthenticated && hasRequiredStatus && hasRequiredRole
+  const hasRequiredPermissions =
+    requirePermissions.length === 0 || canAll(requirePermissions)
 
-  return {
-    isFetching,
-    isAuthenticated,
-    hasAccess,
-    status: me?.status || null,
-    role: me?.role || null
-  }
+  const hasAccess =
+    isAuthenticated &&
+    hasRequiredStatus &&
+    hasRequiredRole &&
+    hasRequiredPermissions
+
+  return { isFetching, isAuthenticated, hasAccess }
 }

@@ -1,3 +1,5 @@
+import type { Context } from 'hono'
+
 import { createMiddleware } from 'hono/factory'
 
 import type { AppContext } from '@/context'
@@ -9,28 +11,84 @@ import { isAdmin } from '@/types'
 /**
  * Team access middleware - ensures user has access to the team.
  *
- * Note: teamId is already validated by requestValidator middleware
+ * IMPORTANT: Must be used in strict chain with requirePermission middleware:
+ * 1. First: requirePermission with either Permission.ViewTeams or Permission.ManageTeams
+ * 2. Then: requireTeamAccess (this middleware)
  *
- * TODO: Add Redis caching for team membership queries
- * Currently queries database on every request (~1-5ms per query).
- * With Redis cache: 80-95% hit rate, 20-50x faster response time.
- * See: https://github.com/SlavaMelanko/smela-back/issues/58
+ * Logic:
+ * - Always validates team existence
+ * - For routes with memberId: validates target member exists in team
+ * - For admins: only validates team/member existence (permissions already checked)
+ * - For regular users: validates both current user AND target member access
+ *
+ * Note: teamId is already validated by validateParams middleware
  */
-export const teamAccessMiddleware = createMiddleware<AppContext>(
-  async (c, next) => {
-    const teamId = c.req.param('teamId')!
-    const { id: userId, role } = c.get('user')
 
-    // Admins and owners have access to all teams
-    if (isAdmin(role)) {
-      return next()
+const handleAdminAccess = async (
+  c: Context<AppContext>,
+  teamId: string,
+  memberId: string | undefined
+) => {
+  if (!memberId) {
+    return
+  }
+
+  const targetMember = await teamRepo.findMember(teamId, memberId)
+  if (!targetMember) {
+    throw new AppError(ErrorCode.NotFound, 'Member not found')
+  }
+
+  c.set('targetMember', targetMember)
+}
+
+const handleUserAccess = async (
+  c: Context<AppContext>,
+  teamId: string,
+  currentUserId: string,
+  memberId: string | undefined
+) => {
+  if (memberId) {
+    const [currentUser, targetMember] = await Promise.all([
+      teamRepo.findMember(teamId, currentUserId),
+      teamRepo.findMember(teamId, memberId)
+    ])
+
+    if (!currentUser) {
+      throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
+    }
+    if (!targetMember) {
+      throw new AppError(ErrorCode.NotFound, 'Member not found')
     }
 
-    // Regular users must be team members
-    const membership = await teamRepo.findMember(teamId, userId)
+    c.set('currentUser', currentUser)
+    c.set('targetMember', targetMember)
+  } else {
+    const currentUser = await teamRepo.findMember(teamId, currentUserId)
+    if (!currentUser) {
+      throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
+    }
 
-    if (!membership) {
-      throw new AppError(ErrorCode.Forbidden)
+    c.set('currentUser', currentUser)
+  }
+}
+
+export const requireTeamAccess = createMiddleware<AppContext>(
+  async (c, next) => {
+    const teamId = c.req.param('teamId')!
+    const memberId = c.req.param('memberId')
+    const { id: currentUserId, role } = c.get('user')
+
+    const team = await teamRepo.find(teamId)
+    if (!team) {
+      throw new AppError(ErrorCode.NotFound, 'Team not found')
+    }
+
+    c.set('team', team)
+
+    if (isAdmin(role)) {
+      await handleAdminAccess(c, teamId, memberId)
+    } else {
+      await handleUserAccess(c, teamId, currentUserId, memberId)
     }
 
     return next()

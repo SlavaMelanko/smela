@@ -3,7 +3,7 @@ import { EmailLink } from '@ui/components/links'
 import { useCurrentUser, useResendVerificationEmail } from '@ui/hooks/useAuth'
 import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useLocation } from '@ui/hooks/useRouter'
+import { Navigate, useLocation } from '@ui/hooks/useRouter'
 import { useTheme } from '@ui/hooks/useTheme'
 import { useToast } from '@ui/hooks/useToast'
 
@@ -17,10 +17,14 @@ export const EmailConfirmationPage = () => {
   const { mutate: resendVerificationEmail, isPending } =
     useResendVerificationEmail()
   const { showSuccessToast, showErrorToast } = useToast()
-  const { user: me } = useCurrentUser()
+  const { isFetching, user: me } = useCurrentUser()
   const { captchaRef, getCaptchaToken } = useCaptcha()
 
   const email = location.state?.email || me?.email
+
+  if (!isFetching && !email) {
+    return <Navigate to='/' replace />
+  }
 
   const handleResendVerificationEmail = async data => {
     const token = await getCaptchaToken()

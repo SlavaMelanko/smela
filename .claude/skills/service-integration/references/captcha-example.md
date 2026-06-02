@@ -312,7 +312,7 @@ interface CaptchaInput {
  *
  * Expects `captcha.token` to be present in the validated request body.
  */
-const captchaMiddleware = (): MiddlewareHandler<AppContext> => {
+const verifyCaptcha = (): MiddlewareHandler<AppContext> => {
   // Create single instance once (closure pattern)
   const captchaVerifier = createCaptchaVerifier()
 
@@ -334,7 +334,7 @@ const captchaMiddleware = (): MiddlewareHandler<AppContext> => {
   })
 }
 
-export default captchaMiddleware
+export default verifyCaptcha
 ```
 
 **Key Usage Patterns:**

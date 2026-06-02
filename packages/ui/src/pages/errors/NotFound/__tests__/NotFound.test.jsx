@@ -9,7 +9,6 @@ import { NotFoundErrorPage } from '../index'
 
 describe('NotFoundErrorPage', () => {
   beforeEach(() => {
-    globalThis.mockNavigate.mockClear()
     captureMessage.mockClear()
   })
 
@@ -29,7 +28,7 @@ describe('NotFoundErrorPage', () => {
     ).toBeVisible()
   })
 
-  it('navigates to home when button is clicked', async () => {
+  it('hard reloads to home when button is clicked', async () => {
     const user = userEvent.setup()
 
     renderWithProviders(<NotFoundErrorPage />)
@@ -38,8 +37,7 @@ describe('NotFoundErrorPage', () => {
       screen.getByRole('button', { name: en.error.notFound.cta })
     )
 
-    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/')
-    expect(globalThis.mockNavigate).toHaveBeenCalledTimes(1)
+    expect(window.location.href).toBe('http://localhost:3000/')
   })
 
   it('reports 404 to error tracker on mount', () => {

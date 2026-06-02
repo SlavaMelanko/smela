@@ -3,7 +3,7 @@
 /**
  * Seed initial data required to start the application
  *
- * Seeds: permissions, initial users (owner, admin, test users) with direct user permissions
+ * Seeds: permissions, initial users (owner, admin, support admin, test users) with direct user permissions
  *
  * Usage:
  *   bun run db:seed
@@ -28,6 +28,14 @@ import {
 
 // Seed faker for consistent data across runs
 faker.seed(42)
+
+// eslint-disable-next-line node/no-process-env
+const SEED_USER_PASSWORD = process.env['SEED_USER_PASSWORD']
+
+if (!SEED_USER_PASSWORD) {
+  console.error('❌ SEED_USER_PASSWORD is not set')
+  process.exit(1)
+}
 
 const seedPermissions = async () => {
   const allResources = Object.values(Resource)
@@ -151,25 +159,40 @@ const seedSystemUsers = async () => {
       firstName: 'Slava',
       lastName: 'Owner',
       email: 'owner@smela.me',
-      password: 'Passw0rd!',
+      password: SEED_USER_PASSWORD,
       role: Role.Owner,
       status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
       ]
     },
     {
       firstName: 'Slava',
       lastName: 'Admin',
       email: 'admin@smela.me',
-      password: 'Passw0rd!',
+      password: SEED_USER_PASSWORD,
       role: Role.Admin,
       status: UserStatus.Active,
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
+      ]
+    },
+    {
+      firstName: 'Support',
+      lastName: 'Admin',
+      email: 'support@smela.me',
+      password: SEED_USER_PASSWORD,
+      role: Role.Admin,
+      status: UserStatus.Active,
+      permissions: [
+        { action: Action.View, resource: Resource.Users },
+        { action: Action.View, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Dashboard }
       ]
     }
   ]
@@ -222,24 +245,24 @@ const seedTestUsers = async (teamId: string) => {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       email: 'alyce96@gmail.com', // Use a consistent email for testing
-      password: 'Passw0rd!',
+      password: SEED_USER_PASSWORD,
       status: UserStatus.Active,
       position: 'Developer',
       permissions: [
-        { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams }
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Dashboard }
       ]
     },
     {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       email: faker.internet.email().toLowerCase(),
-      password: 'Passw0rd!',
+      password: SEED_USER_PASSWORD,
       status: UserStatus.Pending,
       position: 'Designer',
       permissions: [
-        { action: Action.View, resource: Resource.Users },
-        { action: Action.View, resource: Resource.Teams }
+        { action: Action.View, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Dashboard }
       ]
     }
   ]
