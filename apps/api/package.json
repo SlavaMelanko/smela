@@ -1,6 +1,6 @@
 {
   "name": "@smela/api",
-  "version": "2026.04.20",
+  "version": "2026.06.02",
   "scripts": {
     "clean": "rm -rf node_modules",
     "dev": "bun --watch src/app.ts",
