@@ -260,7 +260,9 @@ test.describe.serial('User: Member Permissions', () => {
       .getByRole('tab', { name: new RegExp(t.team.tabs.members.label) })
       .textContent()
 
-    const initialCount = parseInt(initialTabText?.match(/\d+/)?.[0] ?? '0')
+    const initialCount = Number.parseInt(
+      initialTabText?.match(/\d+/)?.[0] ?? '0'
+    )
 
     await memberRow.click({ button: 'right' })
 
