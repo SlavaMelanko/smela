@@ -1,1 +1,4 @@
-export { requirePermission } from './require-permission'
+export {
+  requirePermission,
+  requireSelfOrPermission
+} from './require-permission'

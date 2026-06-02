@@ -4,6 +4,7 @@ import type { AppContext } from '@/context'
 
 import {
   requirePermission,
+  requireSelfOrPermission,
   requireTeamAccess,
   validateBody,
   validateParams
@@ -36,7 +37,7 @@ teamsMemberByIdRoute.patch(
   '/',
   validateParams(memberIdParamsSchema),
   validateBody(updateTeamMemberBodySchema),
-  requirePermission(Permission.ManageTeams),
+  requireSelfOrPermission(Permission.ManageTeams),
   requireTeamAccess,
   updateTeamMemberHandler
 )
