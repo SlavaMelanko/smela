@@ -4,6 +4,7 @@ import type { AppContext } from '@/context'
 
 import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
+import { logger } from '@/logging'
 import {
   deleteGoogleStateCookie,
   getDeviceInfo,
@@ -18,6 +19,13 @@ import { loginOrSignupWithGoogle } from '@/use-cases/auth/google-oauth'
 const buildErrorRedirect = (reason: string) =>
   `${env.FE_USER_URL}/login?reason=${encodeURIComponent(reason)}`
 
+const isValidGoogleState = (c: Context<AppContext>, state: string) => {
+  const storedState = getGoogleStateCookie(c)
+  deleteGoogleStateCookie(c)
+
+  return !!storedState && storedState === state
+}
+
 export const googleRedirectHandler = (c: Context<AppContext>) => {
   const state = crypto.randomUUID()
 
@@ -30,16 +38,18 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
   const { code, state, error } = c.req.query()
 
   if (error || !code || !state) {
+    logger.warn(
+      { error, hasCode: Boolean(code), hasState: Boolean(state) },
+      'Google OAuth callback cancelled or missing parameters'
+    )
+
     return c.redirect(
       buildErrorRedirect('auth/google-oauth-cancelled'),
       HttpStatus.MOVED_TEMPORARILY
     )
   }
 
-  const storedState = getGoogleStateCookie(c)
-  deleteGoogleStateCookie(c)
-
-  if (!storedState || storedState !== state) {
+  if (!isValidGoogleState(c, state)) {
     return c.redirect(
       buildErrorRedirect('auth/google-oauth-invalid-state'),
       HttpStatus.MOVED_TEMPORARILY
