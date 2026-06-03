@@ -9,3 +9,9 @@ export const captchaEnvVars = {
 export const sentryEnvVars = {
   SENTRY_DSN: z.url().optional()
 }
+
+export const googleOAuthEnvVars = {
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  GOOGLE_REDIRECT_URI: z.url().optional()
+}
