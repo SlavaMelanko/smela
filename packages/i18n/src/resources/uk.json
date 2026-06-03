@@ -6,6 +6,8 @@
     "auth/already-verified": "Невірний запит. Спробуйте увійти в обліковий запис.",
     "auth/email-already-in-use": "Електронна адреса вже зайнята.",
     "auth/forbidden": "Доступ заборонено.",
+    "auth/google-oauth-cancelled": "Вхід через Google скасовано. Спробуйте ще раз.",
+    "auth/google-oauth-invalid-state": "Щось пішло не так. Спробуйте ще раз.",
     "auth/invalid-credentials": "Невірна електронна адреса або пароль.",
     "auth/invalid-password": "Поточний пароль невірний.",
     "auth/unauthorized": "Доступ заборонено. Увійдіть щоб продовжити.",

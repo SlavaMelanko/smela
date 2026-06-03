@@ -35,12 +35,12 @@ export const buildAuthUrl = (state: string): string => {
   const { clientId, redirectUri } = requireGoogleEnv()
 
   const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUri,
-    response_type: 'code',
-    scope: 'openid email profile',
-    access_type: 'offline',
-    state
+    client_id: clientId, // identifies our app to Google
+    redirect_uri: redirectUri, // where Google sends the user after auth
+    response_type: 'code', // authorization code flow — code is exchanged server-side for tokens
+    scope: 'openid email profile', // request email and basic profile (name)
+    access_type: 'offline', // include refresh token in response
+    state // CSRF nonce — verified in the callback to prevent forged requests
   })
 
   return `${AUTH_URL}?${params}`

@@ -6,6 +6,8 @@
     "auth/already-verified": "Invalid request. Please try logging in.",
     "auth/email-already-in-use": "Email is already taken.",
     "auth/forbidden": "Access denied.",
+    "auth/google-oauth-cancelled": "Google sign-in was cancelled. Please try again.",
+    "auth/google-oauth-invalid-state": "Something went wrong. Please try again.",
     "auth/invalid-credentials": "Invalid email or password.",
     "auth/invalid-password": "Current password is incorrect.",
     "auth/unauthorized": "Access denied. Please try logging in again.",
