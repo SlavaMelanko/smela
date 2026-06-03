@@ -83,6 +83,13 @@ export const router = createBrowserRouter([
           import('@smela/ui/pages/auth').then(m => ({
             Component: m.VerifyEmailPage
           }))
+      },
+      {
+        path: 'auth/google/callback',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.GoogleOAuthCallbackPage
+          }))
       }
     ]
   },

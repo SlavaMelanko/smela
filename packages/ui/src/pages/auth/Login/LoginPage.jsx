@@ -57,9 +57,6 @@ export const LoginPage = ({ options = {} }) => {
 
   const handleLoginWithGoogle = () => {
     logInWithGoogle(undefined, {
-      onSuccess: () => {
-        navigate('/')
-      },
       onError: error => {
         showErrorToast(te(error))
       }

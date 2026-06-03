@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import env from '@ui/lib/env'
 import { accessTokenStorage } from '@ui/lib/storage'
 import { authApi, userApi } from '@ui/services/backend'
+import { GOOGLE_OAUTH_PATH } from '@ui/services/backend/paths'
 import {
   clearUser as clearErrorTrackerUser,
   setUser as setErrorTrackerUser
@@ -67,14 +69,18 @@ export const useLogin = () => {
 export const useLoginWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      // Temporary implementation until Google OAuth is implemented
-      throw new Error('Google login not implemented for backend API yet')
-    },
-    meta: {
-      // When implemented, this will invalidate queries to refetch user data
-      invalidatesQueries: authKeys.user()
+      window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
+
+export const useCompleteGoogleLogin = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.refreshToken,
+    onSuccess: data => cacheAuthResponse(queryClient, data)
+  })
+}
 
 export const useUserSignupWithEmail = () => {
   const queryClient = useQueryClient()
@@ -88,12 +94,7 @@ export const useUserSignupWithEmail = () => {
 export const useUserSignupWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      // Temporary implementation until Google OAuth is implemented
-      throw new Error('Google signup not implemented for backend API yet')
-    },
-    meta: {
-      // When implemented, this will invalidate queries to refetch user data
-      invalidatesQueries: authKeys.user()
+      window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
 

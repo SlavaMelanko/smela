@@ -1,0 +1,34 @@
+import { Spinner } from '@ui/components/Spinner'
+import { useCompleteGoogleLogin } from '@ui/hooks/useAuth'
+import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
+import { useToast } from '@ui/hooks/useToast'
+import { useEffect, useRef } from 'react'
+
+export const GoogleOAuthCallbackPage = () => {
+  const { te } = useLocale()
+  const navigate = useNavigate()
+  const { showErrorToast } = useToast()
+  const { mutate: completeGoogleLogin } = useCompleteGoogleLogin()
+  const called = useRef(false)
+
+  useEffect(() => {
+    if (called.current) {
+      return
+    }
+
+    called.current = true
+
+    completeGoogleLogin(undefined, {
+      onSuccess: () => {
+        navigate('/', { replace: true })
+      },
+      onError: error => {
+        showErrorToast(te(error))
+        navigate('/login', { replace: true })
+      }
+    })
+  }, [completeGoogleLogin, navigate, showErrorToast, te])
+
+  return <Spinner />
+}
