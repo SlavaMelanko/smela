@@ -1,4 +1,5 @@
 // Auth endpoints
+export const GOOGLE_OAUTH_PATH = '/api/v1/auth/google'
 export const SIGNUP_PATH = '/api/v1/auth/signup'
 export const LOGIN_PATH = '/api/v1/auth/login'
 export const VERIFY_EMAIL_PATH = '/api/v1/auth/verify-email'
