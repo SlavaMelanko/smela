@@ -42,7 +42,7 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
   if (!storedState || storedState !== state) {
     return c.redirect(
       buildErrorRedirect('auth/google-oauth-invalid-state'),
-      302
+      HttpStatus.MOVED_TEMPORARILY
     )
   }
 

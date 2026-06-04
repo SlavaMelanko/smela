@@ -59,6 +59,76 @@ interface GoogleUserInfo {
   verified_email: boolean
 }
 
+const validateTokenResponse = (data: unknown): GoogleTokenResponse => {
+  if (!data || typeof data !== 'object') {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Invalid token response from Google'
+    )
+  }
+
+  const response = data as Record<string, unknown>
+  
+  if (typeof response.access_token !== 'string' || !response.access_token) {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Missing access token in Google response'
+    )
+  }
+
+  if (typeof response.token_type !== 'string') {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Missing token type in Google response'
+    )
+  }
+
+  return {
+    access_token: response.access_token,
+    token_type: response.token_type
+  }
+}
+
+const validateUserInfo = (data: unknown): GoogleUserInfo => {
+  if (!data || typeof data !== 'object') {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Invalid user info response from Google'
+    )
+  }
+
+  const userInfo = data as Record<string, unknown>
+  
+  if (typeof userInfo.id !== 'string' || !userInfo.id) {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Missing user ID in Google response'
+    )
+  }
+
+  if (typeof userInfo.email !== 'string' || !userInfo.email) {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Missing email in Google response'
+    )
+  }
+
+  if (typeof userInfo.given_name !== 'string' || !userInfo.given_name) {
+    throw new AppError(
+      ErrorCode.InternalError,
+      'Missing given name in Google response'
+    )
+  }
+
+  return {
+    id: userInfo.id,
+    email: userInfo.email,
+    given_name: userInfo.given_name,
+    family_name: typeof userInfo.family_name === 'string' ? userInfo.family_name : undefined,
+    verified_email: userInfo.verified_email === true
+  }
+}
+
 const fetchGoogleTokens = async (
   code: string
 ): Promise<GoogleTokenResponse> => {
@@ -83,7 +153,8 @@ const fetchGoogleTokens = async (
     )
   }
 
-  return res.json() as Promise<GoogleTokenResponse>
+  const data = await res.json()
+  return validateTokenResponse(data)
 }
 
 const fetchGoogleUserInfo = async (
@@ -100,7 +171,8 @@ const fetchGoogleUserInfo = async (
     )
   }
 
-  return res.json() as Promise<GoogleUserInfo>
+  const data = await res.json()
+  return validateUserInfo(data)
 }
 
 export const exchangeCodeForProfile = async (
