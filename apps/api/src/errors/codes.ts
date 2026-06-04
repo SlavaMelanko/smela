@@ -8,10 +8,10 @@ enum ErrorCode {
   InvalidCredentials = 'auth/invalid-credentials',
   InvalidPassword = 'auth/invalid-password',
   Unauthorized = 'auth/unauthorized',
-  GoogleOAuthCancelled = 'auth/google-oauth-cancelled',
-  GoogleOAuthInvalidState = 'auth/google-oauth-invalid-state',
-  GoogleOAuthFailed = 'auth/google-oauth-failed',
   GoogleEmailNotVerified = 'auth/google-email-not-verified',
+  GoogleOAuthCancelled = 'auth/google-oauth-cancelled',
+  GoogleOAuthFailed = 'auth/google-oauth-failed',
+  GoogleOAuthInvalidState = 'auth/google-oauth-invalid-state',
 
   TokenAlreadyUsed = 'token/already-used',
   TokenCancelled = 'token/cancelled',
