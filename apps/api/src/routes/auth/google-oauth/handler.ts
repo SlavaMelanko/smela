@@ -44,14 +44,14 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
     )
 
     return c.redirect(
-      buildErrorRedirect('auth/google-oauth-cancelled'),
+      buildErrorRedirect(ErrorCode.GoogleOAuthCancelled),
       HttpStatus.MOVED_TEMPORARILY
     )
   }
 
   if (!isValidGoogleState(c, state)) {
     return c.redirect(
-      buildErrorRedirect('auth/google-oauth-invalid-state'),
+      buildErrorRedirect(ErrorCode.GoogleOAuthInvalidState),
       HttpStatus.MOVED_TEMPORARILY
     )
   }

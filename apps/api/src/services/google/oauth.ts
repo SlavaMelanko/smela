@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 
@@ -25,92 +27,20 @@ export const buildAuthUrl = (state: string): string => {
   return `${AUTH_URL}?${params}`
 }
 
-interface GoogleTokenResponse {
-  access_token: string
-  token_type: string
-}
+const googleTokenSchema = z.object({
+  access_token: z.string(),
+  token_type: z.string()
+})
 
-interface GoogleUserInfo {
-  id: string
-  email: string
-  given_name: string
-  family_name?: string
-  verified_email: boolean
-}
+const googleUserInfoSchema = z.object({
+  id: z.string(),
+  email: z.email(),
+  given_name: z.string(),
+  family_name: z.string().optional(),
+  verified_email: z.boolean()
+})
 
-const validateTokenResponse = (data: unknown): GoogleTokenResponse => {
-  if (!data || typeof data !== 'object') {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Invalid token response from Google'
-    )
-  }
-
-  const response = data as Record<string, unknown>
-  
-  if (typeof response.access_token !== 'string' || !response.access_token) {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Missing access token in Google response'
-    )
-  }
-
-  if (typeof response.token_type !== 'string') {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Missing token type in Google response'
-    )
-  }
-
-  return {
-    access_token: response.access_token,
-    token_type: response.token_type
-  }
-}
-
-const validateUserInfo = (data: unknown): GoogleUserInfo => {
-  if (!data || typeof data !== 'object') {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Invalid user info response from Google'
-    )
-  }
-
-  const userInfo = data as Record<string, unknown>
-  
-  if (typeof userInfo.id !== 'string' || !userInfo.id) {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Missing user ID in Google response'
-    )
-  }
-
-  if (typeof userInfo.email !== 'string' || !userInfo.email) {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Missing email in Google response'
-    )
-  }
-
-  if (typeof userInfo.given_name !== 'string' || !userInfo.given_name) {
-    throw new AppError(
-      ErrorCode.InternalError,
-      'Missing given name in Google response'
-    )
-  }
-
-  return {
-    id: userInfo.id,
-    email: userInfo.email,
-    given_name: userInfo.given_name,
-    family_name: typeof userInfo.family_name === 'string' ? userInfo.family_name : undefined,
-    verified_email: userInfo.verified_email === true
-  }
-}
-
-const fetchGoogleTokens = async (
-  code: string
-): Promise<GoogleTokenResponse> => {
+const fetchGoogleTokens = async (code: string) => {
   const res = await fetch(TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -125,31 +55,45 @@ const fetchGoogleTokens = async (
 
   if (!res.ok) {
     throw new AppError(
-      ErrorCode.InvalidCredentials,
+      ErrorCode.GoogleOAuthFailed,
       'Google token exchange failed'
     )
   }
 
-  const data = await res.json()
-  return validateTokenResponse(data)
+  const parsed = googleTokenSchema.safeParse(await res.json())
+
+  if (!parsed.success) {
+    throw new AppError(
+      ErrorCode.GoogleOAuthFailed,
+      'Unexpected Google token response'
+    )
+  }
+
+  return parsed.data
 }
 
-const fetchGoogleUserInfo = async (
-  accessToken: string
-): Promise<GoogleUserInfo> => {
+const fetchGoogleUserInfo = async (accessToken: string) => {
   const res = await fetch(USER_INFO_URL, {
     headers: { Authorization: `Bearer ${accessToken}` }
   })
 
   if (!res.ok) {
     throw new AppError(
-      ErrorCode.InvalidCredentials,
+      ErrorCode.GoogleOAuthFailed,
       'Failed to fetch Google user info'
     )
   }
 
-  const data = await res.json()
-  return validateUserInfo(data)
+  const parsed = googleUserInfoSchema.safeParse(await res.json())
+
+  if (!parsed.success) {
+    throw new AppError(
+      ErrorCode.GoogleOAuthFailed,
+      'Unexpected Google user info response'
+    )
+  }
+
+  return parsed.data
 }
 
 export const exchangeCodeForProfile = async (
@@ -160,7 +104,7 @@ export const exchangeCodeForProfile = async (
 
   if (!userInfo.verified_email) {
     throw new AppError(
-      ErrorCode.InvalidCredentials,
+      ErrorCode.GoogleEmailNotVerified,
       'Google email not verified'
     )
   }
