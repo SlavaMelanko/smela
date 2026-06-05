@@ -19,6 +19,16 @@ import { logInOrSignUpWithGoogle } from '@/use-cases/auth/google-oauth'
 const buildErrorRedirect = (reason: string) =>
   `${env.FE_USER_URL}/login?reason=${encodeURIComponent(reason)}`
 
+const buildCallbackRedirect = (isNew: boolean) => {
+  const url = new URL(`${env.FE_USER_URL}/auth/google/callback`)
+
+  if (isNew) {
+    url.searchParams.set('new', '1')
+  }
+
+  return url.toString()
+}
+
 const isValidGoogleState = (c: Context<AppContext>, state: string) => {
   const storedState = getGoogleStateCookie(c)
   deleteGoogleStateCookie(c)
@@ -75,7 +85,7 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
     // Redirect to frontend callback page — frontend will call /refresh-token
     // to exchange the httpOnly cookie for an access token (no token in URL)
     return c.redirect(
-      `${env.FE_USER_URL}/auth/google/callback`,
+      buildCallbackRedirect(result.isNew),
       HttpStatus.MOVED_TEMPORARILY
     )
   } catch (err) {

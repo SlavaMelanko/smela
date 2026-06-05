@@ -29,11 +29,11 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
     const user = await userRepo.findById(existingAuth.userId)
 
     if (user) {
-      return user
+      return { user, isNew: false }
     }
   }
 
-  return db.transaction(async tx => {
+  const user = await db.transaction(async tx => {
     // User may already exist via email (signed up with password before)
     let user = await userRepo.findByEmail(email, tx)
 
@@ -62,13 +62,15 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
 
     return user
   })
+
+  return { user, isNew: true }
 }
 
 export const logInOrSignUpWithGoogle = async (
   profile: GoogleOAuthInput,
   deviceInfo: DeviceInfo
 ) => {
-  const user = await findOrCreateGoogleUser(profile)
+  const { user, isNew } = await findOrCreateGoogleUser(profile)
 
   const [team, permissions] = await Promise.all([
     teamRepo.findUserTeam(user.id),
@@ -83,6 +85,7 @@ export const logInOrSignUpWithGoogle = async (
 
   return {
     data: { user, team, permissions, accessToken },
+    isNew,
     refreshToken
   }
 }
