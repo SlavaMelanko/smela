@@ -7,6 +7,12 @@ import { Suspense } from 'react'
 
 import { LayoutContent, LayoutRoot, LayoutTopRightControls } from './Layout'
 
+export const ErrorInlineLayout = ({ children }) => (
+  <div className='flex flex-1 items-center justify-center'>
+    <div className='w-full max-w-105'>{children}</div>
+  </div>
+)
+
 export const ErrorLayout = ({ children }) => (
   <LayoutRoot>
     <LayoutTopRightControls>
