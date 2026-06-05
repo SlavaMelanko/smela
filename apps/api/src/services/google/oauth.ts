@@ -4,7 +4,7 @@ import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
-const USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo'
+const USER_INFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo'
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 
 export interface GoogleProfile {
@@ -33,11 +33,11 @@ const googleTokenSchema = z.object({
 })
 
 const googleUserInfoSchema = z.object({
-  id: z.string(),
+  sub: z.string(), // stable unique identifier per OpenID Connect spec
   email: z.email(),
   given_name: z.string(),
   family_name: z.string().optional(),
-  verified_email: z.boolean()
+  email_verified: z.boolean()
 })
 
 const fetchGoogleTokens = async (code: string) => {
@@ -102,7 +102,7 @@ export const exchangeCodeForProfile = async (
   const tokens = await fetchGoogleTokens(code)
   const userInfo = await fetchGoogleUserInfo(tokens.access_token)
 
-  if (!userInfo.verified_email) {
+  if (!userInfo.email_verified) {
     throw new AppError(
       ErrorCode.GoogleEmailNotVerified,
       'Google email not verified'
@@ -110,7 +110,7 @@ export const exchangeCodeForProfile = async (
   }
 
   return {
-    id: userInfo.id,
+    id: userInfo.sub,
     email: userInfo.email,
     firstName: userInfo.given_name,
     lastName: userInfo.family_name
