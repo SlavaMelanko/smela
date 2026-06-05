@@ -2,7 +2,7 @@ import Action from './action'
 import Resource from './resource'
 
 export type PermissionsInput = Partial<
-  Record<Resource, { view: boolean; manage: boolean }>
+  Record<Resource, Record<Action, boolean>>
 >
 
 export type PermissionMap<
@@ -45,6 +45,10 @@ export const getMemberBasePermissions = (): PermissionMap => ({
 export const getMemberDefaultPermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
+})
+
+export const getSelfServeUserDefaultPermissions = (): PermissionsInput => ({
+  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true }
 })
 
 export default Permission

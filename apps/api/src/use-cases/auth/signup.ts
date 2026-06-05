@@ -1,13 +1,17 @@
 import type { DeviceInfo } from '@/net/http/device'
 import type { UserPreferences } from '@/types'
 
-import { authRepo, db, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 import { hashPassword } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
 import { emailAgent } from '@/services'
-import { AuthProvider, UserStatus } from '@/types'
+import {
+  AuthProvider,
+  getSelfServeUserDefaultPermissions,
+  UserStatus
+} from '@/types'
 
 import { createAuthTokens } from '../tokens'
 
@@ -54,6 +58,12 @@ const createNewUser = async (
         token: verificationToken,
         expiresAt
       },
+      tx
+    )
+
+    await rbacRepo.setUserPermissions(
+      newUser.id,
+      getSelfServeUserDefaultPermissions(),
       tx
     )
 

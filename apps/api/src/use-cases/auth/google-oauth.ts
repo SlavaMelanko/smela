@@ -1,7 +1,11 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, teamRepo, userRepo } from '@/data'
-import { AuthProvider, UserStatus } from '@/types'
+import { authRepo, db, rbacRepo, teamRepo, userRepo } from '@/data'
+import {
+  AuthProvider,
+  getSelfServeUserDefaultPermissions,
+  UserStatus
+} from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens } from '../tokens'
@@ -42,6 +46,12 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
 
     await authRepo.create(
       { userId: user.id, provider: AuthProvider.Google, identifier: googleId },
+      tx
+    )
+
+    await rbacRepo.setUserPermissions(
+      user.id,
+      getSelfServeUserDefaultPermissions(),
       tx
     )
 
