@@ -1,6 +1,4 @@
-// IMPORTANT: When adding, removing, or updating error codes in this enum,
-// you must also update the httpStatusMap in @/handlers/http-status-mapper.ts
-// to ensure all error codes have corresponding HTTP status mappings
+// Keep in sync: @/errors/registry.ts (messages) and @/handlers/http-status-mapper.ts (HTTP status)
 enum ErrorCode {
   AlreadyVerified = 'auth/already-verified',
   EmailAlreadyInUse = 'auth/email-already-in-use',
