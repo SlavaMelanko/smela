@@ -1,4 +1,4 @@
-export { loginOrSignupWithGoogle } from './google-oauth'
+export { logInOrSignUpWithGoogle } from './google-oauth'
 export { logInWithEmail } from './login'
 export { refreshAuthTokens } from './refresh-token'
 export { requestPasswordReset } from './request-password-reset'

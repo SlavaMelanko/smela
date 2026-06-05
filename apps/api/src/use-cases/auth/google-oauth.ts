@@ -54,7 +54,7 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
   })
 }
 
-export const loginOrSignupWithGoogle = async (
+export const logInOrSignUpWithGoogle = async (
   profile: GoogleOAuthInput,
   deviceInfo: DeviceInfo
 ) => {

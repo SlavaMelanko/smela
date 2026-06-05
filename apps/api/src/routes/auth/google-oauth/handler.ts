@@ -14,7 +14,7 @@ import {
   setRefreshCookie
 } from '@/net/http'
 import { buildAuthUrl, exchangeCodeForProfile } from '@/services/google'
-import { loginOrSignupWithGoogle } from '@/use-cases/auth/google-oauth'
+import { logInOrSignUpWithGoogle } from '@/use-cases/auth/google-oauth'
 
 const buildErrorRedirect = (reason: string) =>
   `${env.FE_USER_URL}/login?reason=${encodeURIComponent(reason)}`
@@ -60,7 +60,7 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
     const profile = await exchangeCodeForProfile(code)
     const deviceInfo = getDeviceInfo(c)
 
-    const result = await loginOrSignupWithGoogle(
+    const result = await logInOrSignUpWithGoogle(
       {
         googleId: profile.id,
         email: profile.email,
