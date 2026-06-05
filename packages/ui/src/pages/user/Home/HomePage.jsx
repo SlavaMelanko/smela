@@ -7,7 +7,8 @@ import { useEffect } from 'react'
 export const HomePage = () => {
   const { t } = useLocale()
   const { showSuccessToast } = useToast()
-  const { state: { showWelcome } = {} } = useLocation()
+  const { state } = useLocation()
+  const { showWelcome } = state ?? {}
 
   // Show welcome toast after successful social OAuth signup
   useEffect(() => {
