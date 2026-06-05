@@ -15,7 +15,7 @@ export const googleOAuthEnvVars = {
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   GOOGLE_REDIRECT_URI: z
     .url()
-    .default('http://localhost:3000/auth/google/callback'),
+    .default('http://localhost:3000/api/v1/auth/google/callback'),
   GOOGLE_OAUTH_STATE_COOKIE: z.string().min(1).default('google-oauth-state'),
   GOOGLE_OAUTH_STATE_COOKIE_MAX_AGE: z.coerce
     .number()

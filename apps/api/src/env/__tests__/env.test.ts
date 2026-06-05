@@ -29,7 +29,7 @@ describe('Environment Configuration', () => {
     CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890',
     GOOGLE_CLIENT_ID: 'test-google-client-id',
     GOOGLE_CLIENT_SECRET: 'test-google-client-secret',
-    GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/google/callback'
+    GOOGLE_REDIRECT_URI: 'http://localhost:3000/api/v1/auth/google/callback'
   })
 
   beforeEach(() => {
