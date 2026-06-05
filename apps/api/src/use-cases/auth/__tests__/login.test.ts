@@ -191,7 +191,7 @@ describe('Login with Email', () => {
       })
     })
 
-    it('should throw InvalidCredentials when auth record has no password hash', async () => {
+    it('should throw SocialAuthOnly when auth record has no password hash', async () => {
       mockAuthRepo.findById.mockImplementation(async () => ({
         ...mockAuthRecord,
         passwordHash: null
@@ -201,7 +201,7 @@ describe('Login with Email', () => {
         logInWithEmail(mockLoginParams, mockDeviceInfo)
       ).rejects.toMatchObject({
         name: 'AppError',
-        code: ErrorCode.InvalidCredentials
+        code: ErrorCode.SocialAuthOnly
       })
     })
   })
@@ -317,7 +317,7 @@ describe('Login with Email', () => {
       }
     })
 
-    it('should handle malformed auth data from database', async () => {
+    it('should throw SocialAuthOnly when auth record has undefined password hash', async () => {
       mockAuthRepo.findById.mockImplementation(async () => ({
         ...mockAuthRecord,
         passwordHash: undefined
@@ -328,7 +328,7 @@ describe('Login with Email', () => {
         expect(true).toBe(false) // should not reach here
       } catch (error) {
         expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.InvalidCredentials)
+        expect((error as AppError).code).toBe(ErrorCode.SocialAuthOnly)
       }
     })
   })

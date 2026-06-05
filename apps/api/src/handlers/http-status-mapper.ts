@@ -8,6 +8,7 @@ const httpStatusMap: Record<ErrorCode, HttpStatus> = {
   [ErrorCode.Forbidden]: HttpStatus.FORBIDDEN,
   [ErrorCode.InvalidCredentials]: HttpStatus.UNAUTHORIZED,
   [ErrorCode.InvalidPassword]: HttpStatus.UNAUTHORIZED,
+  [ErrorCode.SocialAuthOnly]: HttpStatus.CONFLICT,
   [ErrorCode.Unauthorized]: HttpStatus.UNAUTHORIZED,
   [ErrorCode.GoogleEmailNotVerified]: HttpStatus.FORBIDDEN,
   [ErrorCode.GoogleOAuthCancelled]: HttpStatus.BAD_REQUEST,

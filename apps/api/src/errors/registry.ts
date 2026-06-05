@@ -21,6 +21,10 @@ const ErrorRegistry: Record<ErrorCode, ErrorDetails> = {
   [ErrorCode.InvalidPassword]: {
     error: 'Current password is incorrect.'
   },
+  [ErrorCode.SocialAuthOnly]: {
+    error:
+      'This account uses social login. Please sign in with your social provider.'
+  },
   [ErrorCode.Unauthorized]: {
     error: 'Unauthorized access.'
   },

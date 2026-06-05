@@ -12,6 +12,7 @@
     "auth/google-oauth-invalid-state": "Something went wrong. Please try again.",
     "auth/invalid-credentials": "Invalid email or password.",
     "auth/invalid-password": "Current password is incorrect.",
+    "auth/social-auth-only": "This account uses social login. Please sign in with your social provider.",
     "auth/unauthorized": "Access denied. Please try logging in again.",
     "captcha/invalid-token": "Security verification failed. Please try again.",
     "captcha/validation-failed": "Security verification failed. Please try again.",

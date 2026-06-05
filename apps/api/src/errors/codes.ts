@@ -5,6 +5,7 @@ enum ErrorCode {
   Forbidden = 'auth/forbidden',
   InvalidCredentials = 'auth/invalid-credentials',
   InvalidPassword = 'auth/invalid-password',
+  SocialAuthOnly = 'auth/social-auth-only',
   Unauthorized = 'auth/unauthorized',
   GoogleEmailNotVerified = 'auth/google-email-not-verified',
   GoogleOAuthCancelled = 'auth/google-oauth-cancelled',
