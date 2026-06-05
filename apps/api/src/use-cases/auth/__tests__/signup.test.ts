@@ -86,6 +86,7 @@ describe('Signup with Email', () => {
       authRepo: mockAuthRepo,
       tokenRepo: mockTokenRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
+      rbacRepo: { setUserPermissions: mock(async () => {}) },
       db: mockTransaction
     }))
 
