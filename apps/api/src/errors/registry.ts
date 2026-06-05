@@ -24,17 +24,17 @@ const ErrorRegistry: Record<ErrorCode, ErrorDetails> = {
   [ErrorCode.Unauthorized]: {
     error: 'Unauthorized access.'
   },
+  [ErrorCode.GoogleEmailNotVerified]: {
+    error: 'Google email is not verified.'
+  },
   [ErrorCode.GoogleOAuthCancelled]: {
     error: 'Google sign-in was cancelled.'
-  },
-  [ErrorCode.GoogleOAuthInvalidState]: {
-    error: 'Invalid Google sign-in state.'
   },
   [ErrorCode.GoogleOAuthFailed]: {
     error: 'Google sign-in failed.'
   },
-  [ErrorCode.GoogleEmailNotVerified]: {
-    error: 'Google email is not verified.'
+  [ErrorCode.GoogleOAuthInvalidState]: {
+    error: 'Invalid Google sign-in state.'
   },
 
   // Token errors

@@ -9,10 +9,10 @@ const httpStatusMap: Record<ErrorCode, HttpStatus> = {
   [ErrorCode.InvalidCredentials]: HttpStatus.UNAUTHORIZED,
   [ErrorCode.InvalidPassword]: HttpStatus.UNAUTHORIZED,
   [ErrorCode.Unauthorized]: HttpStatus.UNAUTHORIZED,
-  [ErrorCode.GoogleOAuthCancelled]: HttpStatus.BAD_REQUEST,
-  [ErrorCode.GoogleOAuthInvalidState]: HttpStatus.BAD_REQUEST,
-  [ErrorCode.GoogleOAuthFailed]: HttpStatus.BAD_GATEWAY,
   [ErrorCode.GoogleEmailNotVerified]: HttpStatus.FORBIDDEN,
+  [ErrorCode.GoogleOAuthCancelled]: HttpStatus.BAD_REQUEST,
+  [ErrorCode.GoogleOAuthFailed]: HttpStatus.BAD_GATEWAY,
+  [ErrorCode.GoogleOAuthInvalidState]: HttpStatus.BAD_REQUEST,
 
   // Token errors
   [ErrorCode.TokenAlreadyUsed]: HttpStatus.BAD_REQUEST,
