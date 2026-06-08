@@ -493,6 +493,40 @@ test.describe('Authentication: General', () => {
     }
   })
 
+  test('login: shows info and error notices from url params', async ({
+    page,
+    t
+  }) => {
+    const infoCode = 'refresh-token/missing'
+    const errorCode = 'auth/google-oauth-failed'
+
+    // Info notice — neutral (e.g. expired session redirect)
+    await page.goto(`/login?info=${encodeURIComponent(infoCode)}`)
+
+    const infoNotice = page.getByRole('alert')
+
+    await expect(infoNotice).toHaveText(t.backend[infoCode])
+    await expect(infoNotice).not.toHaveClass(/text-destructive/)
+
+    // Error notice — destructive (e.g. Google OAuth failure)
+    await page.goto(`/login?error=${encodeURIComponent(errorCode)}`)
+
+    const errorNotice = page.getByRole('alert')
+
+    await expect(errorNotice).toHaveText(t.backend[errorCode])
+    await expect(errorNotice).toHaveClass(/text-destructive/)
+
+    // Error takes precedence when both params are present
+    await page.goto(
+      `/login?info=${encodeURIComponent(infoCode)}&error=${encodeURIComponent(errorCode)}`
+    )
+
+    const notice = page.getByRole('alert')
+
+    await expect(notice).toHaveText(t.backend[errorCode])
+    await expect(notice).toHaveClass(/text-destructive/)
+  })
+
   test('login: redirects authenticated users from auth pages', async ({
     page,
     t,
