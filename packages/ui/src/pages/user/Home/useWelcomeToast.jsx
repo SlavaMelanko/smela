@@ -15,10 +15,12 @@ export const useWelcomeToast = () => {
   const { showWelcome } = state ?? {}
 
   useEffect(() => {
-    if (showWelcome && !welcomed.current) {
-      welcomed.current = true
-      showSuccessToast(t('email.verification.success'))
-      navigate(pathname, { replace: true })
+    if (!showWelcome || welcomed.current) {
+      return
     }
+
+    welcomed.current = true
+    showSuccessToast(t('email.verification.success'))
+    navigate(pathname, { replace: true })
   }, [showWelcome, showSuccessToast, t, navigate, pathname])
 }
