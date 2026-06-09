@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
 
 export const GoogleOAuthCallbackPage = () => {
   const navigate = useNavigate()
-  const { mutate: completeGoogleLogin } = useCompleteGoogleLogin()
+  const { mutateAsync: completeGoogleLoginAsync } = useCompleteGoogleLogin()
   const { new: isNew } = useUrlParams(['new'])
   const called = useRef(false)
 
@@ -18,17 +18,17 @@ export const GoogleOAuthCallbackPage = () => {
 
     called.current = true
 
-    completeGoogleLogin(undefined, {
-      onSuccess: () => {
+    completeGoogleLoginAsync()
+      .then(() => {
         navigate('/home', { replace: true, state: { showWelcome: isNew } })
-      },
-      onError: error => {
+      })
+      .catch(error => {
         navigate(withQuery('/login', { error: error?.code }), {
           replace: true
         })
-      }
-    })
-  }, [completeGoogleLogin, isNew, navigate])
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return <Spinner />
 }

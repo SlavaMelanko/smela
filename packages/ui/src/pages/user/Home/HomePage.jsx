@@ -1,21 +1,9 @@
 import { PageContent } from '@ui/components/PageContent'
-import { useLocale } from '@ui/hooks/useLocale'
-import { useLocation } from '@ui/hooks/useRouter'
-import { useToast } from '@ui/hooks/useToast'
-import { useEffect } from 'react'
+
+import { useWelcomeToast } from './useWelcomeToast'
 
 export const HomePage = () => {
-  const { t } = useLocale()
-  const { showSuccessToast } = useToast()
-  const { state } = useLocation()
-  const { showWelcome } = state ?? {}
-
-  // Show welcome toast after successful social OAuth signup
-  useEffect(() => {
-    if (showWelcome) {
-      showSuccessToast(t('email.verification.success'))
-    }
-  }, [showWelcome, showSuccessToast, t])
+  useWelcomeToast()
 
   return (
     <PageContent>
