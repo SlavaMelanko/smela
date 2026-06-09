@@ -116,13 +116,12 @@ export const useLogout = () => {
   })
 }
 
-export const useVerifyEmail = ({ onSettled }) => {
+export const useVerifyEmail = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.verifyEmail,
-    onSuccess: data => cacheAuthResponse(queryClient, data),
-    onSettled
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 
