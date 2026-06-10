@@ -3,7 +3,8 @@
 /**
  * Seed initial data required to start the application
  *
- * Seeds: permissions, initial users (owner, admin, support admin, test users) with direct user permissions
+ * Always seeds: permissions, system users (owner, admin, support admin)
+ * Non-production only: teams and test users
  *
  * Usage:
  *   bun run db:seed
@@ -12,6 +13,7 @@
 import { faker } from '@faker-js/faker'
 import { eq } from 'drizzle-orm'
 
+import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
 import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
@@ -328,8 +330,11 @@ const seedTestUsers = async (teamId: string) => {
 const seed = async () => {
   await seedPermissions()
   await seedSystemUsers()
-  const teamId = await seedTeams()
-  await seedTestUsers(teamId)
+
+  if (!isProdEnv()) {
+    const teamId = await seedTeams()
+    await seedTestUsers(teamId)
+  }
 }
 
 seed().catch(err => {
