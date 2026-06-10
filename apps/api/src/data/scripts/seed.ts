@@ -327,6 +327,41 @@ const seedTestUsers = async (teamId: string) => {
   }
 }
 
+// Google OAuth user (no password, no team) for testing SocialAuthOnly and account-linking flows
+const seedGoogleUser = async () => {
+  const email = 'user.google@gmail.com'
+
+  const [existingUser] = await db
+    .select({ id: usersTable.id })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+
+  if (existingUser) {
+    console.log(`✅ Google user ${email} already exists`)
+
+    return
+  }
+
+  const [createdUser] = await db
+    .insert(usersTable)
+    .values({
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email,
+      status: UserStatus.Active
+    })
+    .returning({ id: usersTable.id })
+
+  await db.insert(authTable).values({
+    userId: createdUser.id,
+    provider: AuthProvider.Google,
+    identifier: email,
+    passwordHash: null
+  })
+
+  console.log(`✅ Google user ${email} seeded`)
+}
+
 const seed = async () => {
   await seedPermissions()
   await seedSystemUsers()
@@ -334,6 +369,7 @@ const seed = async () => {
   if (!isProdEnv()) {
     const teamId = await seedTeams()
     await seedTestUsers(teamId)
+    await seedGoogleUser()
   }
 }
 

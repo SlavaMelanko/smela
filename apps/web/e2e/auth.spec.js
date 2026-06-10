@@ -493,6 +493,33 @@ test.describe('Authentication: General', () => {
     }
   })
 
+  test('login: shows error for Google-only account using email login', async ({
+    page,
+    t
+  }) => {
+    await page.goto('/login')
+
+    const apiPromise = waitForApiCall(page, {
+      path: LOGIN_PATH,
+      status: HttpStatus.CONFLICT
+    })
+
+    await fillLoginFormAndSubmit(
+      page,
+      {
+        email: process.env.VITE_E2E_USER_GOOGLE_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
+      },
+      t
+    )
+
+    await apiPromise
+
+    await expect(
+      page.getByText(t.backend['auth/social-auth-only'])
+    ).toBeVisible()
+  })
+
   test('login: shows info and error notices from url params', async ({
     page,
     t
