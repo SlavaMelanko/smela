@@ -327,39 +327,51 @@ const seedTestUsers = async (teamId: string) => {
   }
 }
 
-// Google OAuth user (no password, no team) for testing SocialAuthOnly and account-linking flows
-const seedGoogleUser = async () => {
-  const email = 'user.google@gmail.com'
-
-  const [existingUser] = await db
-    .select({ id: usersTable.id })
-    .from(usersTable)
-    .where(eq(usersTable.email, email))
-
-  if (existingUser) {
-    console.log(`✅ Google user ${email} already exists`)
-
-    return
-  }
-
-  const [createdUser] = await db
-    .insert(usersTable)
-    .values({
+// Google OAuth users (no password, no team) - identifier is the Google account id (sub), not email
+const seedGoogleUsers = async () => {
+  const googleUsers = [
+    {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
-      email,
-      status: UserStatus.Active
+      email: 'user.google@gmail.com',
+      googleId: 'mock-google-id-user-google',
+      status: UserStatus.Active,
+      permissions: [{ action: Action.Manage, resource: Resource.Dashboard }]
+    }
+  ]
+
+  for (const user of googleUsers) {
+    const [existingUser] = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(eq(usersTable.email, user.email))
+
+    if (existingUser) {
+      console.log(`✅ Google user ${user.email} already exists`)
+      continue
+    }
+
+    const [createdUser] = await db
+      .insert(usersTable)
+      .values({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        status: user.status
+      })
+      .returning({ id: usersTable.id })
+
+    await db.insert(authTable).values({
+      userId: createdUser.id,
+      provider: AuthProvider.Google,
+      identifier: user.googleId,
+      passwordHash: null
     })
-    .returning({ id: usersTable.id })
 
-  await db.insert(authTable).values({
-    userId: createdUser.id,
-    provider: AuthProvider.Google,
-    identifier: email,
-    passwordHash: null
-  })
+    await setUserPermissions(createdUser.id, user.permissions)
 
-  console.log(`✅ Google user ${email} seeded`)
+    console.log(`✅ Google user ${user.email} seeded`)
+  }
 }
 
 const seed = async () => {
@@ -369,7 +381,7 @@ const seed = async () => {
   if (!isProdEnv()) {
     const teamId = await seedTeams()
     await seedTestUsers(teamId)
-    await seedGoogleUser()
+    await seedGoogleUsers()
   }
 }
 
