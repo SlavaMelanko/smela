@@ -1,3 +1,4 @@
+import { LastUsedBadge } from '@ui/components/badges'
 import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { LoginPrompt, TermsAndPrivacyPrompt } from '@ui/components/prompts'
@@ -12,6 +13,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useTheme } from '@ui/hooks/useTheme'
 import { useToast } from '@ui/hooks/useToast'
+import { AuthMethod, lastAuthMethodStorage } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { SignupForm } from './Form'
@@ -26,6 +28,8 @@ export const SignupPage = () => {
   const { mutate: signUpWithGoogle, isPending: isGooglePending } =
     useUserSignupWithGoogle()
   const { captchaRef, getCaptchaToken } = useCaptcha()
+
+  const lastAuthMethod = lastAuthMethodStorage.get()
 
   const handleSignupWithEmail = async data => {
     const token = await getCaptchaToken()
@@ -73,12 +77,13 @@ export const SignupPage = () => {
           <div className='flex flex-col gap-4'>
             <Button
               variant='outline'
-              className='w-full'
+              className='relative w-full'
               onClick={handleSignupWithGoogle}
               disabled={isGooglePending}
             >
               <GoogleIcon />
               {t('continueWithGoogle')}
+              {lastAuthMethod === AuthMethod.Google && <LastUsedBadge />}
             </Button>
           </div>
         </div>

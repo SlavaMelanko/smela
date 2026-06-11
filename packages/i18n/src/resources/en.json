@@ -181,6 +181,7 @@
     },
     "label": "Last name"
   },
+  "lastUsed": "Last used",
   "loading": "Loading...",
   "login": {
     "noun": "Login",

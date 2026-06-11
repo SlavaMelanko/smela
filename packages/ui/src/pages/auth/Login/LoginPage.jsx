@@ -1,3 +1,4 @@
+import { LastUsedBadge } from '@ui/components/badges'
 import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { ForgotYourPasswordPrompt, SignupPrompt } from '@ui/components/prompts'
@@ -8,6 +9,7 @@ import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
+import { AuthMethod, lastAuthMethodStorage } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { LoginForm } from './Form'
@@ -31,6 +33,8 @@ export const LoginPage = ({ options = {} }) => {
     ...defaultOptions,
     ...options
   }
+
+  const lastAuthMethod = lastAuthMethodStorage.get()
 
   const handleLogin = async data => {
     const token = await getCaptchaToken()
@@ -68,7 +72,11 @@ export const LoginPage = ({ options = {} }) => {
         <Notice />
 
         <div className='flex flex-col gap-2'>
-          <LoginForm isLoading={isEmailPending} onSubmit={handleLogin} />
+          <LoginForm
+            isLastUsed={lastAuthMethod === AuthMethod.Email}
+            isLoading={isEmailPending}
+            onSubmit={handleLogin}
+          />
 
           {showSocialLogin && (
             <>
@@ -77,12 +85,13 @@ export const LoginPage = ({ options = {} }) => {
               <div className='flex flex-col gap-4'>
                 <Button
                   variant='outline'
-                  className='w-full'
+                  className='relative w-full'
                   onClick={handleLoginWithGoogle}
                   disabled={isGooglePending}
                 >
                   <GoogleIcon />
                   {t('continueWithGoogle')}
+                  {lastAuthMethod === AuthMethod.Google && <LastUsedBadge />}
                 </Button>
               </div>
             </>
