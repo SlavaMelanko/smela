@@ -14,7 +14,9 @@
 
 ## Introduction
 
-The Modular Service Design Pattern provides a systematic approach to integrating external services while maintaining clean architecture principles. This guide walks through all 7 steps with detailed explanations and code examples.
+The Modular Service Design Pattern provides a systematic approach to integrating
+external services while maintaining clean architecture principles. This guide
+walks through all 7 steps with detailed explanations and code examples.
 
 **Pattern Goals:**
 
@@ -25,12 +27,15 @@ The Modular Service Design Pattern provides a systematic approach to integrating
 
 **Comparison to Monolithic Approach:**
 
-- Monolithic: Direct API calls scattered throughout codebase, hard to test, provider lock-in
-- Modular: Centralized service logic, testable interfaces, easy provider switching
+- Monolithic: Direct API calls scattered throughout codebase, hard to test,
+  provider lock-in
+- Modular: Centralized service logic, testable interfaces, easy provider
+  switching
 
 ## Step 1: Feature Isolation
 
-**Principle:** Each external service gets its own isolated directory under `apps/api/src/services/`.
+**Principle:** Each external service gets its own isolated directory under
+`apps/api/src/services/`.
 
 **Directory Structure:**
 
@@ -57,7 +62,8 @@ apps/api/src/services/[service-name]/
 **Naming Conventions:**
 
 - Service directory: kebab-case (e.g., `captcha`, `email`, `file-storage`)
-- Provider subdirectory: provider name in lowercase (e.g., `recaptcha`, `ethereal`)
+- Provider subdirectory: provider name in lowercase (e.g., `recaptcha`,
+  `ethereal`)
 - Files: kebab-case with descriptive names
 
 **Example:**
@@ -134,7 +140,8 @@ interface EmailProvider {
 
 ## Step 3: Helper Interfaces
 
-**Principle:** Create supporting types for data structures, but keep them provider-specific when needed.
+**Principle:** Create supporting types for data structures, but keep them
+provider-specific when needed.
 
 **When to Create Helpers:**
 
@@ -197,7 +204,7 @@ export class Recaptcha implements Captcha {
       const errorCodes = result['error-codes'] || []
       throw new AppError(
         ErrorCode.CaptchaValidationFailed,
-        `reCAPTCHA validation failed: ${errorCodes.join(', ')}`,
+        `reCAPTCHA validation failed: ${errorCodes.join(', ')}`
       )
     }
   }
@@ -205,7 +212,7 @@ export class Recaptcha implements Captcha {
   private createBody(token: string): URLSearchParams {
     return new URLSearchParams({
       secret: this.config.secret,
-      response: token,
+      response: token
     })
   }
 }
@@ -235,7 +242,8 @@ if (!result.success) {
 
 ## Step 5: Factory Pattern
 
-**Principle:** Provide factory functions for service instantiation, hiding concrete implementations.
+**Principle:** Provide factory functions for service instantiation, hiding
+concrete implementations.
 
 **Basic Factory:**
 
@@ -299,7 +307,8 @@ export const createCaptchaVerifier = (type?: ProviderType): Captcha => {
 
 ## Step 6: Encapsulation Strategy
 
-**Principle:** Export only the public API via `index.ts`, hiding implementation details.
+**Principle:** Export only the public API via `index.ts`, hiding implementation
+details.
 
 **Public API Definition:**
 
@@ -400,7 +409,8 @@ const loginHandler = async (c: Context) => {
 **Performance Considerations:**
 
 - Use singleton/closure pattern for stateless services (CAPTCHA, email)
-- Use per-request instances for stateful services (database connections, transactions)
+- Use per-request instances for stateful services (database connections,
+  transactions)
 - Avoid creating instances in hot paths (inside loops)
 
 ## Testing Strategy
@@ -416,7 +426,7 @@ const mockCaptcha: Captcha = {
     if (token === 'invalid') {
       throw new AppError(ErrorCode.CaptchaValidationFailed)
     }
-  }),
+  })
 }
 ```
 

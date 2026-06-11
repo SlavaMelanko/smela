@@ -19,8 +19,8 @@ identical.
 Authorization-code flow with a **server-side token exchange**. The browser never
 sees a token:
 
-1. FE sends user to `GET /api/v1/auth/<provider>` → backend redirects to provider
-   consent (with a CSRF `state` cookie).
+1. FE sends user to `GET /api/v1/auth/<provider>` → backend redirects to
+   provider consent (with a CSRF `state` cookie).
 2. Provider redirects back to `GET /api/v1/auth/<provider>/callback?code&state`.
 3. Backend validates `state`, exchanges `code` for the user profile, finds or
    creates the user, sets an **httpOnly refresh cookie**, redirects to the FE
@@ -81,12 +81,16 @@ if (user.status === UserStatus.New) user = await userRepo.update(user.id, { stat
 ```
 
 **Always mint tokens WITH permissions** (PR #141 regression) — every auth path
-must resolve and pass permissions, or the JWT claim is `undefined` →
-"Access denied" on `/home`:
+must resolve and pass permissions, or the JWT claim is `undefined` → "Access
+denied" on `/home`:
 
 ```ts
 const permissions = await resolvePermissionList(user.id)
-const [accessToken, refreshToken] = await createAuthTokens(user, deviceInfo, permissions)
+const [accessToken, refreshToken] = await createAuthTokens(
+  user,
+  deviceInfo,
+  permissions
+)
 ```
 
 Audit all token-minting paths: `login`, `signup`, `verify-email`,
@@ -100,7 +104,8 @@ Audit all token-minting paths: `login`, `signup`, `verify-email`,
 ## Gotchas
 
 - `auth.identifier` stores the **provider account id** (e.g. Google `sub`), not
-  the email. CHECK constraint: non-local providers must have `password_hash` NULL.
+  the email. CHECK constraint: non-local providers must have `password_hash`
+  NULL.
 - State cookie needs `secure: !isDevOrTestEnv()` to round-trip in dev.
 - Provider-only account attempting **email login** → `SocialAuthOnly` (409).
   Email signup for an existing account's email → `EmailAlreadyInUse` (409).
@@ -108,6 +113,7 @@ Audit all token-minting paths: `login`, `signup`, `verify-email`,
 ## Testing (see `e2e-testing` + `api-testing` skills)
 
 E2E-able without a real round-trip (seed a provider-only user):
+
 - provider-only account → email login → `SocialAuthOnly`
 - email signup for existing provider email → `EmailAlreadyInUse`
 - callback with missing session → redirect `/login` with neutral notice

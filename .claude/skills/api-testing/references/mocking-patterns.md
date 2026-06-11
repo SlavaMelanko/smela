@@ -12,28 +12,30 @@ Detailed patterns for ModuleMocker and mock setup in bun:test.
 
 ## Variable Declaration Order
 
-Group variables by module/domain with blank lines between groups. Order groups to match their initialization in `beforeEach`:
+Group variables by module/domain with blank lines between groups. Order groups
+to match their initialization in `beforeEach`:
 
 ```typescript
 const moduleMocker = new ModuleMocker(import.meta.url)
 
-let mockSignupParams: any                    // Test data group
+let mockSignupParams: any // Test data group
 
-let mockNewUser: any                         // @/data module group
+let mockNewUser: any // @/data module group
 let mockUserRepo: any
 let mockAuthRepo: any
 let mockTransaction: any
 
-let mockToken: string                        // @/security/token module group
+let mockToken: string // @/security/token module group
 let mockExpiresAt: Date
 let mockGenerateToken: any
 
-let mockEmailAgent: any                      // @/lib/email-agent module group
+let mockEmailAgent: any // @/lib/email-agent module group
 ```
 
 ## Initial Mock Setup in beforeEach
 
-**Core principle**: Use `const` for static test data that never changes, use `let` + `beforeEach` for mocks needing re-initialization.
+**Core principle**: Use `const` for static test data that never changes, use
+`let` + `beforeEach` for mocks needing re-initialization.
 
 **Pattern**: Follow small → large dependency chain within each module group.
 
@@ -86,9 +88,12 @@ describe('Signup', () => {
 
 1. Use `moduleMocker.mock()` ONLY in `beforeEach` for initial module mocking
 2. Never use `moduleMocker.mock()` in individual test cases
-3. Always define mock object variable before calling `moduleMocker.mock()` with it
-4. Call `moduleMocker.mock()` immediately after defining all related mock objects
-5. **Don't mock encapsulated dependencies**: Only mock the public API/wrapper, not underlying implementation
+3. Always define mock object variable before calling `moduleMocker.mock()` with
+   it
+4. Call `moduleMocker.mock()` immediately after defining all related mock
+   objects
+5. **Don't mock encapsulated dependencies**: Only mock the public API/wrapper,
+   not underlying implementation
    - Example: If `@/net/http/cookie` wraps `hono/cookie`, only mock the wrapper
    - Prevents tight coupling to implementation details
 
@@ -106,7 +111,8 @@ it('should handle user not found', async () => {
 })
 ```
 
-Other mock utilities: `mockReturnValue`, `mockResolvedValue`, `mockRejectedValue`
+Other mock utilities: `mockReturnValue`, `mockResolvedValue`,
+`mockRejectedValue`
 
 ## Complete Example
 
@@ -145,15 +151,15 @@ describe('AuthService', () => {
     mockUser = { id: 1, email: TEST_EMAIL, role: 'user' }
     mockUserRepo = {
       findByEmail: mock(async () => mockUser),
-      update: mock(async () => mockUser),
+      update: mock(async () => mockUser)
     }
     mockAuthRepo = {
-      findByUserId: mock(async () => ({ passwordHash: 'hash' })),
+      findByUserId: mock(async () => ({ passwordHash: 'hash' }))
     }
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
-      authRepo: mockAuthRepo,
+      authRepo: mockAuthRepo
     }))
 
     // Security mocks
@@ -161,11 +167,11 @@ describe('AuthService', () => {
     mockSignToken = mock(async () => JWT_TOKEN)
 
     await moduleMocker.mock('@/security/password', () => ({
-      verifyPassword: mockVerifyPassword,
+      verifyPassword: mockVerifyPassword
     }))
 
     await moduleMocker.mock('@/security/jwt', () => ({
-      signToken: mockSignToken,
+      signToken: mockSignToken
     }))
   })
 
@@ -192,7 +198,9 @@ describe('AuthService', () => {
 
     const { login } = await import('./auth-service')
 
-    await expect(login(TEST_EMAIL, 'wrong')).rejects.toThrow('Invalid credentials')
+    await expect(login(TEST_EMAIL, 'wrong')).rejects.toThrow(
+      'Invalid credentials'
+    )
   })
 })
 ```
