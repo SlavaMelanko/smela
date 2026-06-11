@@ -643,6 +643,35 @@ test.describe('Authentication: General', () => {
  * Cover the flows reachable without a real Google round-trip.
  */
 test.describe('Authentication: Google OAuth', () => {
+  test('signup: prevents email signup for an existing Google account', async ({
+    page,
+    t
+  }) => {
+    await page.goto('/signup')
+
+    const apiPromise = waitForApiCall(page, {
+      path: SIGNUP_PATH,
+      status: HttpStatus.CONFLICT
+    })
+
+    await fillSignupFormAndSubmit(
+      page,
+      {
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        email: process.env.VITE_E2E_USER_GOOGLE_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
+      },
+      t
+    )
+
+    await apiPromise
+
+    await expect(
+      page.getByText(t.backend['auth/email-already-in-use'])
+    ).toBeVisible()
+  })
+
   test('login: shows error for Google-only account using email login', async ({
     page,
     t

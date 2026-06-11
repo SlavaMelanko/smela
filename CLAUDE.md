@@ -63,3 +63,6 @@
 - [rbac](.claude/skills/rbac/SKILL.md) — Role-based and permission-based access
   control patterns across API and frontend (route guards, permission middleware,
   JWT claims)
+- [social-auth](.claude/skills/social-auth/SKILL.md) — End-to-end recipe for
+  integrating a social auth provider (Google, GitHub, Facebook) across API and
+  frontend (env setup, OAuth flow, account linking, testing)

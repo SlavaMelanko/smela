@@ -21,6 +21,7 @@ export const buildAuthUrl = (state: string): string => {
     response_type: 'code', // authorization code flow — code is exchanged server-side for tokens
     scope: 'openid email profile', // request email and basic profile (name)
     access_type: 'offline', // include refresh token in response
+    prompt: 'select_account', // always let the user choose which Google account to use
     state // CSRF nonce — verified in the callback to prevent forged requests
   })
 
