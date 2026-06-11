@@ -53,9 +53,6 @@ export const SignupPage = () => {
 
   const handleSignupWithGoogle = () => {
     signUpWithGoogle(undefined, {
-      onSuccess: () => {
-        navigate('/')
-      },
       onError: error => {
         showErrorToast(te(error))
       }

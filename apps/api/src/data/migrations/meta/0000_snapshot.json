@@ -1,5 +1,5 @@
 {
-  "id": "50a2592a-e90f-4e4e-baed-f67e5e5873d9",
+  "id": "a4d467db-64f9-4158-b3d4-595552608d6d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -682,7 +682,7 @@
     "public.resource": {
       "name": "resource",
       "schema": "public",
-      "values": ["users", "admins", "teams"]
+      "values": ["users", "admins", "teams", "dashboard"]
     },
     "public.role": {
       "name": "role",

@@ -3,7 +3,8 @@
 /**
  * Seed initial data required to start the application
  *
- * Seeds: permissions, initial users (owner, admin, support admin, test users) with direct user permissions
+ * Always seeds: permissions, system users (owner, admin, support admin)
+ * Non-production only: teams and test users
  *
  * Usage:
  *   bun run db:seed
@@ -12,6 +13,7 @@
 import { faker } from '@faker-js/faker'
 import { eq } from 'drizzle-orm'
 
+import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
 import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
@@ -325,11 +327,62 @@ const seedTestUsers = async (teamId: string) => {
   }
 }
 
+// Google OAuth users (no password, no team) - identifier is the Google account id (sub), not email
+const seedGoogleUsers = async () => {
+  const googleUsers = [
+    {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email: 'user.google@gmail.com',
+      googleId: 'mock-google-id-user-google',
+      status: UserStatus.Active,
+      permissions: [{ action: Action.Manage, resource: Resource.Dashboard }]
+    }
+  ]
+
+  for (const user of googleUsers) {
+    const [existingUser] = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(eq(usersTable.email, user.email))
+
+    if (existingUser) {
+      console.log(`✅ Google user ${user.email} already exists`)
+      continue
+    }
+
+    const [createdUser] = await db
+      .insert(usersTable)
+      .values({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        status: user.status
+      })
+      .returning({ id: usersTable.id })
+
+    await db.insert(authTable).values({
+      userId: createdUser.id,
+      provider: AuthProvider.Google,
+      identifier: user.googleId,
+      passwordHash: null
+    })
+
+    await setUserPermissions(createdUser.id, user.permissions)
+
+    console.log(`✅ Google user ${user.email} seeded`)
+  }
+}
+
 const seed = async () => {
   await seedPermissions()
   await seedSystemUsers()
-  const teamId = await seedTeams()
-  await seedTestUsers(teamId)
+
+  if (!isProdEnv()) {
+    const teamId = await seedTeams()
+    await seedTestUsers(teamId)
+    await seedGoogleUsers()
+  }
 }
 
 seed().catch(err => {

@@ -37,6 +37,8 @@ jobs:
       COMPANY_NAME: ${{ vars.COMPANY_NAME }}
       COMPANY_SOCIAL_LINKS: ${{ vars.COMPANY_SOCIAL_LINKS }}
       CAPTCHA_SECRET_KEY: ${{ secrets.CAPTCHA_SECRET_KEY }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
     steps:
       - name: Checkout code

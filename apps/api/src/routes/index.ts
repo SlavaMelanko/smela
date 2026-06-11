@@ -2,6 +2,7 @@ import { adminTeamsRoute, adminUsersRoute } from './admin'
 import {
   acceptInviteRoute,
   checkInviteRoute,
+  googleOAuthRoute,
   loginRoute,
   logoutRoute,
   refreshTokenRoute,
@@ -17,6 +18,7 @@ import { meRoute, teamsRoute } from './user'
 export const authPublicRoutes = [
   acceptInviteRoute,
   checkInviteRoute,
+  googleOAuthRoute,
   loginRoute,
   logoutRoute,
   refreshTokenRoute,

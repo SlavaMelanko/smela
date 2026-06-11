@@ -1,7 +1,7 @@
 import { Spinner } from '@ui/components/Spinner'
 import { useHasAccess } from '@ui/hooks/useHasAccess'
 import { Navigate } from '@ui/hooks/useRouter'
-import { ErrorLayout } from '@ui/layouts'
+import { ErrorInlineLayout } from '@ui/layouts'
 import { ForbiddenErrorPage } from '@ui/pages/errors'
 
 export const PrivateRoute = ({
@@ -26,9 +26,9 @@ export const PrivateRoute = ({
 
   if (!hasAccess) {
     return (
-      <ErrorLayout>
+      <ErrorInlineLayout>
         <ForbiddenErrorPage />
-      </ErrorLayout>
+      </ErrorInlineLayout>
     )
   }
 

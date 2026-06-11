@@ -15,11 +15,11 @@ const redirectToNetworkErrorPage = error => {
   }
 }
 
-const redirectToLogin = reason => {
+const redirectToLogin = params => {
   const path = '/login'
 
   if (!window.location.pathname.includes(path)) {
-    window.location.href = withQuery(path, { reason })
+    window.location.href = withQuery(path, params)
   }
 }
 
@@ -35,7 +35,7 @@ const handleError = error => {
     error?.code === 'refresh-token/missing'
   ) {
     queryClient.clear()
-    redirectToLogin(error.code)
+    redirectToLogin({ info: error.code })
 
     return
   }

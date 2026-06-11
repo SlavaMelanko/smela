@@ -1,4 +1,3 @@
-import { Alert } from '@ui/components/Alert'
 import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { ForgotYourPasswordPrompt, SignupPrompt } from '@ui/components/prompts'
@@ -7,11 +6,12 @@ import { Button } from '@ui/components/ui'
 import { useLogin, useLoginWithGoogle } from '@ui/hooks/useAuth'
 import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useNavigate, useSearchParams } from '@ui/hooks/useRouter'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
 
 import { AuthRoot } from '../Auth'
 import { LoginForm } from './Form'
+import { Notice } from './Notice'
 
 const defaultOptions = {
   showSignupPrompt: true,
@@ -21,7 +21,6 @@ const defaultOptions = {
 export const LoginPage = ({ options = {} }) => {
   const { t, te } = useLocale()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const { mutate: logInWithEmail, isPending: isEmailPending } = useLogin()
   const { mutate: logInWithGoogle, isPending: isGooglePending } =
     useLoginWithGoogle()
@@ -57,9 +56,6 @@ export const LoginPage = ({ options = {} }) => {
 
   const handleLoginWithGoogle = () => {
     logInWithGoogle(undefined, {
-      onSuccess: () => {
-        navigate('/')
-      },
       onError: error => {
         showErrorToast(te(error))
       }
@@ -69,9 +65,7 @@ export const LoginPage = ({ options = {} }) => {
   return (
     <>
       <AuthRoot>
-        {searchParams.get('reason') && (
-          <Alert title={t(`backend.${searchParams.get('reason')}`)} />
-        )}
+        <Notice />
 
         <div className='flex flex-col gap-2'>
           <LoginForm isLoading={isEmailPending} onSubmit={handleLogin} />
