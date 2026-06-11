@@ -9,8 +9,8 @@
 // ❌ Avoid: handle* prefix on every callback
 const handleClick = () => navigate('/')
 const handleToggle = () => setVisible(!visible)
-const handlePageChange = (page) => setParams({ page })
-const handleSubmit = (data) => updateTeam(data)
+const handlePageChange = page => setParams({ page })
+const handleSubmit = data => updateTeam(data)
 ```
 
 **Why this fails:**
@@ -28,8 +28,8 @@ Name functions by the action they perform.
 // ✅ Prefer: action-based names
 const navigateHome = () => navigate('/')
 const toggleVisibility = () => setVisible(!visible)
-const changePage = (page) => setParams({ page })
-const submit = (data) => updateTeam(data)
+const changePage = page => setParams({ page })
+const submit = data => updateTeam(data)
 ```
 
 ### Exception: TanStack Query Mutation Wrappers
@@ -42,14 +42,14 @@ Keep `handle*` for callbacks that wrap TanStack Query mutations with
 const handleLogOut = () => {
   logOut(undefined, {
     onSuccess: () => navigate('/login'),
-    onError: (error) => showErrorToast(te(error)),
+    onError: error => showErrorToast(te(error))
   })
 }
 
-const handleResendInvitation = (admin) => {
+const handleResendInvitation = admin => {
   resendInvitation(admin.id, {
     onSuccess: () => showSuccessToast(t('invitation.resend.success')),
-    onError: (error) => showErrorToast(te(error)),
+    onError: error => showErrorToast(te(error))
   })
 }
 ```

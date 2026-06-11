@@ -1,20 +1,28 @@
 ---
 name: service-integration
-description: Modular design pattern for external service integrations in apps/api (CAPTCHA, payment, SMS, file storage, analytics). Use when implementing third-party services, designing service abstractions, or reviewing service architecture. Triggers on apps/api/src/services/* files, integration questions, and provider implementations.
+description:
+  Modular design pattern for external service integrations in apps/api (CAPTCHA,
+  payment, SMS, file storage, analytics). Use when implementing third-party
+  services, designing service abstractions, or reviewing service architecture.
+  Triggers on apps/api/src/services/* files, integration questions, and provider
+  implementations.
 ---
 
 # Service Architecture Patterns Skill (apps/api)
 
 ## Overview
 
-The **Modular Service Design Pattern** provides a structured approach for integrating external services with:
+The **Modular Service Design Pattern** provides a structured approach for
+integrating external services with:
 
 - Feature isolation in dedicated directories
 - Generic interfaces supporting multiple providers
 - Factory-based instantiation
 - Encapsulation of implementation details
 
-**Use this pattern for:** Payment processors, CAPTCHA services, Email providers, SMS services, File storage, Analytics services, and any external API integration.
+**Use this pattern for:** Payment processors, CAPTCHA services, Email providers,
+SMS services, File storage, Analytics services, and any external API
+integration.
 
 **Key Benefits:**
 
@@ -68,7 +76,9 @@ Implement the generic interface with provider-specific logic:
 ```typescript
 export class Recaptcha implements Captcha {
   constructor(private config: Config) {}
-  async validate(token: string): Promise<void> { /* ... */ }
+  async validate(token: string): Promise<void> {
+    /* ... */
+  }
 }
 ```
 
@@ -113,11 +123,16 @@ Use this pattern when:
 
 ## Real Examples from Codebase
 
-- **Simple (single provider)**: `apps/api/src/services/captcha/` - Google reCAPTCHA
-- **Advanced (multiple providers)**: `apps/api/src/services/email/` - Ethereal + Resend with registry pattern
+- **Simple (single provider)**: `apps/api/src/services/captcha/` - Google
+  reCAPTCHA
+- **Advanced (multiple providers)**: `apps/api/src/services/email/` - Ethereal +
+  Resend with registry pattern
 
 ## Deep Dive References
 
-- **[Implementation Guide](references/implementation-guide.md)** - Complete 7-step walkthrough with testing strategies
-- **[Captcha Example](references/captcha-example.md)** - Simple single-provider reference implementation
-- **[Email Example](references/email-example.md)** - Advanced multi-provider with registry and singleton patterns
+- **[Implementation Guide](references/implementation-guide.md)** - Complete
+  7-step walkthrough with testing strategies
+- **[Captcha Example](references/captcha-example.md)** - Simple single-provider
+  reference implementation
+- **[Email Example](references/email-example.md)** - Advanced multi-provider
+  with registry and singleton patterns

@@ -82,7 +82,7 @@ export const FormRoot = ({ children, className, ...props }) => (
 export const FormLabel = ({ htmlFor, children, optional }) => (
   <label htmlFor={htmlFor}>
     {children}
-    {!optional && <span className="ml-1 text-destructive">*</span>}
+    {!optional && <span className='ml-1 text-destructive'>*</span>}
   </label>
 )
 ```
@@ -95,7 +95,8 @@ export const FormLabel = ({ htmlFor, children, optional }) => (
 
 ## `components/ui/` Exception
 
-Reserved exclusively for shadcn/ui primitives — do not add custom components here.
+Reserved exclusively for shadcn/ui primitives — do not add custom components
+here.
 
 ```bash
 # Install shadcn components from apps/web/

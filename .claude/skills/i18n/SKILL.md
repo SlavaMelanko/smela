@@ -61,9 +61,9 @@ apps/web/public/
     └── uk.json    # Ukrainian translations
 ```
 
-Locale files are in `apps/web/public/` because i18next's `HttpBackend` fetches them at
-startup (see `apps/web/src/i18n.js`). This keeps translations out of the JS bundle and
-allows loading only the needed language.
+Locale files are in `apps/web/public/` because i18next's `HttpBackend` fetches
+them at startup (see `apps/web/src/i18n.js`). This keeps translations out of the
+JS bundle and allows loading only the needed language.
 
 ### Translation File Organization
 

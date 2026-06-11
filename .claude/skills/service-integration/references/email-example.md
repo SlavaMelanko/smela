@@ -13,7 +13,9 @@
 
 ## Overview
 
-The email service demonstrates an advanced implementation of the Modular Service Design Pattern with multiple providers (Ethereal for development, Resend for production). It introduces additional patterns beyond the basic 7 steps:
+The email service demonstrates an advanced implementation of the Modular Service
+Design Pattern with multiple providers (Ethereal for development, Resend for
+production). It introduces additional patterns beyond the basic 7 steps:
 
 - **Registry Pattern:** Maps email types to configurations
 - **Singleton Facade:** EmailAgent provides simplified API
@@ -58,7 +60,8 @@ apps/api/src/services/email/
 
 ### 1. Registry Pattern
 
-**Purpose:** Maps email types to their configurations (templates, subjects, renderers).
+**Purpose:** Maps email types to their configurations (templates, subjects,
+renderers).
 
 **Interface:**
 
@@ -159,7 +162,7 @@ export class EmailAgent {
     firstName: string,
     email: string,
     token: string,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ) {
     const verificationUrl = `${env.FE_BASE_URL}/verify-email?token=${token}`
 
@@ -168,9 +171,9 @@ export class EmailAgent {
       email,
       {
         firstName,
-        verificationUrl,
+        verificationUrl
       },
-      preferences,
+      preferences
     )
   }
 
@@ -178,7 +181,7 @@ export class EmailAgent {
     firstName: string,
     email: string,
     token: string,
-    preferences?: UserPreferences,
+    preferences?: UserPreferences
   ) {
     const resetUrl = `${env.FE_BASE_URL}/reset-password?token=${token}`
 
@@ -187,9 +190,9 @@ export class EmailAgent {
       email,
       {
         firstName,
-        resetUrl,
+        resetUrl
       },
-      preferences,
+      preferences
     )
   }
 }
@@ -215,7 +218,7 @@ import { emailAgent } from '@/services/email'
 await emailAgent.sendEmailVerificationEmail(
   user.firstName,
   user.email,
-  verificationToken,
+  verificationToken
 )
 ```
 
@@ -250,7 +253,8 @@ export interface EmailPayload {
 }
 ```
 
-**Key Design Decision:** Interface is extremely simple (just `send`), but payload structure is rich enough to support multiple providers.
+**Key Design Decision:** Interface is extremely simple (just `send`), but
+payload structure is rich enough to support multiple providers.
 
 ### Step 5: Factory Pattern with Environment Selection
 
@@ -277,7 +281,7 @@ const getProviderType = (type?: EmailProviderType): EmailProviderType => {
 }
 
 export const createEmailProvider = (
-  type?: EmailProviderType,
+  type?: EmailProviderType
 ): EmailProvider => {
   const providerType = getProviderType(type)
 
@@ -289,7 +293,7 @@ export const createEmailProvider = (
         env.EMAIL_ETHEREAL_HOST,
         env.EMAIL_ETHEREAL_PORT,
         env.EMAIL_ETHEREAL_USERNAME,
-        env.EMAIL_ETHEREAL_PASSWORD,
+        env.EMAIL_ETHEREAL_PASSWORD
       )
     }
     case 'resend': {
@@ -349,7 +353,8 @@ export const createEmailProvider = (
 - Multiple providers needed
 - Registry for content management
 - Singleton facade for simplified API
-- Use when: Service has multiple providers, complex configuration, or needs application-wide instance
+- Use when: Service has multiple providers, complex configuration, or needs
+  application-wide instance
 
 ## Progressive Enhancement Approach
 
@@ -358,7 +363,8 @@ export const createEmailProvider = (
 3. **Phase 3:** Add registry if multiple configurations grow
 4. **Phase 4:** Add singleton facade if usage becomes repetitive
 
-**Key Lesson:** Don't add complexity upfront. Start simple, enhance when pain points emerge.
+**Key Lesson:** Don't add complexity upfront. Start simple, enhance when pain
+points emerge.
 
 ## Key Takeaways
 

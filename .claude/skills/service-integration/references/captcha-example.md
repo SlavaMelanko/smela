@@ -9,7 +9,10 @@
 
 ## Overview
 
-The captcha service demonstrates the simplest form of the Modular Service Design Pattern with a single provider (Google reCAPTCHA). This is an excellent starting point for understanding the pattern before moving to more complex multi-provider scenarios.
+The captcha service demonstrates the simplest form of the Modular Service Design
+Pattern with a single provider (Google reCAPTCHA). This is an excellent starting
+point for understanding the pattern before moving to more complex multi-provider
+scenarios.
 
 **Why This Is a Good Example:**
 
@@ -42,7 +45,8 @@ apps/api/src/services/captcha/
 
 ### Step 1: Feature Isolation
 
-All CAPTCHA-related code lives under `apps/api/apps/api/src/services/captcha/`, completely isolated from business logic.
+All CAPTCHA-related code lives under `apps/api/apps/api/src/services/captcha/`,
+completely isolated from business logic.
 
 ### Step 2: Interface Abstraction
 
@@ -67,7 +71,9 @@ export interface Captcha {
 }
 ```
 
-**Key Design Decision:** Interface has single method `validate()` that throws on failure (void return). This is simpler than returning boolean, as error details can be included in exceptions.
+**Key Design Decision:** Interface has single method `validate()` that throws on
+failure (void return). This is simpler than returning boolean, as error details
+can be included in exceptions.
 
 ### Step 2: Configuration Interface
 
@@ -91,7 +97,8 @@ export interface Config {
 }
 ```
 
-**Key Design Decision:** Configuration includes all necessary fields for HTTP requests (baseUrl, path, headers, timeout) plus provider-specific secret.
+**Key Design Decision:** Configuration includes all necessary fields for HTTP
+requests (baseUrl, path, headers, timeout) plus provider-specific secret.
 
 ### Step 3: Helper Interfaces
 
@@ -104,14 +111,15 @@ export interface Config {
  * Response from Google's reCAPTCHA verification endpoint.
  */
 export interface Result {
-  'success': boolean
-  'challenge_ts'?: string
-  'hostname'?: string
+  success: boolean
+  challenge_ts?: string
+  hostname?: string
   'error-codes'?: string[]
 }
 ```
 
-**Key Design Decision:** Result type matches Google's API response exactly. Quoted keys used for kebab-case fields (`'error-codes'`).
+**Key Design Decision:** Result type matches Google's API response exactly.
+Quoted keys used for kebab-case fields (`'error-codes'`).
 
 ### Step 4: Concrete Implementation
 
@@ -136,10 +144,7 @@ export class Recaptcha implements Captcha {
 
   constructor(config: Config) {
     this.config = config
-    this.httpClient = new HttpClient(
-      config.baseUrl,
-      config.options,
-    )
+    this.httpClient = new HttpClient(config.baseUrl, config.options)
   }
 
   async validate(token: string): Promise<void> {
@@ -156,8 +161,7 @@ export class Recaptcha implements Captcha {
     if (!result.success) {
       const errorCodes = result['error-codes'] || []
       const hostname = result.hostname || 'unknown'
-      const message
-        = `reCAPTCHA token validation failed. Error codes: ${errorCodes.join(', ')}. Hostname: ${hostname}`
+      const message = `reCAPTCHA token validation failed. Error codes: ${errorCodes.join(', ')}. Hostname: ${hostname}`
 
       throw new AppError(ErrorCode.CaptchaValidationFailed, message)
     }
@@ -166,7 +170,7 @@ export class Recaptcha implements Captcha {
   private createBody(token: string): URLSearchParams {
     return new URLSearchParams({
       secret: this.config.secret,
-      response: token,
+      response: token
     })
   }
 }
@@ -195,11 +199,11 @@ export const recaptchaConfig: Config = {
   path: '/recaptcha/api/siteverify',
   options: {
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
-    timeout: 5000,
+    timeout: 5000
   },
-  secret: env.CAPTCHA_SECRET_KEY,
+  secret: env.CAPTCHA_SECRET_KEY
 }
 ```
 
@@ -242,7 +246,9 @@ export const createCaptchaVerifier = (): Captcha => {
 **Future Extension Example:**
 
 ```typescript
-export const createCaptchaVerifier = (type?: 'recaptcha' | 'hcaptcha'): Captcha => {
+export const createCaptchaVerifier = (
+  type?: 'recaptcha' | 'hcaptcha'
+): Captcha => {
   const providerType = type || 'recaptcha'
 
   switch (providerType) {
@@ -278,7 +284,9 @@ export { createCaptchaVerifier } from './factory'
 - `recaptchaConfig` object (internal detail)
 - `Result` type (provider-specific)
 
-**Why This Matters:** Consumers can only depend on the interface and factory, not implementation details. This makes it safe to change providers without breaking code.
+**Why This Matters:** Consumers can only depend on the interface and factory,
+not implementation details. This makes it safe to change providers without
+breaking code.
 
 ### Step 7: Usage Pattern
 
