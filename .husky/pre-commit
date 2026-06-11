@@ -3,6 +3,3 @@
 set -e
 
 bun run --filter '*' --sequential lint:staged
-
-# Root-level files outside any workspace (e.g. .claude/)
-bun run lint:staged
