@@ -13,6 +13,7 @@ import {
   UserStatus
 } from '@/types'
 
+import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens } from '../tokens'
 
 const createNewUser = async (
@@ -115,13 +116,16 @@ export const signUpWithEmail = async (
       )
     })
 
+  const permissions = await resolvePermissionList(newUser.id)
+
   const [accessToken, refreshToken] = await createAuthTokens(
     newUser,
-    deviceInfo
+    deviceInfo,
+    permissions
   )
 
   return {
-    data: { user: newUser, accessToken },
+    data: { user: newUser, permissions, accessToken },
     refreshToken
   }
 }

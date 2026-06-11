@@ -86,7 +86,13 @@ describe('Signup with Email', () => {
       authRepo: mockAuthRepo,
       tokenRepo: mockTokenRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
-      rbacRepo: { setUserPermissions: mock(async () => {}) },
+      rbacRepo: {
+        setUserPermissions: mock(async () => {}),
+        findUserPermissions: mock(async () => [
+          { action: 'view', resource: 'dashboard' },
+          { action: 'manage', resource: 'dashboard' }
+        ])
+      },
       db: mockTransaction
     }))
 
