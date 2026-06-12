@@ -61,7 +61,7 @@ export const SignupPage = () => {
   return (
     <>
       <AuthRoot>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-4'>
           <SignupForm
             isLoading={isEmailPending}
             onSubmit={handleSignupWithEmail}

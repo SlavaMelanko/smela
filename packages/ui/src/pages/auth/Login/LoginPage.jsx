@@ -67,7 +67,7 @@ export const LoginPage = ({ options = {} }) => {
       <AuthRoot>
         <Notice />
 
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-4'>
           <LoginForm
             isLastUsed={wasLastAuthMethod(AuthMethod.Email)}
             isLoading={isEmailPending}
