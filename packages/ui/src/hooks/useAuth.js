@@ -76,7 +76,6 @@ export const useLogin = () => {
 export const useLoginWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      lastAuthMethodStorage.set(AuthMethod.Google)
       window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
@@ -86,7 +85,10 @@ export const useCompleteGoogleLogin = () => {
 
   return useMutation({
     mutationFn: authApi.refreshToken,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Google)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 
@@ -105,7 +107,6 @@ export const useUserSignupWithEmail = () => {
 export const useUserSignupWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      lastAuthMethodStorage.set(AuthMethod.Google)
       window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
