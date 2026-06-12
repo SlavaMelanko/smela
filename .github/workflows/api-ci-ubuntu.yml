@@ -24,17 +24,12 @@ jobs:
         working-directory: apps/api
 
     env:
-      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      COOKIE_REFRESH_TOKEN_NAME: ${{ vars.COOKIE_REFRESH_TOKEN_NAME }}
-      COOKIE_REFRESH_TOKEN_EXPIRATION:
-        ${{ vars.COOKIE_REFRESH_TOKEN_EXPIRATION }}
       EMAIL_RESEND_API_KEY: ${{ secrets.EMAIL_RESEND_API_KEY }}
       EMAIL_SENDER_PROFILES: ${{ vars.EMAIL_SENDER_PROFILES }}
-      COMPANY_NAME: ${{ vars.COMPANY_NAME }}
       COMPANY_SOCIAL_LINKS: ${{ vars.COMPANY_SOCIAL_LINKS }}
       CAPTCHA_SECRET_KEY: ${{ secrets.CAPTCHA_SECRET_KEY }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
