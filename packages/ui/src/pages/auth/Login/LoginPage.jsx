@@ -76,7 +76,7 @@ export const LoginPage = ({ options = {} }) => {
 
           {showSocialLogin && (
             <>
-              <TextSeparator text={t('or')} />
+              <TextSeparator text={t('orContinueWith')} />
 
               <SocialOAuthGroup>
                 <GoogleOAuthButton

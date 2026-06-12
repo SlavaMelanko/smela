@@ -47,7 +47,6 @@
     "remove": "Remove",
     "resend": "Resend"
   },
-  "continueWithGoogle": "Continue with Google",
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
   "doNotHaveAccount": "Don't have an account?",
@@ -194,7 +193,7 @@
   "membership": "Membership",
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",
-  "or": "or",
+  "orContinueWith": "or continue with",
   "pagination": {
     "limit": "Limit:",
     "of": "of"

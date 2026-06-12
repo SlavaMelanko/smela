@@ -67,7 +67,7 @@ export const SignupPage = () => {
             onSubmit={handleSignupWithEmail}
           />
 
-          <TextSeparator text={t('or')} />
+          <TextSeparator text={t('orContinueWith')} />
 
           <SocialOAuthGroup>
             <GoogleOAuthButton
