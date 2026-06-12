@@ -720,4 +720,19 @@ test.describe('Authentication: Google OAuth', () => {
     await expect(notice).toHaveText(t.backend['refresh-token/missing'])
     await expect(notice).not.toHaveClass(/text-destructive/)
   })
+
+  test('callback: shows destructive error when the backend redirects with a failure', async ({
+    page,
+    t
+  }) => {
+    const errorCode = 'auth/google-oauth-failed'
+
+    // The backend funnels token-exchange / user-info failures to this redirect
+    await page.goto(`/login?error=${encodeURIComponent(errorCode)}`)
+
+    const notice = page.getByRole('alert')
+
+    await expect(notice).toHaveText(t.backend[errorCode])
+    await expect(notice).toHaveClass(/text-destructive/)
+  })
 })
