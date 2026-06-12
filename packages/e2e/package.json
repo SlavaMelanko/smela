@@ -20,6 +20,7 @@
   },
   "exports": {
     "./config": "./src/config.js",
+    "./env": "./src/env.js",
     "./api": "./src/api.js",
     "./email": "./src/email/index.js",
     "./actions": "./src/actions/index.js"

@@ -1,3 +1,4 @@
+import { requireResendApiKey } from '@smela/e2e/env'
 import { loadEnv } from 'vite'
 
 // NODE_ENV=test is set in package.json scripts.
@@ -7,6 +8,7 @@ export const loadTestEnv = () => {
 }
 
 const globalSetup = () => {
+  requireResendApiKey()
   loadTestEnv()
 }
 
