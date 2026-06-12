@@ -1,3 +1,7 @@
 export { accessTokenStorage } from './accessTokenStorage'
-export { AuthMethod, lastAuthMethodStorage } from './lastAuthMethodStorage'
+export {
+  AuthMethod,
+  lastAuthMethodStorage,
+  wasLastAuthMethod
+} from './lastAuthMethodStorage'
 export { localStorage } from './localStorage'

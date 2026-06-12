@@ -13,7 +13,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useTheme } from '@ui/hooks/useTheme'
 import { useToast } from '@ui/hooks/useToast'
-import { AuthMethod, lastAuthMethodStorage } from '@ui/lib/storage'
+import { AuthMethod, wasLastAuthMethod } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { SignupForm } from './Form'
@@ -28,8 +28,6 @@ export const SignupPage = () => {
   const { mutate: signUpWithGoogle, isPending: isGooglePending } =
     useUserSignupWithGoogle()
   const { captchaRef, getCaptchaToken } = useCaptcha()
-
-  const lastAuthMethod = lastAuthMethodStorage.get()
 
   const handleSignupWithEmail = async data => {
     const token = await getCaptchaToken()
@@ -83,7 +81,7 @@ export const SignupPage = () => {
             >
               <GoogleIcon />
               {t('continueWithGoogle')}
-              {lastAuthMethod === AuthMethod.Google && <LastUsedBadge />}
+              {wasLastAuthMethod(AuthMethod.Google) && <LastUsedBadge />}
             </Button>
           </div>
         </div>

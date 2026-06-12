@@ -6,3 +6,6 @@ export const AuthMethod = {
 }
 
 export const lastAuthMethodStorage = createKeyStorage('last_auth_method')
+
+export const wasLastAuthMethod = method =>
+  lastAuthMethodStorage.get() === method

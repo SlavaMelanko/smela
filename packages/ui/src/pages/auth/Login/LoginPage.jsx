@@ -9,7 +9,7 @@ import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
-import { AuthMethod, lastAuthMethodStorage } from '@ui/lib/storage'
+import { AuthMethod, wasLastAuthMethod } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { LoginForm } from './Form'
@@ -33,8 +33,6 @@ export const LoginPage = ({ options = {} }) => {
     ...defaultOptions,
     ...options
   }
-
-  const lastAuthMethod = lastAuthMethodStorage.get()
 
   const handleLogin = async data => {
     const token = await getCaptchaToken()
@@ -73,7 +71,7 @@ export const LoginPage = ({ options = {} }) => {
 
         <div className='flex flex-col gap-2'>
           <LoginForm
-            isLastUsed={lastAuthMethod === AuthMethod.Email}
+            isLastUsed={wasLastAuthMethod(AuthMethod.Email)}
             isLoading={isEmailPending}
             onSubmit={handleLogin}
           />
@@ -91,7 +89,7 @@ export const LoginPage = ({ options = {} }) => {
                 >
                   <GoogleIcon />
                   {t('continueWithGoogle')}
-                  {lastAuthMethod === AuthMethod.Google && <LastUsedBadge />}
+                  {wasLastAuthMethod(AuthMethod.Google) && <LastUsedBadge />}
                 </Button>
               </div>
             </>
