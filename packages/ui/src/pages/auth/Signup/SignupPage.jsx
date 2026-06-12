@@ -1,9 +1,7 @@
-import { LastUsedBadge } from '@ui/components/badges'
-import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { LoginPrompt, TermsAndPrivacyPrompt } from '@ui/components/prompts'
 import { TextSeparator } from '@ui/components/Separator'
-import { Button } from '@ui/components/ui'
+import { GoogleOAuthButton, SocialOAuthGroup } from '@ui/components/socialAuth'
 import {
   useUserSignupWithEmail,
   useUserSignupWithGoogle
@@ -13,7 +11,6 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useTheme } from '@ui/hooks/useTheme'
 import { useToast } from '@ui/hooks/useToast'
-import { AuthMethod, wasLastAuthMethod } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { SignupForm } from './Form'
@@ -72,18 +69,12 @@ export const SignupPage = () => {
 
           <TextSeparator text={t('or')} />
 
-          <div className='flex flex-col gap-4'>
-            <Button
-              variant='outline'
-              className='relative w-full'
+          <SocialOAuthGroup>
+            <GoogleOAuthButton
               onClick={handleSignupWithGoogle}
-              disabled={isGooglePending}
-            >
-              <GoogleIcon />
-              {t('continueWithGoogle')}
-              {wasLastAuthMethod(AuthMethod.Google) && <LastUsedBadge />}
-            </Button>
-          </div>
+              isPending={isGooglePending}
+            />
+          </SocialOAuthGroup>
         </div>
 
         <div className='-mt-5'>

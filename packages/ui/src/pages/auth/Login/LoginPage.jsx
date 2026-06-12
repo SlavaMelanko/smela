@@ -1,9 +1,7 @@
-import { LastUsedBadge } from '@ui/components/badges'
-import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { ForgotYourPasswordPrompt, SignupPrompt } from '@ui/components/prompts'
 import { TextSeparator } from '@ui/components/Separator'
-import { Button } from '@ui/components/ui'
+import { GoogleOAuthButton, SocialOAuthGroup } from '@ui/components/socialAuth'
 import { useLogin, useLoginWithGoogle } from '@ui/hooks/useAuth'
 import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
@@ -80,18 +78,12 @@ export const LoginPage = ({ options = {} }) => {
             <>
               <TextSeparator text={t('or')} />
 
-              <div className='flex flex-col gap-4'>
-                <Button
-                  variant='outline'
-                  className='relative w-full'
+              <SocialOAuthGroup>
+                <GoogleOAuthButton
                   onClick={handleLoginWithGoogle}
-                  disabled={isGooglePending}
-                >
-                  <GoogleIcon />
-                  {t('continueWithGoogle')}
-                  {wasLastAuthMethod(AuthMethod.Google) && <LastUsedBadge />}
-                </Button>
-              </div>
+                  isPending={isGooglePending}
+                />
+              </SocialOAuthGroup>
             </>
           )}
         </div>
