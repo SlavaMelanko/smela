@@ -13,11 +13,12 @@ import {
   setGoogleStateCookie,
   setRefreshCookie
 } from '@/net/http'
+import { getErrorTracker } from '@/services'
 import { buildAuthUrl, exchangeCodeForProfile } from '@/services/google'
 import { logInOrSignUpWithGoogle } from '@/use-cases/auth/google-oauth'
 
-const buildErrorRedirect = (reason: string) =>
-  `${env.FE_USER_URL}/login?reason=${encodeURIComponent(reason)}`
+const buildErrorRedirect = (code: string) =>
+  `${env.FE_USER_URL}/login?error=${encodeURIComponent(code)}`
 
 const buildCallbackRedirect = (isNew: boolean) => {
   const url = new URL(`${env.FE_USER_URL}/auth/google/callback`)
@@ -89,8 +90,13 @@ export const googleCallbackHandler = async (c: Context<AppContext>) => {
       HttpStatus.MOVED_TEMPORARILY
     )
   } catch (err) {
-    const reason = err instanceof AppError ? err.code : ErrorCode.InternalError
+    // Past this redirect the failure is silent to us — always capture
+    getErrorTracker().captureError(
+      err instanceof Error ? err : new Error(String(err))
+    )
 
-    return c.redirect(buildErrorRedirect(reason), HttpStatus.MOVED_TEMPORARILY)
+    const code = err instanceof AppError ? err.code : ErrorCode.InternalError
+
+    return c.redirect(buildErrorRedirect(code), HttpStatus.MOVED_TEMPORARILY)
   }
 }
