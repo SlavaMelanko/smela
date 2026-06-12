@@ -3,38 +3,27 @@ import { AuthMethod, lastAuthMethodStorage } from '@ui/lib/storage'
 import { GoogleOAuthButton } from './GoogleOAuthButton'
 import { SocialOAuthGroup } from './SocialOAuthGroup'
 
-const withContainer = Story => (
-  <div className='w-80 p-6'>
+const withCenteredFrame = Story => (
+  <div className='flex min-h-60 w-80 items-center justify-center'>
     <Story />
   </div>
 )
 
 export default {
   title: 'Components/SocialAuth',
-  decorators: [withContainer],
-  parameters: { layout: 'centered' }
+  decorators: [withCenteredFrame],
+  parameters: { layout: 'centered' },
+  render: () => (
+    <SocialOAuthGroup>
+      <GoogleOAuthButton onClick={() => {}} />
+    </SocialOAuthGroup>
+  )
 }
 
 export const Default = {
-  render: () => {
-    lastAuthMethodStorage.remove()
-
-    return (
-      <SocialOAuthGroup>
-        <GoogleOAuthButton onClick={() => {}} />
-      </SocialOAuthGroup>
-    )
-  }
+  beforeEach: () => lastAuthMethodStorage.remove()
 }
 
-export const LastUsed = {
-  render: () => {
-    lastAuthMethodStorage.set(AuthMethod.Google)
-
-    return (
-      <SocialOAuthGroup>
-        <GoogleOAuthButton onClick={() => {}} />
-      </SocialOAuthGroup>
-    )
-  }
+export const WithLastUsedBadge = {
+  beforeEach: () => lastAuthMethodStorage.set(AuthMethod.Google)
 }
