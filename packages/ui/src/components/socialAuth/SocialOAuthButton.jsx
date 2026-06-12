@@ -7,13 +7,16 @@ export const SocialOAuthButton = ({
   icon,
   label,
   onClick,
-  isPending
+  isPending,
+  ...props
 }) => (
   <Button
     variant='outline'
     className='relative w-full'
     onClick={onClick}
     disabled={isPending}
+    data-testid={`${provider}-oauth-button`}
+    {...props}
   >
     {icon}
     {label}
