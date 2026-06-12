@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import env from '@ui/lib/env'
-import { accessTokenStorage } from '@ui/lib/storage'
+import {
+  accessTokenStorage,
+  AuthMethod,
+  lastAuthMethodStorage
+} from '@ui/lib/storage'
 import { authApi, userApi } from '@ui/services/backend'
 import { GOOGLE_OAUTH_PATH } from '@ui/services/backend/paths'
 import {
@@ -62,7 +66,10 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: authApi.logIn,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Email)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 
@@ -78,7 +85,10 @@ export const useCompleteGoogleLogin = () => {
 
   return useMutation({
     mutationFn: authApi.refreshToken,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Google)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 
@@ -87,7 +97,10 @@ export const useUserSignupWithEmail = () => {
 
   return useMutation({
     mutationFn: authApi.signUp,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Email)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 

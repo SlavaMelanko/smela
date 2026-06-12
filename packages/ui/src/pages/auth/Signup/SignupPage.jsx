@@ -1,8 +1,7 @@
-import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { LoginPrompt, TermsAndPrivacyPrompt } from '@ui/components/prompts'
 import { TextSeparator } from '@ui/components/Separator'
-import { Button } from '@ui/components/ui'
+import { GoogleOAuthButton, SocialOAuthGroup } from '@ui/components/socialAuth'
 import {
   useUserSignupWithEmail,
   useUserSignupWithGoogle
@@ -62,25 +61,20 @@ export const SignupPage = () => {
   return (
     <>
       <AuthRoot>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-4'>
           <SignupForm
             isLoading={isEmailPending}
             onSubmit={handleSignupWithEmail}
           />
 
-          <TextSeparator text={t('or')} />
+          <TextSeparator text={t('orContinueWith')} />
 
-          <div className='flex flex-col gap-4'>
-            <Button
-              variant='outline'
-              className='w-full'
+          <SocialOAuthGroup>
+            <GoogleOAuthButton
               onClick={handleSignupWithGoogle}
-              disabled={isGooglePending}
-            >
-              <GoogleIcon />
-              {t('continueWithGoogle')}
-            </Button>
-          </div>
+              isPending={isGooglePending}
+            />
+          </SocialOAuthGroup>
         </div>
 
         <div className='-mt-5'>

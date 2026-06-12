@@ -47,7 +47,6 @@
     "remove": "Remove",
     "resend": "Resend"
   },
-  "continueWithGoogle": "Continue with Google",
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
   "doNotHaveAccount": "Don't have an account?",
@@ -181,6 +180,7 @@
     },
     "label": "Last name"
   },
+  "lastUsed": "Last used",
   "loading": "Loading...",
   "login": {
     "noun": "Login",
@@ -193,7 +193,7 @@
   "membership": "Membership",
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",
-  "or": "or",
+  "orContinueWith": "or continue with",
   "pagination": {
     "limit": "Limit:",
     "of": "of"

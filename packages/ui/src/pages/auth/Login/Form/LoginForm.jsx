@@ -1,3 +1,4 @@
+import { LastUsedBadge } from '@ui/components/badges'
 import {
   FormField,
   FormFields,
@@ -11,7 +12,7 @@ import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, resolver } from './schema'
 
-export const LoginForm = ({ isLoading, onSubmit }) => {
+export const LoginForm = ({ isLastUsed, isLoading, onSubmit }) => {
   const { t } = useLocale()
 
   const {
@@ -43,8 +44,9 @@ export const LoginForm = ({ isLoading, onSubmit }) => {
         </FormField>
       </FormFields>
 
-      <SubmitButton isLoading={isSubmitting || isLoading}>
+      <SubmitButton className='relative' isLoading={isSubmitting || isLoading}>
         {t('login.verb')}
+        {isLastUsed && <LastUsedBadge />}
       </SubmitButton>
     </FormRoot>
   )

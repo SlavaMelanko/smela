@@ -1,13 +1,13 @@
-import { GoogleIcon } from '@ui/components/icons'
 import { InvisibleReCaptcha } from '@ui/components/InvisibleReCaptcha'
 import { ForgotYourPasswordPrompt, SignupPrompt } from '@ui/components/prompts'
 import { TextSeparator } from '@ui/components/Separator'
-import { Button } from '@ui/components/ui'
+import { GoogleOAuthButton, SocialOAuthGroup } from '@ui/components/socialAuth'
 import { useLogin, useLoginWithGoogle } from '@ui/hooks/useAuth'
 import { useCaptcha } from '@ui/hooks/useCaptcha'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
+import { AuthMethod, wasLastAuthMethod } from '@ui/lib/storage'
 
 import { AuthRoot } from '../Auth'
 import { LoginForm } from './Form'
@@ -67,24 +67,23 @@ export const LoginPage = ({ options = {} }) => {
       <AuthRoot>
         <Notice />
 
-        <div className='flex flex-col gap-2'>
-          <LoginForm isLoading={isEmailPending} onSubmit={handleLogin} />
+        <div className='flex flex-col gap-4'>
+          <LoginForm
+            isLastUsed={wasLastAuthMethod(AuthMethod.Email)}
+            isLoading={isEmailPending}
+            onSubmit={handleLogin}
+          />
 
           {showSocialLogin && (
             <>
-              <TextSeparator text={t('or')} />
+              <TextSeparator text={t('orContinueWith')} />
 
-              <div className='flex flex-col gap-4'>
-                <Button
-                  variant='outline'
-                  className='w-full'
+              <SocialOAuthGroup>
+                <GoogleOAuthButton
                   onClick={handleLoginWithGoogle}
-                  disabled={isGooglePending}
-                >
-                  <GoogleIcon />
-                  {t('continueWithGoogle')}
-                </Button>
-              </div>
+                  isPending={isGooglePending}
+                />
+              </SocialOAuthGroup>
             </>
           )}
         </div>

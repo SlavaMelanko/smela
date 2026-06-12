@@ -47,7 +47,6 @@
     "remove": "Видалити",
     "resend": "Надіслати повторно"
   },
-  "continueWithGoogle": "Продовжити з Google",
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Створено",
   "doNotHaveAccount": "Новенький тут?",
@@ -187,6 +186,7 @@
     },
     "label": "Прізвище"
   },
+  "lastUsed": "Використано востаннє",
   "loading": "Завантаження...",
   "login": {
     "noun": "Увійти",
@@ -199,7 +199,7 @@
   "membership": "Членство",
   "noNewNotifications": "Нових сповіщень немає.",
   "notifications": "Сповіщення",
-  "or": "або",
+  "orContinueWith": "або продовжити через",
   "pagination": {
     "limit": "Ліміт:",
     "of": "з"
