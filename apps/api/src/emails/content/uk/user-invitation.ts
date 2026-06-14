@@ -18,7 +18,7 @@ export const content: UserInvitationContent = {
   expiryNotice: 'З міркувань безпеки це посилання дійсне протягом 24 годин.',
   signature: {
     thanks: 'Дякуємо,',
-    who: `Команда ${config.company.name}`
+    who: `Команда ${config.companyName}`
   }
 }
 

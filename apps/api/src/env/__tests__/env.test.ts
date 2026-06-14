@@ -70,7 +70,6 @@ describe('Environment Configuration', () => {
 
     // Company defaults
     expect(devEnv.COMPANY_NAME).toBe('SMELA')
-    expect(devEnv.COMPANY_SOCIAL_LINKS).toEqual({})
 
     // POSTGRES_URL construction
     expect(devEnv.POSTGRES_URL).toBe(
@@ -315,10 +314,6 @@ describe('Environment Configuration', () => {
   test('should parse valid JSON configurations', () => {
     const customEnv = {
       ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: JSON.stringify({
-        twitter: 'https://twitter.com/company',
-        github: 'https://github.com/company'
-      }),
       EMAIL_SENDER_PROFILES: JSON.stringify({
         system: { email: 'noreply@example.com', name: 'Company' },
         marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
@@ -327,24 +322,9 @@ describe('Environment Configuration', () => {
 
     const env = validateEnvVars(customEnv)
 
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({
-      twitter: 'https://twitter.com/company',
-      github: 'https://github.com/company'
-    })
-
     expect(env.EMAIL_SENDER_PROFILES).toEqual({
       system: { email: 'noreply@example.com', name: 'Company' },
       marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
     })
-  })
-
-  test('should handle invalid JSON gracefully', () => {
-    const customEnv = {
-      ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: 'invalid-json'
-    }
-
-    const env = validateEnvVars(customEnv)
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({})
   })
 })

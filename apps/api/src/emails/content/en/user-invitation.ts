@@ -18,7 +18,7 @@ export const content: UserInvitationContent = {
   expiryNotice: 'This link expires in 24 hours for security reasons.',
   signature: {
     thanks: 'Thanks,',
-    who: `The ${config.company.name} Team`
+    who: `The ${config.companyName} Team`
   }
 }
 

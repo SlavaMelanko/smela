@@ -4,7 +4,7 @@ import { config } from '../../config'
 
 export const content: EmailVerificationContent = {
   subject: 'Підтвердіть вашу електронну адресу',
-  previewText: `Підтвердіть електронну адресу для ${config.company.name}`,
+  previewText: `Підтвердіть електронну адресу для ${config.companyName}`,
   greeting: (firstName?: string) => `Вітаю ${firstName || 'друже'},`,
   body: 'Натисніть посилання нижче, щоб підтвердити вашу електронну адресу:',
   ctaText: 'Підтвердити електронну адресу',
@@ -13,7 +13,7 @@ export const content: EmailVerificationContent = {
     'Якщо ви не створювали обліковий запис, просто проігноруйте цей лист.',
   signature: {
     thanks: 'Дякуємо,',
-    who: `Команда ${config.company.name}`
+    who: `Команда ${config.companyName}`
   }
 }
 

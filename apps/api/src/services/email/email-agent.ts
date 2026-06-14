@@ -1,5 +1,7 @@
+import type { EmailConfig } from '@/emails'
 import type { Role, UserPreferences } from '@/types'
 
+import { setConfig as cacheConfig } from '@/emails'
 import env from '@/env'
 import { isAdmin } from '@/types'
 
@@ -26,6 +28,12 @@ export class EmailAgent {
     EmailAgent.instance ??= new EmailAgent()
 
     return EmailAgent.instance
+  }
+
+  // Update the email config cache. Called at startup with the full config
+  // and after owner/admin edits with the changed fields, so footers stay current
+  setConfig(config: EmailConfig): void {
+    cacheConfig(config)
   }
 
   async sendEmailVerificationEmail(

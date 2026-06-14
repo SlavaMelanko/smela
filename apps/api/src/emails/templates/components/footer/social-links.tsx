@@ -2,11 +2,12 @@
 
 import { Link } from '@react-email/components'
 
+import type { SocialLink } from '../../../config'
 import type { ThemeStyles } from '../../../styles'
 
 import { getThemeStyles } from '../../../styles'
 
-interface SocialLink {
+interface RenderedLink {
   href: string
   icon: React.ReactNode
   label: string
@@ -52,17 +53,14 @@ const getIcon = (
         <circle cx='4' cy='4' r='2' />
       </svg>
     ),
-    twitter: (
-      <svg
-        style={style}
-        viewBox='0 0 24 24'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-      >
+    x: (
+      <svg style={style} viewBox='0 0 24 24'>
         <path
-          d='M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66
-         10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0
-         20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z'
+          fill={style.stroke}
+          stroke='none'
+          d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99
+         21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084
+         4.126H5.117z'
         />
       </svg>
     )
@@ -74,25 +72,22 @@ const getIcon = (
 const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
 
 const mapIcons = (
-  links: Record<string, string>,
+  links: SocialLink[],
   style: ThemeStyles['icon']
-): SocialLink[] =>
-  Object.entries(links).map(([platform, url]) => ({
+): RenderedLink[] =>
+  links.map(({ name, url, icon }) => ({
     href: url,
-    icon: getIcon(platform, style),
-    label: capitalize(platform)
+    icon: getIcon(icon, style),
+    label: capitalize(name)
   }))
 
 interface Props {
   styles: ThemeStyles
-  socialMediaLinks: Record<string, string>
+  socialLinks: SocialLink[]
 }
 
-const SocialMediaLinks = ({
-  styles,
-  socialMediaLinks
-}: Props): React.ReactElement => {
-  const links: SocialLink[] = mapIcons(socialMediaLinks, styles.icon)
+const SocialLinks = ({ styles, socialLinks }: Props): React.ReactElement => {
+  const links: RenderedLink[] = mapIcons(socialLinks, styles.icon)
 
   return (
     <div
@@ -116,13 +111,21 @@ const SocialMediaLinks = ({
   )
 }
 
-SocialMediaLinks.PreviewProps = {
+SocialLinks.PreviewProps = {
   styles: getThemeStyles('light'),
-  socialMediaLinks: {
-    facebook: 'https://facebook.com/your-profile',
-    github: 'https://github.com/your-profile',
-    linkedin: 'https://linkedin.com/in/your-profile'
-  }
+  socialLinks: [
+    {
+      name: 'facebook',
+      url: 'https://facebook.com/your-profile',
+      icon: 'facebook'
+    },
+    { name: 'github', url: 'https://github.com/your-profile', icon: 'github' },
+    {
+      name: 'linkedin',
+      url: 'https://linkedin.com/in/your-profile',
+      icon: 'linkedin'
+    }
+  ]
 } as Props
 
-export default SocialMediaLinks
+export default SocialLinks

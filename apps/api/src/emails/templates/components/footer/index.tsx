@@ -1,5 +1,6 @@
 /** @jsxImportSource react */
 
+import type { SocialLink } from '../../../config'
 import type { Metadata } from '../../../metadata'
 import type { ThemeStyles } from '../../../styles'
 
@@ -7,19 +8,19 @@ import { config } from '../../../config'
 import { getThemeStyles } from '../../../styles'
 import Copyright from './copyright'
 import MetadataContainer from './metadata'
-import SocialMediaLinks from './social-media-links'
+import SocialLinks from './social-links'
 
 interface Props {
   styles: ThemeStyles
   companyName?: string
-  socialMediaLinks?: Record<string, string>
+  socialLinks?: SocialLink[]
   metadata?: Metadata
 }
 
 const Footer = ({
   styles,
-  companyName = config.company.name,
-  socialMediaLinks = config.company.socialMediaLinks,
+  companyName = config.companyName,
+  socialLinks = config.socialLinks,
   metadata
 }: Props): React.ReactElement => (
   <div
@@ -30,7 +31,7 @@ const Footer = ({
       alignItems: 'center'
     }}
   >
-    <SocialMediaLinks styles={styles} socialMediaLinks={socialMediaLinks} />
+    <SocialLinks styles={styles} socialLinks={socialLinks} />
     <Copyright styles={styles} companyName={companyName} />
     {metadata && <MetadataContainer {...metadata} />}
   </div>
@@ -39,11 +40,19 @@ const Footer = ({
 Footer.PreviewProps = {
   styles: getThemeStyles('light'),
   companyName: 'Company Name',
-  socialMediaLinks: {
-    facebook: 'https://facebook.com/your-profile',
-    github: 'https://github.com/your-profile',
-    linkedin: 'https://linkedin.com/in/your-profile'
-  }
+  socialLinks: [
+    {
+      name: 'facebook',
+      url: 'https://facebook.com/your-profile',
+      icon: 'facebook'
+    },
+    { name: 'github', url: 'https://github.com/your-profile', icon: 'github' },
+    {
+      name: 'linkedin',
+      url: 'https://linkedin.com/in/your-profile',
+      icon: 'linkedin'
+    }
+  ]
 } as Props
 
 export default Footer

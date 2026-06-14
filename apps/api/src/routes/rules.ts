@@ -74,6 +74,13 @@ export const rules = {
     search: z.string().trim().max(100)
   },
 
+  socialLink: {
+    id: z.uuid(),
+    name: z.string().trim().min(1).max(32),
+    url: z.url().max(255),
+    icon: z.string().trim().min(1).max(32)
+  },
+
   userFilter: {
     search: z.string().trim(),
 

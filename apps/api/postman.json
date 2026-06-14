@@ -1153,6 +1153,113 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "social-links",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const lastLink = res.socialLinks[0];",
+                  "",
+                  "if (lastLink) {",
+                  "    pm.environment.set(\"last_social_link_id\", lastLink.id);",
+                  "    console.log(\"Saved last_social_link_id:\", lastLink.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{owner_api_url}}/social-links",
+              "host": [
+                "{{owner_api_url}}"
+              ],
+              "path": [
+                "social-links"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "social-links",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"github\",\n    \"url\": \"https://github.com/smela\",\n    \"icon\": \"github\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{owner_api_url}}/social-links",
+              "host": [
+                "{{owner_api_url}}"
+              ],
+              "path": [
+                "social-links"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "social-links/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://github.com/smela-new\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{owner_api_url}}/social-links/{{last_social_link_id}}",
+              "host": [
+                "{{owner_api_url}}"
+              ],
+              "path": [
+                "social-links",
+                "{{last_social_link_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "social-links/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{owner_api_url}}/social-links/{{last_social_link_id}}",
+              "host": [
+                "{{owner_api_url}}"
+              ],
+              "path": [
+                "social-links",
+                "{{last_social_link_id}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }

@@ -4,7 +4,7 @@ import { config } from '../../config'
 
 export const content: EmailVerificationContent = {
   subject: 'Verify your email',
-  previewText: `Confirm your email for ${config.company.name}`,
+  previewText: `Confirm your email for ${config.companyName}`,
   greeting: (firstName?: string) => `Hi ${firstName || 'there'},`,
   body: 'Click the link below to verify your email address:',
   ctaText: 'Verify email address',
@@ -13,7 +13,7 @@ export const content: EmailVerificationContent = {
     "If you didn't create an account, you can safely ignore this email.",
   signature: {
     thanks: 'Thanks,',
-    who: `The ${config.company.name} team`
+    who: `The ${config.companyName} team`
   }
 }
 

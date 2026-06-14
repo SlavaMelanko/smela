@@ -1,19 +1,27 @@
-import { env } from './env'
+export interface SocialLink {
+  name: string
+  url: string
+  icon: string
+}
 
 export interface EmailConfig {
-  company: {
-    name: string
-    socialMediaLinks: Record<string, string>
-  }
+  companyName?: string
+  socialLinks?: SocialLink[]
 }
 
-const createEmailConfig = (): EmailConfig => {
-  return {
-    company: {
-      name: env.companyName,
-      socialMediaLinks: env.companySocialLinks
-    }
-  }
+// Runtime cache. Filled by emailAgent at startup and refreshed on owner/admin edits.
+// Defaults keep the standalone email preview server working without a DB/env.
+export const config = {
+  companyName: 'SMELA',
+  socialLinks: [] as SocialLink[]
 }
 
-export const config = createEmailConfig()
+export const setConfig = ({ companyName, socialLinks }: EmailConfig): void => {
+  if (companyName) {
+    config.companyName = companyName
+  }
+
+  if (socialLinks) {
+    config.socialLinks = socialLinks
+  }
+}

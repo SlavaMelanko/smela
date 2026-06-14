@@ -21,6 +21,7 @@ import { db } from '../clients'
 import {
   authTable,
   permissionsTable,
+  socialLinksTable,
   teamMembersTable,
   teamsTable,
   userPermissionsTable,
@@ -374,9 +375,35 @@ const seedGoogleUsers = async () => {
   }
 }
 
+const seedSocialLinks = async () => {
+  const links = [
+    { name: 'facebook', url: 'https://facebook.com', icon: 'facebook' },
+    { name: 'github', url: 'https://github.com', icon: 'github' },
+    { name: 'linkedin', url: 'https://linkedin.com', icon: 'linkedin' },
+    { name: 'x', url: 'https://x.com', icon: 'x' }
+  ]
+
+  for (const link of links) {
+    const [existing] = await db
+      .select()
+      .from(socialLinksTable)
+      .where(eq(socialLinksTable.name, link.name))
+
+    if (existing) {
+      console.log(`✅ ${link.name} link already exists`)
+      continue
+    }
+
+    await db.insert(socialLinksTable).values(link)
+
+    console.log(`✅ ${link.name} link seeded`)
+  }
+}
+
 const seed = async () => {
   await seedPermissions()
   await seedSystemUsers()
+  await seedSocialLinks()
 
   if (!isProdEnv()) {
     const teamId = await seedTeams()

@@ -6,6 +6,8 @@ import { requestId } from 'hono/request-id'
 
 import type { AppContext } from '@/context'
 
+import { appRepo } from '@/data'
+import env from '@/env'
 import { notFound, onError } from '@/handlers'
 import {
   authRateLimiter,
@@ -27,6 +29,7 @@ import {
   userRoutesAllowNew,
   userRoutesVerifiedOnly
 } from '@/routes'
+import { emailAgent } from '@/services'
 
 class Server {
   private readonly app: Hono<AppContext>
@@ -36,10 +39,24 @@ class Server {
     this.setupMiddleware()
     this.setupRoutes()
     this.setupHandlers()
+    void this.setupServices()
   }
 
   getApp() {
     return this.app
+  }
+
+  private async setupServices() {
+    const socialLinks = await appRepo.findSocialLinks()
+
+    emailAgent.setConfig({
+      companyName: env.COMPANY_NAME,
+      socialLinks: socialLinks.map(({ name, url, icon }) => ({
+        name,
+        url,
+        icon
+      }))
+    })
   }
 
   private setupMiddleware() {
