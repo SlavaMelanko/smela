@@ -29,7 +29,8 @@ describe('getAdminDefaultPermissionsHandler', () => {
         permissions: {
           [Resource.Dashboard]: { view: true, manage: true },
           [Resource.Users]: { view: true, manage: true },
-          [Resource.Teams]: { view: true, manage: true }
+          [Resource.Teams]: { view: true, manage: true },
+          [Resource.System]: { view: false, manage: false }
         }
       },
       HttpStatus.OK

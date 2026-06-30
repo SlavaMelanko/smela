@@ -14,10 +14,12 @@ enum Permission {
   ViewUsers = 'view:users',
   ViewTeams = 'view:teams',
   ViewAdmins = 'view:admins',
+  ViewSystem = 'view:system',
   ManageDashboard = 'manage:dashboard',
   ManageUsers = 'manage:users',
   ManageTeams = 'manage:teams',
-  ManageAdmins = 'manage:admins'
+  ManageAdmins = 'manage:admins',
+  ManageSystem = 'manage:system'
 }
 
 // Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
@@ -25,7 +27,8 @@ enum Permission {
 export const getAdminBasePermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false },
   [Resource.Users]: { [Action.View]: false, [Action.Manage]: false },
-  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false }
+  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false },
+  [Resource.System]: { [Action.View]: false, [Action.Manage]: false }
 })
 
 export const getAdminDefaultPermissions = (): PermissionMap => ({
