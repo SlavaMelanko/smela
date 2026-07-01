@@ -168,7 +168,8 @@ const seedSystemUsers = async () => {
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
         { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard }
+        { action: Action.Manage, resource: Resource.Dashboard },
+        { action: Action.Manage, resource: Resource.System }
       ]
     },
     {
@@ -181,7 +182,8 @@ const seedSystemUsers = async () => {
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
         { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard }
+        { action: Action.Manage, resource: Resource.Dashboard },
+        { action: Action.Manage, resource: Resource.System }
       ]
     },
     {

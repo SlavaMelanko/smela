@@ -29,6 +29,9 @@
     "*.ts": [
       "bunx prettier --write",
       "bunx eslint --cache --fix"
+    ],
+    "*.json": [
+      "bunx prettier --write"
     ]
   },
   "dependencies": {

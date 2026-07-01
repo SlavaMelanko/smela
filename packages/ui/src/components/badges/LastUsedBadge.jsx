@@ -9,7 +9,7 @@ export const LastUsedBadge = ({ className }) => {
     <Badge
       variant='secondary'
       className={cn(
-        'absolute right-2 top-0 -translate-y-1/2 font-light',
+        'absolute right-2 top-0 -translate-y-1/2 bg-muted font-light text-muted-foreground',
         className
       )}
     >
