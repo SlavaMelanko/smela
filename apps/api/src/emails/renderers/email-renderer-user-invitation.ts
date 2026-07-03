@@ -11,6 +11,7 @@ import { renderEmail } from './helper'
 export interface UserInvitationEmailData {
   firstName: string
   inviteUrl: string
+  inviterName?: string
   teamName?: string
 }
 
