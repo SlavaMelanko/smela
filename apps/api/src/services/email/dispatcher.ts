@@ -19,7 +19,7 @@ const mergeWithDefaultPreferences = (
     : defaultPreferences
 }
 
-export class EmailService {
+export class EmailDispatcher {
   constructor(
     private readonly provider: EmailProvider,
     private readonly registry: EmailRegistry
@@ -31,11 +31,11 @@ export class EmailService {
     data: T,
     preferences?: UserPreferences
   ): Promise<void> {
-    const config = await this.registry.get<T>(emailType)
+    const definition = await this.registry.get<T>(emailType)
 
-    const { email, name } = config.getSender()
+    const { email, name } = await definition.getSender()
 
-    const renderer = await config.getRenderer()
+    const renderer = await definition.getRenderer()
     const userPreferences = mergeWithDefaultPreferences(preferences)
     const metadata = createMetadata()
     const { subject, html, text } = await renderer.render(

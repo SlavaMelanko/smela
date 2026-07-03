@@ -3,8 +3,7 @@ import env from '@/env'
 export enum SenderProfile {
   SYSTEM = 'system',
   SUPPORT = 'support',
-  CEO = 'ceo',
-  MARKETING = 'marketing'
+  SECURITY = 'security'
 }
 
 export interface EmailSender {
@@ -12,12 +11,18 @@ export interface EmailSender {
   name: string
 }
 
-export const getSenderDetails = (senderProfile: SenderProfile): EmailSender => {
-  const profiles = env.EMAIL_SENDER_PROFILES
-  const profile = profiles[senderProfile] ?? profiles[SenderProfile.SYSTEM]
+export interface SenderProfileProvider {
+  getSender: (profile: SenderProfile) => Promise<EmailSender>
+}
 
-  return {
-    email: profile.email,
-    name: profile.name
+export class EnvSenderProfileProvider implements SenderProfileProvider {
+  async getSender(profile: SenderProfile): Promise<EmailSender> {
+    const profiles = env.EMAIL_SENDER_PROFILES
+    const sender = profiles[profile] ?? profiles[SenderProfile.SYSTEM]
+
+    return {
+      email: sender.email,
+      name: sender.name
+    }
   }
 }

@@ -1,20 +1,20 @@
-import type { EmailConfig } from '../configs/config'
+import type { EmailDefinition } from '../definitions'
 import type { EmailType } from '../email-type'
 import type { EmailRegistry } from './registry'
 
 export class DefaultEmailRegistry implements EmailRegistry {
-  private readonly configs = new Map<EmailType, EmailConfig>()
+  private readonly definitions = new Map<EmailType, EmailDefinition>()
 
-  add<T>(config: EmailConfig<T>): void {
-    this.configs.set(config.getType(), config)
+  add<T>(definition: EmailDefinition<T>): void {
+    this.definitions.set(definition.getType(), definition)
   }
 
-  async get<T>(emailType: EmailType): Promise<EmailConfig<T>> {
-    const config = this.configs.get(emailType)
-    if (!config) {
+  async get<T>(emailType: EmailType): Promise<EmailDefinition<T>> {
+    const definition = this.definitions.get(emailType)
+    if (!definition) {
       throw new Error(`Unknown email type: ${emailType}`)
     }
 
-    return config as EmailConfig<T>
+    return definition as EmailDefinition<T>
   }
 }
