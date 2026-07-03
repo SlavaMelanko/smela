@@ -1,18 +1,21 @@
+import type { SenderProfileProvider } from '../sender-profile'
 import type { EmailRegistry } from './registry'
 
 import {
-  EmailVerificationEmailConfig,
-  PasswordResetEmailConfig,
-  UserInvitationEmailConfig
-} from '../configs'
+  emailVerificationEmail,
+  passwordResetEmail,
+  userInvitationEmail
+} from '../definitions'
 import { DefaultEmailRegistry } from './registry-default'
 
-export const buildEmailRegistry = (): EmailRegistry => {
+export const buildEmailRegistry = (
+  senderProfileProvider: SenderProfileProvider
+): EmailRegistry => {
   const registry = new DefaultEmailRegistry()
 
-  registry.add(new EmailVerificationEmailConfig())
-  registry.add(new PasswordResetEmailConfig())
-  registry.add(new UserInvitationEmailConfig())
+  registry.add(emailVerificationEmail(senderProfileProvider))
+  registry.add(passwordResetEmail(senderProfileProvider))
+  registry.add(userInvitationEmail(senderProfileProvider))
 
   return registry
 }
