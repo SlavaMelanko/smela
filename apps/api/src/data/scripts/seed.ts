@@ -11,16 +11,24 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
-import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  Resource,
+  Role,
+  SenderProfile,
+  UserStatus
+} from '@/types'
 
 import { db } from '../clients'
 import {
   authTable,
   permissionsTable,
+  senderProfilesTable,
   teamMembersTable,
   teamsTable,
   userPermissionsTable,
@@ -72,6 +80,44 @@ const seedPermissions = async () => {
   await db.insert(permissionsTable).values(permissionsToInsert)
 
   console.log(`✅ ${permissionsToInsert.length} permissions seeded`)
+}
+
+const seedSenderProfiles = async () => {
+  const senderProfiles = [
+    {
+      profile: SenderProfile.System,
+      email: 'noreply@smela.me',
+      name: 'SMELA',
+      description: 'Transactional and system notifications'
+    },
+    {
+      profile: SenderProfile.Support,
+      email: 'support@smela.me',
+      name: 'SMELA Support',
+      description: 'Customer support and help requests'
+    },
+    {
+      profile: SenderProfile.Security,
+      email: 'security@smela.me',
+      name: 'SMELA Security',
+      description: 'Security alerts and account protection'
+    }
+  ]
+
+  await db
+    .insert(senderProfilesTable)
+    .values(senderProfiles)
+    .onConflictDoUpdate({
+      target: senderProfilesTable.profile,
+      set: {
+        email: sql`excluded.email`,
+        name: sql`excluded.name`,
+        description: sql`excluded.description`,
+        updatedAt: new Date()
+      }
+    })
+
+  console.log(`✅ ${senderProfiles.length} sender profiles seeded`)
 }
 
 const setUserPermissions = async (
@@ -378,6 +424,7 @@ const seedGoogleUsers = async () => {
 
 const seed = async () => {
   await seedPermissions()
+  await seedSenderProfiles()
   await seedSystemUsers()
 
   if (!isProdEnv()) {

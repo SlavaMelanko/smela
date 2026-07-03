@@ -15,6 +15,13 @@
       "when": 1782849037786,
       "tag": "0001_rare_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783108709041,
+      "tag": "0002_last_sentry",
+      "breakpoints": true
     }
   ]
 }

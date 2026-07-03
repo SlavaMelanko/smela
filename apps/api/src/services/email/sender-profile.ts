@@ -1,10 +1,7 @@
-import env from '@/env'
+import { systemRepo } from '@/data'
+import { SenderProfile } from '@/types'
 
-export enum SenderProfile {
-  SYSTEM = 'system',
-  SUPPORT = 'support',
-  SECURITY = 'security'
-}
+export { SenderProfile }
 
 export interface EmailSender {
   email: string
@@ -15,14 +12,19 @@ export interface SenderProfileProvider {
   getSender: (profile: SenderProfile) => Promise<EmailSender>
 }
 
-export class EnvSenderProfileProvider implements SenderProfileProvider {
+export class DatabaseSenderProfileProvider implements SenderProfileProvider {
   async getSender(profile: SenderProfile): Promise<EmailSender> {
-    const profiles = env.EMAIL_SENDER_PROFILES
-    const sender = profiles[profile] ?? profiles[SenderProfile.SYSTEM]
+    const record =
+      (await systemRepo.findSenderProfile(profile)) ??
+      (await systemRepo.findSenderProfile(SenderProfile.System))
+
+    if (!record) {
+      throw new Error(`No sender profile found for: ${profile}`)
+    }
 
     return {
-      email: sender.email,
-      name: sender.name
+      email: record.email,
+      name: record.name
     }
   }
 }

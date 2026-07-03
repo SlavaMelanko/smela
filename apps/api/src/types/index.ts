@@ -17,6 +17,7 @@ export {
   isUserOrAdmin,
   default as Role
 } from './role'
+export { default as SenderProfile } from './sender-profile'
 export type {
   SupportedLocale,
   Theme,

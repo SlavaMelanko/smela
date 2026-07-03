@@ -9,7 +9,7 @@ export const passwordResetEmail = (
 ) =>
   defineEmail(
     EmailType.PASSWORD_RESET,
-    async () => senderProfileProvider.getSender(SenderProfile.SECURITY),
+    async () => senderProfileProvider.getSender(SenderProfile.Security),
     async () => {
       const { PasswordResetEmailRenderer } = await import('@/emails')
 
