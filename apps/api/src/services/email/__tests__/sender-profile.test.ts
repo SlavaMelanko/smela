@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'bun:test'
+import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 
 import type { EmailSenderProfileRecord } from '@/data'
 
@@ -7,47 +7,54 @@ import { EmailSenderProfile } from '@/types'
 
 import { DatabaseEmailSenderProfileProvider } from '../sender-profile'
 
+const ONE_HOUR_MS = 60 * 60 * 1000
+
 describe('DatabaseEmailSenderProfileProvider', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  const records: Partial<Record<EmailSenderProfile, EmailSenderProfileRecord>> =
-    {
-      [EmailSenderProfile.System]: {
-        profile: EmailSenderProfile.System,
-        email: 'system@example.com',
-        name: 'System',
-        description: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      [EmailSenderProfile.Support]: {
-        profile: EmailSenderProfile.Support,
-        email: 'support@example.com',
-        name: 'Support',
-        description: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    }
+  const record = (
+    profile: EmailSenderProfile,
+    email: string,
+    name: string
+  ): EmailSenderProfileRecord => ({
+    profile,
+    email,
+    name,
+    description: null,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  })
+
+  const records = [
+    record(EmailSenderProfile.System, 'system@example.com', 'System'),
+    record(EmailSenderProfile.Support, 'support@example.com', 'Support')
+  ]
 
   const mockRepo = async (
-    findEmailSender: (
-      profile: EmailSenderProfile
-    ) => Promise<EmailSenderProfileRecord | undefined>
+    findEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
   ) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { findEmailSender }
+      systemRepo: { findEmailSenderProfiles }
     }))
 
-  const mockConfiguredProfiles = async () =>
-    mockRepo(async profile => records[profile])
+  const mockCountedRepo = async (rows = records) => {
+    let queries = 0
+    await mockRepo(async () => {
+      queries++
+
+      return rows
+    })
+
+    return () => queries
+  }
 
   afterEach(async () => {
+    setSystemTime()
     await moduleMocker.clear()
   })
 
   it('resolves the sender for a known profile', async () => {
-    await mockConfiguredProfiles()
+    await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
     const sender = await provider.getSender(EmailSenderProfile.Support)
@@ -56,7 +63,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   })
 
   it('falls back to the system profile for an unknown profile', async () => {
-    await mockConfiguredProfiles()
+    await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
     const sender = await provider.getSender(EmailSenderProfile.Security)
@@ -65,7 +72,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   })
 
   it('throws when neither the profile nor the system fallback exist', async () => {
-    await mockRepo(async () => undefined)
+    await mockRepo(async () => [])
     const provider = new DatabaseEmailSenderProfileProvider()
 
     expect.hasAssertions()
@@ -76,5 +83,27 @@ describe('DatabaseEmailSenderProfileProvider', () => {
         'No email sender profile found for: security'
       )
     }
+  })
+
+  it('serves repeated lookups from the cache within the TTL', async () => {
+    const queries = await mockCountedRepo()
+    const provider = new DatabaseEmailSenderProfileProvider()
+
+    await provider.getSender(EmailSenderProfile.Support)
+    await provider.getSender(EmailSenderProfile.System)
+
+    expect(queries()).toBe(1)
+  })
+
+  it('reloads from the database after the TTL expires', async () => {
+    setSystemTime(new Date('2026-01-01T00:00:00Z'))
+    const queries = await mockCountedRepo()
+    const provider = new DatabaseEmailSenderProfileProvider()
+
+    await provider.getSender(EmailSenderProfile.Support)
+    setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
+    await provider.getSender(EmailSenderProfile.Support)
+
+    expect(queries()).toBe(2)
   })
 })
