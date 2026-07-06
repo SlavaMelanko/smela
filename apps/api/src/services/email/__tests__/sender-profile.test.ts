@@ -1,41 +1,42 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 
-import type { SenderProfileRecord } from '@/data'
+import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
-import { SenderProfile } from '@/types'
+import { EmailSenderProfile } from '@/types'
 
-import { DatabaseSenderProfileProvider } from '../sender-profile'
+import { DatabaseEmailSenderProfileProvider } from '../sender-profile'
 
-describe('DatabaseSenderProfileProvider', () => {
+describe('DatabaseEmailSenderProfileProvider', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  const records: Partial<Record<SenderProfile, SenderProfileRecord>> = {
-    [SenderProfile.System]: {
-      profile: SenderProfile.System,
-      email: 'system@example.com',
-      name: 'System',
-      description: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    [SenderProfile.Support]: {
-      profile: SenderProfile.Support,
-      email: 'support@example.com',
-      name: 'Support',
-      description: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
+  const records: Partial<Record<EmailSenderProfile, EmailSenderProfileRecord>> =
+    {
+      [EmailSenderProfile.System]: {
+        profile: EmailSenderProfile.System,
+        email: 'system@example.com',
+        name: 'System',
+        description: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      [EmailSenderProfile.Support]: {
+        profile: EmailSenderProfile.Support,
+        email: 'support@example.com',
+        name: 'Support',
+        description: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
     }
-  }
 
   const mockRepo = async (
-    findSenderProfile: (
-      profile: SenderProfile
-    ) => Promise<SenderProfileRecord | undefined>
+    findEmailSender: (
+      profile: EmailSenderProfile
+    ) => Promise<EmailSenderProfileRecord | undefined>
   ) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { findSenderProfile }
+      systemRepo: { findEmailSender }
     }))
 
   const mockConfiguredProfiles = async () =>
@@ -47,32 +48,32 @@ describe('DatabaseSenderProfileProvider', () => {
 
   it('resolves the sender for a known profile', async () => {
     await mockConfiguredProfiles()
-    const provider = new DatabaseSenderProfileProvider()
+    const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.getSender(SenderProfile.Support)
+    const sender = await provider.getSender(EmailSenderProfile.Support)
 
     expect(sender).toEqual({ email: 'support@example.com', name: 'Support' })
   })
 
   it('falls back to the system profile for an unknown profile', async () => {
     await mockConfiguredProfiles()
-    const provider = new DatabaseSenderProfileProvider()
+    const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.getSender(SenderProfile.Security)
+    const sender = await provider.getSender(EmailSenderProfile.Security)
 
     expect(sender).toEqual({ email: 'system@example.com', name: 'System' })
   })
 
   it('throws when neither the profile nor the system fallback exist', async () => {
     await mockRepo(async () => undefined)
-    const provider = new DatabaseSenderProfileProvider()
+    const provider = new DatabaseEmailSenderProfileProvider()
 
     expect.hasAssertions()
     try {
-      await provider.getSender(SenderProfile.Security)
+      await provider.getSender(EmailSenderProfile.Security)
     } catch (error) {
       expect((error as Error).message).toBe(
-        'No sender profile found for: security'
+        'No email sender profile found for: security'
       )
     }
   })

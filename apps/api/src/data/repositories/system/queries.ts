@@ -1,23 +1,23 @@
 import { eq } from 'drizzle-orm'
 
-import type { SenderProfile } from '@/types'
+import type { EmailSenderProfile } from '@/types'
 
 import type { Database } from '../../clients'
-import type { SenderProfileRecord } from './types'
+import type { EmailSenderProfileRecord } from './types'
 
 import { db } from '../../clients'
-import { senderProfilesTable } from '../../schema'
+import { emailSenderProfilesTable } from '../../schema'
 
-export const findSenderProfile = async (
-  profile: SenderProfile,
+export const findEmailSender = async (
+  profile: EmailSenderProfile,
   tx?: Database
-): Promise<SenderProfileRecord | undefined> => {
+): Promise<EmailSenderProfileRecord | undefined> => {
   const executor = tx || db
 
   const [record] = await executor
     .select()
-    .from(senderProfilesTable)
-    .where(eq(senderProfilesTable.profile, profile))
+    .from(emailSenderProfilesTable)
+    .where(eq(emailSenderProfilesTable.profile, profile))
 
   return record
 }

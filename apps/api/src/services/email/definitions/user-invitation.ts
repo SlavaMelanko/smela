@@ -1,15 +1,16 @@
-import type { SenderProfileProvider } from '../sender-profile'
+import type { EmailSenderProfileProvider } from '../sender-profile'
 
 import { EmailType } from '../email-type'
-import { SenderProfile } from '../sender-profile'
+import { EmailSenderProfile } from '../sender-profile'
 import { defineEmail } from './email-definition'
 
 export const userInvitationEmail = (
-  senderProfileProvider: SenderProfileProvider
+  emailSenderProfileProvider: EmailSenderProfileProvider
 ) =>
   defineEmail(
     EmailType.USER_INVITATION,
-    async () => senderProfileProvider.getSender(SenderProfile.Support),
+    async () =>
+      emailSenderProfileProvider.getSender(EmailSenderProfile.Support),
     async () => {
       const { UserInvitationEmailRenderer } = await import('@/emails')
 

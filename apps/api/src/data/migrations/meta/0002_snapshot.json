@@ -1,5 +1,5 @@
 {
-  "id": "4a547de3-8895-47e8-baaf-d8cf3739f01e",
+  "id": "83eafd79-6650-4a8b-95be-e9411f35d989",
   "prevId": "a8ec2943-95ed-4c37-964e-fea5ada0e910",
   "version": "7",
   "dialect": "postgresql",
@@ -327,13 +327,13 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.sender_profiles": {
-      "name": "sender_profiles",
+    "public.email_sender_profiles": {
+      "name": "email_sender_profiles",
       "schema": "",
       "columns": {
         "profile": {
           "name": "profile",
-          "type": "sender_profile",
+          "type": "email_sender_profile",
           "typeSchema": "public",
           "primaryKey": true,
           "notNull": true
@@ -741,8 +741,8 @@
       "schema": "public",
       "values": ["owner", "admin", "user"]
     },
-    "public.sender_profile": {
-      "name": "sender_profile",
+    "public.email_sender_profile": {
+      "name": "email_sender_profile",
       "schema": "public",
       "values": ["system", "support", "security"]
     },

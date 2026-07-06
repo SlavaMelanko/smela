@@ -1,5 +1,7 @@
-import type { senderProfilesTable } from '../../schema'
+import type { emailSenderProfilesTable } from '../../schema'
 
-export type SenderProfileRecord = typeof senderProfilesTable.$inferSelect
+export type EmailSenderProfileRecord =
+  typeof emailSenderProfilesTable.$inferSelect
 
-export type CreateSenderProfileInput = typeof senderProfilesTable.$inferInsert
+export type CreateEmailSenderProfileInput =
+  typeof emailSenderProfilesTable.$inferInsert

@@ -1,7 +1,7 @@
-enum SenderProfile {
+enum EmailSenderProfile {
   System = 'system',
   Support = 'support',
   Security = 'security'
 }
 
-export default SenderProfile
+export default EmailSenderProfile

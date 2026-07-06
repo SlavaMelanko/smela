@@ -1,7 +1,7 @@
-import { findSenderProfile } from './queries'
+import { findEmailSender } from './queries'
 
 export * from './types'
 
 export const systemRepo = {
-  findSenderProfile
+  findEmailSender
 }

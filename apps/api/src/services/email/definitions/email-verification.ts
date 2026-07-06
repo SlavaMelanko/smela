@@ -1,15 +1,15 @@
-import type { SenderProfileProvider } from '../sender-profile'
+import type { EmailSenderProfileProvider } from '../sender-profile'
 
 import { EmailType } from '../email-type'
-import { SenderProfile } from '../sender-profile'
+import { EmailSenderProfile } from '../sender-profile'
 import { defineEmail } from './email-definition'
 
 export const emailVerificationEmail = (
-  senderProfileProvider: SenderProfileProvider
+  emailSenderProfileProvider: EmailSenderProfileProvider
 ) =>
   defineEmail(
     EmailType.EMAIL_VERIFICATION,
-    async () => senderProfileProvider.getSender(SenderProfile.System),
+    async () => emailSenderProfileProvider.getSender(EmailSenderProfile.System),
     async () => {
       const { EmailVerificationEmailRenderer } = await import('@/emails')
 

@@ -3,13 +3,13 @@ import type { Role, UserPreferences } from '@/types'
 import env from '@/env'
 import { isAdmin } from '@/types'
 
-import type { SenderProfileProvider } from './sender-profile'
+import type { EmailSenderProfileProvider } from './sender-profile'
 
 import { EmailDispatcher } from './dispatcher'
 import { EmailType } from './email-type'
 import { createEmailProvider } from './providers'
 import { buildEmailRegistry } from './registry'
-import { DatabaseSenderProfileProvider } from './sender-profile'
+import { DatabaseEmailSenderProfileProvider } from './sender-profile'
 
 const getFeBaseUrl = (role: Role) =>
   isAdmin(role) ? env.FE_ADMIN_URL : env.FE_USER_URL
@@ -17,10 +17,10 @@ const getFeBaseUrl = (role: Role) =>
 export class EmailAgent {
   private readonly dispatcher: EmailDispatcher
 
-  constructor(senderProfileProvider: SenderProfileProvider) {
+  constructor(emailSenderProfileProvider: EmailSenderProfileProvider) {
     this.dispatcher = new EmailDispatcher(
       createEmailProvider(),
-      buildEmailRegistry(senderProfileProvider)
+      buildEmailRegistry(emailSenderProfileProvider)
     )
   }
 
@@ -88,4 +88,6 @@ export class EmailAgent {
   }
 }
 
-export const emailAgent = new EmailAgent(new DatabaseSenderProfileProvider())
+export const emailAgent = new EmailAgent(
+  new DatabaseEmailSenderProfileProvider()
+)
