@@ -8,11 +8,11 @@ export interface EmailSender {
   name: string
 }
 
+type EmailSenders = Map<EmailSenderProfile, EmailSender>
+
 export interface EmailSenderProfileProvider {
   getSender: (profile: EmailSenderProfile) => Promise<EmailSender>
 }
-
-type EmailSenders = Map<EmailSenderProfile, EmailSender>
 
 class InMemorySource {
   private static readonly TTL_MS = 60 * 60 * 1000 // 1 hour
