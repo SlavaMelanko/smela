@@ -1,28 +1,56 @@
-import env from '@/env'
+import { systemRepo } from '@/data'
+import { EmailSenderProfile } from '@/types'
 
-export enum SenderProfile {
-  SYSTEM = 'system',
-  SUPPORT = 'support',
-  SECURITY = 'security'
-}
+export { EmailSenderProfile }
 
 export interface EmailSender {
   email: string
   name: string
 }
 
-export interface SenderProfileProvider {
-  getSender: (profile: SenderProfile) => Promise<EmailSender>
+type EmailSenders = Map<EmailSenderProfile, EmailSender>
+
+export interface EmailSenderProfileProvider {
+  getSender: (profile: EmailSenderProfile) => Promise<EmailSender>
 }
 
-export class EnvSenderProfileProvider implements SenderProfileProvider {
-  async getSender(profile: SenderProfile): Promise<EmailSender> {
-    const profiles = env.EMAIL_SENDER_PROFILES
-    const sender = profiles[profile] ?? profiles[SenderProfile.SYSTEM]
+class InMemorySource {
+  private static readonly TTL_MS = 60 * 60 * 1000 // 1 hour
 
-    return {
-      email: sender.email,
-      name: sender.name
+  private senders?: EmailSenders
+  private expiresAt = 0
+
+  async get(): Promise<EmailSenders> {
+    if (!this.senders || Date.now() >= this.expiresAt) {
+      this.senders = await this.load()
+      this.expiresAt = Date.now() + InMemorySource.TTL_MS
     }
+
+    return this.senders
+  }
+
+  private async load(): Promise<EmailSenders> {
+    const records = await systemRepo.findEmailSenderProfiles()
+
+    return new Map(
+      records.map(({ profile, email, name }) => [profile, { email, name }])
+    )
+  }
+}
+
+export class DatabaseEmailSenderProfileProvider implements EmailSenderProfileProvider {
+  private readonly source = new InMemorySource()
+
+  async getSender(profile: EmailSenderProfile): Promise<EmailSender> {
+    const senders = await this.source.get()
+
+    const sender =
+      senders.get(profile) ?? senders.get(EmailSenderProfile.System)
+
+    if (!sender) {
+      throw new Error(`No email sender profile found for: ${profile}`)
+    }
+
+    return sender
   }
 }

@@ -3,30 +3,25 @@ import type { Role, UserPreferences } from '@/types'
 import env from '@/env'
 import { isAdmin } from '@/types'
 
+import type { EmailSenderProfileProvider } from './sender-profile'
+
 import { EmailDispatcher } from './dispatcher'
 import { EmailType } from './email-type'
 import { createEmailProvider } from './providers'
 import { buildEmailRegistry } from './registry'
-import { EnvSenderProfileProvider } from './sender-profile'
+import { DatabaseEmailSenderProfileProvider } from './sender-profile'
 
 const getFeBaseUrl = (role: Role) =>
   isAdmin(role) ? env.FE_ADMIN_URL : env.FE_USER_URL
 
 export class EmailAgent {
-  private static instance: EmailAgent | null = null
   private readonly dispatcher: EmailDispatcher
 
-  private constructor() {
-    const provider = createEmailProvider()
-    const registry = buildEmailRegistry(new EnvSenderProfileProvider())
-
-    this.dispatcher = new EmailDispatcher(provider, registry)
-  }
-
-  static getInstance(): EmailAgent {
-    EmailAgent.instance ??= new EmailAgent()
-
-    return EmailAgent.instance
+  constructor(emailSenderProfileProvider: EmailSenderProfileProvider) {
+    this.dispatcher = new EmailDispatcher(
+      createEmailProvider(),
+      buildEmailRegistry(emailSenderProfileProvider)
+    )
   }
 
   async sendEmailVerificationEmail(
@@ -93,4 +88,6 @@ export class EmailAgent {
   }
 }
 
-export const emailAgent = EmailAgent.getInstance()
+export const emailAgent = new EmailAgent(
+  new DatabaseEmailSenderProfileProvider()
+)

@@ -1,5 +1,6 @@
 export { default as Action } from './action'
 export { default as AuthProvider } from './auth-providers'
+export { default as EmailSenderProfile } from './email-sender-profile'
 export {
   getAdminBasePermissions,
   getAdminDefaultPermissions,

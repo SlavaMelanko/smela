@@ -15,18 +15,5 @@ export const emailEnvVars = (nodeEnv?: string) => ({
   EMAIL_ETHEREAL_HOST: z.string().optional(),
   EMAIL_ETHEREAL_PORT: z.coerce.number().optional(),
   EMAIL_ETHEREAL_USERNAME: z.string().optional(),
-  EMAIL_ETHEREAL_PASSWORD: z.string().optional(),
-
-  EMAIL_SENDER_PROFILES: z.string().transform(str => {
-    const parsed = JSON.parse(str) as unknown
-    const profileSchema = z.record(
-      z.string(),
-      z.object({
-        email: z.email(),
-        name: z.string()
-      })
-    )
-
-    return profileSchema.parse(parsed)
-  })
+  EMAIL_ETHEREAL_PASSWORD: z.string().optional()
 })

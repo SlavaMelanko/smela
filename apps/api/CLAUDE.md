@@ -393,7 +393,8 @@ configuration examples.
 
 - Uses Resend email service for actual email delivery
 - Requires `EMAIL_RESEND_API_KEY` to be configured
-- Supports multiple sender profiles configured via `EMAIL_SENDER_PROFILES`
+- Sender profiles (system/support/security) are stored in the
+  `email_sender_profiles` table and resolved at send time
 
 **Email Provider Selection:**
 

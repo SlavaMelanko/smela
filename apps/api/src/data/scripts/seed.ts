@@ -11,15 +11,23 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
-import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  EmailSenderProfile,
+  Resource,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { db } from '../clients'
 import {
   authTable,
+  emailSenderProfilesTable,
   permissionsTable,
   teamMembersTable,
   teamsTable,
@@ -72,6 +80,44 @@ const seedPermissions = async () => {
   await db.insert(permissionsTable).values(permissionsToInsert)
 
   console.log(`✅ ${permissionsToInsert.length} permissions seeded`)
+}
+
+const seedEmailSenderProfiles = async () => {
+  const emailSenderProfiles = [
+    {
+      profile: EmailSenderProfile.System,
+      email: 'noreply@smela.me',
+      name: 'SMELA',
+      description: 'Transactional and system notifications'
+    },
+    {
+      profile: EmailSenderProfile.Support,
+      email: 'support@smela.me',
+      name: 'SMELA Support',
+      description: 'Customer support and help requests'
+    },
+    {
+      profile: EmailSenderProfile.Security,
+      email: 'security@smela.me',
+      name: 'SMELA Security',
+      description: 'Security alerts and account protection'
+    }
+  ]
+
+  await db
+    .insert(emailSenderProfilesTable)
+    .values(emailSenderProfiles)
+    .onConflictDoUpdate({
+      target: emailSenderProfilesTable.profile,
+      set: {
+        email: sql`excluded.email`,
+        name: sql`excluded.name`,
+        description: sql`excluded.description`,
+        updatedAt: new Date()
+      }
+    })
+
+  console.log(`✅ ${emailSenderProfiles.length} email sender profiles seeded`)
 }
 
 const setUserPermissions = async (
@@ -378,6 +424,7 @@ const seedGoogleUsers = async () => {
 
 const seed = async () => {
   await seedPermissions()
+  await seedEmailSenderProfiles()
   await seedSystemUsers()
 
   if (!isProdEnv()) {
