@@ -21,7 +21,6 @@ export const useDebouncedSearch = (urlValue, onSearch) => {
   // Sync from URL only for external changes (browser back/forward)
   useEffect(() => {
     if (urlValue !== expectedUrlRef.current) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing external state (URL) is valid
       setInstantValue(urlValue)
       expectedUrlRef.current = urlValue
     }

@@ -66,12 +66,12 @@ describe('Accept Invite', () => {
       status: UserStatus.Pending,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as User
+    }
 
     mockActivatedUser = {
       ...mockUser,
       status: UserStatus.Active
-    } as User
+    }
 
     mockAccessToken = 'mock-access-token'
     mockRefreshToken = 'mock-refresh-token'
