@@ -35,16 +35,17 @@ jobs:
 
       - name: Run Claude Code Review
         id: claude-code-review
-        uses: anthropics/claude-code-action@beta
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-          model: 'claude-sonnet-5'
+          claude_args: '--model claude-sonnet-5'
 
           use_sticky_comment: true
 
-          # Direct prompt for automated review (no @claude mention needed)
-          direct_prompt: |
+          # Automated review prompt (no @claude mention needed)
+          prompt: |
             Please review this pull request. It may touch one or more of: apps/web, apps/admin (Vite + React JS apps), packages/ui (shared React component library), or packages/i18n (i18n/translation resources — no components, focus on key naming and missing translations).
 
             If a previous review comment exists on this PR, use it as the baseline:
