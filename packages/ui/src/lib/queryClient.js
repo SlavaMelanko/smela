@@ -50,12 +50,15 @@ const queryCache = new QueryCache({
 const mutationCache = new MutationCache({
   onError: handleError,
   onSettled: (_data, _error, _variables, _context, mutation) => {
-    const invalidatesQueries = mutation.meta?.invalidatesQueries
-    const refetchType = mutation.meta?.refetchType
+    const { invalidatesQueries, refetchType } = mutation.meta ?? {}
 
-    // Only invalidate queries if refetchType is not 'none'
-    if (invalidatesQueries && refetchType !== 'none') {
-      queryClient.invalidateQueries({ queryKey: invalidatesQueries })
+    // refetchType 'none' marks queries stale without an active refetch,
+    // so optimistically updated data is reconciled on next mount
+    if (invalidatesQueries) {
+      queryClient.invalidateQueries({
+        queryKey: invalidatesQueries,
+        ...(refetchType && { refetchType })
+      })
     }
   }
 })

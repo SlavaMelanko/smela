@@ -3,13 +3,7 @@ import { isValidLimit, Limit } from '@ui/components/Pagination'
 import { useDebouncedSearch } from './useDebouncedSearch'
 import { useSearchParams } from './useRouter'
 
-const parseArrayParam = value => {
-  if (!value) {
-    return []
-  }
-
-  return value.split(',').filter(Boolean)
-}
+const parseArrayParam = value => value?.split(',').filter(Boolean) ?? []
 
 const parsePage = pageStr => {
   const page = Number(pageStr)
@@ -41,18 +35,14 @@ export const useTableState = () => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
 
+      // Arrays become comma-separated; empty values remove the param
       Object.entries(updates).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          // Arrays → comma-separated or remove if empty
-          if (value.length > 0) {
-            next.set(key, value.join(','))
-          } else {
-            next.delete(key)
-          }
-        } else if (value === null || value === undefined || value === '') {
+        const param = Array.isArray(value) ? value.join(',') : value
+
+        if (param === null || param === undefined || param === '') {
           next.delete(key)
         } else {
-          next.set(key, String(value))
+          next.set(key, String(param))
         }
       })
 
@@ -66,7 +56,7 @@ export const useTableState = () => {
   }
 
   const handleSearch = value =>
-    setParams({ search: value || null }, { resetPage: true })
+    setParams({ search: value }, { resetPage: true })
   const { searchValue, setSearchValue } = useDebouncedSearch(
     params.search,
     handleSearch
