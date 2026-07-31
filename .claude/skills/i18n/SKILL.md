@@ -7,15 +7,6 @@ description: |
 
 # i18n & Localization
 
-## Core Concepts
-
-| Term   | Meaning                                               |
-| ------ | ----------------------------------------------------- |
-| i18n   | Internationalization - designing for multiple locales |
-| L10n   | Localization - adapting for a specific locale         |
-| Locale | Language + region code (e.g., `en-US`, `uk-UA`)       |
-| RTL    | Right-to-left text direction (Arabic, Hebrew)         |
-
 ## Implementation Patterns
 
 ### Translation Function `t()`
@@ -23,7 +14,7 @@ description: |
 Use `t()` for all user-facing strings:
 
 ```jsx
-import { useLocale } from '@/hooks/useLocale'
+import { useLocale } from '@ui/hooks/useLocale'
 
 const MyComponent = () => {
   const { t } = useLocale()
@@ -55,15 +46,16 @@ How it works:
 ## File Structure
 
 ```txt
-apps/web/public/
-└── locales/
-    ├── en.json    # English translations
-    └── uk.json    # Ukrainian translations
+packages/i18n/src/resources/   # SOURCE OF TRUTH — edit only here
+├── en.json                    # English translations
+└── uk.json                    # Ukrainian translations
 ```
 
-Locale files are in `apps/web/public/` because i18next's `HttpBackend` fetches
-them at startup (see `apps/web/src/i18n.js`). This keeps translations out of the
-JS bundle and allows loading only the needed language.
+**Only edit `packages/i18n/src/resources/`.** The locale files in
+`apps/web/public/locales/` and `apps/admin/public/locales/` are generated copies
+— `bun run sync` in `packages/i18n` distributes them (`sync:watch` for dev).
+i18next's `HttpBackend` fetches the copies at startup, keeping translations out
+of the JS bundle.
 
 ### Translation File Organization
 
@@ -122,7 +114,7 @@ to ensure graceful fallback.
 Run the checker script to detect untranslated text:
 
 ```bash
-python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src
+python .claude/skills/i18n/scripts/i18n_checker.py packages/ui/src
 ```
 
 ### Date/Number Formatting
@@ -158,9 +150,9 @@ Detects hardcoded strings and missing translations.
 **Usage**:
 
 ```bash
-# Check apps/web/src (default target)
-python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src
+# Components and pages live in packages/ui
+python .claude/skills/i18n/scripts/i18n_checker.py packages/ui/src
 
 # Check specific path
-python .claude/skills/i18n/scripts/i18n_checker.py apps/web/src/components
+python .claude/skills/i18n/scripts/i18n_checker.py packages/ui/src/components
 ```

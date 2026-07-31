@@ -48,8 +48,6 @@
   patterns
 - [e2e-testing](.claude/skills/e2e-testing/SKILL.md) — Playwright E2E test
   writing and infrastructure
-- [review](.claude/skills/review/SKILL.md) — Code review against all web
-  conventions
 
 ### apps/api
 

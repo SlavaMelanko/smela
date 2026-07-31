@@ -8,131 +8,47 @@ description:
   implementations.
 ---
 
-# Service Architecture Patterns Skill (apps/api)
+# Service Integration Pattern (apps/api)
 
-## Overview
+Every external service integration follows the same 7-step modular pattern:
+isolated module, generic interface, factory instantiation, encapsulated
+internals.
 
-The **Modular Service Design Pattern** provides a structured approach for
-integrating external services with:
+## The 7 Steps
 
-- Feature isolation in dedicated directories
-- Generic interfaces supporting multiple providers
-- Factory-based instantiation
-- Encapsulation of implementation details
+1. **Feature isolation** — module under `apps/api/src/services/[service-name]/`:
 
-**Use this pattern for:** Payment processors, CAPTCHA services, Email providers,
-SMS services, File storage, Analytics services, and any external API
-integration.
+   ```text
+   apps/api/src/services/[service-name]/
+   ├── index.ts              # Public API exports only
+   ├── [service].ts          # Generic interface
+   ├── factory.ts            # Factory method
+   ├── config.ts             # General configuration interface
+   └── [provider]/           # Provider-specific implementation
+   ```
 
-**Key Benefits:**
+2. **Interface abstraction** — generic interface supporting multiple
+   implementations (`interface Captcha { validate(token): Promise<void> }`).
+3. **Helper interfaces** — supporting types for configs and data structures.
+4. **Concrete implementation** — provider class implements the generic interface
+   (`class Recaptcha implements Captcha`).
+5. **Factory** — `createCaptchaVerifier(): Captcha` hides which provider is
+   chosen.
+6. **Encapsulation** — `index.ts` exports the interface type and factory only;
+   implementation details stay internal.
+7. **Usage** — consumers call the factory and depend on the interface, never on
+   a provider class.
 
-- **Extensibility**: Easy to add new providers without changing consumers
-- **Testability**: Mock interfaces instead of concrete implementations
-- **Maintainability**: Clear separation of concerns and responsibilities
-- **Performance**: Reusable service instances via closure/singleton patterns
-- **Type Safety**: Full TypeScript support with proper abstractions
+## Reference Implementations (read the real code)
 
-## Quick Reference: 7-Step Pattern
-
-### 1. Feature Isolation
-
-Create isolated service modules under `apps/api/src/services/[service-name]/`:
-
-```text
-apps/api/src/services/[service-name]/
-├── index.ts              # Public API exports only
-├── [service].ts          # Generic interface
-├── factory.ts            # Factory method
-├── config.ts             # General configuration interface
-└── [provider]/           # Provider-specific implementation
-```
-
-### 2. Interface Abstraction
-
-Define generic interfaces supporting multiple implementations:
-
-```typescript
-export interface Captcha {
-  validate: (token: string) => Promise<void>
-}
-```
-
-### 3. Helper Interfaces
-
-Create supporting types for data structures and configurations:
-
-```typescript
-export interface Config {
-  baseUrl: string
-  secret: string
-  options: RequestOptions
-}
-```
-
-### 4. Concrete Implementation
-
-Implement the generic interface with provider-specific logic:
-
-```typescript
-export class Recaptcha implements Captcha {
-  constructor(private config: Config) {}
-  async validate(token: string): Promise<void> {
-    /* ... */
-  }
-}
-```
-
-### 5. Factory Pattern
-
-Provide factory method for service creation:
-
-```typescript
-export const createCaptchaVerifier = (): Captcha => {
-  return new Recaptcha(recaptchaConfig)
-}
-```
-
-### 6. Encapsulation Strategy
-
-Export only public API via index.ts:
-
-```typescript
-export type { Captcha } from './captcha'
-export { createCaptchaVerifier } from './factory'
-// Implementation details NOT exported
-```
-
-### 7. Usage Pattern
-
-Consume services via factory methods and generic interfaces:
-
-```typescript
-const captchaVerifier = createCaptchaVerifier() // singleton instance
-await captchaVerifier.validate(token)
-```
-
-## When to Use This Pattern
-
-Use this pattern when:
-
-- Integrating external third-party services or APIs
-- Multiple provider implementations are needed (or planned)
-- Testing requires mocking external dependencies
-- Service logic should be isolated from business logic
-- Provider may change in the future
-
-## Real Examples from Codebase
-
-- **Simple (single provider)**: `apps/api/src/services/captcha/` - Google
+- **Simple (single provider)**: `apps/api/src/services/captcha/` — Google
   reCAPTCHA
-- **Advanced (multiple providers)**: `apps/api/src/services/email/` - Ethereal +
-  Resend with registry pattern
+- **Advanced (multiple providers)**: `apps/api/src/services/email/` — Ethereal +
+  Resend with registry pattern and singleton instances
 
-## Deep Dive References
+## When to Use
 
-- **[Implementation Guide](references/implementation-guide.md)** - Complete
-  7-step walkthrough with testing strategies
-- **[Captcha Example](references/captcha-example.md)** - Simple single-provider
-  reference implementation
-- **[Email Example](references/email-example.md)** - Advanced multi-provider
-  with registry and singleton patterns
+- Integrating any external third-party service or API
+- Multiple provider implementations needed (or plausible later)
+- Service logic must be mockable in tests — mock the interface, never the
+  provider (see `api-testing` skill)

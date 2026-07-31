@@ -172,37 +172,12 @@ When adding a new page or layout, register its export in
 }
 ```
 
-## Tailwind Best Practices
+## Project Styling Conventions
 
-### Class Organization
-
-Order classes consistently: layout → sizing → spacing → typography → colors →
-effects
-
-```jsx
-// Good: logical grouping
-<div className='flex items-center gap-4 p-4 text-sm text-muted-foreground bg-card rounded-lg shadow-sm' />
-```
-
-### Avoid Inline Style Bloat
-
-Extract repeated **behavioral** patterns into wrapper components:
-
-```jsx
-// Avoid: repeating complex compositions
-;<Button variant='ghost' className='w-full justify-start gap-2'>
-  <Icon /> Menu Item
-</Button>
-
-// Prefer: wrapper for repeated composition + behavior
-// packages/ui/src/components/MenuItem.jsx
-export const MenuItem = ({ icon: Icon, children, ...props }) => (
-  <Button variant='ghost' className='w-full justify-start gap-2' {...props}>
-    {Icon && <Icon className='h-4 w-4' />}
-    {children}
-  </Button>
-)
-```
+- **Class order**: layout → sizing → spacing → typography → colors → effects
+- **Spacing scale**: tight 2, default 4, loose 6, section 8–12 (16px base)
+- **Repeated compositions**: extract into a wrapper component in
+  `packages/ui/src/components/` (see hierarchy rules above)
 
 ### Adding Variants to ui/ Components
 
@@ -239,82 +214,3 @@ Define project tokens in `apps/web/src/index.css` (or
 ```
 
 Reference via Tailwind: `bg-brand`, `text-brand-foreground`
-
-## Component Composition Pattern
-
-```jsx
-// packages/ui/src/components/ui/card.jsx - shadcn primitive
-// packages/ui/src/components/ui/button.jsx - shadcn primitive
-
-// packages/ui/src/components/FeatureCard.jsx - custom composition
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  Button
-} from '@ui/components/ui'
-
-export const FeatureCard = ({ title, description, onAction }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-    </CardHeader>
-    <CardContent className='space-y-4'>
-      <p className='text-muted-foreground'>{description}</p>
-      {onAction && <Button onClick={onAction}>Learn More</Button>}
-    </CardContent>
-  </Card>
-)
-
-// packages/ui/src/pages/public/FeaturesPage.jsx - page composition
-import { FeatureCard } from '@ui/components/FeatureCard'
-
-export const FeaturesPage = () => (
-  <main className='container py-12'>
-    <h1 className='text-3xl font-bold mb-8'>Features</h1>
-    <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-      <FeatureCard title='Fast' description='...' />
-      <FeatureCard title='Secure' description='...' onAction={() => {}} />
-    </div>
-  </main>
-)
-```
-
-## Common Patterns
-
-### Responsive Design
-
-Mobile-first with breakpoint prefixes:
-
-```jsx
-<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' />
-```
-
-### Dark Mode
-
-Use shadcn's built-in dark mode support via `dark:` prefix:
-
-```jsx
-<div className="bg-background text-foreground" /> // Automatic
-<div className="bg-white dark:bg-slate-900" />    // Manual override
-```
-
-### Spacing Consistency
-
-Use consistent spacing scale: `gap-4`, `space-y-4`, `p-4`, `m-4` (16px base)
-
-- Tight: 2 (8px)
-- Default: 4 (16px)
-- Loose: 6 (24px)
-- Section: 8-12 (32-48px)
-
-### Animation
-
-Use Tailwind's transition utilities:
-
-```jsx
-<Button className='transition-colors hover:bg-primary/90' />
-```
-
-For complex animations, use `tailwindcss-animate` (included with shadcn).

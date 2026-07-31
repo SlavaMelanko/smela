@@ -49,13 +49,6 @@ const response = await post(app, '/api/v1/auth/signup', {
 - **Integration tests**: Use real database, mock external APIs only
 - **Endpoint tests**: Use `createTestApp()` with mocked services
 
-## Test Priorities
-
-1. Correct scenario(s)
-2. Error handling
-3. Boundary inputs
-4. Failure scenarios
-
 ## Environment Setup
 
 - Use `apps/api/.env.test` for test-specific variables
@@ -72,31 +65,8 @@ const response = await post(app, '/api/v1/auth/signup', {
 
 ## Type Safety
 
-- Minimize `any` — prefer proper TypeScript types
-- Use type inference when possible
-- Use `Partial<T>` for mock objects
-- Exception: Use `any` only for complex mocks where full typing adds unnecessary
-  complexity
-
-## Test Structure
-
-Use arrange → act → assert pattern with descriptive test names:
-
-```typescript
-describe('UserService', () => {
-  it('should return user when found by email', async () => {
-    // Arrange
-    const mockUser = { id: 1, email: 'test@example.com' }
-    mockUserRepo.findByEmail.mockResolvedValue(mockUser)
-
-    // Act
-    const result = await userService.findByEmail('test@example.com')
-
-    // Assert
-    expect(result).toEqual(mockUser)
-  })
-})
-```
+- Prefer proper types and `Partial<T>` for mocks; allow `any` only where full
+  typing adds unnecessary complexity
 
 ## Mocking Patterns
 
@@ -111,6 +81,8 @@ Always clean up side effects after each test:
 ```typescript
 afterEach(async () => {
   await moduleMocker.clear() // restore mocked modules
-  vi.clearAllMocks() // or mock.mockClear() for individual mocks
 })
 ```
+
+Use `.mockClear()` on individual bun:test mocks when call history must reset
+between tests.
