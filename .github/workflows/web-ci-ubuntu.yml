@@ -27,7 +27,7 @@ jobs:
   ci:
     name: Format, Lint & Tests
     runs-on: ubuntu-latest
-    container: oven/bun:1.3.11
+    container: oven/bun:1.3.14
     environment: web-test
     env:
       VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
