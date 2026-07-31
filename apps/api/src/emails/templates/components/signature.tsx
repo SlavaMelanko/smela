@@ -31,6 +31,6 @@ Signature.PreviewProps = {
     thanks: 'Best regards,',
     who: 'The Team'
   }
-} as Props
+}
 
 export default Signature

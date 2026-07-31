@@ -71,7 +71,7 @@ export default antfu(
         'error',
         {
           case: 'kebabCase',
-          ignore: ['README.md', 'CLAUDE.md', 'WARP.md']
+          ignore: ['README.md', 'CLAUDE.md', 'WARP.md', '__tests__']
         }
       ]
     }

@@ -66,7 +66,7 @@ describe('Reset Password', () => {
       status: UserStatus.Active,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as User
+    }
 
     mockAccessToken = 'mock-access-token'
     mockRefreshToken = 'mock-refresh-token'

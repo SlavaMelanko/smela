@@ -26,10 +26,10 @@
     "./actions": "./src/actions/index.js"
   },
   "peerDependencies": {
-    "@playwright/test": "^1.59.1"
+    "@playwright/test": "^1.62.1"
   },
   "dependencies": {
-    "mailisk": "^2.2.2"
+    "mailisk": "^2.5.1"
   },
   "devDependencies": {
     "@smela/eslint": "workspace:*"
