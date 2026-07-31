@@ -98,18 +98,10 @@ middleware) and throws `Forbidden` if the permission string is absent.
 }
 ```
 
-### Permission enum values — `apps/api/src/types/permission.ts`
+### Permission enum — `apps/api/src/types/permission.ts`
 
-| Permission        | Value              |
-| ----------------- | ------------------ |
-| `ViewDashboard`   | `view:dashboard`   |
-| `ViewUsers`       | `view:users`       |
-| `ViewTeams`       | `view:teams`       |
-| `ViewAdmins`      | `view:admins`      |
-| `ManageDashboard` | `manage:dashboard` |
-| `ManageUsers`     | `manage:users`     |
-| `ManageTeams`     | `manage:teams`     |
-| `ManageAdmins`    | `manage:admins`    |
+Enum members follow `ViewX`/`ManageX` naming mapping to `view:x`/`manage:x`
+values — see the file for the current list.
 
 **Implicit grant rule**: `manage:X` implies `view:X`. `expandPermissions()`
 inserts synthetic `view` rows when resolving from DB — so never grant `view`
