@@ -1,4 +1,4 @@
-import { adminTeamsRoute, adminUsersRoute } from './admin'
+import { adminSystemRoute, adminTeamsRoute, adminUsersRoute } from './admin'
 import {
   acceptInviteRoute,
   checkInviteRoute,
@@ -33,6 +33,6 @@ export const userRoutesAllowNew = [meRoute]
 
 export const userRoutesVerifiedOnly = [teamsRoute]
 
-export const adminRoutes = [adminTeamsRoute, adminUsersRoute]
+export const adminRoutes = [adminSystemRoute, adminTeamsRoute, adminUsersRoute]
 
 export const ownerRoutes = [ownerAdminsRoute]

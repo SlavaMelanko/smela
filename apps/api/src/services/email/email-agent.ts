@@ -16,12 +16,19 @@ const getFeBaseUrl = (role: Role) =>
 
 export class EmailAgent {
   private readonly dispatcher: EmailDispatcher
+  private readonly senderProfileProvider: EmailSenderProfileProvider
 
   constructor(emailSenderProfileProvider: EmailSenderProfileProvider) {
+    this.senderProfileProvider = emailSenderProfileProvider
     this.dispatcher = new EmailDispatcher(
       createEmailProvider(),
       buildEmailRegistry(emailSenderProfileProvider)
     )
+  }
+
+  // Sender profiles are cached in memory, so writes must drop the stale entry
+  invalidateSenderProfiles() {
+    this.senderProfileProvider.invalidate()
   }
 
   async sendEmailVerificationEmail(

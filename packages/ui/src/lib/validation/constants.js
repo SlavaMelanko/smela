@@ -3,7 +3,8 @@ export const NameConstraint = {
   MAX_LENGTH: 50
 }
 
-export const TeamNameConstraint = {
+// Shared bounds for user-facing entity labels (team name, sender profile name)
+export const DisplayNameConstraint = {
   MIN_LENGTH: 2,
   MAX_LENGTH: 100
 }

@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Cog,
   Home,
   LayoutDashboard,
   MapPinCheckInside,
@@ -39,7 +40,8 @@ export const getUserMenuItems = () => [
 
 export const getAdminMenuItems = ({
   canViewTeams = false,
-  canViewAdmins = false
+  canViewAdmins = false,
+  canViewSystem = false
 } = {}) => [
   {
     title: 'sidebar.dashboard',
@@ -56,6 +58,9 @@ export const getAdminMenuItems = ({
     : []),
   ...(canViewAdmins
     ? [{ title: 'sidebar.admins', url: '/admins', icon: ShieldCheck }]
+    : []),
+  ...(canViewSystem
+    ? [{ title: 'sidebar.system', url: '/system', icon: Cog }]
     : []),
   {
     title: 'sidebar.settings',

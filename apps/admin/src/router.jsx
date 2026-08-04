@@ -2,7 +2,9 @@ import { AuthLayout, ErrorLayout, UserLayout } from '@smela/ui/layouts'
 import { adminActiveStatuses, Role } from '@smela/ui/lib/types'
 import {
   DashboardPage,
+  EmailSenderProfilePage,
   SettingsPage as AdminSettingsPage,
+  SystemPage,
   TeamPage,
   TeamsPage,
   UserPage,
@@ -102,6 +104,20 @@ export const router = createBrowserRouter([
         children: [
           { path: 'teams', element: <TeamsPage /> },
           { path: 'teams/:id', element: <TeamPage /> }
+        ]
+      },
+      {
+        element: (
+          <PrivateRoute requirePermissions={['view:system']}>
+            <Outlet />
+          </PrivateRoute>
+        ),
+        children: [
+          { path: 'system', element: <SystemPage /> },
+          {
+            path: 'system/email-sender-profiles/:profile',
+            element: <EmailSenderProfilePage />
+          }
         ]
       },
       { path: 'profile', element: <ProfilePage /> },

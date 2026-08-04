@@ -3,10 +3,10 @@ import { z } from 'zod'
 import { allUserStatuses } from '../types/index.js'
 import {
   DescriptionConstraint,
+  DisplayNameConstraint,
   EmailConstraint,
   NameConstraint,
-  PasswordConstraint,
-  TeamNameConstraint
+  PasswordConstraint
 } from './constants'
 
 const requiredStr = errorMessage => z.string().trim().nonempty(errorMessage)
@@ -60,10 +60,11 @@ export const url = errorMessage =>
     errorMessage
   )
 
-export const teamName = errors =>
+// Required label with shared length bounds, error keys supplied per entity
+export const displayName = errors =>
   requiredStr(errors.required)
-    .min(TeamNameConstraint.MIN_LENGTH, errors.min)
-    .max(TeamNameConstraint.MAX_LENGTH, errors.max)
+    .min(DisplayNameConstraint.MIN_LENGTH, errors.min)
+    .max(DisplayNameConstraint.MAX_LENGTH, errors.max)
 
 export const description = errorMessage =>
   optionalStr().refine(

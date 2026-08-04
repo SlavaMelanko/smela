@@ -12,7 +12,8 @@ export const useSidebarMenu = () => {
   } else if (isAdmin(me?.role)) {
     items = getAdminMenuItems({
       canViewTeams: can('view:teams'),
-      canViewAdmins: can('view:admins')
+      canViewAdmins: can('view:admins'),
+      canViewSystem: can('view:system')
     })
   }
 

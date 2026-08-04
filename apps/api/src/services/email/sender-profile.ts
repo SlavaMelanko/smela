@@ -12,6 +12,7 @@ type EmailSenders = Map<EmailSenderProfile, EmailSender>
 
 export interface EmailSenderProfileProvider {
   getSender: (profile: EmailSenderProfile) => Promise<EmailSender>
+  invalidate: () => void
 }
 
 class InMemorySource {
@@ -27,6 +28,11 @@ class InMemorySource {
     }
 
     return this.senders
+  }
+
+  invalidate() {
+    this.senders = undefined
+    this.expiresAt = 0
   }
 
   private async load(): Promise<EmailSenders> {
@@ -52,5 +58,9 @@ export class DatabaseEmailSenderProfileProvider implements EmailSenderProfilePro
     }
 
     return sender
+  }
+
+  invalidate() {
+    this.source.invalidate()
   }
 }

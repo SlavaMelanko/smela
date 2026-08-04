@@ -1,3 +1,4 @@
+export { EmailSenderProfileForm } from './EmailSenderProfileForm'
 export {
   FormActions,
   FormFields,

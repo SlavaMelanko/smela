@@ -75,6 +75,34 @@
       "success": "Вітаю! Ваш обліковий запис готовий."
     }
   },
+  "emailSenderProfile": {
+    "description": {
+      "error": {
+        "max": "$t(team.description.error.max)"
+      },
+      "label": "Опис"
+    },
+    "email": {
+      "label": "$t(email.label)"
+    },
+    "empty": "Профілів відправника email ще немає.",
+    "name": {
+      "error": {
+        "max": "Назва не може перевищувати 100 символів.",
+        "min": "Назва має містити щонайменше 2 символи.",
+        "required": "Назва обовʼязкова."
+      },
+      "label": "Назва"
+    },
+    "profile": {
+      "label": "Профіль",
+      "values": {
+        "security": "Безпека",
+        "support": "Підтримка",
+        "system": "Система"
+      }
+    }
+  },
   "error": {
     "forbidden": {
       "cta": "На головну",
@@ -343,6 +371,7 @@
     "residential": "Резидентні",
     "serpApi": "SERP API",
     "settings": "Налаштування",
+    "system": "Система",
     "teams": "Команди",
     "users": "Користувачі"
   },
@@ -365,9 +394,22 @@
     }
   },
   "support": "Підтримка",
+  "system": {
+    "description": "Налаштуйте системні параметри.",
+    "emailSenderProfiles": "Профілі відправника email",
+    "title": "Система"
+  },
   "table": {
     "column": "Колонка",
     "column_plural": "Колонки",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "Опис",
+      "email": "$t(email.label)",
+      "name": "Назва",
+      "profile": "Профіль",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Фільтр",
     "filter_plural": "Фільтри",
     "members": {

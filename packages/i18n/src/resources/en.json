@@ -75,6 +75,34 @@
       "success": "Welcome! Your account is ready."
     }
   },
+  "emailSenderProfile": {
+    "description": {
+      "error": {
+        "max": "$t(team.description.error.max)"
+      },
+      "label": "Description"
+    },
+    "email": {
+      "label": "$t(email.label)"
+    },
+    "empty": "No email sender profiles yet.",
+    "name": {
+      "error": {
+        "max": "Name can't exceed 100 characters.",
+        "min": "Name must be at least 2 characters.",
+        "required": "Name is required."
+      },
+      "label": "Name"
+    },
+    "profile": {
+      "label": "Profile",
+      "values": {
+        "security": "Security",
+        "support": "Support",
+        "system": "System"
+      }
+    }
+  },
   "error": {
     "forbidden": {
       "cta": "Go home",
@@ -337,6 +365,7 @@
     "residential": "Residential",
     "serpApi": "SERP API",
     "settings": "Settings",
+    "system": "System",
     "teams": "Teams",
     "users": "Users"
   },
@@ -359,9 +388,22 @@
     }
   },
   "support": "Support",
+  "system": {
+    "description": "Configure system-level settings.",
+    "emailSenderProfiles": "Email Sender Profiles",
+    "title": "System"
+  },
   "table": {
     "column": "Column",
     "column_plural": "Columns",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "Description",
+      "email": "$t(email.label)",
+      "name": "Name",
+      "profile": "Profile",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Filter",
     "filter_plural": "Filters",
     "members": {

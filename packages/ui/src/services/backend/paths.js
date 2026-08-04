@@ -20,6 +20,9 @@ export const UPDATE_PASSWORD_PATH = '/api/v1/user/me/password'
 export const ADMIN_USERS_PATH = '/api/v1/admin/users'
 export const ADMIN_USER_PATH = `${ADMIN_USERS_PATH}/:userId`
 export const ADMIN_TEAMS_PATH = '/api/v1/admin/teams'
+export const ADMIN_EMAIL_SENDER_PROFILES_PATH =
+  '/api/v1/admin/system/email-sender-profiles'
+export const ADMIN_EMAIL_SENDER_PROFILE_PATH = `${ADMIN_EMAIL_SENDER_PROFILES_PATH}/:profile`
 
 // Verified user/admin team operations
 export const TEAMS_PATH = '/api/v1/user/verified/teams/:teamId'
