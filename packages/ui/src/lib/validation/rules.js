@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { allUserStatuses } from '../types/index.js'
 import {
   DescriptionConstraint,
-  DisplayNameConstraint,
   EmailConstraint,
   NameConstraint,
   PasswordConstraint
@@ -63,8 +62,8 @@ export const url = errorMessage =>
 // Required label with shared length bounds, error keys supplied per entity
 export const displayName = errors =>
   requiredStr(errors.required)
-    .min(DisplayNameConstraint.MIN_LENGTH, errors.min)
-    .max(DisplayNameConstraint.MAX_LENGTH, errors.max)
+    .min(NameConstraint.MIN_LENGTH, errors.min)
+    .max(NameConstraint.MAX_LENGTH, errors.max)
 
 export const description = errorMessage =>
   optionalStr().refine(

@@ -14,9 +14,10 @@ const email = z
     message: 'Invalid email'
   })
 
-const displayName = z.string().trim().min(1).max(255)
+// Keep in sync with packages/ui/src/lib/validation/constants.js
+const displayName = z.string().trim().min(2).max(50)
 
-const description = z.string().trim().max(2000)
+const description = z.string().trim().max(500)
 
 export const rules = {
   user: {

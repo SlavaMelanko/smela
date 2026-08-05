@@ -1,6 +1,6 @@
 import type { emailSenderProfilesTable } from '../../schema'
 
-// Database types
+// Database type
 export type EmailSenderProfileRecord =
   typeof emailSenderProfilesTable.$inferSelect
 

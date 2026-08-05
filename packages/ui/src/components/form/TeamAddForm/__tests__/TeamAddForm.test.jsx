@@ -55,10 +55,10 @@ describe('TeamAddForm', () => {
     })
   })
 
-  it('shows max length error when name exceeds 100 characters', async () => {
+  it('shows max length error when name exceeds 50 characters', async () => {
     const { nameInput, submitButton } = renderForm()
 
-    await user.type(nameInput, 'A'.repeat(101))
+    await user.type(nameInput, 'A'.repeat(51))
     await user.click(submitButton)
 
     await waitFor(() => {
