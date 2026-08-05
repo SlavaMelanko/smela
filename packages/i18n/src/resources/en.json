@@ -352,7 +352,7 @@
   },
   "security": "Security",
   "settings": {
-    "description": "Your app-wide preferences",
+    "description": "Your app-wide preferences.",
     "title": "Settings"
   },
   "sidebar": {

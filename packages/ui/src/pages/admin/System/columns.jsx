@@ -23,7 +23,8 @@ export const getColumns = (t, formatDate) => {
     {
       accessorKey: 'createdAt',
       header: label('createdAt'),
-      cell: info => formatDate(info.getValue())
+      cell: info => formatDate(info.getValue()),
+      hidden: true
     },
     {
       accessorKey: 'updatedAt',
