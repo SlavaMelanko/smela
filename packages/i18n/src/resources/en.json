@@ -49,6 +49,12 @@
   },
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
+  "description": {
+    "error": {
+      "max": "Description can't exceed 500 characters."
+    },
+    "label": "Description"
+  },
   "doNotHaveAccount": "Don't have an account?",
   "email": {
     "confirmation": {
@@ -76,24 +82,7 @@
     }
   },
   "emailSenderProfile": {
-    "description": {
-      "error": {
-        "max": "$t(team.description.error.max)"
-      },
-      "label": "Description"
-    },
-    "email": {
-      "label": "$t(email.label)"
-    },
     "empty": "No email sender profiles yet.",
-    "name": {
-      "error": {
-        "max": "Name can't exceed 100 characters.",
-        "min": "Name must be at least 2 characters.",
-        "required": "Name is required."
-      },
-      "label": "Name"
-    },
     "profile": {
       "label": "Profile",
       "values": {
@@ -219,6 +208,14 @@
     "verb": "Log out"
   },
   "membership": "Membership",
+  "name": {
+    "error": {
+      "max": "Name can't exceed 50 characters.",
+      "min": "Name must be at least 2 characters.",
+      "required": "Name is required."
+    },
+    "label": "Name"
+  },
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",
   "orContinueWith": "or continue with",
@@ -390,7 +387,9 @@
   "support": "Support",
   "system": {
     "description": "Configure system-level settings.",
-    "emailSenderProfiles": "Email Sender Profiles",
+    "tabs": {
+      "emailSenderProfiles": "Email Sender Profiles"
+    },
     "title": "System"
   },
   "table": {
@@ -443,12 +442,6 @@
       "success": "Team created.",
       "title": "Add team"
     },
-    "description": {
-      "error": {
-        "max": "Description can't exceed 500 characters."
-      },
-      "label": "Description"
-    },
     "members": {
       "empty": "No team members yet.",
       "remove": {
@@ -459,12 +452,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Team name can't exceed 100 characters.",
-        "min": "Team name must be at least 2 characters.",
-        "required": "Team name is required."
-      },
-      "label": "Name",
       "label2": "Team"
     },
     "tabs": {

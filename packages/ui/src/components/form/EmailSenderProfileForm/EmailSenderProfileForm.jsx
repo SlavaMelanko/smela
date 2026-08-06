@@ -52,7 +52,7 @@ export const EmailSenderProfileForm = ({
 
         <FormRow>
           <FormField
-            label={t('emailSenderProfile.name.label')}
+            label={t('name.label')}
             name={FieldName.NAME}
             error={errors[FieldName.NAME]}
           >
@@ -60,7 +60,7 @@ export const EmailSenderProfileForm = ({
           </FormField>
 
           <FormField
-            label={t('emailSenderProfile.email.label')}
+            label={t('email.label')}
             name={FieldName.EMAIL}
             error={errors[FieldName.EMAIL]}
           >
@@ -69,7 +69,7 @@ export const EmailSenderProfileForm = ({
         </FormRow>
 
         <FormField
-          label={t('emailSenderProfile.description.label')}
+          label={t('description.label')}
           name={FieldName.DESCRIPTION}
           error={errors[FieldName.DESCRIPTION]}
           optional

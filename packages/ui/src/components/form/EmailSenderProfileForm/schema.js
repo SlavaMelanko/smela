@@ -19,13 +19,7 @@ export const getValues = ({ name, email, description }) => ({
 })
 
 export const resolver = createResolver({
-  [FieldName.NAME]: rules.displayName({
-    required: 'emailSenderProfile.name.error.required',
-    min: 'emailSenderProfile.name.error.min',
-    max: 'emailSenderProfile.name.error.max'
-  }),
+  [FieldName.NAME]: rules.displayName,
   [FieldName.EMAIL]: rules.email.new,
-  [FieldName.DESCRIPTION]: rules.description(
-    'emailSenderProfile.description.error.max'
-  )
+  [FieldName.DESCRIPTION]: rules.description
 })

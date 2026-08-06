@@ -22,7 +22,7 @@ export const SystemPage = () => {
     {
       value: SystemTab.EMAIL_SENDER_PROFILES,
       icon: Mail,
-      label: () => t('system.emailSenderProfiles')
+      label: () => t('system.tabs.emailSenderProfiles')
     }
   ]
 

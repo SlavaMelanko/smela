@@ -49,6 +49,12 @@
   },
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Створено",
+  "description": {
+    "error": {
+      "max": "Опис не може перевищувати 500 символів."
+    },
+    "label": "Опис"
+  },
   "doNotHaveAccount": "Новенький тут?",
   "email": {
     "confirmation": {
@@ -76,24 +82,7 @@
     }
   },
   "emailSenderProfile": {
-    "description": {
-      "error": {
-        "max": "$t(team.description.error.max)"
-      },
-      "label": "Опис"
-    },
-    "email": {
-      "label": "$t(email.label)"
-    },
     "empty": "Профілів відправника email ще немає.",
-    "name": {
-      "error": {
-        "max": "Назва не може перевищувати 100 символів.",
-        "min": "Назва має містити щонайменше 2 символи.",
-        "required": "Назва обовʼязкова."
-      },
-      "label": "Назва"
-    },
     "profile": {
       "label": "Профіль",
       "values": {
@@ -225,6 +214,14 @@
     "verb": "Вийти"
   },
   "membership": "Членство",
+  "name": {
+    "error": {
+      "max": "Назва не може перевищувати 50 символів.",
+      "min": "Назва має містити щонайменше 2 символи.",
+      "required": "Назва обовʼязкова."
+    },
+    "label": "Назва"
+  },
   "noNewNotifications": "Нових сповіщень немає.",
   "notifications": "Сповіщення",
   "orContinueWith": "або продовжити через",
@@ -396,7 +393,9 @@
   "support": "Підтримка",
   "system": {
     "description": "Налаштуйте системні параметри.",
-    "emailSenderProfiles": "Профілі відправника email",
+    "tabs": {
+      "emailSenderProfiles": "Профілі відправника email"
+    },
     "title": "Система"
   },
   "table": {
@@ -449,12 +448,6 @@
       "success": "Команду створено.",
       "title": "Додати команду"
     },
-    "description": {
-      "error": {
-        "max": "Опис не може перевищувати 500 символів."
-      },
-      "label": "Опис"
-    },
     "members": {
       "empty": "Учасників команди поки немає.",
       "remove": {
@@ -465,12 +458,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Назва команди не може перевищувати 100 символів.",
-        "min": "Назва команди має містити щонайменше 2 символи.",
-        "required": "Назва команди обовʼязкова."
-      },
-      "label": "Назва",
       "label2": "Команда"
     },
     "tabs": {
