@@ -1,11 +1,11 @@
-import { useTable } from '@tanstack/react-table'
 import { InviteButton } from '@ui/components/buttons'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
   ColumnVisibilityDropdown,
   staticTableFeatures,
-  Table
+  Table,
+  useTableConfig
 } from '@ui/components/table'
 import {
   createInviteItem,
@@ -13,7 +13,6 @@ import {
   createRemoveMemberItem
 } from '@ui/components/table/contextMenuItems'
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 import { useTeamMembers } from '@ui/hooks/useTeam'
@@ -75,17 +74,11 @@ export const TeamMembersSection = ({
   ]
 
   const columns = getColumns(t, formatDate, me?.id)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'team-members',
-    columns
-  )
 
-  const config = useTable({
+  const config = useTableConfig('team-members', {
     features: staticTableFeatures,
     data: members ?? [],
-    columns,
-    state: { columnVisibility },
-    onColumnVisibilityChange: setColumnVisibility
+    columns
   })
 
   if (isError) {

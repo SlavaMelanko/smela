@@ -1,12 +1,14 @@
-import { useTable } from '@tanstack/react-table'
 import { PageContent } from '@ui/components/PageContent'
 import { Pagination } from '@ui/components/Pagination'
 import { Spinner } from '@ui/components/Spinner'
 import { ErrorState } from '@ui/components/states'
-import { sortableTableFeatures, Table } from '@ui/components/table'
+import {
+  sortableTableFeatures,
+  Table,
+  useTableConfig
+} from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useUsers } from '@ui/hooks/useAdmin'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useTableState } from '@ui/hooks/useTableState'
@@ -26,10 +28,6 @@ export const UsersPage = () => {
     useUsers(apiParams)
 
   const columns = getColumns(t, formatDate)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'users',
-    columns
-  )
   const [sorting, setSorting] = useState([])
   const [showFilters, setShowFilters] = useState(false)
 
@@ -40,17 +38,11 @@ export const UsersPage = () => {
 
   const contextMenu = [createOpenItem(t, openUserProfile)]
 
-  const config = useTable({
+  const config = useTableConfig('users', {
     features: sortableTableFeatures,
     data: users,
     columns,
-    state: {
-      sorting,
-      columnVisibility
-    },
-    columnResizeMode: 'onChange',
-    columnResizeDirection: 'ltr',
-    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting },
     onSortingChange: setSorting
   })
 

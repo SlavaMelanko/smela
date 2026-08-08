@@ -1,13 +1,12 @@
-import { useTable } from '@tanstack/react-table'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
   ColumnVisibilityDropdown,
   staticTableFeatures,
-  Table
+  Table,
+  useTableConfig
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useEmailSenderProfiles } from '@ui/hooks/useSystem'
@@ -30,10 +29,6 @@ export const EmailSenderProfilesTab = () => {
     useEmailSenderProfiles()
 
   const columns = getColumns(t, formatDate)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'email-sender-profiles',
-    columns
-  )
 
   const viewEmailSenderProfile = senderProfile =>
     navigate(`/system/email-sender-profiles/${senderProfile.profile}`, {
@@ -42,12 +37,10 @@ export const EmailSenderProfilesTab = () => {
 
   const contextMenu = [createOpenItem(t, viewEmailSenderProfile, Mail)]
 
-  const config = useTable({
+  const config = useTableConfig('email-sender-profiles', {
     features: staticTableFeatures,
     data: senderProfiles,
-    columns,
-    state: { columnVisibility },
-    onColumnVisibilityChange: setColumnVisibility
+    columns
   })
 
   if (isError) {

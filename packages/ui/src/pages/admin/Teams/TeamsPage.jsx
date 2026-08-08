@@ -1,4 +1,3 @@
-import { useTable } from '@tanstack/react-table'
 import { AddButton } from '@ui/components/buttons'
 import { SearchInput } from '@ui/components/inputs'
 import { PageContent } from '@ui/components/PageContent'
@@ -8,11 +7,11 @@ import { ErrorState } from '@ui/components/states'
 import {
   ColumnVisibilityDropdown,
   sortableTableFeatures,
-  Table
+  Table,
+  useTableConfig
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useTableState } from '@ui/hooks/useTableState'
@@ -40,24 +39,17 @@ export const TeamsPage = () => {
   const canManageTeams = can('manage:teams')
 
   const columns = getColumns(t, formatDate)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'teams',
-    columns
-  )
   const [sorting, setSorting] = useState([])
 
   const viewTeam = team => navigate(`/teams/${team.id}`, { state: { team } })
 
   const contextMenu = [createOpenItem(t, viewTeam, Users)]
 
-  const config = useTable({
+  const config = useTableConfig('teams', {
     features: sortableTableFeatures,
     data: teams,
     columns,
-    state: { sorting, columnVisibility },
-    columnResizeMode: 'onChange',
-    columnResizeDirection: 'ltr',
-    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting },
     onSortingChange: setSorting
   })
 

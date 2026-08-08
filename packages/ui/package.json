@@ -21,8 +21,7 @@
     "./pages/user": "./src/pages/user/index.js",
     "./routes": "./src/routes/index.js",
     "./services": "./src/services/index.js",
-    "./services/backend/paths": "./src/services/backend/paths.js",
-    "./react-compiler": "./react-compiler.js"
+    "./services/backend/paths": "./src/services/backend/paths.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",

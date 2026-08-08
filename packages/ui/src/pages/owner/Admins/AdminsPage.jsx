@@ -1,4 +1,3 @@
-import { useTable } from '@tanstack/react-table'
 import { InviteButton } from '@ui/components/buttons'
 import { SearchInput } from '@ui/components/inputs'
 import { PageContent } from '@ui/components/PageContent'
@@ -8,14 +7,14 @@ import { ErrorState } from '@ui/components/states'
 import {
   ColumnVisibilityDropdown,
   sortableTableFeatures,
-  Table
+  Table,
+  useTableConfig
 } from '@ui/components/table'
 import {
   createInviteItem,
   createOpenItem
 } from '@ui/components/table/contextMenuItems'
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useAdmins } from '@ui/hooks/useOwner'
 import { useNavigate } from '@ui/hooks/useRouter'
@@ -46,10 +45,6 @@ export const AdminsPage = () => {
   } = useInvite()
 
   const columns = getColumns(t, formatDate, me?.id)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'admins',
-    columns
-  )
   const [sorting, setSorting] = useState([])
 
   const canManageAdmins = can('manage:admins')
@@ -66,14 +61,11 @@ export const AdminsPage = () => {
     })
   ]
 
-  const config = useTable({
+  const config = useTableConfig('admins', {
     features: sortableTableFeatures,
     data: admins,
     columns,
-    state: { sorting, columnVisibility },
-    columnResizeMode: 'onChange',
-    columnResizeDirection: 'ltr',
-    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting },
     onSortingChange: setSorting
   })
 
