@@ -40,12 +40,16 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-          claude_args: '--model claude-sonnet-5'
+          claude_args: |
+            --model claude-sonnet-5
+            --allowedTools "mcp__github_comment__update_claude_comment"
 
           use_sticky_comment: true
 
           # Automated review prompt (no @claude mention needed)
           prompt: |
+            Post your review as a PR comment using the mcp__github_comment__update_claude_comment tool — a review left only in your final text output is lost.
+
             Please review this pull request. It may touch one or more of: apps/web, apps/admin (Vite + React JS apps), packages/ui (shared React component library), or packages/i18n (i18n/translation resources — no components, focus on key naming and missing translations).
 
             If a previous review comment exists on this PR, use it as the baseline:

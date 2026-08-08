@@ -36,12 +36,16 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-          claude_args: '--model claude-sonnet-5'
+          claude_args: |
+            --model claude-sonnet-5
+            --allowedTools "mcp__github_comment__update_claude_comment"
 
           use_sticky_comment: true
 
           # Automated review prompt (no @claude mention needed)
           prompt: |
+            Post your review as a PR comment using the mcp__github_comment__update_claude_comment tool — a review left only in your final text output is lost.
+
             Review this pull request (Bun + Hono + TypeScript API). Score each area 1–10. Be concise — one short justification per section, max 3 actionable issues if any.
 
             If a previous review comment exists on this PR, use it as the baseline:
