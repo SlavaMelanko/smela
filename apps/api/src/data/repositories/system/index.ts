@@ -1,7 +1,10 @@
-import { findEmailSenderProfiles } from './queries'
+import { updateEmailSenderProfile } from './mutations'
+import { findEmailSenderProfile, findEmailSenderProfiles } from './queries'
 
 export * from './types'
 
 export const systemRepo = {
-  findEmailSenderProfiles
+  findEmailSenderProfile,
+  findEmailSenderProfiles,
+  updateEmailSenderProfile
 }

@@ -113,7 +113,7 @@ test.describe.serial('Admin: Teams Management', () => {
 
     // Verify updated name in page header and form field
     await expect(page.getByRole('heading', { name: editedName })).toBeVisible()
-    await expect(page.getByLabel(t.team.name.label)).toHaveValue(editedName)
+    await expect(page.getByLabel(t.name.label)).toHaveValue(editedName)
     await expect(page.getByLabel(t.team.website.label)).toHaveValue(
       newTeam.website
     )

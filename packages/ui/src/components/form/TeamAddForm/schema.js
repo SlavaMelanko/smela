@@ -13,11 +13,7 @@ export const getDefaultValues = () => ({
 })
 
 export const resolver = createResolver({
-  [FieldName.NAME]: rules.teamName({
-    required: 'team.name.error.required',
-    min: 'team.name.error.min',
-    max: 'team.name.error.max'
-  }),
+  [FieldName.NAME]: rules.displayName,
   [FieldName.WEBSITE]: rules.url('team.website.error.format'),
-  [FieldName.DESCRIPTION]: rules.description('team.description.error.max')
+  [FieldName.DESCRIPTION]: rules.description
 })

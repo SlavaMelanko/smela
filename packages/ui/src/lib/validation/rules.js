@@ -5,8 +5,7 @@ import {
   DescriptionConstraint,
   EmailConstraint,
   NameConstraint,
-  PasswordConstraint,
-  TeamNameConstraint
+  PasswordConstraint
 } from './constants'
 
 const requiredStr = errorMessage => z.string().trim().nonempty(errorMessage)
@@ -60,17 +59,15 @@ export const url = errorMessage =>
     errorMessage
   )
 
-export const teamName = errors =>
-  requiredStr(errors.required)
-    .min(TeamNameConstraint.MIN_LENGTH, errors.min)
-    .max(TeamNameConstraint.MAX_LENGTH, errors.max)
+export const displayName = requiredStr('name.error.required')
+  .min(NameConstraint.MIN_LENGTH, 'name.error.min')
+  .max(NameConstraint.MAX_LENGTH, 'name.error.max')
 
-export const description = errorMessage =>
-  optionalStr().refine(
-    value =>
-      value === undefined || value.length <= DescriptionConstraint.MAX_LENGTH,
-    errorMessage
-  )
+export const description = optionalStr().refine(
+  value =>
+    value === undefined || value.length <= DescriptionConstraint.MAX_LENGTH,
+  'description.error.max'
+)
 
 export const position = optionalStr()
   .refine(

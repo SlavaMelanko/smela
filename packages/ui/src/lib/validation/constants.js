@@ -1,11 +1,7 @@
+// Shared bounds for user-facing names and entity labels
 export const NameConstraint = {
   MIN_LENGTH: 2,
   MAX_LENGTH: 50
-}
-
-export const TeamNameConstraint = {
-  MIN_LENGTH: 2,
-  MAX_LENGTH: 100
 }
 
 export const DescriptionConstraint = {

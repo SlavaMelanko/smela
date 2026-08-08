@@ -106,4 +106,29 @@ describe('DatabaseEmailSenderProfileProvider', () => {
 
     expect(queries()).toBe(2)
   })
+
+  it('reloads from the database after being invalidated within the TTL', async () => {
+    const queries = await mockCountedRepo()
+    const provider = new DatabaseEmailSenderProfileProvider()
+
+    await provider.getSender(EmailSenderProfile.Support)
+    provider.invalidate()
+    await provider.getSender(EmailSenderProfile.Support)
+
+    expect(queries()).toBe(2)
+  })
+
+  it('serves the updated sender after being invalidated', async () => {
+    let rows = [record(EmailSenderProfile.System, 'old@example.com', 'Old')]
+    await mockRepo(async () => rows)
+    const provider = new DatabaseEmailSenderProfileProvider()
+
+    await provider.getSender(EmailSenderProfile.System)
+    rows = [record(EmailSenderProfile.System, 'new@example.com', 'New')]
+    provider.invalidate()
+
+    const sender = await provider.getSender(EmailSenderProfile.System)
+
+    expect(sender.email).toBe('new@example.com')
+  })
 })

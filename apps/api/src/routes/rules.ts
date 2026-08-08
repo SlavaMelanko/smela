@@ -2,21 +2,28 @@ import { z } from 'zod'
 
 import { PASSWORD_REGEX } from '@/security/password'
 import { TOKEN_LENGTH } from '@/security/token'
-import { Role, UserStatus } from '@/types'
+import { EmailSenderProfile, Role, UserStatus } from '@/types'
 import Resource from '@/types/resource'
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
+
+const email = z
+  .string()
+  .transform(normalizeEmail)
+  .refine(value => z.email().safeParse(value).success, {
+    message: 'Invalid email'
+  })
+
+// Keep in sync with packages/ui/src/lib/validation/constants.js
+const displayName = z.string().trim().min(2).max(50)
+
+const description = z.string().trim().max(500)
 
 export const rules = {
   user: {
     id: z.uuid(),
 
-    email: z
-      .string()
-      .transform(normalizeEmail)
-      .refine(email => z.email().safeParse(email).success, {
-        message: 'Invalid email'
-      }),
+    email,
 
     password: z.string().min(8).regex(PASSWORD_REGEX, {
       message:
@@ -67,11 +74,18 @@ export const rules = {
 
   team: {
     id: z.uuid(),
-    name: z.string().trim().min(1).max(255),
+    name: displayName,
     website: z.url().max(255),
-    description: z.string().trim().max(2000),
+    description,
     position: z.string().trim().max(100),
     search: z.string().trim().max(100)
+  },
+
+  emailSenderProfile: {
+    profile: z.enum(EmailSenderProfile),
+    email,
+    name: displayName,
+    description
   },
 
   userFilter: {

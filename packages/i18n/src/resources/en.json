@@ -49,6 +49,12 @@
   },
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
+  "description": {
+    "error": {
+      "max": "Description can't exceed 500 characters."
+    },
+    "label": "Description"
+  },
   "doNotHaveAccount": "Don't have an account?",
   "email": {
     "confirmation": {
@@ -73,6 +79,17 @@
       },
       "loading": "Verifying email...",
       "success": "Welcome! Your account is ready."
+    }
+  },
+  "emailSenderProfile": {
+    "empty": "No email sender profiles yet.",
+    "profile": {
+      "label": "Profile",
+      "values": {
+        "security": "Security",
+        "support": "Support",
+        "system": "System"
+      }
     }
   },
   "error": {
@@ -191,6 +208,14 @@
     "verb": "Log out"
   },
   "membership": "Membership",
+  "name": {
+    "error": {
+      "max": "Name can't exceed 50 characters.",
+      "min": "Name must be at least 2 characters.",
+      "required": "Name is required."
+    },
+    "label": "Name"
+  },
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",
   "orContinueWith": "or continue with",
@@ -324,7 +349,7 @@
   },
   "security": "Security",
   "settings": {
-    "description": "Your app-wide preferences",
+    "description": "Your app-wide preferences.",
     "title": "Settings"
   },
   "sidebar": {
@@ -337,6 +362,7 @@
     "residential": "Residential",
     "serpApi": "SERP API",
     "settings": "Settings",
+    "system": "System",
     "teams": "Teams",
     "users": "Users"
   },
@@ -359,9 +385,24 @@
     }
   },
   "support": "Support",
+  "system": {
+    "description": "Configure system-level settings.",
+    "tabs": {
+      "emailSenderProfiles": "Email Sender Profiles"
+    },
+    "title": "System"
+  },
   "table": {
     "column": "Column",
     "column_plural": "Columns",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "$t(description.label)",
+      "email": "$t(email.label)",
+      "name": "$t(name.label)",
+      "profile": "$t(emailSenderProfile.profile.label)",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Filter",
     "filter_plural": "Filters",
     "members": {
@@ -371,14 +412,14 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
-      "position": "Position",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Members",
-      "name": "Name",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
       "website": "Website"
     },
@@ -391,7 +432,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
       "status": "$t(status.name)",
-      "team": "Team",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },
@@ -400,12 +441,6 @@
       "cta": "Create",
       "success": "Team created.",
       "title": "Add team"
-    },
-    "description": {
-      "error": {
-        "max": "Description can't exceed 500 characters."
-      },
-      "label": "Description"
     },
     "members": {
       "empty": "No team members yet.",
@@ -417,12 +452,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Team name can't exceed 100 characters.",
-        "min": "Team name must be at least 2 characters.",
-        "required": "Team name is required."
-      },
-      "label": "Name",
       "label2": "Team"
     },
     "tabs": {

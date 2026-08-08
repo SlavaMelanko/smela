@@ -49,6 +49,12 @@
   },
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Створено",
+  "description": {
+    "error": {
+      "max": "Опис не може перевищувати 500 символів."
+    },
+    "label": "Опис"
+  },
   "doNotHaveAccount": "Новенький тут?",
   "email": {
     "confirmation": {
@@ -73,6 +79,17 @@
       },
       "loading": "Підтверджуємо електронну пошту...",
       "success": "Вітаю! Ваш обліковий запис готовий."
+    }
+  },
+  "emailSenderProfile": {
+    "empty": "Профілів відправника email ще немає.",
+    "profile": {
+      "label": "Профіль",
+      "values": {
+        "security": "Безпека",
+        "support": "Підтримка",
+        "system": "Система"
+      }
     }
   },
   "error": {
@@ -197,6 +214,14 @@
     "verb": "Вийти"
   },
   "membership": "Членство",
+  "name": {
+    "error": {
+      "max": "Назва не може перевищувати 50 символів.",
+      "min": "Назва має містити щонайменше 2 символи.",
+      "required": "Назва обовʼязкова."
+    },
+    "label": "Назва"
+  },
   "noNewNotifications": "Нових сповіщень немає.",
   "notifications": "Сповіщення",
   "orContinueWith": "або продовжити через",
@@ -330,7 +355,7 @@
   },
   "security": "Безпека",
   "settings": {
-    "description": "Ваші налаштування для всього застосунку",
+    "description": "Ваші налаштування для всього застосунку.",
     "title": "Налаштування"
   },
   "sidebar": {
@@ -343,6 +368,7 @@
     "residential": "Резидентні",
     "serpApi": "SERP API",
     "settings": "Налаштування",
+    "system": "Система",
     "teams": "Команди",
     "users": "Користувачі"
   },
@@ -365,9 +391,24 @@
     }
   },
   "support": "Підтримка",
+  "system": {
+    "description": "Налаштуйте системні параметри.",
+    "tabs": {
+      "emailSenderProfiles": "Профілі відправника email"
+    },
+    "title": "Система"
+  },
   "table": {
     "column": "Колонка",
     "column_plural": "Колонки",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "$t(description.label)",
+      "email": "$t(email.label)",
+      "name": "$t(name.label)",
+      "profile": "$t(emailSenderProfile.profile.label)",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Фільтр",
     "filter_plural": "Фільтри",
     "members": {
@@ -377,14 +418,14 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
-      "position": "Посада",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Учасники",
-      "name": "Назва",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
       "website": "Сайт"
     },
@@ -397,7 +438,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
       "status": "$t(status.name)",
-      "team": "Команда",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },
@@ -406,12 +447,6 @@
       "cta": "Створити",
       "success": "Команду створено.",
       "title": "Додати команду"
-    },
-    "description": {
-      "error": {
-        "max": "Опис не може перевищувати 500 символів."
-      },
-      "label": "Опис"
     },
     "members": {
       "empty": "Учасників команди поки немає.",
@@ -423,12 +458,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Назва команди не може перевищувати 100 символів.",
-        "min": "Назва команди має містити щонайменше 2 символи.",
-        "required": "Назва команди обовʼязкова."
-      },
-      "label": "Назва",
       "label2": "Команда"
     },
     "tabs": {
