@@ -77,8 +77,8 @@ export const TeamMembersSection = ({
 
   const config = useTableConfig('team-members', {
     features: staticTableFeatures,
-    data: members ?? [],
-    columns
+    columns,
+    data: members ?? []
   })
 
   if (isError) {

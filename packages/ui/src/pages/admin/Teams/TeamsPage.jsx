@@ -47,8 +47,8 @@ export const TeamsPage = () => {
 
   const config = useTableConfig('teams', {
     features: sortableTableFeatures,
-    data: teams,
     columns,
+    data: teams,
     state: { sorting },
     onSortingChange: setSorting
   })

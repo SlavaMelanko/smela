@@ -63,8 +63,8 @@ export const AdminsPage = () => {
 
   const config = useTableConfig('admins', {
     features: sortableTableFeatures,
-    data: admins,
     columns,
+    data: admins,
     state: { sorting },
     onSortingChange: setSorting
   })

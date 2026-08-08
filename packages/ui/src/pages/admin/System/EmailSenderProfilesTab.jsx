@@ -39,8 +39,8 @@ export const EmailSenderProfilesTab = () => {
 
   const config = useTableConfig('email-sender-profiles', {
     features: staticTableFeatures,
-    data: senderProfiles,
-    columns
+    columns,
+    data: senderProfiles
   })
 
   if (isError) {

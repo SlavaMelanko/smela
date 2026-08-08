@@ -40,8 +40,8 @@ export const UsersPage = () => {
 
   const config = useTableConfig('users', {
     features: sortableTableFeatures,
-    data: users,
     columns,
+    data: users,
     state: { sorting },
     onSortingChange: setSorting
   })
