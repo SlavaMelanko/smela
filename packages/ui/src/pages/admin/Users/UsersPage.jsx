@@ -1,14 +1,9 @@
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
+import { useTable } from '@tanstack/react-table'
 import { PageContent } from '@ui/components/PageContent'
 import { Pagination } from '@ui/components/Pagination'
 import { Spinner } from '@ui/components/Spinner'
 import { ErrorState } from '@ui/components/states'
-import { Table } from '@ui/components/table'
+import { sortableTableFeatures, Table } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useUsers } from '@ui/hooks/useAdmin'
 import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
@@ -20,10 +15,6 @@ import { useState } from 'react'
 import { getColumns } from './columns'
 import { Filters } from './Filters'
 import { Toolbar } from './Toolbar'
-
-const coreRowModel = getCoreRowModel()
-const filteredRowModel = getFilteredRowModel()
-const sortedRowModel = getSortedRowModel()
 
 export const UsersPage = () => {
   const { t, formatDate } = useLocale()
@@ -49,23 +40,18 @@ export const UsersPage = () => {
 
   const contextMenu = [createOpenItem(t, openUserProfile)]
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
+  const config = useTable({
+    features: sortableTableFeatures,
     data: users,
     columns,
     state: {
       sorting,
       columnVisibility
     },
-    manualPagination: true,
-    pageCount: pagination.totalPages,
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
     onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: setSorting,
-    getCoreRowModel: coreRowModel,
-    getFilteredRowModel: filteredRowModel,
-    getSortedRowModel: sortedRowModel
+    onSortingChange: setSorting
   })
 
   const changeLimit = limit => {

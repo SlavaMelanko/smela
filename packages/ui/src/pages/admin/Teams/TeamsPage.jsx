@@ -1,15 +1,15 @@
-import {
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
+import { useTable } from '@tanstack/react-table'
 import { AddButton } from '@ui/components/buttons'
 import { SearchInput } from '@ui/components/inputs'
 import { PageContent } from '@ui/components/PageContent'
 import { Pagination } from '@ui/components/Pagination'
 import { Spinner } from '@ui/components/Spinner'
 import { ErrorState } from '@ui/components/states'
-import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
+import {
+  ColumnVisibilityDropdown,
+  sortableTableFeatures,
+  Table
+} from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
@@ -22,9 +22,6 @@ import { useState } from 'react'
 
 import { getColumns } from './columns'
 import { useManageTeams } from './useManageTeams'
-
-const coreRowModel = getCoreRowModel()
-const sortedRowModel = getSortedRowModel()
 
 const Toolbar = ({ children }) => (
   <div className='flex min-h-11 items-center gap-4'>{children}</div>
@@ -53,19 +50,15 @@ export const TeamsPage = () => {
 
   const contextMenu = [createOpenItem(t, viewTeam, Users)]
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
+  const config = useTable({
+    features: sortableTableFeatures,
     data: teams,
     columns,
     state: { sorting, columnVisibility },
-    manualPagination: true,
-    pageCount: pagination.totalPages,
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
     onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: setSorting,
-    getCoreRowModel: coreRowModel,
-    getSortedRowModel: sortedRowModel
+    onSortingChange: setSorting
   })
 
   const changeLimit = limit => {

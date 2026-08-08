@@ -1,7 +1,11 @@
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useTable } from '@tanstack/react-table'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
-import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
+import {
+  ColumnVisibilityDropdown,
+  staticTableFeatures,
+  Table
+} from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
@@ -10,8 +14,6 @@ import { useEmailSenderProfiles } from '@ui/hooks/useSystem'
 import { Mail } from 'lucide-react'
 
 import { getColumns } from './columns'
-
-const coreRowModel = getCoreRowModel()
 
 const EmailSenderProfilesRoot = ({ children }) => (
   <div className='flex flex-col gap-4'>{children}</div>
@@ -40,13 +42,12 @@ export const EmailSenderProfilesTab = () => {
 
   const contextMenu = [createOpenItem(t, viewEmailSenderProfile, Mail)]
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
+  const config = useTable({
+    features: staticTableFeatures,
     data: senderProfiles,
     columns,
     state: { columnVisibility },
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: coreRowModel
+    onColumnVisibilityChange: setColumnVisibility
   })
 
   if (isError) {

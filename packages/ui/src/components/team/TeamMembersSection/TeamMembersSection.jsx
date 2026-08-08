@@ -1,8 +1,12 @@
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useTable } from '@tanstack/react-table'
 import { InviteButton } from '@ui/components/buttons'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
-import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
+import {
+  ColumnVisibilityDropdown,
+  staticTableFeatures,
+  Table
+} from '@ui/components/table'
 import {
   createInviteItem,
   createOpenItem,
@@ -16,8 +20,6 @@ import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
 import { useInvite } from './useMemberInvite'
-
-const coreRowModel = getCoreRowModel()
 
 const TeamMembersRoot = ({ children }) => (
   <div className='flex flex-col gap-4'>{children}</div>
@@ -78,13 +80,12 @@ export const TeamMembersSection = ({
     columns
   )
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
+  const config = useTable({
+    features: staticTableFeatures,
     data: members ?? [],
     columns,
     state: { columnVisibility },
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: coreRowModel
+    onColumnVisibilityChange: setColumnVisibility
   })
 
   if (isError) {
