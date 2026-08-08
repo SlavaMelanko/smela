@@ -403,10 +403,10 @@
     "column_plural": "Колонки",
     "emailSenderProfiles": {
       "createdAt": "$t(createdAt)",
-      "description": "Опис",
+      "description": "$t(description.label)",
       "email": "$t(email.label)",
-      "name": "Назва",
-      "profile": "Профіль",
+      "name": "$t(name.label)",
+      "profile": "$t(emailSenderProfile.profile.label)",
       "updatedAt": "$t(updatedAt)"
     },
     "filter": "Фільтр",
@@ -418,14 +418,14 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
-      "position": "Посада",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Учасники",
-      "name": "Назва",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
       "website": "Сайт"
     },
@@ -438,7 +438,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
       "status": "$t(status.name)",
-      "team": "Команда",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },

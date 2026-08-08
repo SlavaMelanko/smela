@@ -397,10 +397,10 @@
     "column_plural": "Columns",
     "emailSenderProfiles": {
       "createdAt": "$t(createdAt)",
-      "description": "Description",
+      "description": "$t(description.label)",
       "email": "$t(email.label)",
-      "name": "Name",
-      "profile": "Profile",
+      "name": "$t(name.label)",
+      "profile": "$t(emailSenderProfile.profile.label)",
       "updatedAt": "$t(updatedAt)"
     },
     "filter": "Filter",
@@ -412,14 +412,14 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
-      "position": "Position",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Members",
-      "name": "Name",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
       "website": "Website"
     },
@@ -432,7 +432,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
       "status": "$t(status.name)",
-      "team": "Team",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },
