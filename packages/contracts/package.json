@@ -13,7 +13,7 @@
     "lint": "eslint --cache src",
     "lint:fix": "eslint --cache --fix src",
     "lint:staged": "lint-staged",
-    "tsc": "bunx tsc --noEmit",
+    "tsc": "bunx tsc",
     "test": "bun test src",
     "check": "bun run format:fix && bun run lint:fix && bun run tsc && bun run test"
   },

@@ -19,7 +19,7 @@
     "lint": "bunx eslint --cache src",
     "lint:fix": "bunx eslint --cache --fix src",
     "lint:staged": "lint-staged",
-    "tsc": "bunx tsc --noEmit",
+    "tsc": "bunx tsc",
     "test": "NODE_ENV=test bun test src",
     "coverage": "NODE_ENV=test bun test src --coverage",
     "check": "bun run format:fix && bun run lint:fix && bun run tsc && bun run test",
