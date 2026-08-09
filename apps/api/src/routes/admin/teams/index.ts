@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { requirePermission, validateBody, validateQuery } from '@/middleware'
-import Permission from '@/types/permission'
+import { Permission } from '@/types'
 
 import { createTeamHandler, getTeamsHandler } from './handler'
 import { createTeamBodySchema, getTeamsQuerySchema } from './schema'

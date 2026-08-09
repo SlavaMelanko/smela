@@ -38,6 +38,7 @@
     "@hono/zod-validator": "^0.9.0",
     "@react-email/components": "^1.0.12",
     "@sentry/bun": "^10.69.0",
+    "@smela/contracts": "workspace:*",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.32",

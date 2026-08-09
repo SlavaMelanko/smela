@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import Resource from '@/types/resource'
+import { Resource } from '@/types'
 
 import { rules } from '../rules'
 

@@ -1,2 +1,2 @@
-// Placeholder export, removed once the first real contract lands.
-export const placeholder = true
+export { Role } from './role'
+export { UserStatus } from './user-status'
