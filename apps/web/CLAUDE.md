@@ -105,29 +105,6 @@ custom backend API:
    - Trailing comments: Lowercase start, brief, no period (e.g.,
      `const i = 0 // initial value`)
 
-## Known Issues / FIXME
-
-### TanStack Table + React Compiler Incompatibility
-
-TanStack Table uses interior mutability which is incompatible with React
-Compiler's memoization assumptions. See:
-https://react.dev/reference/eslint-plugin-react-hooks/lints/incompatible-library
-
-**Current workarounds:**
-
-1. Always use the ESLint disable comment when calling `useReactTable`:
-
-   ```jsx
-   // eslint-disable-next-line react-hooks/incompatible-library
-   const table = useReactTable({
-   ```
-
-2. React Compiler is disabled for `src/components/table/` in `vite.config.js`
-   (fixed column visibility dropdown in PR #158)
-
-**Tracking:** Issue #149 - Update TanStack Table when compatible version is
-released.
-
 ## Important Considerations
 
 - The app supports English and Ukrainian languages

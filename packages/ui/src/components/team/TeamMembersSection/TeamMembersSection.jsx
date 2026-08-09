@@ -1,23 +1,24 @@
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { InviteButton } from '@ui/components/buttons'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
-import { ColumnVisibilityDropdown, Table } from '@ui/components/table'
+import {
+  ColumnVisibilityDropdown,
+  staticTableFeatures,
+  Table,
+  useTableConfig
+} from '@ui/components/table'
 import {
   createInviteItem,
   createOpenItem,
   createRemoveMemberItem
 } from '@ui/components/table/contextMenuItems'
 import { useCurrentUser } from '@ui/hooks/useAuth'
-import { useColumnVisibility } from '@ui/hooks/useColumnVisibility'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useRemoveTeamMember } from '@ui/hooks/useRemoveTeamMember'
 import { useTeamMembers } from '@ui/hooks/useTeam'
 
 import { getColumns } from './columns'
 import { useInvite } from './useMemberInvite'
-
-const coreRowModel = getCoreRowModel()
 
 const TeamMembersRoot = ({ children }) => (
   <div className='flex flex-col gap-4'>{children}</div>
@@ -73,18 +74,11 @@ export const TeamMembersSection = ({
   ]
 
   const columns = getColumns(t, formatDate, me?.id)
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility(
-    'team-members',
-    columns
-  )
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
-    data: members ?? [],
+  const config = useTableConfig('team-members', {
+    features: staticTableFeatures,
     columns,
-    state: { columnVisibility },
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: coreRowModel
+    data: members ?? []
   })
 
   if (isError) {

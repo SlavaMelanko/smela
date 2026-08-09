@@ -34,7 +34,7 @@ export const ColumnVisibilityDropdown = ({
           <DropdownMenuCheckboxItem
             key={column.id}
             checked={column.getIsVisible()}
-            onCheckedChange={column.toggleVisibility}
+            onCheckedChange={value => column.toggleVisibility(value)}
             closeOnClick={false}
           >
             {createLabel(column.id)}

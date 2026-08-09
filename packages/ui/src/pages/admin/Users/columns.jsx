@@ -16,7 +16,7 @@ export const getColumns = (t, formatDate) => {
       header: label('name'),
       accessorFn: row => getFullName(row),
       cell: info => getFullName(info.row.original),
-      sortingFn: 'alphanumeric'
+      sortFn: 'alphanumeric'
     },
     {
       accessorKey: 'email',

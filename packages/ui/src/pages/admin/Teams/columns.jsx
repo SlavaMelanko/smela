@@ -10,7 +10,7 @@ export const getColumns = (t, formatDate) => {
     {
       accessorKey: 'name',
       header: label('name'),
-      sortingFn: 'alphanumeric'
+      sortFn: 'alphanumeric'
     },
     {
       accessorKey: 'website',

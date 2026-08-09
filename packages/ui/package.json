@@ -21,8 +21,7 @@
     "./pages/user": "./src/pages/user/index.js",
     "./routes": "./src/routes/index.js",
     "./services": "./src/services/index.js",
-    "./services/backend/paths": "./src/services/backend/paths.js",
-    "./react-compiler": "./react-compiler.js"
+    "./services/backend/paths": "./src/services/backend/paths.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -55,7 +54,7 @@
     "@sentry/react": "^10.69.0",
     "@smela/i18n": "workspace:*",
     "@tanstack/react-pacer": "^0.22.1",
-    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-table": "^9.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

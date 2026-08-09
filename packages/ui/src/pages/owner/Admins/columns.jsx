@@ -21,7 +21,7 @@ export const getColumns = (t, formatDate, meId) => {
           {info.row.original.id === meId && <YouBadge />}
         </>
       ),
-      sortingFn: 'alphanumeric'
+      sortFn: 'alphanumeric'
     },
     {
       accessorKey: 'email',
