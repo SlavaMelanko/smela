@@ -1,88 +1,60 @@
-import antfu from '@antfu/eslint-config'
+import { typescriptConfig } from '@smela/eslint/typescript'
 
-export default antfu(
-  {
-    type: 'app',
-    typescript: {
-      tsconfigPath: './tsconfig.json'
-    },
-    formatters: false,
-    stylistic: false,
-    ignores: [
-      'src/data/migrations/**',
-      'scripts/**',
-      '**/*.md',
-      'coverage/**',
-      '.env*'
+export default typescriptConfig({
+  type: 'app',
+  ignores: [
+    'src/data/migrations/**',
+    'scripts/**',
+    '**/*.md',
+    'coverage/**',
+    '.env*'
+  ],
+  sortImports: [
+    'error',
+    {
+      internalPattern: ['^@/']
+    }
+  ],
+  filenameCaseIgnore: ['CLAUDE.md', 'WARP.md'],
+  rules: {
+    'antfu/top-level-function': ['off'],
+    'ts/strict-boolean-expressions': ['off'],
+    'no-return-await': ['error'],
+    'node/no-process-env': ['error'],
+    'node/prefer-global/process': ['off'],
+    'padding-line-between-statements': [
+      'error',
+      { blankLine: 'always', prev: '*', next: 'return' }
     ],
-    rules: {
-      'antfu/top-level-function': ['off'],
-      complexity: ['warn', 10],
-      curly: ['error', 'all'],
-      'ts/strict-boolean-expressions': ['off'],
-      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
-      'no-console': ['warn'],
-      'no-return-await': ['error'],
-      'node/no-process-env': ['error'],
-      'node/prefer-global/process': ['off'],
-      'padding-line-between-statements': [
-        'error',
-        { blankLine: 'always', prev: '*', next: 'return' }
-      ],
-      'perfectionist/sort-imports': [
-        'error',
-        {
-          internalPattern: ['^@/']
-        }
-      ],
-      'prefer-arrow-callback': ['error'],
-      'ts/member-ordering': [
-        'error',
-        {
-          default: [
-            // Static fields
-            'public-static-field',
-            'protected-static-field',
-            'private-static-field',
-            // Instance fields
-            'public-instance-field',
-            'protected-instance-field',
-            'private-instance-field',
-            // Constructor
-            'constructor',
-            // Static methods
-            'public-static-method',
-            'protected-static-method',
-            'private-static-method',
-            // Instance methods
-            'public-instance-method',
-            'protected-instance-method',
-            'private-instance-method'
-          ]
-        }
-      ],
-      'ts/no-unsafe-argument': ['error'],
-      'ts/no-unsafe-assignment': ['error'],
-      'ts/no-unsafe-call': ['error'],
-      'ts/no-unsafe-member-access': ['error'],
-      'ts/prefer-ts-expect-error': ['error'],
-      'ts/no-deprecated': ['error'],
-      'unicorn/filename-case': [
-        'error',
-        {
-          case: 'kebabCase',
-          ignore: ['README.md', 'CLAUDE.md', 'WARP.md', '__tests__']
-        }
-      ]
-    }
-  },
-  {
-    files: ['**/*.test.ts', '**/__tests__/**'],
-    rules: {
-      'ts/no-unsafe-argument': ['off'],
-      'ts/no-unsafe-assignment': ['off'],
-      'ts/no-unsafe-call': ['off'],
-      'ts/no-unsafe-member-access': ['off']
-    }
+    'ts/member-ordering': [
+      'error',
+      {
+        default: [
+          // Static fields
+          'public-static-field',
+          'protected-static-field',
+          'private-static-field',
+          // Instance fields
+          'public-instance-field',
+          'protected-instance-field',
+          'private-instance-field',
+          // Constructor
+          'constructor',
+          // Static methods
+          'public-static-method',
+          'protected-static-method',
+          'private-static-method',
+          // Instance methods
+          'public-instance-method',
+          'protected-instance-method',
+          'private-instance-method'
+        ]
+      }
+    ],
+    'ts/no-unsafe-argument': ['error'],
+    'ts/no-unsafe-assignment': ['error'],
+    'ts/no-unsafe-call': ['error'],
+    'ts/no-unsafe-member-access': ['error'],
+    'ts/prefer-ts-expect-error': ['error']
   }
-)
+})

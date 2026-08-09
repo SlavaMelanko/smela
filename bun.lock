@@ -62,9 +62,9 @@
         "zod": "^4.4.3",
       },
       "devDependencies": {
-        "@antfu/eslint-config": "^9.2.0",
         "@faker-js/faker": "^10.5.0",
         "@react-email/preview-server": "^5.2.10",
+        "@smela/eslint": "workspace:*",
         "@types/bun": "^1.3.14",
         "@types/nodemailer": "^8.0.1",
         "@types/pg": "^8.20.0",
@@ -104,6 +104,14 @@
         "vite": "^8.2.0",
       },
     },
+    "packages/contracts": {
+      "name": "@smela/contracts",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@smela/eslint": "workspace:*",
+        "@types/bun": "^1.3.14",
+      },
+    },
     "packages/e2e": {
       "name": "@smela/e2e",
       "version": "0.0.1",
@@ -121,6 +129,7 @@
       "name": "@smela/eslint",
       "version": "0.0.1",
       "dependencies": {
+        "@antfu/eslint-config": "^9.2.0",
         "@eslint/js": "^10",
         "@tanstack/eslint-plugin-query": "^5.101.4",
         "eslint-plugin-react": "^7.37.5",
@@ -856,6 +865,8 @@
     "@smela/admin": ["@smela/admin@workspace:apps/admin"],
 
     "@smela/api": ["@smela/api@workspace:apps/api"],
+
+    "@smela/contracts": ["@smela/contracts@workspace:packages/contracts"],
 
     "@smela/e2e": ["@smela/e2e@workspace:packages/e2e"],
 
