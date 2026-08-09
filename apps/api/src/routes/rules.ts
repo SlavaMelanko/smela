@@ -25,6 +25,7 @@ export const rules = {
 
     email,
 
+    // PASSWORD_REGEX: keep in sync with packages/ui/src/lib/validation/constants.js
     password: z.string().min(8).regex(PASSWORD_REGEX, {
       message:
         'Minimum eight characters, at least one letter, one number and one special character'

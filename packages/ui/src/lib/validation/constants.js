@@ -8,6 +8,7 @@ export const DescriptionConstraint = {
   MAX_LENGTH: 500
 }
 
+// Keep in sync with apps/api/src/security/password/index.ts (PASSWORD_REGEX)
 export const PasswordConstraint = {
   MIN_LENGTH: 8,
   // Requires at least one uppercase letter, one digit, and one special character
@@ -15,8 +16,8 @@ export const PasswordConstraint = {
   STRONG: /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Z\d@$!%*#?&]{8,}$/i
 }
 
+// Keep in sync with zod's z.email() regex (apps/api uses z.email() directly)
 export const EmailConstraint = {
-  // Requires standard email format (e.g., user@domain.com)
-  // Rejects local-only addresses like user@localhost
-  STANDARD: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  STANDARD:
+    /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+.-]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9-]*\.)+[A-Za-z]{2,}$/
 }
