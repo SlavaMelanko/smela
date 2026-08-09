@@ -1,7 +1,6 @@
 import type { PermissionsInput } from '@/types'
 
-import Action from '@/types/action'
-import Resource from '@/types/resource'
+import { Action, Resource } from '@/types'
 
 import type { ActivePermissionRow } from './types'
 

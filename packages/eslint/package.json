@@ -10,7 +10,8 @@
     "./vitest": "./src/vitest.js",
     "./playwright": "./src/playwright.js",
     "./shadcn": "./src/shadcn.js",
-    "./storybook": "./src/storybook.js"
+    "./storybook": "./src/storybook.js",
+    "./typescript": "./src/typescript.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -20,6 +21,7 @@
     "eslint": "^10"
   },
   "dependencies": {
+    "@antfu/eslint-config": "^9.2.0",
     "@eslint/js": "^10",
     "@tanstack/eslint-plugin-query": "^5.101.4",
     "eslint-plugin-react": "^7.37.5",

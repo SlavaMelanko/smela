@@ -1,13 +1,7 @@
+import { UserStatus } from '@smela/contracts'
+
 // Cross-references: public/locales/*.json
-export const UserStatus = {
-  New: 'new',
-  Verified: 'verified',
-  Trial: 'trial',
-  Active: 'active',
-  Suspended: 'suspended',
-  Archived: 'archived',
-  Pending: 'pending'
-}
+export { UserStatus }
 
 export const allUserStatuses = Object.values(UserStatus)
 

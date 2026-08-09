@@ -1,8 +1,6 @@
-export const Role = {
-  User: 'user',
-  Admin: 'admin',
-  Owner: 'owner'
-}
+import { Role } from '@smela/contracts'
+
+export { Role }
 
 export const isUser = role => role === Role.User
 

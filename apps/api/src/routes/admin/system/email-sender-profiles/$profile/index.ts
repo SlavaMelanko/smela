@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { requirePermission, validateBody, validateParams } from '@/middleware'
-import Permission from '@/types/permission'
+import { Permission } from '@/types'
 
 import {
   getEmailSenderProfileHandler,

@@ -1,0 +1,30 @@
+{
+  "name": "@smela/contracts",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "format": "prettier --cache --check .",
+    "format:fix": "prettier --cache --write .",
+    "lint": "eslint --cache src",
+    "lint:fix": "eslint --cache --fix src",
+    "lint:staged": "lint-staged",
+    "tsc": "bunx tsc",
+    "test": "bun test src",
+    "check": "bun run format:fix && bun run lint:fix && bun run tsc && bun run test"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "bunx prettier --write",
+      "bunx eslint --cache --fix"
+    ]
+  },
+  "devDependencies": {
+    "@smela/eslint": "workspace:*",
+    "@types/bun": "^1.3.14"
+  }
+}

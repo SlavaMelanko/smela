@@ -48,6 +48,7 @@
         "@hono/zod-validator": "^0.9.0",
         "@react-email/components": "^1.0.12",
         "@sentry/bun": "^10.69.0",
+        "@smela/contracts": "workspace:*",
         "dotenv": "^17.4.2",
         "drizzle-orm": "^0.45.2",
         "hono": "^4.12.32",
@@ -62,9 +63,9 @@
         "zod": "^4.4.3",
       },
       "devDependencies": {
-        "@antfu/eslint-config": "^9.2.0",
         "@faker-js/faker": "^10.5.0",
         "@react-email/preview-server": "^5.2.10",
+        "@smela/eslint": "workspace:*",
         "@types/bun": "^1.3.14",
         "@types/nodemailer": "^8.0.1",
         "@types/pg": "^8.20.0",
@@ -104,6 +105,14 @@
         "vite": "^8.2.0",
       },
     },
+    "packages/contracts": {
+      "name": "@smela/contracts",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@smela/eslint": "workspace:*",
+        "@types/bun": "^1.3.14",
+      },
+    },
     "packages/e2e": {
       "name": "@smela/e2e",
       "version": "0.0.1",
@@ -121,6 +130,7 @@
       "name": "@smela/eslint",
       "version": "0.0.1",
       "dependencies": {
+        "@antfu/eslint-config": "^9.2.0",
         "@eslint/js": "^10",
         "@tanstack/eslint-plugin-query": "^5.101.4",
         "eslint-plugin-react": "^7.37.5",
@@ -154,6 +164,7 @@
         "@fontsource-variable/inter": "^5.3.0",
         "@hookform/resolvers": "^5.5.7",
         "@sentry/react": "^10.69.0",
+        "@smela/contracts": "workspace:*",
         "@smela/i18n": "workspace:*",
         "@tanstack/react-pacer": "^0.22.1",
         "@tanstack/react-table": "^9.1.1",
@@ -856,6 +867,8 @@
     "@smela/admin": ["@smela/admin@workspace:apps/admin"],
 
     "@smela/api": ["@smela/api@workspace:apps/api"],
+
+    "@smela/contracts": ["@smela/contracts@workspace:packages/contracts"],
 
     "@smela/e2e": ["@smela/e2e@workspace:packages/e2e"],
 
