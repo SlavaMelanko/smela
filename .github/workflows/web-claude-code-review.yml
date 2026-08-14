@@ -9,6 +9,11 @@ on:
       - 'packages/ui/**'
       - 'packages/i18n/**'
 
+# Cancel superseded review runs so only the latest push gets reviewed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-code-review:
     # if: |
@@ -44,8 +49,9 @@ jobs:
             --model claude-sonnet-5
             --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*),mcp__github_comment__update_claude_comment"
 
+          # track_progress creates a fresh tracking comment per run, which
+          # defeats use_sticky_comment — keep only the sticky comment
           use_sticky_comment: true
-          track_progress: true
 
           # Automated review prompt (no @claude mention needed)
           prompt: |
