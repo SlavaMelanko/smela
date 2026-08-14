@@ -45,6 +45,7 @@ jobs:
             --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*),mcp__github_comment__update_claude_comment"
 
           use_sticky_comment: true
+          track_progress: true
 
           # Automated review prompt (no @claude mention needed)
           prompt: |
