@@ -69,6 +69,7 @@
     },
     "error": {
       "format": "Enter a valid email.",
+      "max": "Email can't be longer than 254 characters.",
       "required": "Email is required."
     },
     "label": "Email",
@@ -225,6 +226,7 @@
   },
   "password": {
     "error": {
+      "max": "Password can't be longer than 64 characters.",
       "min": "Password must be at least 8 characters.",
       "required": "Password is required.",
       "same": "Must differ from current password.",
@@ -284,8 +286,7 @@
   "position": {
     "default": "Team member",
     "error": {
-      "max": "Position can't be longer than 50 characters.",
-      "min": "Position must be at least 2 characters."
+      "max": "Position can't be longer than 100 characters."
     },
     "label": "Position"
   },
@@ -463,7 +464,8 @@
     },
     "website": {
       "error": {
-        "format": "Enter a valid URL."
+        "format": "Enter a valid URL.",
+        "max": "Website can't be longer than 255 characters."
       },
       "label": "Website"
     }

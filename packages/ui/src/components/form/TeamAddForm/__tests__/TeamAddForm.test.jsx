@@ -89,4 +89,17 @@ describe('TeamAddForm', () => {
       expect(screen.getByText(en.team.website.error.format)).toBeInTheDocument()
     })
   })
+
+  it('shows max length error when website exceeds 255 characters', async () => {
+    const { nameInput, websiteInput, submitButton } = renderForm()
+    const longUrl = `https://example.com/${'a'.repeat(240)}`
+
+    await user.type(nameInput, 'Valid Team')
+    await user.type(websiteInput, longUrl)
+    await user.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(en.team.website.error.max)).toBeInTheDocument()
+    })
+  })
 })
