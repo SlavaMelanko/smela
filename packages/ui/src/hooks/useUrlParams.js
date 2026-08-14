@@ -1,7 +1,5 @@
 import { useSearchParams } from './useRouter'
 
-const stringToNumber = str => Number(str)
-
 const stringToBoolean = str => {
   if (str === 'true') {
     return true
@@ -23,7 +21,7 @@ export const useUrlParams = (keys = [], options = {}) => {
       let value = params.get(key) || undefined
 
       if (value && parseNumbers && !Number.isNaN(value)) {
-        value = stringToNumber(value)
+        value = Number(value)
       } else if (value && parseBooleans) {
         value = stringToBoolean(value)
       }

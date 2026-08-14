@@ -369,8 +369,8 @@ describe('Login with Email', () => {
         const userWithStatus = { ...mockUser, status }
         mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
 
-        await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        // Test passes if no error is thrown
+        const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+        expect(result.data.user.status).toBe(status)
       }
     })
   })

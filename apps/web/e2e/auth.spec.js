@@ -139,6 +139,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     })
 
     await page.waitForURL('/home')
+    await expect(page).toHaveURL(/\/home/)
 
     // Logout to ensure clean state for next test
     await logOut(page, t)

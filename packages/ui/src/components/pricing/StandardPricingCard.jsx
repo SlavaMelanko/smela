@@ -47,8 +47,8 @@ export const StandardPricingCard = ({
       />
 
       <ul className='m-0 flex flex-1 list-none flex-wrap items-center justify-center gap-6 p-0'>
-        {features.map((feature, index) => (
-          <li key={index} className='flex items-center'>
+        {features.map(feature => (
+          <li key={feature.text} className='flex items-center'>
             <Feature icon={feature.icon} text={feature.text} />
           </li>
         ))}

@@ -5,8 +5,8 @@ export const Range = ({ tickLabels }) => {
 
   return (
     <div className='mb-2 flex items-center justify-between'>
-      {tickLabels.map((label, index) => (
-        <span key={index} className='text-base font-normal text-foreground'>
+      {tickLabels.map(label => (
+        <span key={label} className='text-base font-normal text-foreground'>
           {label}
         </span>
       ))}
