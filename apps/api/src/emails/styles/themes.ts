@@ -1,41 +1,41 @@
 export const color = {
   light: {
-    orange: '#e66e5a',
+    accent: '#4f46e5',
 
     text: {
-      primary: '#141414',
-      secondary: '#5c5c5c',
-      tertiary: '#a0a0a0'
+      primary: '#0a0a0a',
+      secondary: '#18181b',
+      tertiary: '#737373'
     },
 
     background: {
-      primary: '#f7f7f7',
-      secondary: '#fff',
-      tertiary: '#eaeaea'
+      primary: '#ffffff',
+      secondary: '#f5f5f5',
+      tertiary: '#f5f5f5'
     },
 
-    border: '#e5e7eb',
+    border: '#e5e5e5',
 
-    link: '#7678ed'
+    link: '#565daa'
   },
 
   dark: {
-    orange: '#e66e5a',
+    accent: '#4f46e5',
 
     text: {
-      primary: '#f7f7f7',
-      secondary: '#a1a1aa',
-      tertiary: '#71717a'
+      primary: '#fafafa',
+      secondary: '#fafafa',
+      tertiary: '#a1a1a1'
     },
 
     background: {
-      primary: '#141414',
-      secondary: '#1e1e1e',
-      tertiary: '#2a2a2a'
+      primary: '#0a0a0a',
+      secondary: '#171717',
+      tertiary: '#404040'
     },
 
-    border: '#2e2e2e',
+    border: '#262626',
 
-    link: '#a5a7ff'
+    link: '#8992d6'
   }
 } as const

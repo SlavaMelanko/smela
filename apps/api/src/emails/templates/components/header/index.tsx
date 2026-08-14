@@ -28,7 +28,7 @@ const Header = ({
           />
           <Column
             style={{
-              borderBottom: `1px solid ${styles.color.orange}`,
+              borderBottom: `1px solid ${styles.color.accent}`,
               width: '220px'
             }}
           />

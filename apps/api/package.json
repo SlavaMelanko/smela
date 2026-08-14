@@ -55,6 +55,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.5.0",
     "@react-email/preview-server": "^5.2.10",
+    "@react-email/ui": "6.9.1",
     "@smela/eslint": "workspace:*",
     "@types/bun": "^1.3.14",
     "@types/nodemailer": "^8.0.1",
