@@ -12,6 +12,8 @@
 
 ### Packages
 
+- `packages/contracts` — Shared API/web contracts (roles, user statuses,
+  validation constraints)
 - `packages/e2e` — E2E testing utilities (see
   [packages/e2e/README.md](packages/e2e/README.md))
 - `packages/eslint` — ESLint configurations
@@ -35,32 +37,3 @@
   items. Specific comments become stale when lists change and nobody remembers
   to update them. Prefer `// Check hidden menu items` over
   `// Invite and Remove actions must be hidden`.
-
-## Skills
-
-### apps/web
-
-- [react-artisan](.claude/skills/react-artisan/SKILL.md) — React component
-  patterns, hooks, composition, code quality, and file/folder organization
-- [tailwind-shadcn](.claude/skills/tailwind-shadcn/SKILL.md) — Tailwind CSS and
-  shadcn/ui styling conventions
-- [i18n](.claude/skills/i18n/SKILL.md) — Internationalization and translation
-  patterns
-- [e2e-testing](.claude/skills/e2e-testing/SKILL.md) — Playwright E2E test
-  writing and infrastructure
-
-### apps/api
-
-- [api-testing](.claude/skills/api-testing/SKILL.md) — Bun/TypeScript test
-  writing with bun:test and mocking patterns
-- [service-integration](.claude/skills/service-integration/SKILL.md) — Modular
-  design pattern for external service integrations
-
-### Shared
-
-- [rbac](.claude/skills/rbac/SKILL.md) — Role-based and permission-based access
-  control patterns across API and frontend (route guards, permission middleware,
-  JWT claims)
-- [social-auth](.claude/skills/social-auth/SKILL.md) — End-to-end recipe for
-  integrating a social auth provider (Google, GitHub, Facebook) across API and
-  frontend (env setup, OAuth flow, account linking, testing)

@@ -43,7 +43,7 @@ All script commands are defined in [package.json](package.json). Key workflows:
 
 ### Component Structure
 
-See `../../.claude/skills/react-project-structure/SKILL.md` for detailed
+See `../../.claude/skills/react-artisan/SKILL.md` for detailed
 conventions on file organization, naming, barrel exports, and folder structure.
 
 ### State Management
