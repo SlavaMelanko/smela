@@ -330,15 +330,15 @@ const seedTestUsers = async (teamId: string) => {
         .from(teamMembersTable)
         .where(eq(teamMembersTable.userId, existingUser.id))
 
-      if (!existingLink) {
+      if (existingLink) {
+        console.log(`✅ user ${user.email} already exists`)
+      } else {
         await db.insert(teamMembersTable).values({
           userId: existingUser.id,
           teamId,
           position: user.position
         })
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
-      } else {
-        console.log(`✅ user ${user.email} already exists`)
       }
 
       continue
