@@ -25,12 +25,12 @@ export const StandardCards = () => {
         unit: 'GB'
       },
       pricePerUnit: {
-        original: 0.0,
-        final: 0.0,
+        original: 0,
+        final: 0,
         unit: 'GB'
       },
       totalPrice: {
-        original: 0.0
+        original: 0
       },
       features: [
         {
@@ -53,7 +53,7 @@ export const StandardCards = () => {
         unit: 'GB'
       },
       totalPrice: {
-        original: 75.0,
+        original: 75,
         final: 37.5
       },
       features: [
@@ -86,7 +86,7 @@ export const StandardCards = () => {
         unit: 'GB'
       },
       totalPrice: {
-        original: 499.0,
+        original: 499,
         final: 249.5
       },
       features: [

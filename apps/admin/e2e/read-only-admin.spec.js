@@ -23,22 +23,22 @@ test.describe('Read-Only Admin: Authentication', () => {
   }) => {
     await login(supportCredentials)
 
+    const expected = ['view:dashboard', 'view:teams', 'view:users']
+
     const mePromise = waitForApiCall(page, {
       path: ME_PATH,
       status: HttpStatus.OK,
-      validateResponse: body => {
-        const expected = ['view:dashboard', 'view:teams', 'view:users']
-
-        return (
-          Array.isArray(body.permissions) &&
-          body.permissions.length === expected.length &&
-          expected.every(p => body.permissions.includes(p))
-        )
-      }
+      validateResponse: body =>
+        Array.isArray(body.permissions) &&
+        body.permissions.length === expected.length &&
+        expected.every(p => body.permissions.includes(p))
     })
 
     await page.reload()
-    await mePromise
+    const { body } = await mePromise
+
+    expect(body.permissions).toEqual(expect.arrayContaining(expected))
+    expect(body.permissions).toHaveLength(expected.length)
   })
 })
 
