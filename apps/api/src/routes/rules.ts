@@ -1,6 +1,15 @@
+// Server-side request validation (the enforced boundary).
+// Client-side counterpart: packages/ui/src/lib/validation/rules.js
+import {
+  DescriptionConstraint,
+  EmailConstraint,
+  NameConstraint,
+  PasswordConstraint,
+  PositionConstraint,
+  WebsiteConstraint
+} from '@smela/contracts'
 import { z } from 'zod'
 
-import { PASSWORD_REGEX } from '@/security/password'
 import { TOKEN_LENGTH } from '@/security/token'
 import { EmailSenderProfile, Resource, Role, UserStatus } from '@/types'
 
@@ -9,14 +18,18 @@ const normalizeEmail = (email: string): string => email.trim().toLowerCase()
 const email = z
   .string()
   .transform(normalizeEmail)
-  .refine(value => z.email().safeParse(value).success, {
+  .pipe(z.string().max(EmailConstraint.MAX_LENGTH))
+  .refine(value => EmailConstraint.STANDARD.test(value), {
     message: 'Invalid email'
   })
 
-// Keep in sync with packages/ui/src/lib/validation/constants.js
-const displayName = z.string().trim().min(2).max(50)
+const displayName = z
+  .string()
+  .trim()
+  .min(NameConstraint.MIN_LENGTH)
+  .max(NameConstraint.MAX_LENGTH)
 
-const description = z.string().trim().max(500)
+const description = z.string().trim().max(DescriptionConstraint.MAX_LENGTH)
 
 export const rules = {
   user: {
@@ -24,20 +37,34 @@ export const rules = {
 
     email,
 
-    // PASSWORD_REGEX: keep in sync with packages/ui/src/lib/validation/constants.js
-    password: z.string().min(8).regex(PASSWORD_REGEX, {
-      message:
-        'Minimum eight characters, at least one letter, one number and one special character'
-    }),
+    password: z
+      .string()
+      .min(PasswordConstraint.MIN_LENGTH)
+      .max(PasswordConstraint.MAX_LENGTH)
+      .regex(PasswordConstraint.STRONG, {
+        message:
+          'Minimum eight characters, at least one letter, one number and one special character'
+      }),
 
     // Required for signup, add .optional() for updates
-    firstName: z.string().trim().min(2).max(50),
+    firstName: z
+      .string()
+      .trim()
+      .min(NameConstraint.MIN_LENGTH)
+      .max(NameConstraint.MAX_LENGTH),
 
     // Normalizes null/'' → "", valid string → trimmed
     // undefined means "don't touch the field"
     lastName: z.preprocess(
       val => (val === null || val === '' ? '' : val),
-      z.union([z.literal(''), z.string().trim().min(2).max(50)])
+      z.union([
+        z.literal(''),
+        z
+          .string()
+          .trim()
+          .min(NameConstraint.MIN_LENGTH)
+          .max(NameConstraint.MAX_LENGTH)
+      ])
     ),
 
     role: z.enum(Role),
@@ -75,9 +102,9 @@ export const rules = {
   team: {
     id: z.uuid(),
     name: displayName,
-    website: z.url().max(255),
+    website: z.url().max(WebsiteConstraint.MAX_LENGTH),
     description,
-    position: z.string().trim().max(100),
+    position: z.string().trim().max(PositionConstraint.MAX_LENGTH),
     search: z.string().trim().max(100)
   },
 

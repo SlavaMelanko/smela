@@ -325,13 +325,13 @@ packages/contracts/
 │   ├── role.ts               // export enum Role { ... }
 │   ├── user-status.ts        // export enum UserStatus { ... }
 │   ├── error-code.ts         // export enum ErrorCode { ... }
-│   ├── validation.ts         // NameConstraint, PositionConstraint,
+│   ├── constraints.ts        // NameConstraint, PositionConstraint,
 │   │                         // WebsiteConstraint, DescriptionConstraint,
 │   │                         // PasswordConstraint, EmailConstraint
 │   └── __tests__/
 │       ├── role.test.ts
 │       ├── user-status.test.ts
-│       └── validation.test.ts
+│       └── constraints.test.ts
 ├── eslint.config.mjs
 └── tsconfig.json
 ```
@@ -446,13 +446,13 @@ Contracts-only phase — no api/ui call sites change yet, so this phase carries
 zero behavior-change risk and can be reviewed purely on "are the constants
 right."
 
-- `src/validation.ts`: `NameConstraint`, `PositionConstraint`,
+- `src/constraints.ts`: `NameConstraint`, `PositionConstraint`,
   `WebsiteConstraint`, `DescriptionConstraint`, `PasswordConstraint`
   (`MIN_LENGTH` + `STRONG`, composition-only regex — no `{8,}` baked in),
   `EmailConstraint` (`STANDARD`). Values sourced from api's current `rules.ts`,
   since it has the correct bound for every field including `position` (100, no
   minimum) and `website` (255).
-- `__tests__/validation.test.ts`: table tests with representative accepted and
+- `__tests__/constraints.test.ts`: table tests with representative accepted and
   rejected values for `PasswordConstraint.STRONG` and `EmailConstraint.STANDARD`
   — testing the declared policy, not equivalence with `z.email()`.
 
