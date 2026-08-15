@@ -1,6 +1,7 @@
 import type { DeviceInfo } from '@/net/http/device'
 
 import { authRepo, db, rbacRepo, teamRepo, userRepo } from '@/data'
+import { exchangeCodeForProfile } from '@/services/google'
 import {
   AuthProvider,
   getSelfServeUserDefaultPermissions,
@@ -88,4 +89,23 @@ export const logInOrSignUpWithGoogle = async (
     isNew,
     refreshToken
   }
+}
+
+export const completeGoogleOAuth = async (
+  code: string,
+  deviceInfo: DeviceInfo
+) => {
+  const profile = await exchangeCodeForProfile(code)
+
+  const { isNew, refreshToken } = await logInOrSignUpWithGoogle(
+    {
+      googleId: profile.id,
+      email: profile.email,
+      firstName: profile.firstName,
+      lastName: profile.lastName
+    },
+    deviceInfo
+  )
+
+  return { isNew, refreshToken }
 }

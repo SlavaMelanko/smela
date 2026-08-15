@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import type { ValidatedJsonCtx } from '@/routes/validated-ctx'
-
 import { rules } from '@/routes/rules'
 
 export const resendVerificationEmailBodySchema = z
@@ -21,9 +19,3 @@ export const resendVerificationEmailBodySchema = z
       .optional()
   })
   .strict()
-
-export type ResendVerificationEmailBody = z.infer<
-  typeof resendVerificationEmailBodySchema
->
-export type ResendVerificationEmailCtx =
-  ValidatedJsonCtx<ResendVerificationEmailBody>

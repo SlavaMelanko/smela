@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import type { ValidatedJsonCtx } from '@/routes/validated-ctx'
-
 import { rules } from '@/routes/rules'
 
 export const requestPasswordResetBodySchema = z
@@ -21,8 +19,3 @@ export const requestPasswordResetBodySchema = z
       .optional()
   })
   .strict()
-
-export type RequestPasswordResetBody = z.infer<
-  typeof requestPasswordResetBodySchema
->
-export type RequestPasswordResetCtx = ValidatedJsonCtx<RequestPasswordResetBody>

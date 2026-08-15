@@ -8,12 +8,13 @@ import {
   validateBody,
   validateParams
 } from '@/middleware'
+import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-
 import {
-  getTeamMemberPermissionsHandler,
-  updateTeamMemberPermissionsHandler
-} from './handler'
+  getTeamMemberPermissions,
+  updateTeamMemberPermissions
+} from '@/use-cases/user'
+
 import {
   memberPermissionsParamsSchema,
   updateMemberPermissionsBodySchema
@@ -26,7 +27,13 @@ teamMemberPermissionsRoute.get(
   validateParams(memberPermissionsParamsSchema),
   requirePermission(Permission.ViewTeams),
   requireTeamAccess,
-  getTeamMemberPermissionsHandler
+  async c => {
+    const { memberId } = c.req.valid('param')
+
+    const result = await getTeamMemberPermissions(memberId)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 teamMemberPermissionsRoute.patch(
@@ -35,5 +42,12 @@ teamMemberPermissionsRoute.patch(
   validateBody(updateMemberPermissionsBodySchema),
   requirePermission(Permission.ManageTeams),
   requireTeamAccess,
-  updateTeamMemberPermissionsHandler
+  async c => {
+    const { memberId } = c.req.valid('param')
+    const { permissions } = c.req.valid('json')
+
+    const result = await updateTeamMemberPermissions(memberId, permissions)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )

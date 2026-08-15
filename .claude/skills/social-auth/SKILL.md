@@ -49,7 +49,7 @@ account.
   get/set/delete.
 - `use-cases/auth/<provider>-oauth.ts` — `logInOrSignUpWith<Provider>`:
   find-or-create + link-by-email + activate `New→Active`.
-- `routes/auth/<provider>-oauth/` (`handler.ts`, `index.ts`) + mount in
+- `routes/auth/<provider>-oauth/` (`index.ts` with inline handlers) + mount in
   `routes/auth/index.ts`.
 - `data/scripts/seed.ts` — optionally seed a provider-only user for E2E.
 
