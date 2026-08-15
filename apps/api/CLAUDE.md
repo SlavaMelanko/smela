@@ -1,25 +1,9 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
-
 ## Project Overview
 
-TypeScript backend API built with Bun runtime and Hono framework. It provides
-authentication, user management, and role-based access control using PostgreSQL
-with Drizzle ORM.
-
-- **Runtime**: Bun with TypeScript
-- **Framework**: Hono web framework
-- **Database**: PostgreSQL (Docker)
-- **ORM**: Drizzle for type-safe queries
-- **Authentication**: JWT, bcrypt password hashing
-- **Email**: Transactional email support
-- **Validation**: Schema-based validation
-- **Security**: Rate limiting, CORS, CSP
-- **Testing**: Built-in test runner
-- **Code Quality**: ESLint & formatting
-- **CI/CD**: GitHub Actions pipeline
+TypeScript backend API: Bun + Hono + PostgreSQL (Docker) with Drizzle ORM + JWT
+auth. Provides authentication, user management, and role-based access control.
 
 ## Key Commands
 
@@ -43,53 +27,6 @@ include:
 **For detailed architecture documentation, see
 [src/README.md](src/README.md)** - Describes the layered architecture, module
 organization, and dependency rules.
-
-### Directory Structure
-
-- `/src/app.ts` - Application entry point
-- `/src/server.ts` - Server configuration with middleware setup
-- `/src/data/` - Data access layer
-  - `/schema/` - Database schema (users, auth, rbac, tokens) with inline enums
-  - `/clients/` - Database clients (PostgreSQL via postgres.js)
-  - `/repositories/` - Repository pattern for data access (auth, token, user)
-  - `/migrations/` - Drizzle ORM migrations
-  - `/scripts/` - Database scripts (see file headers for usage)
-- `/src/security/` - Security-related utilities
-  - `/jwt/` - JWT token generation and validation with claims
-  - `/password/` - Password hashing, validation, and regex patterns
-  - `/token/` - Token generation for email verification and password reset
-- `/src/crypto/` - Low-level cryptographic primitives (hashing, random bytes)
-- `/src/services/` - External service integrations
-  - `/email/` - Email provider abstraction (Ethereal, Resend)
-  - `/captcha/` - CAPTCHA verification (reCAPTCHA)
-- `/src/emails/` - Email templates and rendering
-  - `/templates/` - React Email templates and components
-  - `/renderers/` - Email renderer implementations
-  - `/content/` - Localized email content (en, uk)
-  - `/styles/` - Email styling utilities
-- `/src/middleware/` - Hono middleware stack
-  - `/auth/` - JWT access token authentication via Authorization header
-  - `/captcha/` - CAPTCHA verification middleware
-  - `/rate-limiter/` - Rate limiting per endpoint
-  - `/size-limiter/` - Request size limits
-  - `/secure-headers/` - Security headers (CSP, HSTS, etc.)
-  - `/cors/` - CORS configuration
-  - `/request-validator/` - Request validation middleware
-- `/src/routes/` - API endpoint handlers organized by domain
-  - `/@shared/` - Shared route utilities (data validation rules)
-  - `/auth/` - Authentication routes (login, signup, password reset, email
-    verification)
-  - `/user/` - User-specific routes (profile management)
-- `/src/lib/` - Shared utilities (email sender)
-- `/src/utils/` - Generic, reusable utilities
-  - `/async.ts` - Async/promise utilities (withTimeout, sleepFor,
-    exponentialBackoffDelay)
-- `/src/net/http/` - HTTP utilities (cookie handling, status codes)
-- `/src/env/` - Environment variable configuration and validation
-- `/src/errors/` - Custom error classes
-- `/src/handlers/` - Global error handlers
-- `/src/logging/` - Pino logger configuration and transports
-- `/src/types/` - Shared TypeScript type definitions
 
 ### Route Organization
 
@@ -127,12 +64,8 @@ ORM with full transaction support.
 
 ### Authentication Flow
 
-1. Signup creates user + auth record + verification token
-2. Email verification required before login (frontend handles email link, makes
-   POST to backend)
-3. JWT tokens used for authenticated requests (returned in Set-Cookie header)
-4. Password reset flow with one-time use tokens
-5. Rate limiting applied to auth endpoints
+Signup → email verification (required before login) → JWT for authenticated
+requests (returned in Set-Cookie header). Password reset uses one-time tokens.
 
 ### Frontend-Backend Architecture
 
@@ -163,22 +96,9 @@ For detailed mocking patterns:
     Stored in httpOnly cookies
   - Token rotation: New refresh token generated on each use, old token revoked
   - Rationale: Reduces attack surface, aligns with OAuth 2.0 best practices
-- **JWT Secret Rotation Strategy**:
-  - Two-secret pattern: `JWT_SECRET` (current) and `JWT_SECRET_PREVIOUS`
-    (optional)
-  - Signing: Always uses current secret (`JWT_SECRET`)
-  - Verification: Tries current secret first, falls back to previous secret if
-    set
-  - Recommended rotation period: 90 days (2-3x longest token lifetime)
-  - Grace period: 37 days (30 days max refresh token lifetime + 7 day buffer)
-  - Rotation process:
-    1. Generate new secret and set as `JWT_SECRET`
-    2. Move old secret to `JWT_SECRET_PREVIOUS`
-    3. Deploy changes
-    4. Wait grace period (37 days)
-    5. Remove `JWT_SECRET_PREVIOUS`
-  - Zero breaking changes: System works without `JWT_SECRET_PREVIOUS` for
-    backward compatibility
+- **JWT Secret Rotation**: Two-secret pattern — signing uses `JWT_SECRET`,
+  verification falls back to optional `JWT_SECRET_PREVIOUS` during the grace
+  period. Runbook: [README.md](README.md#-jwt-secret-rotation)
 - Flexible authentication support (cookies for web, Bearer tokens for
   API/mobile)
 - bcrypt password hashing with configurable salt rounds (default: 10 rounds)
@@ -208,14 +128,6 @@ For detailed mocking patterns:
 - HSTS, X-Frame-Options, X-Content-Type-Options
 - Permissions Policy restricting browser features
 - Environment-specific configurations (dev/staging/production)
-
-### Development Patterns
-
-- Repository pattern for data access
-- Clean separation between route handlers and business logic
-- Zod schemas for request/response validation
-- Structured error handling with custom error classes
-- Comprehensive logging with Pino
 
 ### Service Architecture Patterns
 
@@ -248,17 +160,6 @@ guide with real examples from the codebase.
     `MAX_RETRY_COUNT`, `API_TIMEOUT`)
   - **PascalCase**: Classes, types, interfaces, and enums (e.g., `UserService`,
     `Status`, `EmailRenderer`)
-- **Export Style**: Use direct exports on declarations instead of collecting
-  exports at the bottom of files
-  - Prefer `export interface MyInterface` over `interface MyInterface` +
-    `export { MyInterface }`
-  - Prefer `export const myFunction = () => {}` over
-    `const myFunction = () => {}` + `export { myFunction }`
-  - Prefer `export default class MyClass` over `class MyClass` +
-    `export { MyClass as default }`
-  - Use direct re-exports like
-    `export type { default as TypeName } from './module'` when possible
-  - ESLint rule enforces blank lines between export statements for readability
 - **Class Member Ordering**: Enforced via `@typescript-eslint/member-ordering`
   (see `eslint.config.mjs` for exact ordering)
 - **Return Types**: Lean on TypeScript inference for simple functions. Add
@@ -269,35 +170,8 @@ guide with real examples from the codebase.
 
 #### Comment Formatting Standards
 
-**Primary Rule**: Prefer descriptive and meaningful names for variables,
-functions, and classes instead of comments.
-
-**When comments are necessary:**
-
-- **Trailing Comments**: Keep short, no uppercase letter at beginning, no dot at
-  end
-
-  ```typescript
-  const timeout = 5000 // milliseconds
-  const isValid = checkAuth() // validates JWT token
-  ```
-
-- **Full-Line Comments (Single Sentence)**: Start with uppercase letter, no dot
-  at end
-
-  ```typescript
-  // Validate user permissions before processing request
-  const hasPermission = await checkUserRole(userId)
-  ```
-
-- **Full-Line Comments (Multiple Sentences)**: Start with uppercase letter, use
-  dots between sentences but not at the end:
-
-  ```typescript
-  // Initialize database connection pool. This ensures optimal performance
-  // for concurrent requests. The pool size is configured via environment variables
-  const pool = createConnectionPool()
-  ```
+See [Comment Formatting](../../CLAUDE.md#comment-formatting) in the root
+CLAUDE.md.
 
 #### Interface Implementation Naming Convention
 
@@ -347,30 +221,10 @@ relationship to the interface explicit.
 
 #### Utils Directory Guidelines
 
-The `/src/utils/` directory is for **generic, reusable utilities** that meet
-strict acceptance criteria to prevent it from becoming a dumping ground.
-
-**Acceptance Criteria for New Utilities:**
-
-1. **Genuinely Generic**: Must not be domain-specific or tied to business logic
-2. **Multiple Usage**: Must be used in 2+ places across different modules
-3. **Single Responsibility**: Each utility file must have a clear, focused
-   purpose
-4. **Well-Documented**: Must include JSDoc with examples and clear parameter
-   descriptions
-
-**Organization Rules:**
-
-- Name files by specific domain: `async.ts`, `string.ts`, `date.ts`
-- Avoid vague names like `helpers.ts`, `common.ts`, or `utils.ts`
-- One file per utility domain (e.g., all async/promise utilities in `async.ts`)
-- Reject utilities that are only used once - co-locate with primary usage
-  instead
-
-**Current Utilities:**
-
-- `async.ts` - Async/promise utilities (`withTimeout`, `sleepFor`,
-  `exponentialBackoffDelay`)
+`/src/utils/` is for genuinely generic utilities only: not domain-specific,
+used in 2+ modules, single responsibility, documented with JSDoc. Name files by
+domain (`async.ts`, `string.ts`), never `helpers.ts` or `common.ts`.
+Single-use utilities must co-locate with their usage instead.
 
 ### Environment Configuration
 
@@ -381,68 +235,17 @@ configuration examples.
 
 ### Email Configuration
 
-**Development (Ethereal):**
-
-- Uses Ethereal email service for development to avoid sending real emails
-- All emails are captured and can be viewed via preview URLs logged to console
-- Preview URLs are generated for each sent email (e.g.,
-  `https://ethereal.email/message/...`)
-- No real emails are sent, perfect for testing email flows
-
-**Production/Staging (Resend):**
-
-- Uses Resend email service for actual email delivery
-- Requires `EMAIL_RESEND_API_KEY` to be configured
-- Sender profiles (system/support/security) are stored in the
-  `email_sender_profiles` table and resolved at send time
-
-**Email Provider Selection:**
-
-- Automatically selects Ethereal for development environment
-- Automatically selects Resend for staging and production environments
-- Can be overridden by passing explicit provider type to `createEmailProvider()`
-
-### Static File Serving
-
-- Static files served from `/static/*` using built-in Hono/Bun `serveStatic`
-- Files located in `./static/` directory
-- Includes proper MIME type detection and caching headers
-- CORS configured per environment with appropriate origins
+Ethereal for development (no real emails sent, preview URLs logged to
+console); Resend for staging/production (requires `EMAIL_RESEND_API_KEY`).
+Sender profiles live in the `email_sender_profiles` table, resolved at send
+time.
 
 ### Middleware Stack Order
 
-Middleware is applied in this specific order in `server.ts`:
-
-1. **Security Headers** - CSP, HSTS, X-Frame-Options, etc.
-2. **CORS** - Cross-origin resource sharing configuration
-3. **Request ID** - Unique ID generation for request tracking
-4. **Logger** - Pino request/response logging
-5. **General Size Limiter** - 100KB default request size limit
-6. **General Rate Limiter** - 100 requests per 15 minutes
-7. **Auth-specific middleware** (for `/api/v1/auth/*`):
-   - Size Limiter: 10KB for auth endpoints
-   - Rate Limiter: 5 attempts per 15 minutes
-8. **User route auth** (for `/api/v1/user/*`): JWT validation, allows new users
-9. **User verified route auth** (for `/api/v1/user/verified/*`): JWT validation,
-   requires verified users
-10. **Admin route auth** (for `/api/v1/admin/*`): JWT validation, admin roles
-    only
+Middleware order matters — see [src/server.ts](src/server.ts) for the exact
+stack.
 
 ### CORS Configuration
 
-- **Development**: Automatically allows all localhost ports
-  (`http://localhost:*`, `http://127.0.0.1:*`)
-- **Test**: All origins allowed with credentials disabled
-- **Staging/Production**: Strict validation requiring `ALLOWED_ORIGINS`
-  environment variable
-- **Important**: In production/staging, `ALLOWED_ORIGINS` must be a
-  comma-separated list of allowed frontend URLs
-
-## Important Instruction Reminders
-
-Do what has been asked; nothing more, nothing less. NEVER create files unless
-they're absolutely necessary for achieving your goal. ALWAYS prefer editing an
-existing file to creating a new one. NEVER proactively create documentation
-files (\*.md) or README files. Only create documentation files if explicitly
-requested by the User. ALWAYS remember our specified rules about trailing vs
-full-line comments formatting
+In production/staging, `ALLOWED_ORIGINS` must be a comma-separated list of
+allowed frontend URLs. Development/test allow localhost/all origins.
