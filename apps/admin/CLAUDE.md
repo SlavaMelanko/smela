@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-This is the admin/owner version of the frontend application built with React
-19, Vite, React Compiler, TanStack Query, and Tailwind CSS v4 with shadcn/ui.
-This app is dedicated to admin and owner functionality only, separated from the
-main user app for security and bundle optimization.
+This is the admin/owner version of the frontend application built with React 19,
+Vite, React Compiler, TanStack Query, and Tailwind CSS v4 with shadcn/ui. This
+app is dedicated to admin and owner functionality only, separated from the main
+user app for security and bundle optimization.
 
 React Compiler handles memoization — no manual `useMemo`/`useCallback`.
 
