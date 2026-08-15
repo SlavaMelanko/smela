@@ -1,10 +1,10 @@
 ---
 name: rbac
 description:
-  Role-based and permission-based access control patterns for smela. Use when
-  adding routes, modifying auth guards, or implementing permission checks.
-  Triggers on server.ts, router.jsx, requirePermission, PrivateRoute,
-  requireAdminAuth, requireOwnerAuth.
+  Access control (RBAC/PBAC) patterns for smela. Triggers - role, permission,
+  access control, auth guard, protected route, admin route, 401, 403, forbidden,
+  requirePermission, PrivateRoute, requireAdminAuth, requireOwnerAuth,
+  action:resource, server.ts, router.jsx, permission.ts.
 ---
 
 # RBAC + PBAC Skill

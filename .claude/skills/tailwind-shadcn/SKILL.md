@@ -1,12 +1,10 @@
 ---
 name: tailwind-shadcn
 description:
-  Styling conventions for apps/web and apps/admin (Vite + React + Tailwind CSS +
-  shadcn/ui). All components, pages, and UI building blocks live in packages/ui.
-  Apps are thin shells that import from @smela/ui subpath exports. Enforces
-  clean component hierarchy with shadcn primitives in
-  packages/ui/src/components/ui composed into domain components in
-  packages/ui/src/components and pages in packages/ui/src/pages.
+  Styling and component placement conventions for apps/web and apps/admin.
+  Triggers - Tailwind, shadcn, CSS, styling, theme, dark mode, new component,
+  new page, component location, packages/ui, @smela/ui, cn(), variants,
+  primitives, index.css, design tokens.
 ---
 
 # Tailwind + shadcn/ui Styling Structure

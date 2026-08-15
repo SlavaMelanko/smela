@@ -1,9 +1,10 @@
 ---
 name: e2e-testing
 description:
-  Use when writing E2E tests with Playwright for apps/web, setting up test
-  infrastructure, or debugging flaky browser tests. Invoke for browser
-  automation, E2E tests, test flakiness, visual testing.
+  E2E testing for apps/web with Playwright. Triggers - e2e, Playwright, browser
+  automation, flaky test, visual testing, screenshot, page object, locator,
+  selector, apps/web/e2e, packages/e2e, playwright.config, bun run e2e,
+  headless.
 ---
 
 # E2E Testing (apps/web)

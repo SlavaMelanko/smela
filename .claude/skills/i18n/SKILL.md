@@ -1,8 +1,9 @@
 ---
 name: i18n
 description: |
-  Internationalization and localization patterns. Detecting hardcoded strings,
-  managing translations, locale files, RTL support.
+  Internationalization and localization patterns. Triggers - i18n, translation,
+  locale, language, hardcoded string, user-facing text, t(), useLocale,
+  packages/i18n, resources, en.json, RTL, plural, date format, currency.
 ---
 
 # i18n & Localization

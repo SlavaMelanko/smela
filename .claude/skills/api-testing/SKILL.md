@@ -1,10 +1,9 @@
 ---
 name: api-testing
 description:
-  Testing guidelines for Bun/TypeScript projects using bun:test framework. Use
-  when writing tests, creating test files, debugging test failures, setting up
-  mocks, or reviewing test code. Triggers on *.test.ts files, test-related
-  questions, mocking patterns, and coverage discussions.
+  Backend testing guidelines for apps/api (bun:test). Triggers - test, unit
+  test, *.test.ts, __tests__, bun:test, mock, ModuleMocker, spy, stub, coverage,
+  failing test, test setup, .env.test, describe, expect.
 ---
 
 # API Testing Skill
