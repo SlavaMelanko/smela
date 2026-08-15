@@ -1,11 +1,10 @@
 ---
 name: react-artisan
 description: |
-  Use when writing, reviewing, or refactoring React code in packages/ui or the
-  app shells (apps/web, apps/admin). Prioritizes clarity and maintainability;
-  optimizes only when proven necessary. Triggers on React components, hooks,
-  state management, component composition, context, layouts, and file/folder
-  organization.
+  React conventions for packages/ui and app shells (apps/web, apps/admin).
+  Triggers - React, component, hook, useState, useEffect, context, props,
+  state management, composition, layout, JSX, refactor component, re-render,
+  memo, file organization.
 ---
 
 # React Artisan

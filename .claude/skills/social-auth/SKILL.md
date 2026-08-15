@@ -1,11 +1,10 @@
 ---
 name: social-auth
 description:
-  End-to-end recipe for integrating a social auth provider (Google, GitHub,
-  Facebook, etc.) across apps/api and apps/web. Use when adding a new OAuth
-  provider, reviewing social-login code, or debugging the OAuth callback flow.
-  Triggers on AuthProvider, OAuth redirect/callback handlers, provider services,
-  "Continue with X" buttons, and account linking.
+  Recipe for adding a social auth provider across apps/api and apps/web.
+  Triggers - OAuth, social login, Google login, GitHub login, Facebook login,
+  "Continue with", AuthProvider, callback, redirect URI, token exchange,
+  authorization code, account linking, client ID, client secret.
 ---
 
 # Social Auth Integration
