@@ -3,12 +3,13 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { requirePermission, validateBody, validateParams } from '@/middleware'
+import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-
 import {
-  getEmailSenderProfileHandler,
-  updateEmailSenderProfileHandler
-} from './handler'
+  getEmailSenderProfile,
+  updateEmailSenderProfile
+} from '@/use-cases/admin'
+
 import {
   emailSenderProfileParamsSchema,
   updateEmailSenderProfileBodySchema
@@ -20,7 +21,13 @@ adminEmailSenderProfileByProfileRoute.get(
   '/',
   validateParams(emailSenderProfileParamsSchema),
   requirePermission(Permission.ViewSystem),
-  getEmailSenderProfileHandler
+  async c => {
+    const { profile } = c.req.valid('param')
+
+    const result = await getEmailSenderProfile(profile)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 adminEmailSenderProfileByProfileRoute.patch(
@@ -28,5 +35,12 @@ adminEmailSenderProfileByProfileRoute.patch(
   validateParams(emailSenderProfileParamsSchema),
   validateBody(updateEmailSenderProfileBodySchema),
   requirePermission(Permission.ManageSystem),
-  updateEmailSenderProfileHandler
+  async c => {
+    const { profile } = c.req.valid('param')
+    const body = c.req.valid('json')
+
+    const result = await updateEmailSenderProfile(profile, body)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )

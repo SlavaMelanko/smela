@@ -3,14 +3,15 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { requirePermission, validateBody, validateParams } from '@/middleware'
+import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-
 import {
-  cancelAdminInviteHandler,
-  getAdminHandler,
-  resendAdminInviteHandler,
-  updateAdminHandler
-} from './handler'
+  cancelAdminInvite,
+  getAdmin,
+  resendAdminInvite,
+  updateAdmin
+} from '@/use-cases/owner'
+
 import { ownerAdminPermissionsRoute } from './permissions'
 import { adminIdParamsSchema, updateAdminBodySchema } from './schema'
 
@@ -20,7 +21,13 @@ ownerAdminByIdRoute.get(
   '/',
   validateParams(adminIdParamsSchema),
   requirePermission(Permission.ViewAdmins),
-  getAdminHandler
+  async c => {
+    const { adminId } = c.req.valid('param')
+
+    const result = await getAdmin(adminId)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 ownerAdminByIdRoute.patch(
@@ -28,21 +35,41 @@ ownerAdminByIdRoute.patch(
   validateParams(adminIdParamsSchema),
   validateBody(updateAdminBodySchema),
   requirePermission(Permission.ManageAdmins),
-  updateAdminHandler
+  async c => {
+    const { adminId } = c.req.valid('param')
+    const body = c.req.valid('json')
+
+    const result = await updateAdmin(adminId, body)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 ownerAdminByIdRoute.post(
   '/resend-invite',
   validateParams(adminIdParamsSchema),
   requirePermission(Permission.ManageAdmins),
-  resendAdminInviteHandler
+  async c => {
+    const { adminId } = c.req.valid('param')
+    const { id: inviterId } = c.get('user')
+
+    const result = await resendAdminInvite(adminId, inviterId)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 ownerAdminByIdRoute.post(
   '/cancel-invite',
   validateParams(adminIdParamsSchema),
   requirePermission(Permission.ManageAdmins),
-  cancelAdminInviteHandler
+  async c => {
+    const { adminId } = c.req.valid('param')
+
+    const result = await cancelAdminInvite(adminId)
+
+    return c.json(result, HttpStatus.OK)
+  }
 )
 
 ownerAdminByIdRoute.route('/permissions', ownerAdminPermissionsRoute)

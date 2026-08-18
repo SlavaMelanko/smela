@@ -5,7 +5,7 @@ import type { AuthRecord, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
-import { logInOrSignUpWithGoogle } from '../google-oauth'
+import { completeGoogleOAuth, logInOrSignUpWithGoogle } from '../google-oauth'
 
 describe('Google OAuth', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -306,6 +306,47 @@ describe('Google OAuth', () => {
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ lastName: undefined }),
         expect.anything()
+      )
+    })
+  })
+
+  describe('completeGoogleOAuth', () => {
+    let mockExchangeCodeForProfile: any
+
+    beforeEach(async () => {
+      mockExchangeCodeForProfile = mock(async () => ({
+        id: 'google-id-123',
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe'
+      }))
+
+      await moduleMocker.mock('@/services/google', () => ({
+        exchangeCodeForProfile: mockExchangeCodeForProfile
+      }))
+    })
+
+    it('should exchange code and log the user in', async () => {
+      const result = await completeGoogleOAuth('auth-code', mockDeviceInfo)
+
+      expect(mockExchangeCodeForProfile).toHaveBeenCalledWith('auth-code')
+      expect(mockAuthRepo.findByProvider).toHaveBeenCalledWith(
+        AuthProvider.Google,
+        'google-id-123'
+      )
+      expect(result).toEqual({
+        isNew: false,
+        refreshToken: 'refresh_token_123'
+      })
+    })
+
+    it('should propagate profile exchange failure', async () => {
+      mockExchangeCodeForProfile.mockImplementation(async () => {
+        throw new Error('Google token exchange failed')
+      })
+
+      expect(completeGoogleOAuth('bad-code', mockDeviceInfo)).rejects.toThrow(
+        'Google token exchange failed'
       )
     })
   })

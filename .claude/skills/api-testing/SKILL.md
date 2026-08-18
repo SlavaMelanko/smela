@@ -24,10 +24,13 @@ Before writing custom test helpers, check existing utilities:
 
 - **`createTestApp(basePath, route, middleware[])`** - Creates test Hono app
   with error handler, logger, and optional middleware
+- **`withClaims(claims?)`** - Claims-injection middleware that stands in for
+  the real auth guard in route endpoint tests (pass role/permissions overrides)
 - **`ModuleMocker(import.meta.url)`** - Module mocking utility (see
   [mocking patterns](references/mocking-patterns.md))
 - **`post(app, url, body, headers)`** - POST request helper
 - **`get(app, url, headers)`** - GET request helper
+- **`patch(app, url, body, headers)`** - PATCH request helper
 - **`doRequest(app, url, method, body, headers)`** - Generic request helper
 
 Example:
@@ -48,6 +51,30 @@ const response = await post(app, '/api/v1/auth/signup', {
 - **Integration tests**: Use real database, mock external APIs only
 - **Endpoint tests**: Use `createTestApp()` with mocked services
 
+## Route Tests (`index.test.ts` convention)
+
+Route handlers are inlined in `index.ts` (Hono best practice), so they cannot
+be imported directly — never write direct handler unit tests. Instead, write
+endpoint tests through the mounted route:
+
+- One `index.test.ts` per route `index.ts`, co-located in `__tests__/` — the
+  test tree mirrors the route tree
+- Mount the top of the resource group (e.g. `adminUsersRoute`), never the
+  leaf, so `:id` params and nesting run the real chain
+- Top-level describe is the mount context (e.g. `'admin /users'`), nested
+  describes per route (e.g. `'GET /users/:id'`, `'PATCH /users/:id'`)
+- Replace the group-level auth guard with `withClaims(...)`; the guard itself
+  is covered in `middleware/auth/__tests__/`
+- Per route, in chain order (~5–7 tests):
+  1. Happy path — status, use case called with parsed input, response shape
+  2. Validation — one reject per input source (param/query/body), assert the
+     use case `not.toHaveBeenCalled()`; don't re-test `rules.ts` exhaustively
+  3. Permission — one 403 with claims missing the permission
+  4. Error propagation — use case throws → status via `onError`
+
+See `src/routes/admin/users/$id/__tests__/index.test.ts` for the canonical
+example.
+
 ## Environment Setup
 
 - Use `apps/api/.env.test` for test-specific variables
@@ -57,6 +84,8 @@ const response = await post(app, '/api/v1/auth/signup', {
 ## Mocking Strategy
 
 - Mock only business logic dependencies (repositories, external APIs)
+- Route endpoint tests mock at the use-case boundary only (`@/use-cases/*` via
+  `ModuleMocker`) — validators, `requirePermission`, and `onError` run real
 - Use global mocks for shared services (CAPTCHA, email) — don't redefine per
   test
 - No real database or network calls — all I/O must be mocked
