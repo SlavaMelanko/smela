@@ -8,7 +8,7 @@ import { config } from '../../../config'
 import { getThemeStyles } from '../../../styles'
 import Copyright from './copyright'
 import MetadataContainer from './metadata'
-import SocialMediaLinks from './social-media-links'
+import SocialLinks from './social-links'
 
 interface Props {
   styles: ThemeStyles
@@ -31,7 +31,7 @@ const Footer = ({
       alignItems: 'center'
     }}
   >
-    <SocialMediaLinks styles={styles} socialLinks={socialLinks} />
+    <SocialLinks styles={styles} socialLinks={socialLinks} />
     <Copyright styles={styles} companyName={companyName} />
     {metadata && <MetadataContainer {...metadata} />}
   </div>

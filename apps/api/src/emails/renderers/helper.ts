@@ -10,15 +10,15 @@ export const renderEmail = async <T>(
     data: T
     content: any
     styles: any
-    metadata?: Metadata
     socialLinks?: SocialLink[]
+    metadata?: Metadata
   }) => ReactElement,
   props: {
     data: T
     content: any
     styles: any
-    metadata?: Metadata
     socialLinks?: SocialLink[]
+    metadata?: Metadata
   }
 ): Promise<{ html: string; text: string }> => {
   const reactElement = template(props)

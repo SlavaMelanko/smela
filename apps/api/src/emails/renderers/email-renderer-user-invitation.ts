@@ -20,8 +20,8 @@ export default class UserInvitationEmailRenderer implements EmailRenderer<UserIn
   async render(
     data: UserInvitationEmailData,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
-    socialLinks?: SocialLink[]
+    socialLinks?: SocialLink[],
+    metadata?: Metadata
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).userInvitation
     const styles = getThemeStyles(userPreferences?.theme)
@@ -31,8 +31,8 @@ export default class UserInvitationEmailRenderer implements EmailRenderer<UserIn
       data,
       content,
       styles,
-      metadata,
-      socialLinks
+      socialLinks,
+      metadata
     })
 
     return {

@@ -13,7 +13,7 @@ export interface EmailRenderer<T = any> {
   render: (
     data: T,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
-    socialLinks?: SocialLink[]
+    socialLinks?: SocialLink[],
+    metadata?: Metadata
   ) => Promise<RenderedEmail>
 }

@@ -6,9 +6,9 @@ import { describe, expect, it } from 'bun:test'
 import type { SocialLink } from '../../../../social-links'
 
 import { getThemeStyles } from '../../../../styles'
-import SocialMediaLinks from '../social-media-links'
+import SocialLinks from '../social-links'
 
-describe('SocialMediaLinks', () => {
+describe('SocialLinks', () => {
   const styles = getThemeStyles('light')
 
   it('renders a link with the stored svg for each social link', async () => {
@@ -21,7 +21,7 @@ describe('SocialMediaLinks', () => {
     ]
 
     const html = await render(
-      <SocialMediaLinks styles={styles} socialLinks={socialLinks} />
+      <SocialLinks styles={styles} socialLinks={socialLinks} />
     )
 
     expect(html).toContain('href="https://facebook.com/example"')
@@ -36,7 +36,7 @@ describe('SocialMediaLinks', () => {
     ]
 
     const html = await render(
-      <SocialMediaLinks styles={styles} socialLinks={socialLinks} />
+      <SocialLinks styles={styles} socialLinks={socialLinks} />
     )
 
     expect(html).not.toContain('facebook')
@@ -44,9 +44,7 @@ describe('SocialMediaLinks', () => {
   })
 
   it('renders nothing when there are no social links', async () => {
-    const html = await render(
-      <SocialMediaLinks styles={styles} socialLinks={[]} />
-    )
+    const html = await render(<SocialLinks styles={styles} socialLinks={[]} />)
 
     expect(html).not.toContain('<a ')
   })

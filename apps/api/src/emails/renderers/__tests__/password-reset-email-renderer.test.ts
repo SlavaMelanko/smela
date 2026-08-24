@@ -88,7 +88,12 @@ describe('Password Reset Email Renderer', () => {
   })
 
   it('should include metadata when provided', async () => {
-    const result = await renderer.render(mockData, undefined, mockMetadata)
+    const result = await renderer.render(
+      mockData,
+      undefined,
+      undefined,
+      mockMetadata
+    )
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -106,12 +111,7 @@ describe('Password Reset Email Renderer', () => {
       }
     ]
 
-    const result = await renderer.render(
-      mockData,
-      undefined,
-      undefined,
-      mockSocialLinks
-    )
+    const result = await renderer.render(mockData, undefined, mockSocialLinks)
 
     expect(result.html).toContain('https://facebook.com/example')
     expect(result.html).toContain('<path d="M0 0" />')
@@ -126,6 +126,7 @@ describe('Password Reset Email Renderer', () => {
     const result = await renderer.render(
       mockData,
       userPreferences,
+      undefined,
       mockMetadata
     )
 

@@ -19,16 +19,16 @@ interface Props {
   }
   content: PasswordResetEmailContent
   styles: ThemeStyles
-  metadata?: Metadata
   socialLinks?: SocialLink[]
+  metadata?: Metadata
 }
 
 const PasswordResetEmail = ({
   data,
   content: c,
   styles: s,
-  metadata,
-  socialLinks
+  socialLinks,
+  metadata
 }: Props) => {
   const { firstName, resetUrl } = data
 
@@ -37,8 +37,8 @@ const PasswordResetEmail = ({
       subject={c.subject}
       previewText={c.previewText}
       styles={s}
-      metadata={metadata}
       socialLinks={socialLinks}
+      metadata={metadata}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 

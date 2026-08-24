@@ -21,16 +21,16 @@ interface Props {
   }
   content: UserInvitationContent
   styles: ThemeStyles
-  metadata?: Metadata
   socialLinks?: SocialLink[]
+  metadata?: Metadata
 }
 
 const UserInvitationEmail = ({
   data,
   content: c,
   styles: s,
-  metadata,
-  socialLinks
+  socialLinks,
+  metadata
 }: Props) => {
   const { firstName, inviteUrl, inviterName, teamName } = data
 
@@ -39,8 +39,8 @@ const UserInvitationEmail = ({
       subject={c.subject(teamName)}
       previewText={c.previewText(teamName)}
       styles={s}
-      metadata={metadata}
       socialLinks={socialLinks}
+      metadata={metadata}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 

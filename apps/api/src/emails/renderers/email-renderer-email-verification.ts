@@ -18,8 +18,8 @@ export default class EmailVerificationEmailRenderer implements EmailRenderer<Ema
   async render(
     data: EmailVerificationEmailData,
     userPreferences?: UserPreferences,
-    metadata?: Metadata,
-    socialLinks?: SocialLink[]
+    socialLinks?: SocialLink[],
+    metadata?: Metadata
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).emailVerification
     const styles = getThemeStyles(userPreferences?.theme)
@@ -29,8 +29,8 @@ export default class EmailVerificationEmailRenderer implements EmailRenderer<Ema
       data,
       content,
       styles,
-      metadata,
-      socialLinks
+      socialLinks,
+      metadata
     })
 
     return {

@@ -44,8 +44,8 @@ export class EmailDispatcher {
     const { subject, html, text } = await renderer.render(
       data,
       userPreferences,
-      metadata,
-      socialLinks
+      socialLinks,
+      metadata
     )
 
     const payload: EmailPayload = {

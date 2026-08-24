@@ -16,10 +16,7 @@ interface Props {
 
 // Stored SVGs are expected to use stroke/fill="currentColor" so styles.icon's
 // color applies via inheritance from the wrapping span
-const SocialMediaLinks = ({
-  styles,
-  socialLinks
-}: Props): React.ReactElement => (
+const SocialLinks = ({ styles, socialLinks }: Props): React.ReactElement => (
   <div
     style={{
       display: 'flex',
@@ -41,7 +38,7 @@ const SocialMediaLinks = ({
   </div>
 )
 
-SocialMediaLinks.PreviewProps = {
+SocialLinks.PreviewProps = {
   styles: getThemeStyles('light'),
   socialLinks: [
     {
@@ -62,4 +59,4 @@ SocialMediaLinks.PreviewProps = {
   ]
 }
 
-export default SocialMediaLinks
+export default SocialLinks

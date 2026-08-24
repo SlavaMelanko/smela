@@ -13,8 +13,8 @@ export interface Props {
   subject: string
   previewText: string
   styles: ThemeStyles
-  metadata?: Metadata
   socialLinks?: SocialLink[]
+  metadata?: Metadata
   children: React.ReactNode
 }
 
@@ -36,8 +36,8 @@ export const BaseEmail = ({
   subject,
   previewText,
   styles,
-  metadata,
   socialLinks,
+  metadata,
   children
 }: Props) => {
   const emailStyles = getStyles(styles)
@@ -53,7 +53,7 @@ export const BaseEmail = ({
           <Header styles={styles} />
           {children}
         </Container>
-        <Footer styles={styles} metadata={metadata} socialLinks={socialLinks} />
+        <Footer styles={styles} socialLinks={socialLinks} metadata={metadata} />
       </Body>
     </Html>
   )
