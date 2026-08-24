@@ -387,8 +387,8 @@
   "system": {
     "description": "Configure system-level settings.",
     "tabs": {
-      "emailSenderProfiles": "Email Sender Profiles",
-      "socialLinks": "Social Links"
+      "emailSenderProfiles": "Email sender profiles",
+      "socialLinks": "Social links"
     },
     "title": "System"
   },
