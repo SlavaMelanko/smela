@@ -1,6 +1,7 @@
 import type { UserPreferences } from '@/types'
 
 import type { Metadata } from '../metadata'
+import type { SocialLink } from '../social-links'
 
 export interface RenderedEmail {
   subject: string
@@ -12,6 +13,7 @@ export interface EmailRenderer<T = any> {
   render: (
     data: T,
     userPreferences?: UserPreferences,
-    metadata?: Metadata
+    metadata?: Metadata,
+    socialLinks?: SocialLink[]
   ) => Promise<RenderedEmail>
 }

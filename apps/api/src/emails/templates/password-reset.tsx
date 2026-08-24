@@ -4,6 +4,7 @@ import { Link, Text } from '@react-email/components'
 
 import type { PasswordResetEmailContent } from '../content'
 import type { Metadata } from '../metadata'
+import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
 
 import getContent from '../content'
@@ -19,13 +20,15 @@ interface Props {
   content: PasswordResetEmailContent
   styles: ThemeStyles
   metadata?: Metadata
+  socialLinks?: SocialLink[]
 }
 
 const PasswordResetEmail = ({
   data,
   content: c,
   styles: s,
-  metadata
+  metadata,
+  socialLinks
 }: Props) => {
   const { firstName, resetUrl } = data
 
@@ -35,6 +38,7 @@ const PasswordResetEmail = ({
       previewText={c.previewText}
       styles={s}
       metadata={metadata}
+      socialLinks={socialLinks}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 

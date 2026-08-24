@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import type { UserPreferences } from '@/types'
 
 import type { Metadata } from '../../metadata'
+import type { SocialLink } from '../../social-links'
 import type { PasswordResetEmailData } from '../email-renderer-password-reset'
 
 import PasswordResetEmailRenderer from '../email-renderer-password-reset'
@@ -94,6 +95,26 @@ describe('Password Reset Email Renderer', () => {
     expect(result).toHaveProperty('text')
     // Note: Metadata usage depends on template implementation
     // This test ensures metadata doesn't break rendering
+  })
+
+  it('should include social links in the footer when provided', async () => {
+    const mockSocialLinks: SocialLink[] = [
+      {
+        network: 'facebook',
+        url: 'https://facebook.com/example',
+        svg: '<svg><path d="M0 0" /></svg>'
+      }
+    ]
+
+    const result = await renderer.render(
+      mockData,
+      undefined,
+      undefined,
+      mockSocialLinks
+    )
+
+    expect(result.html).toContain('https://facebook.com/example')
+    expect(result.html).toContain('<path d="M0 0" />')
   })
 
   it('should handle complete parameters', async () => {
