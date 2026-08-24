@@ -7,6 +7,9 @@ const ownerCredentials = {
   password: process.env.VITE_E2E_OWNER_PASSWORD
 }
 
+// Matches profiles seeded by apps/api/src/data/scripts/seed.ts
+const seededEmailSenderProfiles = ['System', 'Support', 'Security']
+
 test.describe('Owner: System', () => {
   test('shows page header and seeded email sender profiles', async ({
     page,
@@ -27,11 +30,27 @@ test.describe('Owner: System', () => {
     // Table must list every seeded sender profile
     await expect(page.getByRole('table')).toBeVisible()
 
-    for (const profile of Object.values(t.emailSenderProfile.profile.values)) {
+    for (const profile of seededEmailSenderProfiles) {
       await expect(
         page.getByRole('cell', { name: profile, exact: true })
       ).toBeVisible()
     }
+
+    await logOut(page, t)
+  })
+
+  test('shows seeded social links', async ({ page, t, login }) => {
+    await login(ownerCredentials)
+
+    await page.getByRole('button', { name: t.sidebar.system }).click()
+    await expect(page).toHaveURL('/system')
+
+    await page.getByRole('tab', { name: t.system.tabs.socialLinks }).click()
+
+    await expect(page.getByRole('table')).toBeVisible()
+
+    // Row 0 is the header — at least one data row must be seeded
+    await expect(page.getByRole('row').nth(1)).toBeVisible()
 
     await logOut(page, t)
   })
