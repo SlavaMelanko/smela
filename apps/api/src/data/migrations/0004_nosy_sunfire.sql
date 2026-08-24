@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_social_link_network" ON "social_links" USING btree ("network");

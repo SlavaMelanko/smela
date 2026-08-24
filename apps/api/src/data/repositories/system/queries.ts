@@ -3,10 +3,10 @@ import { eq } from 'drizzle-orm'
 import type { EmailSenderProfile } from '@/types'
 
 import type { Database } from '../../clients'
-import type { EmailSenderProfileRecord } from './types'
+import type { EmailSenderProfileRecord, SocialLinkRecord } from './types'
 
 import { db } from '../../clients'
-import { emailSenderProfilesTable } from '../../schema'
+import { emailSenderProfilesTable, socialLinksTable } from '../../schema'
 
 export const findEmailSenderProfiles = async (
   tx?: Database
@@ -28,4 +28,12 @@ export const findEmailSenderProfile = async (
     .where(eq(emailSenderProfilesTable.profile, profile))
 
   return senderProfile
+}
+
+export const findSocialLinks = async (
+  tx?: Database
+): Promise<SocialLinkRecord[]> => {
+  const executor = tx || db
+
+  return executor.select().from(socialLinksTable)
 }
