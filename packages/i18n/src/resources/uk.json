@@ -85,12 +85,7 @@
   "emailSenderProfile": {
     "empty": "Профілів відправника email ще немає.",
     "profile": {
-      "label": "Профіль",
-      "values": {
-        "security": "Безпека",
-        "support": "Підтримка",
-        "system": "Система"
-      }
+      "label": "Профіль"
     }
   },
   "error": {

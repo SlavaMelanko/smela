@@ -85,12 +85,7 @@
   "emailSenderProfile": {
     "empty": "No email sender profiles yet.",
     "profile": {
-      "label": "Profile",
-      "values": {
-        "security": "Security",
-        "support": "Support",
-        "system": "System"
-      }
+      "label": "Profile"
     }
   },
   "error": {

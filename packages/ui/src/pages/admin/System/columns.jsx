@@ -5,7 +5,11 @@ export const getColumns = (t, formatDate) => {
     {
       accessorKey: 'profile',
       header: label('profile'),
-      cell: info => t(`emailSenderProfile.profile.values.${info.getValue()}`)
+      cell: info => {
+        const profile = info.getValue()
+
+        return profile.charAt(0).toUpperCase() + profile.slice(1)
+      }
     },
     {
       accessorKey: 'name',
