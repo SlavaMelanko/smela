@@ -1,5 +1,8 @@
 import { systemRepo } from '@/data'
+import { logger } from '@/logging'
 import { EmailSenderProfile } from '@/types'
+import { hour } from '@/utils/chrono'
+import { TtlCache } from '@/utils/ttl-cache'
 
 export { EmailSenderProfile }
 
@@ -15,40 +18,26 @@ export interface EmailSenderProfileProvider {
   invalidate: () => void
 }
 
-class InMemorySource {
-  private static readonly TTL_MS = 60 * 60 * 1000 // 1 hour
-
-  private senders?: EmailSenders
-  private expiresAt = 0
-
-  async get(): Promise<EmailSenders> {
-    if (!this.senders || Date.now() >= this.expiresAt) {
-      this.senders = await this.load()
-      this.expiresAt = Date.now() + InMemorySource.TTL_MS
-    }
-
-    return this.senders
-  }
-
-  invalidate() {
-    this.senders = undefined
-    this.expiresAt = 0
-  }
-
-  private async load(): Promise<EmailSenders> {
+const loadProfiles = async (): Promise<EmailSenders> => {
+  try {
     const records = await systemRepo.findEmailSenderProfiles()
+
+    logger.debug({ count: records.length }, 'Loaded email sender profiles')
 
     return new Map(
       records.map(({ profile, email, name }) => [profile, { email, name }])
     )
+  } catch (error) {
+    logger.error({ error }, 'Failed to load email sender profiles')
+    throw error
   }
 }
 
 export class DatabaseEmailSenderProfileProvider implements EmailSenderProfileProvider {
-  private readonly source = new InMemorySource()
+  private readonly cache = new TtlCache(hour(), loadProfiles)
 
   async getSender(profile: EmailSenderProfile): Promise<EmailSender> {
-    const senders = await this.source.get()
+    const senders = await this.cache.get()
 
     const sender =
       senders.get(profile) ?? senders.get(EmailSenderProfile.System)
@@ -61,6 +50,6 @@ export class DatabaseEmailSenderProfileProvider implements EmailSenderProfilePro
   }
 
   invalidate() {
-    this.source.invalidate()
+    this.cache.invalidate()
   }
 }

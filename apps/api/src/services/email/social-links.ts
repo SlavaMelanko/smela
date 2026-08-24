@@ -1,6 +1,9 @@
 import type { SocialLink } from '@/emails'
 
 import { systemRepo } from '@/data'
+import { logger } from '@/logging'
+import { hour } from '@/utils/chrono'
+import { TtlCache } from '@/utils/ttl-cache'
 
 export type { SocialLink }
 
@@ -9,41 +12,28 @@ export interface SocialLinksProvider {
   invalidate: () => void
 }
 
-class InMemorySource {
-  private static readonly TTL_MS = 60 * 60 * 1000 // 1 hour
-
-  private links?: SocialLink[]
-  private expiresAt = 0
-
-  async get(): Promise<SocialLink[]> {
-    if (!this.links || Date.now() >= this.expiresAt) {
-      this.links = await this.load()
-      this.expiresAt = Date.now() + InMemorySource.TTL_MS
-    }
-
-    return this.links
-  }
-
-  invalidate() {
-    this.links = undefined
-    this.expiresAt = 0
-  }
-
-  private async load(): Promise<SocialLink[]> {
+const loadSocialLinks = async (): Promise<SocialLink[]> => {
+  try {
     const records = await systemRepo.findSocialLinks()
 
+    logger.debug({ count: records.length }, 'Loaded social links')
+
     return records.map(({ network, url, svg }) => ({ network, url, svg }))
+  } catch (error) {
+    logger.error({ error }, 'Failed to load social links')
+
+    return []
   }
 }
 
 export class DatabaseSocialLinksProvider implements SocialLinksProvider {
-  private readonly source = new InMemorySource()
+  private readonly cache = new TtlCache(hour(), loadSocialLinks)
 
   async getSocialLinks(): Promise<SocialLink[]> {
-    return this.source.get()
+    return this.cache.get()
   }
 
   invalidate() {
-    this.source.invalidate()
+    this.cache.invalidate()
   }
 }

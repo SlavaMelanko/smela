@@ -79,6 +79,17 @@ describe('DatabaseSocialLinksProvider', () => {
     expect(socialLinks).toEqual([])
   })
 
+  it('returns an empty array when the database query fails', async () => {
+    await mockRepo(async () => {
+      throw new Error('Database unavailable')
+    })
+    const provider = new DatabaseSocialLinksProvider()
+
+    const socialLinks = await provider.getSocialLinks()
+
+    expect(socialLinks).toEqual([])
+  })
+
   it('serves repeated lookups from the cache within the TTL', async () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseSocialLinksProvider()
