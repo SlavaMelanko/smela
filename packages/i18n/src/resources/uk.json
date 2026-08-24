@@ -85,12 +85,7 @@
   "emailSenderProfile": {
     "empty": "Профілів відправника email ще немає.",
     "profile": {
-      "label": "Профіль",
-      "values": {
-        "security": "Безпека",
-        "support": "Підтримка",
-        "system": "Система"
-      }
+      "label": "Профіль"
     }
   },
   "error": {
@@ -374,6 +369,9 @@
     "users": "Користувачі"
   },
   "signUp": "Зареєструватися",
+  "socialLink": {
+    "empty": "Соціальних посилань поки немає."
+  },
   "status": {
     "error": {
       "invalid": "Виберіть правильний статус.",
@@ -395,7 +393,8 @@
   "system": {
     "description": "Налаштуйте системні параметри.",
     "tabs": {
-      "emailSenderProfiles": "Профілі відправника email"
+      "emailSenderProfiles": "Профілі відправника email",
+      "socialLinks": "Соціальні мережі"
     },
     "title": "Система"
   },
@@ -421,6 +420,13 @@
       "name": "Ім'я",
       "position": "$t(position.label)",
       "status": "$t(status.name)"
+    },
+    "socialLinks": {
+      "createdAt": "$t(createdAt)",
+      "network": "Соц. мережа",
+      "svg": "Іконка",
+      "updatedAt": "$t(updatedAt)",
+      "url": "Посилання"
     },
     "teams": {
       "createdAt": "$t(createdAt)",

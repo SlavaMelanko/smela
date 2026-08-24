@@ -4,7 +4,8 @@ import { systemApi } from '@ui/services/backend'
 export const systemKeys = {
   all: () => ['system'],
   emailSenderProfiles: () => [...systemKeys.all(), 'emailSenderProfiles'],
-  emailSenderProfile: profile => [...systemKeys.emailSenderProfiles(), profile]
+  emailSenderProfile: profile => [...systemKeys.emailSenderProfiles(), profile],
+  socialLinks: () => [...systemKeys.all(), 'socialLinks']
 }
 
 // Rarely changes — safe to cache longer than admin-facing team/user data.
@@ -23,6 +24,22 @@ export const useEmailSenderProfiles = () => {
 
   return {
     senderProfiles: data?.senderProfiles ?? [],
+    isPending,
+    isError,
+    error,
+    refetch
+  }
+}
+
+export const useSocialLinks = () => {
+  const { data, isPending, isError, error, refetch } = useQuery({
+    queryKey: systemKeys.socialLinks(),
+    queryFn: () => systemApi.listSocialLinks(),
+    ...systemQueryOptions
+  })
+
+  return {
+    socialLinks: data?.socialLinks ?? [],
     isPending,
     isError,
     error,

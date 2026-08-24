@@ -10,6 +10,12 @@ export const getEmailSenderProfiles = async () => {
   return { senderProfiles }
 }
 
+export const getSocialLinks = async () => {
+  const socialLinks = await systemRepo.findSocialLinks()
+
+  return { socialLinks }
+}
+
 export const getEmailSenderProfile = async (profile: EmailSenderProfile) => {
   const senderProfile = await systemRepo.findEmailSenderProfile(profile)
 

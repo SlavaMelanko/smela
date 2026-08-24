@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
+import {
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar
+} from 'drizzle-orm/pg-core'
 
 import { EmailSenderProfile } from '@/types'
 
@@ -23,3 +31,22 @@ export const emailSenderProfilesTable = pgTable('email_sender_profiles', {
     .notNull()
     .defaultNow()
 })
+
+export const socialLinksTable = pgTable(
+  'social_links',
+  {
+    id: uuid('id')
+      .primaryKey()
+      .$defaultFn(() => sql`uuidv7()`),
+    network: varchar('network', { length: 32 }).notNull(),
+    url: text('url').notNull(),
+    svg: text('svg').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow()
+  },
+  table => [uniqueIndex('unique_social_link_network').on(table.network)]
+)

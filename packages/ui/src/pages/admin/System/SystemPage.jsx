@@ -3,12 +3,14 @@ import { SystemPageHeader } from '@ui/components/PageHeader'
 import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
-import { Mail } from 'lucide-react'
+import { Link, Mail } from 'lucide-react'
 
 import { EmailSenderProfilesTab } from './EmailSenderProfilesTab'
+import { SocialLinksTab } from './SocialLinksTab'
 
 const SystemTab = {
-  EMAIL_SENDER_PROFILES: 'email-sender-profiles'
+  EMAIL_SENDER_PROFILES: 'email-sender-profiles',
+  SOCIAL_LINKS: 'social-links'
 }
 
 export const SystemPage = () => {
@@ -23,6 +25,11 @@ export const SystemPage = () => {
       value: SystemTab.EMAIL_SENDER_PROFILES,
       icon: Mail,
       label: () => t('system.tabs.emailSenderProfiles')
+    },
+    {
+      value: SystemTab.SOCIAL_LINKS,
+      icon: Link,
+      label: () => t('system.tabs.socialLinks')
     }
   ]
 
@@ -36,6 +43,9 @@ export const SystemPage = () => {
         <TabsLine tabs={tabs} />
         <TabsContent value={SystemTab.EMAIL_SENDER_PROFILES}>
           <EmailSenderProfilesTab />
+        </TabsContent>
+        <TabsContent value={SystemTab.SOCIAL_LINKS}>
+          <SocialLinksTab />
         </TabsContent>
       </Tabs>
     </PageContent>

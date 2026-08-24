@@ -85,12 +85,7 @@
   "emailSenderProfile": {
     "empty": "No email sender profiles yet.",
     "profile": {
-      "label": "Profile",
-      "values": {
-        "security": "Security",
-        "support": "Support",
-        "system": "System"
-      }
+      "label": "Profile"
     }
   },
   "error": {
@@ -368,6 +363,9 @@
     "users": "Users"
   },
   "signUp": "Sign up",
+  "socialLink": {
+    "empty": "No social links yet."
+  },
   "status": {
     "error": {
       "invalid": "Select a valid status.",
@@ -389,7 +387,8 @@
   "system": {
     "description": "Configure system-level settings.",
     "tabs": {
-      "emailSenderProfiles": "Email Sender Profiles"
+      "emailSenderProfiles": "Email sender profiles",
+      "socialLinks": "Social links"
     },
     "title": "System"
   },
@@ -415,6 +414,13 @@
       "name": "Name",
       "position": "$t(position.label)",
       "status": "$t(status.name)"
+    },
+    "socialLinks": {
+      "createdAt": "$t(createdAt)",
+      "network": "Network",
+      "svg": "Icon",
+      "updatedAt": "$t(updatedAt)",
+      "url": "URL"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
