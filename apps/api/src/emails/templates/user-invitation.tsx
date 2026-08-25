@@ -3,7 +3,6 @@
 import { Link, Text } from '@react-email/components'
 
 import type { UserInvitationContent } from '../content'
-import type { Metadata } from '../metadata'
 import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
 
@@ -22,15 +21,13 @@ interface Props {
   content: UserInvitationContent
   styles: ThemeStyles
   socialLinks?: SocialLink[]
-  metadata?: Metadata
 }
 
 const UserInvitationEmail = ({
   data,
   content: c,
   styles: s,
-  socialLinks,
-  metadata
+  socialLinks
 }: Props) => {
   const { firstName, inviteUrl, inviterName, teamName } = data
 
@@ -40,7 +37,6 @@ const UserInvitationEmail = ({
       previewText={c.previewText(teamName)}
       styles={s}
       socialLinks={socialLinks}
-      metadata={metadata}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 

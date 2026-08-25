@@ -3,7 +3,6 @@
 import { Link, Text } from '@react-email/components'
 
 import type { EmailVerificationContent } from '../content'
-import type { Metadata } from '../metadata'
 import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
 
@@ -20,15 +19,13 @@ interface Props {
   content: EmailVerificationContent
   styles: ThemeStyles
   socialLinks?: SocialLink[]
-  metadata?: Metadata
 }
 
 const EmailVerificationEmail = ({
   data,
   content: c,
   styles: s,
-  socialLinks,
-  metadata
+  socialLinks
 }: Props) => {
   const { firstName, verificationUrl } = data
 
@@ -38,7 +35,6 @@ const EmailVerificationEmail = ({
       previewText={c.previewText}
       styles={s}
       socialLinks={socialLinks}
-      metadata={metadata}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 

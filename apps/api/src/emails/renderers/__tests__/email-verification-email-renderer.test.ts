@@ -2,7 +2,6 @@ import { describe, expect, it } from 'bun:test'
 
 import type { UserPreferences } from '@/types'
 
-import type { Metadata } from '../../metadata'
 import type { SocialLink } from '../../social-links'
 import type { EmailVerificationEmailData } from '../email-renderer-email-verification'
 
@@ -14,11 +13,6 @@ describe('Email Verification Email Renderer', () => {
   const mockData: EmailVerificationEmailData = {
     firstName: 'John',
     verificationUrl: 'https://example.com/verify?token=abc123'
-  }
-
-  const mockMetadata: Metadata = {
-    emailId: 'test-email-id',
-    sentAt: '2024-01-01T00:00:00Z'
   }
 
   it('should render email verification email with required fields', async () => {
@@ -85,21 +79,6 @@ describe('Email Verification Email Renderer', () => {
     expect(lightResult.subject).toBe(darkResult.subject) // Subject should be same
   })
 
-  it('should include metadata when provided', async () => {
-    const result = await renderer.render(
-      mockData,
-      undefined,
-      undefined,
-      mockMetadata
-    )
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    // Note: Metadata usage depends on template implementation
-    // This test ensures metadata doesn't break rendering
-  })
-
   it('should include social links in the footer when provided', async () => {
     const mockSocialLinks: SocialLink[] = [
       {
@@ -121,12 +100,7 @@ describe('Email Verification Email Renderer', () => {
       theme: 'light'
     }
 
-    const result = await renderer.render(
-      mockData,
-      userPreferences,
-      undefined,
-      mockMetadata
-    )
+    const result = await renderer.render(mockData, userPreferences)
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')

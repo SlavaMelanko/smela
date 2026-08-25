@@ -2,7 +2,6 @@
 
 import { Body, Container, Head, Html, Preview } from '@react-email/components'
 
-import type { Metadata } from '../../metadata'
 import type { SocialLink } from '../../social-links'
 import type { ThemeStyles } from '../../styles'
 
@@ -14,7 +13,6 @@ export interface Props {
   previewText: string
   styles: ThemeStyles
   socialLinks?: SocialLink[]
-  metadata?: Metadata
   children: React.ReactNode
 }
 
@@ -37,7 +35,6 @@ export const BaseEmail = ({
   previewText,
   styles,
   socialLinks,
-  metadata,
   children
 }: Props) => {
   const emailStyles = getStyles(styles)
@@ -53,7 +50,7 @@ export const BaseEmail = ({
           <Header styles={styles} />
           {children}
         </Container>
-        <Footer styles={styles} socialLinks={socialLinks} metadata={metadata} />
+        <Footer styles={styles} socialLinks={socialLinks} />
       </Body>
     </Html>
   )

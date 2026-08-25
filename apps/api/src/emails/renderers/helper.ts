@@ -2,7 +2,6 @@ import type { ReactElement } from 'react'
 
 import { render } from '@react-email/components'
 
-import type { Metadata } from '../metadata'
 import type { SocialLink } from '../social-links'
 
 export const renderEmail = async <T>(
@@ -11,14 +10,12 @@ export const renderEmail = async <T>(
     content: any
     styles: any
     socialLinks?: SocialLink[]
-    metadata?: Metadata
   }) => ReactElement,
   props: {
     data: T
     content: any
     styles: any
     socialLinks?: SocialLink[]
-    metadata?: Metadata
   }
 ): Promise<{ html: string; text: string }> => {
   const reactElement = template(props)

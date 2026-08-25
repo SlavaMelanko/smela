@@ -1,14 +1,9 @@
-import type { Metadata, UserPreferences } from '@/emails'
+import type { UserPreferences } from '@/emails'
 
 import type { EmailType } from './email-type'
 import type { EmailPayload, EmailProvider } from './providers'
 import type { EmailRegistry } from './registry'
 import type { SocialLinksProvider } from './social-links'
-
-const createMetadata = (): Metadata => ({
-  emailId: Bun.randomUUIDv7(),
-  sentAt: new Date().toISOString()
-})
 
 const mergeWithDefaultPreferences = (
   preferences?: UserPreferences
@@ -39,13 +34,11 @@ export class EmailDispatcher {
 
     const renderer = await definition.getRenderer()
     const userPreferences = mergeWithDefaultPreferences(preferences)
-    const metadata = createMetadata()
     const socialLinks = await this.socialLinksProvider.list()
     const { subject, html, text } = await renderer.render(
       data,
       userPreferences,
-      socialLinks,
-      metadata
+      socialLinks
     )
 
     const payload: EmailPayload = {

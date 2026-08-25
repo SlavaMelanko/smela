@@ -1,20 +1,19 @@
 /** @jsxImportSource react */
 
-import type { Metadata } from '../../../metadata'
+const createMetadata = () => ({
+  'Email-ID': Bun.randomUUIDv7(),
+  'Sent-At': new Date().toISOString()
+})
 
-interface Props extends Metadata {}
-
-const MetadataContainer = ({ emailId, sentAt }: Props): React.ReactElement => (
+const MetadataContainer = (): React.ReactElement => (
   <div>
     {/* Hidden email tracking information. */}
-    {emailId && <div style={{ display: 'none' }}>{`Email-ID: ${emailId}`}</div>}
-    {sentAt && <div style={{ display: 'none' }}>{`Sent-At: ${sentAt}`}</div>}
+    {Object.entries(createMetadata()).map(([key, value]) => (
+      <div key={key} style={{ display: 'none' }}>
+        {`${key}: ${value}`}
+      </div>
+    ))}
   </div>
 )
-
-MetadataContainer.PreviewProps = {
-  emailId: 'email-12345',
-  sentAt: new Date().toISOString()
-} as Props
 
 export default MetadataContainer

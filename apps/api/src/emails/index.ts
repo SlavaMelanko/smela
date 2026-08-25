@@ -1,5 +1,3 @@
-export type { Metadata } from './metadata'
-
 export * from './renderers'
 
 export type { SocialLink } from './social-links'

@@ -1,6 +1,5 @@
 import type { UserPreferences } from '@/types'
 
-import type { Metadata } from '../metadata'
 import type { SocialLink } from '../social-links'
 import type { EmailRenderer, RenderedEmail } from './email-renderer'
 
@@ -18,8 +17,7 @@ export default class EmailVerificationEmailRenderer implements EmailRenderer<Ema
   async render(
     data: EmailVerificationEmailData,
     userPreferences?: UserPreferences,
-    socialLinks?: SocialLink[],
-    metadata?: Metadata
+    socialLinks?: SocialLink[]
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).emailVerification
     const styles = getThemeStyles(userPreferences?.theme)
@@ -29,8 +27,7 @@ export default class EmailVerificationEmailRenderer implements EmailRenderer<Ema
       data,
       content,
       styles,
-      socialLinks,
-      metadata
+      socialLinks
     })
 
     return {

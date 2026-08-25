@@ -1,6 +1,5 @@
 /** @jsxImportSource react */
 
-import type { Metadata } from '../../../metadata'
 import type { SocialLink } from '../../../social-links'
 import type { ThemeStyles } from '../../../styles'
 
@@ -14,14 +13,12 @@ interface Props {
   styles: ThemeStyles
   companyName?: string
   socialLinks?: SocialLink[]
-  metadata?: Metadata
 }
 
 const Footer = ({
   styles,
   companyName = config.company.name,
-  socialLinks = [],
-  metadata
+  socialLinks = []
 }: Props): React.ReactElement => (
   <div
     style={{
@@ -33,7 +30,7 @@ const Footer = ({
   >
     <SocialLinks styles={styles} socialLinks={socialLinks} />
     <Copyright styles={styles} companyName={companyName} />
-    {metadata && <MetadataContainer {...metadata} />}
+    <MetadataContainer />
   </div>
 )
 

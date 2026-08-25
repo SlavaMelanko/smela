@@ -1,6 +1,5 @@
 import type { UserPreferences } from '@/types'
 
-import type { Metadata } from '../metadata'
 import type { SocialLink } from '../social-links'
 import type { EmailRenderer, RenderedEmail } from './email-renderer'
 
@@ -18,8 +17,7 @@ export default class PasswordResetEmailRenderer implements EmailRenderer<Passwor
   async render(
     data: PasswordResetEmailData,
     userPreferences?: UserPreferences,
-    socialLinks?: SocialLink[],
-    metadata?: Metadata
+    socialLinks?: SocialLink[]
   ): Promise<RenderedEmail> {
     const content = getContent(userPreferences?.locale).passwordReset
     const styles = getThemeStyles(userPreferences?.theme)
@@ -29,8 +27,7 @@ export default class PasswordResetEmailRenderer implements EmailRenderer<Passwor
       data,
       content,
       styles,
-      socialLinks,
-      metadata
+      socialLinks
     })
 
     return {
