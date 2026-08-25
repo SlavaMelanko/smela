@@ -9,8 +9,7 @@ export const userInvitationEmail = (
 ) =>
   defineEmail(
     EmailType.USER_INVITATION,
-    async () =>
-      emailSenderProfileProvider.getSender(EmailSenderProfile.Support),
+    async () => emailSenderProfileProvider.get(EmailSenderProfile.Support),
     async () => {
       const { UserInvitationEmailRenderer } = await import('@/emails')
 

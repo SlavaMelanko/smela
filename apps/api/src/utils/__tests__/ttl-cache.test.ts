@@ -22,14 +22,14 @@ describe('TtlCache', () => {
 
   it('loads the value on first access', async () => {
     const { load } = countedLoader(1)
-    const cache = new TtlCache(ONE_HOUR_MS, load)
+    const cache = new TtlCache(load, ONE_HOUR_MS)
 
     expect(await cache.get()).toBe(1)
   })
 
   it('serves repeated lookups from the cache within the TTL', async () => {
     const { load, calls } = countedLoader(1)
-    const cache = new TtlCache(ONE_HOUR_MS, load)
+    const cache = new TtlCache(load, ONE_HOUR_MS)
 
     await cache.get()
     await cache.get()
@@ -40,7 +40,7 @@ describe('TtlCache', () => {
   it('reloads after the TTL expires', async () => {
     setSystemTime(new Date('2026-01-01T00:00:00Z'))
     const { load, calls } = countedLoader(1)
-    const cache = new TtlCache(ONE_HOUR_MS, load)
+    const cache = new TtlCache(load, ONE_HOUR_MS)
 
     await cache.get()
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
@@ -51,7 +51,7 @@ describe('TtlCache', () => {
 
   it('reloads after being invalidated within the TTL', async () => {
     const { load, calls } = countedLoader(1)
-    const cache = new TtlCache(ONE_HOUR_MS, load)
+    const cache = new TtlCache(load, ONE_HOUR_MS)
 
     await cache.get()
     cache.invalidate()
@@ -62,7 +62,7 @@ describe('TtlCache', () => {
 
   it('serves the updated value after being invalidated', async () => {
     let value = 1
-    const cache = new TtlCache(ONE_HOUR_MS, async () => value)
+    const cache = new TtlCache(async () => value, ONE_HOUR_MS)
 
     await cache.get()
     value = 2

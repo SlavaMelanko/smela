@@ -2,13 +2,12 @@ import type { SocialLink } from '@/emails'
 
 import { systemRepo } from '@/data'
 import { logger } from '@/logging'
-import { hour } from '@/utils/chrono'
 import { TtlCache } from '@/utils/ttl-cache'
 
 export type { SocialLink }
 
 export interface SocialLinksProvider {
-  getSocialLinks: () => Promise<SocialLink[]>
+  list: () => Promise<SocialLink[]>
   invalidate: () => void
 }
 
@@ -27,9 +26,9 @@ const loadSocialLinks = async (): Promise<SocialLink[]> => {
 }
 
 export class DatabaseSocialLinksProvider implements SocialLinksProvider {
-  private readonly cache = new TtlCache(hour(), loadSocialLinks)
+  private readonly cache = new TtlCache(loadSocialLinks)
 
-  async getSocialLinks(): Promise<SocialLink[]> {
+  async list(): Promise<SocialLink[]> {
     return this.cache.get()
   }
 

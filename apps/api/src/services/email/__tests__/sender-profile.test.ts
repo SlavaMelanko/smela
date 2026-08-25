@@ -57,7 +57,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.getSender(EmailSenderProfile.Support)
+    const sender = await provider.get(EmailSenderProfile.Support)
 
     expect(sender).toEqual({ email: 'support@example.com', name: 'Support' })
   })
@@ -66,7 +66,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.getSender(EmailSenderProfile.Security)
+    const sender = await provider.get(EmailSenderProfile.Security)
 
     expect(sender).toEqual({ email: 'system@example.com', name: 'System' })
   })
@@ -77,7 +77,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
 
     expect.hasAssertions()
     try {
-      await provider.getSender(EmailSenderProfile.Security)
+      await provider.get(EmailSenderProfile.Security)
     } catch (error) {
       expect((error as Error).message).toBe(
         'No email sender profile found for: security'
@@ -89,8 +89,8 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.getSender(EmailSenderProfile.Support)
-    await provider.getSender(EmailSenderProfile.System)
+    await provider.get(EmailSenderProfile.Support)
+    await provider.get(EmailSenderProfile.System)
 
     expect(queries()).toBe(1)
   })
@@ -100,9 +100,9 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderProfile.Support)
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderProfile.Support)
 
     expect(queries()).toBe(2)
   })
@@ -111,9 +111,9 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderProfile.Support)
     provider.invalidate()
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderProfile.Support)
 
     expect(queries()).toBe(2)
   })
@@ -123,11 +123,11 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     await mockRepo(async () => rows)
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.getSender(EmailSenderProfile.System)
+    await provider.get(EmailSenderProfile.System)
     rows = [record(EmailSenderProfile.System, 'new@example.com', 'New')]
     provider.invalidate()
 
-    const sender = await provider.getSender(EmailSenderProfile.System)
+    const sender = await provider.get(EmailSenderProfile.System)
 
     expect(sender.email).toBe('new@example.com')
   })

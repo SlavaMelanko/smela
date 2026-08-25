@@ -40,7 +40,7 @@ export class EmailDispatcher {
     const renderer = await definition.getRenderer()
     const userPreferences = mergeWithDefaultPreferences(preferences)
     const metadata = createMetadata()
-    const socialLinks = await this.socialLinksProvider.getSocialLinks()
+    const socialLinks = await this.socialLinksProvider.list()
     const { subject, html, text } = await renderer.render(
       data,
       userPreferences,

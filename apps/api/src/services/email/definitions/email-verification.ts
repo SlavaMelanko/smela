@@ -9,7 +9,7 @@ export const emailVerificationEmail = (
 ) =>
   defineEmail(
     EmailType.EMAIL_VERIFICATION,
-    async () => emailSenderProfileProvider.getSender(EmailSenderProfile.System),
+    async () => emailSenderProfileProvider.get(EmailSenderProfile.System),
     async () => {
       const { EmailVerificationEmailRenderer } = await import('@/emails')
 

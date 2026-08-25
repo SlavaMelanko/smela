@@ -54,7 +54,7 @@ describe('DatabaseSocialLinksProvider', () => {
     await mockCountedRepo()
     const provider = new DatabaseSocialLinksProvider()
 
-    const socialLinks = await provider.getSocialLinks()
+    const socialLinks = await provider.list()
 
     expect(socialLinks).toEqual([
       {
@@ -74,7 +74,7 @@ describe('DatabaseSocialLinksProvider', () => {
     await mockRepo(async () => [])
     const provider = new DatabaseSocialLinksProvider()
 
-    const socialLinks = await provider.getSocialLinks()
+    const socialLinks = await provider.list()
 
     expect(socialLinks).toEqual([])
   })
@@ -85,7 +85,7 @@ describe('DatabaseSocialLinksProvider', () => {
     })
     const provider = new DatabaseSocialLinksProvider()
 
-    const socialLinks = await provider.getSocialLinks()
+    const socialLinks = await provider.list()
 
     expect(socialLinks).toEqual([])
   })
@@ -94,8 +94,8 @@ describe('DatabaseSocialLinksProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseSocialLinksProvider()
 
-    await provider.getSocialLinks()
-    await provider.getSocialLinks()
+    await provider.list()
+    await provider.list()
 
     expect(queries()).toBe(1)
   })
@@ -105,9 +105,9 @@ describe('DatabaseSocialLinksProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseSocialLinksProvider()
 
-    await provider.getSocialLinks()
+    await provider.list()
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
-    await provider.getSocialLinks()
+    await provider.list()
 
     expect(queries()).toBe(2)
   })
@@ -116,9 +116,9 @@ describe('DatabaseSocialLinksProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseSocialLinksProvider()
 
-    await provider.getSocialLinks()
+    await provider.list()
     provider.invalidate()
-    await provider.getSocialLinks()
+    await provider.list()
 
     expect(queries()).toBe(2)
   })
@@ -130,11 +130,11 @@ describe('DatabaseSocialLinksProvider', () => {
     await mockRepo(async () => rows)
     const provider = new DatabaseSocialLinksProvider()
 
-    await provider.getSocialLinks()
+    await provider.list()
     rows = [record('facebook', 'https://facebook.com/new', '<svg>new</svg>')]
     provider.invalidate()
 
-    const socialLinks = await provider.getSocialLinks()
+    const socialLinks = await provider.list()
 
     expect(socialLinks[0].url).toBe('https://facebook.com/new')
   })

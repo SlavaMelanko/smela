@@ -1,10 +1,12 @@
+import { hour } from './chrono'
+
 export class TtlCache<T> {
   private value?: T
   private expiresAt = 0
 
   constructor(
-    private readonly ttlMs: number,
-    private readonly load: () => Promise<T>
+    private readonly load: () => Promise<T>,
+    private readonly ttlMs: number = hour()
   ) {}
 
   async get(): Promise<T> {
