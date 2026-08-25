@@ -31,10 +31,10 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   ]
 
   const mockRepo = async (
-    findEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
+    listEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
   ) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { findEmailSenderProfiles }
+      systemRepo: { listEmailSenderProfiles }
     }))
 
   const mockCountedRepo = async (rows = records) => {

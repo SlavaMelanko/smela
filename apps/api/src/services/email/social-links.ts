@@ -14,7 +14,7 @@ export interface SocialLinksProvider {
 
 const loadSocialLinks = async (): Promise<SocialLink[]> => {
   try {
-    const records = await systemRepo.findSocialLinks()
+    const records = await systemRepo.listSocialLinks()
 
     logger.debug({ count: records.length }, 'Loaded social links')
 

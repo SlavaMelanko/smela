@@ -29,9 +29,9 @@ describe('DatabaseSocialLinksProvider', () => {
     record('github', 'https://github.com/example', '<svg>github</svg>')
   ]
 
-  const mockRepo = async (findSocialLinks: () => Promise<SocialLinkRecord[]>) =>
+  const mockRepo = async (listSocialLinks: () => Promise<SocialLinkRecord[]>) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { findSocialLinks }
+      systemRepo: { listSocialLinks }
     }))
 
   const mockCountedRepo = async (rows = records) => {

@@ -36,7 +36,7 @@ describe('getEmailSenderProfiles', () => {
     mockFindEmailSenderProfiles = mock(async () => mockSenderProfiles)
 
     await moduleMocker.mock('@/data', () => ({
-      systemRepo: { findEmailSenderProfiles: mockFindEmailSenderProfiles }
+      systemRepo: { listEmailSenderProfiles: mockFindEmailSenderProfiles }
     }))
   })
 

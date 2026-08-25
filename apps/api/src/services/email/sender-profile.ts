@@ -20,7 +20,7 @@ export interface EmailSenderProfileProvider {
 
 const loadProfiles = async (): Promise<EmailSenders> => {
   try {
-    const records = await systemRepo.findEmailSenderProfiles()
+    const records = await systemRepo.listEmailSenderProfiles()
 
     logger.debug({ count: records.length }, 'Loaded email sender profiles')
 

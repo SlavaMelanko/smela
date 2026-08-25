@@ -8,7 +8,7 @@ import type { EmailSenderProfileRecord, SocialLinkRecord } from './types'
 import { db } from '../../clients'
 import { emailSenderProfilesTable, socialLinksTable } from '../../schema'
 
-export const findEmailSenderProfiles = async (
+export const listEmailSenderProfiles = async (
   tx?: Database
 ): Promise<EmailSenderProfileRecord[]> => {
   const executor = tx || db
@@ -30,7 +30,7 @@ export const findEmailSenderProfile = async (
   return senderProfile
 }
 
-export const findSocialLinks = async (
+export const listSocialLinks = async (
   tx?: Database
 ): Promise<SocialLinkRecord[]> => {
   const executor = tx || db

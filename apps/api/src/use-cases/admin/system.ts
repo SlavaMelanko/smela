@@ -5,13 +5,13 @@ import { AppError, ErrorCode } from '@/errors'
 import { emailAgent } from '@/services'
 
 export const getEmailSenderProfiles = async () => {
-  const senderProfiles = await systemRepo.findEmailSenderProfiles()
+  const senderProfiles = await systemRepo.listEmailSenderProfiles()
 
   return { senderProfiles }
 }
 
 export const getSocialLinks = async () => {
-  const socialLinks = await systemRepo.findSocialLinks()
+  const socialLinks = await systemRepo.listSocialLinks()
 
   return { socialLinks }
 }
