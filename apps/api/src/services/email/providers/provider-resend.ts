@@ -3,8 +3,7 @@ import { Resend } from 'resend'
 import { logger } from '@/logging'
 import { exponentialBackoffDelay, sleepFor } from '@/utils/async'
 
-import type { EmailPayload } from './payload'
-import type { EmailProvider } from './provider'
+import type { EmailPayload, EmailProvider } from './provider'
 
 export class ResendEmailProvider implements EmailProvider {
   private readonly resend: Resend

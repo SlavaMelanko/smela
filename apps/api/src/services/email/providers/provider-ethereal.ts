@@ -5,8 +5,7 @@ import nodemailer from 'nodemailer'
 
 import { logger } from '@/logging'
 
-import type { EmailPayload } from './payload'
-import type { EmailProvider } from './provider'
+import type { EmailPayload, EmailProvider } from './provider'
 
 export class EtherealEmailProvider implements EmailProvider {
   private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>
