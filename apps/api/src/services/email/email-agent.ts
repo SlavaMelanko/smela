@@ -53,7 +53,7 @@ export class EmailAgent {
     const verificationUrl = `${env.FE_USER_URL}/verify-email?token=${token}`
 
     await this.dispatcher.send(
-      EmailType.EMAIL_VERIFICATION,
+      EmailType.EmailVerification,
       email,
       {
         firstName,
@@ -73,7 +73,7 @@ export class EmailAgent {
     const resetUrl = `${getFeBaseUrl(role)}/reset-password?token=${token}`
 
     await this.dispatcher.send(
-      EmailType.PASSWORD_RESET,
+      EmailType.PasswordReset,
       email,
       {
         firstName,
@@ -95,7 +95,7 @@ export class EmailAgent {
     const inviteUrl = `${getFeBaseUrl(role)}/accept-invite?token=${token}`
 
     await this.dispatcher.send(
-      EmailType.USER_INVITATION,
+      EmailType.UserInvitation,
       email,
       {
         firstName,
