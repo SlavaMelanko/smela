@@ -1,10 +1,8 @@
+import type { EmailProvider } from '@/emails'
+
+import { EtherealEmailProvider, ResendEmailProvider } from '@/emails'
 import env from '@/env'
 import { logger } from '@/logging'
-
-import type { EmailProvider } from './provider'
-
-import { EtherealEmailProvider } from './provider-ethereal'
-import { ResendEmailProvider } from './provider-resend'
 
 export type EmailProviderType = 'resend' | 'ethereal' // | etc.
 

@@ -1,6 +1,5 @@
 import { Resend } from 'resend'
 
-import { logger } from '@/logging'
 import { exponentialBackoffDelay, sleepFor } from '@/utils/async'
 
 import type { EmailMessage, EmailProvider } from './provider'
@@ -29,35 +28,14 @@ export class ResendEmailProvider implements EmailProvider {
       })
 
       if (!error) {
-        if (attempt > 0) {
-          logger.info(
-            {
-              subject: msg.subject
-            },
-            `Email sent successfully after ${attempt + 1} attempts`
-          )
-        }
-
         return
       }
 
       if (attempt === maxRetries) {
-        logger.error(
-          error,
-          `Failed to send email after ${attempt + 1}/${maxRetries + 1} attempts`,
-          { subject: msg.subject }
+        throw new Error(
+          `Failed to send email after ${attempt + 1}/${maxRetries + 1} attempts: ${error.message}`
         )
-
-        return
       }
-
-      logger.warn(
-        error,
-        `Email attempt ${attempt + 1}/${maxRetries + 1} failed, retrying...`,
-        {
-          subject: msg.subject
-        }
-      )
 
       await sleepFor(exponentialBackoffDelay(1000, attempt))
     }

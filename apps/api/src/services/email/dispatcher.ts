@@ -1,7 +1,12 @@
-import type { SocialLinksProvider, UserPreferences } from '@/emails'
+import type {
+  EmailProvider,
+  SocialLinksProvider,
+  UserPreferences
+} from '@/emails'
+
+import { logger } from '@/logging'
 
 import type { EmailType } from './email-type'
-import type { EmailProvider } from './providers'
 import type { EmailRegistry } from './registry'
 
 const mergeWithDefaultPreferences = (
@@ -40,15 +45,24 @@ export class EmailDispatcher {
       socialLinks
     )
 
-    await this.provider.send({
-      to,
-      from: {
-        email,
-        name
-      },
-      subject,
-      html,
-      text
-    })
+    try {
+      const info = await this.provider.send({
+        to,
+        from: {
+          email,
+          name
+        },
+        subject,
+        html,
+        text
+      })
+
+      if (info) {
+        logger.info(info)
+      }
+    } catch (error) {
+      logger.error({ error, to, subject }, 'Failed to send email')
+      throw error
+    }
   }
 }

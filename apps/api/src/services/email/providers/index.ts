@@ -1,2 +1,2 @@
 export { createEmailProvider, type EmailProviderType } from './factory'
-export type { EmailMessage, EmailProvider } from './provider'
+export type { EmailMessage, EmailProvider } from '@/emails'
