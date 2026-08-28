@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 
-import type { UserPreferences } from '@/types'
-
 import type { SocialLink } from '../../social-links'
+import type { UserPreferences } from '../../user-preferences'
 import type { PasswordResetEmailData } from '../email-renderer-password-reset'
 
 import PasswordResetEmailRenderer from '../email-renderer-password-reset'

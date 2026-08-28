@@ -10,4 +10,8 @@ export { EmailSenderType } from './sender-profile'
 
 export type { SocialLink, SocialLinksProvider } from './social-links'
 
-export type { UserPreferences } from '@/types'
+export type {
+  SupportedLocale,
+  Theme,
+  UserPreferences
+} from './user-preferences'

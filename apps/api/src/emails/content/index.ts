@@ -1,4 +1,4 @@
-import type { SupportedLocale } from '@/types'
+import type { SupportedLocale } from '../user-preferences'
 
 import * as en from './en'
 import * as uk from './uk'

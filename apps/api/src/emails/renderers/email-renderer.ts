@@ -1,6 +1,5 @@
-import type { UserPreferences } from '@/types'
-
 import type { SocialLink } from '../social-links'
+import type { UserPreferences } from '../user-preferences'
 
 export interface RenderedEmail {
   subject: string

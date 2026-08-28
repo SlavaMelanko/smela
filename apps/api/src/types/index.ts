@@ -17,14 +17,10 @@ export {
   isUserOrAdmin,
   default as Role
 } from './role'
-export type {
-  SupportedLocale,
-  Theme,
-  UserPreferences
-} from './user-preferences'
 export {
   isActive,
   isActiveOnly,
   isNewOrActive,
   default as UserStatus
 } from './user-status'
+export type { UserPreferences } from '@/services/email'

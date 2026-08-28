@@ -95,6 +95,7 @@ export const rules = {
     limit: z.coerce.number().int().min(1).max(100).default(25)
   },
 
+  // Keep these literals in sync with apps/api/src/emails/user-preferences.ts
   preferences: {
     locale: z.enum(['en', 'uk']).default('en'),
     theme: z.enum(['light', 'dark']).default('light')
