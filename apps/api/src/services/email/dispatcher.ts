@@ -1,7 +1,7 @@
 import type { UserPreferences } from '@/emails'
 
 import type { EmailType } from './email-type'
-import type { EmailPayload, EmailProvider } from './providers'
+import type { EmailProvider } from './providers'
 import type { EmailRegistry } from './registry'
 import type { SocialLinksProvider } from './social-links'
 
@@ -41,7 +41,7 @@ export class EmailDispatcher {
       socialLinks
     )
 
-    const payload: EmailPayload = {
+    await this.provider.send({
       to,
       from: {
         email,
@@ -50,8 +50,6 @@ export class EmailDispatcher {
       subject,
       html,
       text
-    }
-
-    await this.provider.send(payload)
+    })
   }
 }

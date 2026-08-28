@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 import { logger } from '@/logging'
 import { exponentialBackoffDelay, sleepFor } from '@/utils/async'
 
-import type { EmailPayload, EmailProvider } from './provider'
+import type { EmailMessage, EmailProvider } from './provider'
 
 export class ResendEmailProvider implements EmailProvider {
   private readonly resend: Resend
@@ -16,23 +16,23 @@ export class ResendEmailProvider implements EmailProvider {
     this.resend = new Resend(apiKey)
   }
 
-  async send(payload: EmailPayload): Promise<void> {
+  async send(msg: EmailMessage): Promise<void> {
     const maxRetries = 2
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       const { error } = await this.resend.emails.send({
-        from: `${payload.from.name} <${payload.from.email}>`,
-        to: Array.isArray(payload.to) ? payload.to : [payload.to],
-        subject: payload.subject,
-        html: payload.html,
-        text: payload.text
+        from: `${msg.from.name} <${msg.from.email}>`,
+        to: Array.isArray(msg.to) ? msg.to : [msg.to],
+        subject: msg.subject,
+        html: msg.html,
+        text: msg.text
       })
 
       if (!error) {
         if (attempt > 0) {
           logger.info(
             {
-              subject: payload.subject
+              subject: msg.subject
             },
             `Email sent successfully after ${attempt + 1} attempts`
           )
@@ -45,7 +45,7 @@ export class ResendEmailProvider implements EmailProvider {
         logger.error(
           error,
           `Failed to send email after ${attempt + 1}/${maxRetries + 1} attempts`,
-          { subject: payload.subject }
+          { subject: msg.subject }
         )
 
         return
@@ -55,7 +55,7 @@ export class ResendEmailProvider implements EmailProvider {
         error,
         `Email attempt ${attempt + 1}/${maxRetries + 1} failed, retrying...`,
         {
-          subject: payload.subject
+          subject: msg.subject
         }
       )
 

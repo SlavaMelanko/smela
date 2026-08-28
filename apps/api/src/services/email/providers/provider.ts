@@ -1,4 +1,4 @@
-export interface EmailPayload {
+export interface EmailMessage {
   to: string | string[]
   from: {
     email: string
@@ -10,5 +10,5 @@ export interface EmailPayload {
 }
 
 export interface EmailProvider {
-  send: (payload: EmailPayload) => Promise<void>
+  send: (msg: EmailMessage) => Promise<void>
 }

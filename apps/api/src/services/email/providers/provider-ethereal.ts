@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 
 import { logger } from '@/logging'
 
-import type { EmailPayload, EmailProvider } from './provider'
+import type { EmailMessage, EmailProvider } from './provider'
 
 export class EtherealEmailProvider implements EmailProvider {
   private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>
@@ -33,31 +33,31 @@ export class EtherealEmailProvider implements EmailProvider {
     })
   }
 
-  async send(payload: EmailPayload): Promise<void> {
+  async send(msg: EmailMessage): Promise<void> {
     try {
       const info = await this.transporter.sendMail({
-        from: `${payload.from.name} <${payload.from.email}>`,
-        to: Array.isArray(payload.to) ? payload.to.join(', ') : payload.to,
-        subject: payload.subject,
-        html: payload.html,
-        text: payload.text
+        from: `${msg.from.name} <${msg.from.email}>`,
+        to: Array.isArray(msg.to) ? msg.to.join(', ') : msg.to,
+        subject: msg.subject,
+        html: msg.html,
+        text: msg.text
       })
 
       const previewUrl = nodemailer.getTestMessageUrl(info)
 
       logger.info({
         msg: 'Ethereal email sent',
-        subject: payload.subject,
+        subject: msg.subject,
         messageId: info.messageId,
         previewUrl: previewUrl ?? 'No preview URL available',
-        to: payload.to
+        to: msg.to
       })
     } catch (error: unknown) {
       logger.error({
         msg: 'Failed to send email via Ethereal',
         error: error instanceof Error ? error.message : 'Unknown error',
-        to: payload.to,
-        subject: payload.subject
+        to: msg.to,
+        subject: msg.subject
       })
     }
   }
