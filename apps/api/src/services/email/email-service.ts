@@ -8,8 +8,8 @@ import type {
 import { logger } from '@/logging'
 
 import { createEmailProvider } from './provider-factory'
-import { DatabaseEmailSenderProfileResolver } from './sender-profile'
-import { DatabaseSocialLinksResolver } from './social-links'
+import { ApiEmailSenderProfileResolver } from './sender-profile'
+import { ApiSocialLinksResolver } from './social-links'
 
 export class EmailService {
   constructor(
@@ -48,6 +48,6 @@ export class EmailService {
 
 export const emailService = new EmailService(
   createEmailProvider(),
-  new DatabaseEmailSenderProfileResolver(),
-  new DatabaseSocialLinksResolver()
+  new ApiEmailSenderProfileResolver(),
+  new ApiSocialLinksResolver()
 )

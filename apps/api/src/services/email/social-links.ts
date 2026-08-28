@@ -18,7 +18,7 @@ const loadSocialLinks = async (): Promise<SocialLink[]> => {
   }
 }
 
-export class DatabaseSocialLinksResolver implements SocialLinksResolver {
+export class ApiSocialLinksResolver implements SocialLinksResolver {
   private readonly cache = new TtlCache(loadSocialLinks)
 
   async list(): Promise<SocialLink[]> {

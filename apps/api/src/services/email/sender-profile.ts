@@ -24,7 +24,7 @@ const loadProfiles = async (): Promise<EmailSenderProfiles> => {
   }
 }
 
-export class DatabaseEmailSenderProfileResolver implements EmailSenderProfileResolver {
+export class ApiEmailSenderProfileResolver implements EmailSenderProfileResolver {
   private readonly cache = new TtlCache(loadProfiles)
 
   async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
