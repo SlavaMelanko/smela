@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
+import type { CompanyProfile } from '../../company'
 import type { SocialLink } from '../../social-links'
 import type { UserPreferences } from '../../user-preferences'
 import type { EmailVerificationEmailData } from '../email-verification'
@@ -7,6 +8,8 @@ import type { EmailVerificationEmailData } from '../email-verification'
 import EmailVerificationEmailRenderer from '../email-verification'
 
 describe('Email Verification Email Renderer', () => {
+  const company: CompanyProfile = { name: 'SMELA' }
+
   const renderer = new EmailVerificationEmailRenderer()
 
   const mockData: EmailVerificationEmailData = {
@@ -15,7 +18,7 @@ describe('Email Verification Email Renderer', () => {
   }
 
   it('should render email verification email with required fields', async () => {
-    const result = await renderer.render(mockData)
+    const result = await renderer.render(mockData, { company })
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -29,7 +32,7 @@ describe('Email Verification Email Renderer', () => {
   })
 
   it('should include user data in rendered output', async () => {
-    const result = await renderer.render(mockData)
+    const result = await renderer.render(mockData, { company })
 
     expect(result.html).toContain(mockData.firstName)
     expect(result.html).toContain(mockData.verificationUrl)
@@ -38,7 +41,7 @@ describe('Email Verification Email Renderer', () => {
   })
 
   it('should render with English locale by default', async () => {
-    const result = await renderer.render(mockData)
+    const result = await renderer.render(mockData, { company })
 
     // Basic check that subject is in English (contains common English words)
     expect(result.subject.toLowerCase()).toMatch(/verify|email|account/)
@@ -50,7 +53,10 @@ describe('Email Verification Email Renderer', () => {
       theme: 'light'
     }
 
-    const result = await renderer.render(mockData, userPreferences)
+    const result = await renderer.render(mockData, {
+      company,
+      preferences: userPreferences
+    })
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -69,8 +75,14 @@ describe('Email Verification Email Renderer', () => {
       theme: 'dark'
     }
 
-    const lightResult = await renderer.render(mockData, lightPreferences)
-    const darkResult = await renderer.render(mockData, darkPreferences)
+    const lightResult = await renderer.render(mockData, {
+      company,
+      preferences: lightPreferences
+    })
+    const darkResult = await renderer.render(mockData, {
+      company,
+      preferences: darkPreferences
+    })
 
     // Both should render successfully
     expect(lightResult).toHaveProperty('html')
@@ -87,7 +99,10 @@ describe('Email Verification Email Renderer', () => {
       }
     ]
 
-    const result = await renderer.render(mockData, undefined, mockSocialLinks)
+    const result = await renderer.render(mockData, {
+      company,
+      socialLinks: mockSocialLinks
+    })
 
     expect(result.html).toContain('https://facebook.com/example')
     expect(result.html).toContain('<path d="M0 0" />')
@@ -99,7 +114,10 @@ describe('Email Verification Email Renderer', () => {
       theme: 'light'
     }
 
-    const result = await renderer.render(mockData, userPreferences)
+    const result = await renderer.render(mockData, {
+      company,
+      preferences: userPreferences
+    })
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -114,7 +132,7 @@ describe('Email Verification Email Renderer', () => {
       verificationUrl: 'https://example.com/verify?token=abc123'
     }
 
-    const result = await renderer.render(dataWithSpecialChars)
+    const result = await renderer.render(dataWithSpecialChars, { company })
 
     expect(result.html).toContain('José María')
     expect(result.text).toContain('José María')
@@ -127,7 +145,7 @@ describe('Email Verification Email Renderer', () => {
         'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456'
     }
 
-    const result = await renderer.render(dataWithLongUrl)
+    const result = await renderer.render(dataWithLongUrl, { company })
 
     expect(result.html).toContain(dataWithLongUrl.verificationUrl)
     expect(result.text).toContain(dataWithLongUrl.verificationUrl)

@@ -1,6 +1,8 @@
-import type { SocialLink } from '../social-links'
-import type { UserPreferences } from '../user-preferences'
-import type { EmailRenderer, RenderedEmail } from './email-renderer'
+import type {
+  EmailRenderer,
+  RenderContext,
+  RenderedEmail
+} from './email-renderer'
 
 import getContent from '../content'
 import { getThemeStyles } from '../styles'
@@ -15,18 +17,18 @@ export interface PasswordResetEmailData {
 export default class PasswordResetEmailRenderer implements EmailRenderer<PasswordResetEmailData> {
   async render(
     data: PasswordResetEmailData,
-    userPreferences?: UserPreferences,
-    socialLinks?: SocialLink[]
+    { company, preferences, socialLinks }: RenderContext
   ): Promise<RenderedEmail> {
-    const content = getContent(userPreferences?.locale).passwordReset
-    const styles = getThemeStyles(userPreferences?.theme)
+    const content = getContent(preferences?.locale).passwordReset
+    const styles = getThemeStyles(preferences?.theme)
 
     const subject = content.subject
     const { html, text } = await renderEmail(PasswordResetEmail, {
       data,
       content,
       styles,
-      socialLinks
+      socialLinks,
+      company
     })
 
     return {

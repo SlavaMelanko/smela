@@ -1,7 +1,5 @@
 import type UserInviteContent from '../user-invite'
 
-import { config } from '../../config'
-
 const DEFAULT_TEAM = 'the team'
 
 export const content: UserInviteContent = {
@@ -16,10 +14,10 @@ export const content: UserInviteContent = {
     'Click the link below to accept the invite and finish setting up your account:',
   ctaText: 'Accept invite',
   expiryNotice: 'This link expires in 24 hours for security reasons.',
-  signature: {
+  signature: (companyName: string) => ({
     thanks: 'Thanks,',
-    who: `The ${config.company.name} Team`
-  }
+    who: `The ${companyName} Team`
+  })
 }
 
 export default content

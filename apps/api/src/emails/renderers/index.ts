@@ -1,4 +1,8 @@
-export type { EmailRenderer, RenderedEmail } from './email-renderer'
+export type {
+  EmailRenderer,
+  RenderContext,
+  RenderedEmail
+} from './email-renderer'
 
 export {
   type EmailVerificationEmailData,

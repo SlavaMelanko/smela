@@ -1,5 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test'
 
+import type { CompanyProfile } from '../../company'
 import type {
   EmailSenderProfile,
   EmailSenderProfileResolver
@@ -8,6 +9,8 @@ import type { SocialLinksResolver } from '../../social-links'
 
 import { EmailSenderType } from '../../sender-profile'
 import { VerificationEmailMessageBuilder } from '../email-verification'
+
+const company: CompanyProfile = { name: 'SMELA' }
 
 const senderProfile: EmailSenderProfile = {
   email: 'noreply@smela.me',
@@ -33,7 +36,11 @@ describe('VerificationEmailMessageBuilder', () => {
       verificationUrl: 'https://example.com/verify-email?token=abc123'
     })
 
-    await builder.build(senderProfileResolver, buildSocialLinksResolver())
+    await builder.build(
+      senderProfileResolver,
+      buildSocialLinksResolver(),
+      company
+    )
 
     expect(senderProfileResolver.get).toHaveBeenCalledWith(
       EmailSenderType.System
@@ -48,7 +55,8 @@ describe('VerificationEmailMessageBuilder', () => {
 
     const message = await builder.build(
       buildSenderProfileResolver(),
-      buildSocialLinksResolver()
+      buildSocialLinksResolver(),
+      company
     )
 
     expect(message.to).toBe('user@example.com')

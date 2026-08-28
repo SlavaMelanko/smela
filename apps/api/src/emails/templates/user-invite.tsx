@@ -2,6 +2,7 @@
 
 import { Link, Text } from '@react-email/components'
 
+import type { CompanyProfile } from '../company'
 import type { UserInviteContent } from '../content'
 import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
@@ -20,6 +21,7 @@ interface Props {
   }
   content: UserInviteContent
   styles: ThemeStyles
+  company: CompanyProfile
   socialLinks?: SocialLink[]
 }
 
@@ -27,6 +29,7 @@ const UserInviteEmail = ({
   data,
   content: c,
   styles: s,
+  company,
   socialLinks
 }: Props) => {
   const { firstName, inviteUrl, inviterName, teamName } = data
@@ -36,6 +39,7 @@ const UserInviteEmail = ({
       subject={c.subject(teamName)}
       previewText={c.previewText(teamName)}
       styles={s}
+      company={company}
       socialLinks={socialLinks}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
@@ -50,7 +54,7 @@ const UserInviteEmail = ({
 
       <Text style={s.text.detail}>{`• ${c.expiryNotice}`}</Text>
 
-      <Signature styles={s} signature={c.signature} />
+      <Signature styles={s} signature={c.signature(company.name)} />
     </BaseEmail>
   )
 }
@@ -63,7 +67,8 @@ UserInviteEmail.PreviewProps = {
     teamName: 'Acme Inc'
   },
   content: getContent('en').userInvite,
-  styles: getThemeStyles('dark')
+  styles: getThemeStyles('dark'),
+  company: { name: 'SMELA' }
 } as Props
 
 export default UserInviteEmail

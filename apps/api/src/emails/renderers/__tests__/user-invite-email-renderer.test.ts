@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
+import type { CompanyProfile } from '../../company'
 import type { SocialLink } from '../../social-links'
 import type { UserPreferences } from '../../user-preferences'
 import type { UserInviteEmailData } from '../user-invite'
@@ -7,6 +8,8 @@ import type { UserInviteEmailData } from '../user-invite'
 import UserInviteEmailRenderer from '../user-invite'
 
 describe('User Invitation Email Renderer', () => {
+  const company: CompanyProfile = { name: 'SMELA' }
+
   const renderer = new UserInviteEmailRenderer()
 
   const mockData: UserInviteEmailData = {
@@ -17,7 +20,7 @@ describe('User Invitation Email Renderer', () => {
   }
 
   it('should render invite email with required fields', async () => {
-    const result = await renderer.render(mockData)
+    const result = await renderer.render(mockData, { company })
 
     expect(result).toHaveProperty('subject')
     expect(result).toHaveProperty('html')
@@ -30,7 +33,7 @@ describe('User Invitation Email Renderer', () => {
   })
 
   it('should include the team name in the subject when provided', async () => {
-    const result = await renderer.render(mockData)
+    const result = await renderer.render(mockData, { company })
 
     expect(result.subject).toContain('Acme')
   })
@@ -41,7 +44,7 @@ describe('User Invitation Email Renderer', () => {
       inviteUrl: 'https://example.com/accept-invite?token=abc123'
     }
 
-    const result = await renderer.render(dataWithoutOptionalFields)
+    const result = await renderer.render(dataWithoutOptionalFields, { company })
 
     expect(result.subject.length).toBeGreaterThan(0)
     expect(result.html).toContain('John')
@@ -50,13 +53,13 @@ describe('User Invitation Email Renderer', () => {
 
   it('should render with Ukrainian locale and different themes', async () => {
     const ukResult = await renderer.render(mockData, {
-      locale: 'uk',
-      theme: 'light'
+      company,
+      preferences: { locale: 'uk', theme: 'light' }
     })
     const darkResult = await renderer.render(mockData, {
-      locale: 'en',
-      theme: 'dark'
-    } satisfies UserPreferences)
+      company,
+      preferences: { locale: 'en', theme: 'dark' } satisfies UserPreferences
+    })
 
     expect(ukResult.subject.length).toBeGreaterThan(0)
     expect(darkResult.html).toContain(mockData.firstName)
@@ -71,7 +74,10 @@ describe('User Invitation Email Renderer', () => {
       }
     ]
 
-    const result = await renderer.render(mockData, undefined, mockSocialLinks)
+    const result = await renderer.render(mockData, {
+      company,
+      socialLinks: mockSocialLinks
+    })
 
     expect(result.html).toContain('https://facebook.com/example')
   })
@@ -88,8 +94,8 @@ describe('User Invitation Email Renderer', () => {
       teamName: 'Team B'
     }
 
-    const resultA = await renderer.render(inviteA)
-    const resultB = await renderer.render(inviteB)
+    const resultA = await renderer.render(inviteA, { company })
+    const resultB = await renderer.render(inviteB, { company })
 
     expect(resultA.html).toContain('Alice')
     expect(resultA.html).not.toContain('Bob')

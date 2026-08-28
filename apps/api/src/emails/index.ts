@@ -5,6 +5,8 @@ export {
   VerificationEmailMessageBuilder
 } from './builders'
 
+export type { CompanyProfile } from './company'
+
 export { EtherealEmailProvider, ResendEmailProvider } from './providers'
 
 export type {

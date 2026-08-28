@@ -1,6 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
 
 import type {
+  CompanyProfile,
   EmailMessage,
   EmailMessageBuilder,
   EmailProvider,
@@ -35,6 +36,8 @@ const buildProvider = (
   }))
 ): EmailProvider => ({ send })
 
+const company: CompanyProfile = { name: 'SMELA' }
+
 const buildBuilder = (
   build = mock(async () => message)
 ): EmailMessageBuilder<unknown> =>
@@ -46,7 +49,8 @@ describe('EmailService', () => {
     const service = new EmailService(
       provider,
       senderProfileResolver,
-      socialLinksResolver
+      socialLinksResolver,
+      company
     )
 
     await service.send(buildBuilder())
@@ -54,19 +58,21 @@ describe('EmailService', () => {
     expect(provider.send).toHaveBeenCalledWith(message)
   })
 
-  it('passes both resolvers to the builder', async () => {
+  it('passes both resolvers and the company profile to the builder', async () => {
     const build = mock(async () => message)
     const service = new EmailService(
       buildProvider(),
       senderProfileResolver,
-      socialLinksResolver
+      socialLinksResolver,
+      company
     )
 
     await service.send(buildBuilder(build))
 
     expect(build).toHaveBeenCalledWith(
       senderProfileResolver,
-      socialLinksResolver
+      socialLinksResolver,
+      company
     )
   })
 
@@ -79,7 +85,8 @@ describe('EmailService', () => {
     const service = new EmailService(
       provider,
       senderProfileResolver,
-      socialLinksResolver
+      socialLinksResolver,
+      company
     )
 
     expect(service.send(buildBuilder())).resolves.toBeUndefined()
@@ -92,7 +99,8 @@ describe('EmailService', () => {
     const service = new EmailService(
       buildProvider(),
       senderProfileResolver,
-      socialLinksResolver
+      socialLinksResolver,
+      company
     )
 
     expect(service.send(buildBuilder(build))).resolves.toBeUndefined()

@@ -1,7 +1,5 @@
 import type UserInviteContent from '../user-invite'
 
-import { config } from '../../config'
-
 const DEFAULT_TEAM = 'команди'
 
 export const content: UserInviteContent = {
@@ -16,10 +14,10 @@ export const content: UserInviteContent = {
     'Натисніть посилання нижче, щоб прийняти запрошення та завершити налаштування облікового запису:',
   ctaText: 'Прийняти запрошення',
   expiryNotice: 'З міркувань безпеки це посилання дійсне протягом 24 годин.',
-  signature: {
+  signature: (companyName: string) => ({
     thanks: 'Дякуємо,',
-    who: `Команда ${config.company.name}`
-  }
+    who: `Команда ${companyName}`
+  })
 }
 
 export default content

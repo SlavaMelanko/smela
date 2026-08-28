@@ -1,10 +1,12 @@
 import type {
+  CompanyProfile,
   EmailMessageBuilder,
   EmailProvider,
   EmailSenderProfileResolver,
   SocialLinksResolver
 } from '@/emails'
 
+import env from '@/env'
 import { logger } from '@/logging'
 
 import { createEmailProvider } from './provider-factory'
@@ -15,14 +17,16 @@ export class EmailService {
   constructor(
     private readonly provider: EmailProvider,
     private readonly senderProfileResolver: EmailSenderProfileResolver,
-    private readonly socialLinksResolver: SocialLinksResolver
+    private readonly socialLinksResolver: SocialLinksResolver,
+    private readonly company: CompanyProfile
   ) {}
 
   async send<T>(builder: EmailMessageBuilder<T>): Promise<void> {
     try {
       const message = await builder.build(
         this.senderProfileResolver,
-        this.socialLinksResolver
+        this.socialLinksResolver,
+        this.company
       )
 
       const info = await this.provider.send(message)
@@ -48,5 +52,6 @@ export class EmailService {
 export const emailService = new EmailService(
   createEmailProvider(),
   new ApiEmailSenderProfileResolver(),
-  new ApiSocialLinksResolver()
+  new ApiSocialLinksResolver(),
+  { name: env.COMPANY_NAME }
 )

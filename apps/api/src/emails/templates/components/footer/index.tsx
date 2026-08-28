@@ -1,9 +1,9 @@
 /** @jsxImportSource react */
 
+import type { CompanyProfile } from '../../../company'
 import type { SocialLink } from '../../../social-links'
 import type { ThemeStyles } from '../../../styles'
 
-import { config } from '../../../config'
 import { getThemeStyles } from '../../../styles'
 import Copyright from './copyright'
 import MetadataContainer from './metadata'
@@ -11,13 +11,13 @@ import SocialLinks from './social-links'
 
 interface Props {
   styles: ThemeStyles
-  companyName?: string
+  company: CompanyProfile
   socialLinks?: SocialLink[]
 }
 
 const Footer = ({
   styles,
-  companyName = config.company.name,
+  company,
   socialLinks = []
 }: Props): React.ReactElement => (
   <div
@@ -29,14 +29,14 @@ const Footer = ({
     }}
   >
     <SocialLinks styles={styles} socialLinks={socialLinks} />
-    <Copyright styles={styles} companyName={companyName} />
+    <Copyright styles={styles} companyName={company.name} />
     <MetadataContainer />
   </div>
 )
 
 Footer.PreviewProps = {
   styles: getThemeStyles('light'),
-  companyName: 'Company Name',
+  company: { name: 'Company Name' },
   socialLinks: [
     {
       network: 'facebook',

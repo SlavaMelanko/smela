@@ -1,3 +1,4 @@
+import type { CompanyProfile } from '../company'
 import type { EmailMessage } from '../providers'
 import type { EmailSenderProfileResolver } from '../sender-profile'
 import type { SocialLinksResolver } from '../social-links'
@@ -18,6 +19,7 @@ export abstract class EmailMessageBuilder<T> {
 
   abstract build(
     senderProfileResolver: EmailSenderProfileResolver,
-    socialLinksResolver: SocialLinksResolver
+    socialLinksResolver: SocialLinksResolver,
+    company: CompanyProfile
   ): Promise<EmailMessage>
 }

@@ -6,7 +6,7 @@ export default interface UserInviteContent {
   ctaInstruction: string
   ctaText: string
   expiryNotice: string
-  signature: {
+  signature: (companyName: string) => {
     thanks: string
     who: string
   }
