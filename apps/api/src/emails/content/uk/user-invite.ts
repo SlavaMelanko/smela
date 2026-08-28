@@ -1,10 +1,10 @@
-import type UserInvitationContent from '../user-invitation'
+import type UserInviteContent from '../user-invite'
 
 import { config } from '../../config'
 
 const DEFAULT_TEAM = 'команди'
 
-export const content: UserInvitationContent = {
+export const content: UserInviteContent = {
   subject: (teamName?: string) =>
     `Вас запрошено до ${teamName || DEFAULT_TEAM}`,
   previewText: (teamName?: string) =>

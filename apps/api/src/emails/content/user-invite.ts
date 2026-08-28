@@ -1,4 +1,4 @@
-export default interface UserInvitationContent {
+export default interface UserInviteContent {
   subject: (teamName?: string) => string
   previewText: (inviterName?: string, teamName?: string) => string
   greeting: (firstName?: string) => string

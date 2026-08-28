@@ -2,21 +2,21 @@ import { describe, expect, it } from 'bun:test'
 
 import type { SocialLink } from '../../social-links'
 import type { UserPreferences } from '../../user-preferences'
-import type { UserInvitationEmailData } from '../user-invitation'
+import type { UserInviteEmailData } from '../user-invite'
 
-import UserInvitationEmailRenderer from '../user-invitation'
+import UserInviteEmailRenderer from '../user-invite'
 
 describe('User Invitation Email Renderer', () => {
-  const renderer = new UserInvitationEmailRenderer()
+  const renderer = new UserInviteEmailRenderer()
 
-  const mockData: UserInvitationEmailData = {
+  const mockData: UserInviteEmailData = {
     firstName: 'John',
     inviteUrl: 'https://example.com/accept-invite?token=abc123',
     inviterName: 'Jane',
     teamName: 'Acme'
   }
 
-  it('should render invitation email with required fields', async () => {
+  it('should render invite email with required fields', async () => {
     const result = await renderer.render(mockData)
 
     expect(result).toHaveProperty('subject')
@@ -36,7 +36,7 @@ describe('User Invitation Email Renderer', () => {
   })
 
   it('should render without inviterName or teamName', async () => {
-    const dataWithoutOptionalFields: UserInvitationEmailData = {
+    const dataWithoutOptionalFields: UserInviteEmailData = {
       firstName: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123'
     }
@@ -76,20 +76,20 @@ describe('User Invitation Email Renderer', () => {
     expect(result.html).toContain('https://facebook.com/example')
   })
 
-  it('should not leak data between different invitations', async () => {
-    const invitationA: UserInvitationEmailData = {
+  it('should not leak data between different invites', async () => {
+    const inviteA: UserInviteEmailData = {
       firstName: 'Alice',
       inviteUrl: 'https://example.com/accept-invite?token=token1',
       teamName: 'Team A'
     }
-    const invitationB: UserInvitationEmailData = {
+    const inviteB: UserInviteEmailData = {
       firstName: 'Bob',
       inviteUrl: 'https://example.com/accept-invite?token=token2',
       teamName: 'Team B'
     }
 
-    const resultA = await renderer.render(invitationA)
-    const resultB = await renderer.render(invitationB)
+    const resultA = await renderer.render(inviteA)
+    const resultB = await renderer.render(inviteB)
 
     expect(resultA.html).toContain('Alice')
     expect(resultA.html).not.toContain('Bob')

@@ -8,7 +8,7 @@ import { generateToken, TokenType } from '@/security/token'
 import {
   buildInviteUrl,
   emailService,
-  UserInvitationEmailMessageBuilder
+  UserInviteEmailMessageBuilder
 } from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
@@ -49,7 +49,7 @@ export const inviteMember = async (
       tx
     )
 
-    // Use random password and user sets real password when accepting invitation
+    // Use random password and user sets real password when accepting invite
     const passwordHash = await generatePasswordHash()
 
     await authRepo.create(
@@ -103,7 +103,7 @@ export const inviteMember = async (
   })
 
   void emailService.send(
-    new UserInvitationEmailMessageBuilder(newMember.email, {
+    new UserInviteEmailMessageBuilder(newMember.email, {
       firstName: newMember.firstName,
       inviteUrl: buildInviteUrl(Role.User, token),
       inviterName: inviter.firstName,
@@ -144,7 +144,7 @@ export const resendMemberInvite = async (
   })
 
   void emailService.send(
-    new UserInvitationEmailMessageBuilder(member.email, {
+    new UserInviteEmailMessageBuilder(member.email, {
       firstName: member.firstName,
       inviteUrl: buildInviteUrl(Role.User, token),
       inviterName: inviter.firstName,

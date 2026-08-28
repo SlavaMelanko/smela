@@ -1,7 +1,7 @@
 export {
   EmailMessageBuilder,
   PasswordResetEmailMessageBuilder,
-  UserInvitationEmailMessageBuilder,
+  UserInviteEmailMessageBuilder,
   VerificationEmailMessageBuilder
 } from './builders'
 

@@ -5,7 +5,7 @@ import type { TeamMemberDetails, TeamWithMemberCount, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
-import { UserInvitationEmailMessageBuilder } from '@/services/email'
+import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
 import {
@@ -114,7 +114,7 @@ describe('inviteMember', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'invitation-token-123',
+        token: 'invite-token-123',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
@@ -172,11 +172,11 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should send invitation email', async () => {
+  it('should send invite email', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockEmailService.send).toHaveBeenCalledWith(
-      expect.any(UserInvitationEmailMessageBuilder)
+      expect.any(UserInviteEmailMessageBuilder)
     )
   })
 
@@ -263,7 +263,7 @@ describe('resendMemberInvite', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
@@ -315,18 +315,18 @@ describe('resendMemberInvite', () => {
       {
         userId: USER_1,
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: expect.any(Date)
       },
       expect.anything()
     )
   })
 
-  it('should send invitation email with current inviter name', async () => {
+  it('should send invite email with current inviter name', async () => {
     await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockEmailService.send).toHaveBeenCalledWith(
-      expect.any(UserInvitationEmailMessageBuilder)
+      expect.any(UserInviteEmailMessageBuilder)
     )
   })
 

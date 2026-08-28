@@ -2,7 +2,7 @@
 
 import { Link, Text } from '@react-email/components'
 
-import type { UserInvitationContent } from '../content'
+import type { UserInviteContent } from '../content'
 import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
 
@@ -18,12 +18,12 @@ interface Props {
     inviterName?: string
     teamName?: string
   }
-  content: UserInvitationContent
+  content: UserInviteContent
   styles: ThemeStyles
   socialLinks?: SocialLink[]
 }
 
-const UserInvitationEmail = ({
+const UserInviteEmail = ({
   data,
   content: c,
   styles: s,
@@ -55,15 +55,15 @@ const UserInvitationEmail = ({
   )
 }
 
-UserInvitationEmail.PreviewProps = {
+UserInviteEmail.PreviewProps = {
   data: {
     firstName: 'Jason',
     inviteUrl: `http://localhost:5173/accept-invite?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
     inviterName: 'Alice',
     teamName: 'Acme Inc'
   },
-  content: getContent('en').userInvitation,
+  content: getContent('en').userInvite,
   styles: getThemeStyles('dark')
 } as Props
 
-export default UserInvitationEmail
+export default UserInviteEmail

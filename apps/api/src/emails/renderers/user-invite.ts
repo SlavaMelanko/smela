@@ -4,27 +4,27 @@ import type { EmailRenderer, RenderedEmail } from './email-renderer'
 
 import getContent from '../content'
 import { getThemeStyles } from '../styles'
-import { UserInvitationEmail } from '../templates'
+import { UserInviteEmail } from '../templates'
 import { renderEmail } from './helper'
 
-export interface UserInvitationEmailData {
+export interface UserInviteEmailData {
   firstName: string
   inviteUrl: string
   inviterName?: string
   teamName?: string
 }
 
-export default class UserInvitationEmailRenderer implements EmailRenderer<UserInvitationEmailData> {
+export default class UserInviteEmailRenderer implements EmailRenderer<UserInviteEmailData> {
   async render(
-    data: UserInvitationEmailData,
+    data: UserInviteEmailData,
     userPreferences?: UserPreferences,
     socialLinks?: SocialLink[]
   ): Promise<RenderedEmail> {
-    const content = getContent(userPreferences?.locale).userInvitation
+    const content = getContent(userPreferences?.locale).userInvite
     const styles = getThemeStyles(userPreferences?.theme)
 
     const subject = content.subject(data.teamName)
-    const { html, text } = await renderEmail(UserInvitationEmail, {
+    const { html, text } = await renderEmail(UserInviteEmail, {
       data,
       content,
       styles,

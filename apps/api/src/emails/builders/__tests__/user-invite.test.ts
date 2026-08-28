@@ -7,7 +7,7 @@ import type {
 import type { SocialLinksResolver } from '../../social-links'
 
 import { EmailSenderType } from '../../sender-profile'
-import { UserInvitationEmailMessageBuilder } from '../user-invitation'
+import { UserInviteEmailMessageBuilder } from '../user-invite'
 
 const senderProfile: EmailSenderProfile = {
   email: 'support@smela.me',
@@ -24,11 +24,11 @@ const buildSocialLinksResolver = (): SocialLinksResolver => ({
   invalidate: mock(() => {})
 })
 
-describe('UserInvitationEmailMessageBuilder', () => {
+describe('UserInviteEmailMessageBuilder', () => {
   it('resolves the Support sender profile', async () => {
     const senderProfileResolver = buildSenderProfileResolver()
 
-    const builder = new UserInvitationEmailMessageBuilder('user@example.com', {
+    const builder = new UserInviteEmailMessageBuilder('user@example.com', {
       firstName: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123',
       inviterName: 'Jane',
@@ -43,7 +43,7 @@ describe('UserInvitationEmailMessageBuilder', () => {
   })
 
   it('builds an email message addressed to the given recipient with the resolved sender', async () => {
-    const builder = new UserInvitationEmailMessageBuilder('user@example.com', {
+    const builder = new UserInviteEmailMessageBuilder('user@example.com', {
       firstName: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123',
       inviterName: 'Jane',
@@ -63,7 +63,7 @@ describe('UserInvitationEmailMessageBuilder', () => {
   })
 
   it('builds without the optional inviterName and teamName', async () => {
-    const builder = new UserInvitationEmailMessageBuilder('user@example.com', {
+    const builder = new UserInviteEmailMessageBuilder('user@example.com', {
       firstName: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123'
     })

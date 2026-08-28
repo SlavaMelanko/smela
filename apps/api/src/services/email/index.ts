@@ -11,6 +11,6 @@ export type { UserPreferences } from '@/emails'
 export {
   EmailSenderType,
   PasswordResetEmailMessageBuilder,
-  UserInvitationEmailMessageBuilder,
+  UserInviteEmailMessageBuilder,
   VerificationEmailMessageBuilder
 } from '@/emails'

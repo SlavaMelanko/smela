@@ -1,10 +1,10 @@
-import type UserInvitationContent from '../user-invitation'
+import type UserInviteContent from '../user-invite'
 
 import { config } from '../../config'
 
 const DEFAULT_TEAM = 'the team'
 
-export const content: UserInvitationContent = {
+export const content: UserInviteContent = {
   subject: (teamName?: string) =>
     `You're invited to ${teamName || DEFAULT_TEAM}`,
   previewText: (teamName?: string) =>
@@ -13,8 +13,8 @@ export const content: UserInvitationContent = {
   body: (inviterName?: string, teamName?: string) =>
     `${inviterName || 'Admin'} invited you to join the ${teamName || DEFAULT_TEAM} team.`,
   ctaInstruction:
-    'Click the link below to accept the invitation and finish setting up your account:',
-  ctaText: 'Accept invitation',
+    'Click the link below to accept the invite and finish setting up your account:',
+  ctaText: 'Accept invite',
   expiryNotice: 'This link expires in 24 hours for security reasons.',
   signature: {
     thanks: 'Thanks,',

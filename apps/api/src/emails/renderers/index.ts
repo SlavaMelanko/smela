@@ -11,6 +11,6 @@ export {
 } from './password-reset'
 
 export {
-  type UserInvitationEmailData,
-  default as UserInvitationEmailRenderer
-} from './user-invitation'
+  type UserInviteEmailData,
+  default as UserInviteEmailRenderer
+} from './user-invite'
