@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test'
 
 import type { SocialLink } from '../../social-links'
 import type { UserPreferences } from '../../user-preferences'
-import type { UserInvitationEmailData } from '../email-renderer-user-invitation'
+import type { UserInvitationEmailData } from '../user-invitation'
 
-import UserInvitationEmailRenderer from '../email-renderer-user-invitation'
+import UserInvitationEmailRenderer from '../user-invitation'
 
 describe('User Invitation Email Renderer', () => {
   const renderer = new UserInvitationEmailRenderer()

@@ -187,37 +187,36 @@ pattern:
 
 **Implementation Files:**
 
-- **Filename**: Start with interface filename + implementation name (e.g.,
-  `email-renderer-password-reset.ts`, `email-renderer-welcome.ts`)
+- **Filename**: Name for the concept it implements (e.g., `password-reset.ts`,
+  `welcome.ts`). Prefix with the interface filename only when the concept name
+  alone would be ambiguous within that directory.
 - **Class Name**: Use PascalCase ending with interface name (e.g.,
   `PasswordResetEmailRenderer`, `WelcomeEmailRenderer`)
 
 **Example Structures:**
 
-_Email Renderers (following new convention):_
+_Email Renderers:_
 
 ```text
 src/emails/renderers/
 ├── email-renderer.ts                    # Interface: EmailRenderer
-├── email-renderer-password-reset.ts     # Class: PasswordResetEmailRenderer
-├── email-renderer-welcome.ts            # Class: WelcomeEmailRenderer
+├── password-reset.ts                    # Class: PasswordResetEmailRenderer
+├── welcome.ts                           # Class: WelcomeEmailRenderer
 └── helper.ts                            # Utilities
 ```
 
-_Email Providers (existing pattern):_
+_Email Providers:_
 
 ```text
-src/services/email/providers/
+src/emails/providers/
 ├── provider.ts                          # Interface: EmailProvider
-├── provider-ethereal.ts                 # Class: EtherealEmailProvider
-├── provider-resend.ts                   # Class: ResendEmailProvider
-├── payload.ts                           # Supporting types
-├── factory.ts                           # Factory function
+├── ethereal.ts                          # Class: EtherealEmailProvider
+├── resend.ts                            # Class: ResendEmailProvider
 └── index.ts                             # Public exports
-```
 
-This convention groups implementations together alphabetically and makes the
-relationship to the interface explicit.
+src/services/email/providers/
+└── factory.ts                           # Factory function (consumer side)
+```
 
 #### Utils Directory Guidelines
 

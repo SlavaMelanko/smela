@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test'
 
 import type { SocialLink } from '../../social-links'
 import type { UserPreferences } from '../../user-preferences'
-import type { EmailVerificationEmailData } from '../email-renderer-email-verification'
+import type { EmailVerificationEmailData } from '../email-verification'
 
-import EmailVerificationEmailRenderer from '../email-renderer-email-verification'
+import EmailVerificationEmailRenderer from '../email-verification'
 
 describe('Email Verification Email Renderer', () => {
   const renderer = new EmailVerificationEmailRenderer()
