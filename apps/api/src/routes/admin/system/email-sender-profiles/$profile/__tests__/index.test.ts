@@ -13,7 +13,7 @@ import {
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 import { Permission, Role } from '@/types'
 
 import { adminSystemRoute } from '../../..'
@@ -21,7 +21,7 @@ import { adminSystemRoute } from '../../..'
 describe('admin /system/email-sender-profiles/:profile', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  const PROFILE_URL = `/api/v1/admin/system/email-sender-profiles/${EmailSenderProfile.System}`
+  const PROFILE_URL = `/api/v1/admin/system/email-sender-profiles/${EmailSenderType.System}`
   const INVALID_PROFILE_URL =
     '/api/v1/admin/system/email-sender-profiles/invalid'
 
@@ -42,7 +42,7 @@ describe('admin /system/email-sender-profiles/:profile', () => {
 
   beforeEach(async () => {
     mockSenderProfile = {
-      profile: EmailSenderProfile.System,
+      profile: EmailSenderType.System,
       email: 'noreply@smela.me',
       name: 'SMELA',
       description: 'Transactional and system notifications',
@@ -75,12 +75,12 @@ describe('admin /system/email-sender-profiles/:profile', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockGetEmailSenderProfile).toHaveBeenCalledWith(
-        EmailSenderProfile.System
+        EmailSenderType.System
       )
 
       const data = await res.json()
       expect(data.senderProfile).toMatchObject({
-        profile: EmailSenderProfile.System,
+        profile: EmailSenderType.System,
         email: 'noreply@smela.me'
       })
     })
@@ -120,13 +120,13 @@ describe('admin /system/email-sender-profiles/:profile', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateEmailSenderProfile).toHaveBeenCalledWith(
-        EmailSenderProfile.System,
+        EmailSenderType.System,
         body
       )
 
       const data = await res.json()
       expect(data.senderProfile).toMatchObject({
-        profile: EmailSenderProfile.System
+        profile: EmailSenderType.System
       })
     })
 

@@ -4,7 +4,7 @@ import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 import { ErrorCode } from '@/errors'
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 
 import {
   getEmailSenderProfile,
@@ -15,7 +15,7 @@ import {
 const buildSenderProfile = (
   overrides: Partial<EmailSenderProfileRecord> = {}
 ): EmailSenderProfileRecord => ({
-  profile: EmailSenderProfile.System,
+  profile: EmailSenderType.System,
   email: 'noreply@smela.me',
   name: 'SMELA',
   description: 'Transactional and system notifications',
@@ -75,10 +75,10 @@ describe('getEmailSenderProfile', () => {
   })
 
   it('should return the requested sender profile', async () => {
-    const result = await getEmailSenderProfile(EmailSenderProfile.System)
+    const result = await getEmailSenderProfile(EmailSenderType.System)
 
     expect(mockFindEmailSenderProfile).toHaveBeenCalledWith(
-      EmailSenderProfile.System
+      EmailSenderType.System
     )
     expect(result).toEqual({ senderProfile })
   })
@@ -87,7 +87,7 @@ describe('getEmailSenderProfile', () => {
     mockSenderProfile = undefined
 
     expect(
-      getEmailSenderProfile(EmailSenderProfile.Support)
+      getEmailSenderProfile(EmailSenderType.Support)
     ).rejects.toMatchObject({ code: ErrorCode.NotFound })
   })
 })
@@ -129,19 +129,19 @@ describe('updateEmailSenderProfile', () => {
     const updates = { name: 'SMELA Updated' }
 
     const result = await updateEmailSenderProfile(
-      EmailSenderProfile.System,
+      EmailSenderType.System,
       updates
     )
 
     expect(mockUpdateEmailSenderProfile).toHaveBeenCalledWith(
-      EmailSenderProfile.System,
+      EmailSenderType.System,
       updates
     )
     expect(result).toEqual({ senderProfile: mockUpdatedSenderProfile })
   })
 
   it('should invalidate the cached sender profiles after updating', async () => {
-    await updateEmailSenderProfile(EmailSenderProfile.System, { name: 'SMELA' })
+    await updateEmailSenderProfile(EmailSenderType.System, { name: 'SMELA' })
 
     expect(mockInvalidateSenderProfiles).toHaveBeenCalled()
   })
@@ -149,10 +149,9 @@ describe('updateEmailSenderProfile', () => {
   it('should not update when the sender profile does not exist', async () => {
     mockSenderProfile = undefined
 
-    const error: any = await updateEmailSenderProfile(
-      EmailSenderProfile.Support,
-      { name: 'Nope' }
-    ).catch((e: unknown) => e)
+    const error: any = await updateEmailSenderProfile(EmailSenderType.Support, {
+      name: 'Nope'
+    }).catch((e: unknown) => e)
 
     expect(error).toMatchObject({ code: ErrorCode.NotFound })
     expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()

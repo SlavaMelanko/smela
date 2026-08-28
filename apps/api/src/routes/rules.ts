@@ -11,7 +11,7 @@ import {
 import { z } from 'zod'
 
 import { TOKEN_LENGTH } from '@/security/token'
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 import { Resource, Role, UserStatus } from '@/types'
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
@@ -110,7 +110,7 @@ export const rules = {
   },
 
   emailSenderProfile: {
-    profile: z.enum(EmailSenderProfile),
+    profile: z.enum(EmailSenderType),
     email,
     name: displayName,
     description

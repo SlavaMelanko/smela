@@ -15,7 +15,7 @@ import { eq, sql } from 'drizzle-orm'
 
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
@@ -80,19 +80,19 @@ const seedPermissions = async () => {
 const seedEmailSenderProfiles = async () => {
   const emailSenderProfiles = [
     {
-      profile: EmailSenderProfile.System,
+      profile: EmailSenderType.System,
       email: 'noreply@smela.me',
       name: 'SMELA',
       description: 'Transactional and system notifications'
     },
     {
-      profile: EmailSenderProfile.Support,
+      profile: EmailSenderType.Support,
       email: 'support@smela.me',
       name: 'SMELA Support',
       description: 'Customer support and help requests'
     },
     {
-      profile: EmailSenderProfile.Security,
+      profile: EmailSenderType.Security,
       email: 'security@smela.me',
       name: 'SMELA Security',
       description: 'Security alerts and account protection'

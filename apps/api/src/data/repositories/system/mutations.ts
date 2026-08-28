@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import type { EmailSenderProfile } from '@/services/email'
+import type { EmailSenderType } from '@/services/email'
 
 import { AppError, ErrorCode } from '@/errors'
 
@@ -14,7 +14,7 @@ import { db } from '../../clients'
 import { emailSenderProfilesTable } from '../../schema'
 
 export const updateEmailSenderProfile = async (
-  profile: EmailSenderProfile,
+  profile: EmailSenderType,
   updates: UpdateEmailSenderProfileInput,
   tx?: Database
 ): Promise<EmailSenderProfileRecord> => {

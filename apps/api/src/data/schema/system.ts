@@ -8,19 +8,19 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 
 import { createPgEnum } from '../utils'
 
 export const emailSenderProfileEnum = createPgEnum(
   'email_sender_profile',
-  EmailSenderProfile
+  EmailSenderType
 )
 
 export const emailSenderProfilesTable = pgTable('email_sender_profiles', {
   profile: emailSenderProfileEnum('profile')
     .primaryKey()
-    .$type<EmailSenderProfile>(),
+    .$type<EmailSenderType>(),
   email: varchar('email', { length: 255 }).notNull(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),

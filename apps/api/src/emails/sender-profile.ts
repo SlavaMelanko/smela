@@ -1,17 +1,20 @@
-export enum EmailSenderProfile {
+export enum EmailSenderType {
   System = 'system',
   Support = 'support',
   Security = 'security'
 }
 
-export interface EmailSender {
+export interface EmailSenderProfile {
   email: string
   name: string
 }
 
-export type EmailSenders = Map<EmailSenderProfile, EmailSender>
+export type EmailSenderProfiles = Map<EmailSenderType, EmailSenderProfile>
 
 export interface EmailSenderProfileProvider {
-  get: (profile: EmailSenderProfile) => Promise<EmailSender>
+  // Returns the profile for the given type, or a fallback if the requested type is not found.
+  get: (profile: EmailSenderType) => Promise<EmailSenderProfile>
+
+  // Drops any cached profiles so the next get() call reloads them.
   invalidate: () => void
 }

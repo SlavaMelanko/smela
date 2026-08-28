@@ -1,12 +1,12 @@
 export * from './renderers'
 
 export type {
-  EmailSender,
+  EmailSenderProfile,
   EmailSenderProfileProvider,
-  EmailSenders
+  EmailSenderProfiles
 } from './sender-profile'
 
-export { EmailSenderProfile } from './sender-profile'
+export { EmailSenderType } from './sender-profile'
 
 export type { SocialLink, SocialLinksProvider } from './social-links'
 

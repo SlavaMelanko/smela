@@ -1,6 +1,6 @@
 import type { EmailSenderProfileProvider } from '@/emails'
 
-import { EmailSenderProfile } from '@/emails'
+import { EmailSenderType } from '@/emails'
 
 import { EmailType } from '../email-type'
 import { defineEmail } from './email-definition'
@@ -10,7 +10,7 @@ export const passwordResetEmail = (
 ) =>
   defineEmail(
     EmailType.PasswordReset,
-    async () => emailSenderProfileProvider.get(EmailSenderProfile.Security),
+    async () => emailSenderProfileProvider.get(EmailSenderType.Security),
     async () => {
       const { PasswordResetEmailRenderer } = await import('@/emails')
 

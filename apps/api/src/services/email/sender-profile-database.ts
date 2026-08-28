@@ -1,15 +1,15 @@
 import type {
-  EmailSender,
+  EmailSenderProfile,
   EmailSenderProfileProvider,
-  EmailSenders
+  EmailSenderProfiles
 } from '@/emails'
 
 import { systemRepo } from '@/data'
-import { EmailSenderProfile } from '@/emails'
+import { EmailSenderType } from '@/emails'
 import { logger } from '@/logging'
 import { TtlCache } from '@/utils/ttl-cache'
 
-const loadProfiles = async (): Promise<EmailSenders> => {
+const loadProfiles = async (): Promise<EmailSenderProfiles> => {
   try {
     const records = await systemRepo.listEmailSenderProfiles()
 
@@ -27,11 +27,10 @@ const loadProfiles = async (): Promise<EmailSenders> => {
 export class DatabaseEmailSenderProfileProvider implements EmailSenderProfileProvider {
   private readonly cache = new TtlCache(loadProfiles)
 
-  async get(profile: EmailSenderProfile): Promise<EmailSender> {
+  async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
     const profiles = await this.cache.get()
 
-    const sender =
-      profiles.get(profile) ?? profiles.get(EmailSenderProfile.System)
+    const sender = profiles.get(profile) ?? profiles.get(EmailSenderType.System)
 
     if (!sender) {
       throw new Error(`No email sender profile found for: ${profile}`)

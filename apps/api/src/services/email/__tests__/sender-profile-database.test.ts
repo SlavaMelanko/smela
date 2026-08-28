@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
-import { EmailSenderProfile } from '@/services/email'
+import { EmailSenderType } from '@/services/email'
 
 import { DatabaseEmailSenderProfileProvider } from '../sender-profile-database'
 
@@ -13,7 +13,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const record = (
-    profile: EmailSenderProfile,
+    profile: EmailSenderType,
     email: string,
     name: string
   ): EmailSenderProfileRecord => ({
@@ -26,8 +26,8 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   })
 
   const records = [
-    record(EmailSenderProfile.System, 'system@example.com', 'System'),
-    record(EmailSenderProfile.Support, 'support@example.com', 'Support')
+    record(EmailSenderType.System, 'system@example.com', 'System'),
+    record(EmailSenderType.Support, 'support@example.com', 'Support')
   ]
 
   const mockRepo = async (
@@ -57,16 +57,16 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.get(EmailSenderProfile.Support)
+    const sender = await provider.get(EmailSenderType.Support)
 
     expect(sender).toEqual({ email: 'support@example.com', name: 'Support' })
   })
 
-  it('falls back to the system profile for an unknown profile', async () => {
+  it('falls back to the system profile for an unconfigured type', async () => {
     await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    const sender = await provider.get(EmailSenderProfile.Security)
+    const sender = await provider.get(EmailSenderType.Security)
 
     expect(sender).toEqual({ email: 'system@example.com', name: 'System' })
   })
@@ -77,7 +77,7 @@ describe('DatabaseEmailSenderProfileProvider', () => {
 
     expect.hasAssertions()
     try {
-      await provider.get(EmailSenderProfile.Security)
+      await provider.get(EmailSenderType.Security)
     } catch (error) {
       expect((error as Error).message).toBe(
         'No email sender profile found for: security'
@@ -89,8 +89,8 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.get(EmailSenderProfile.Support)
-    await provider.get(EmailSenderProfile.System)
+    await provider.get(EmailSenderType.Support)
+    await provider.get(EmailSenderType.System)
 
     expect(queries()).toBe(1)
   })
@@ -100,9 +100,9 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.get(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
-    await provider.get(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
 
     expect(queries()).toBe(2)
   })
@@ -111,23 +111,23 @@ describe('DatabaseEmailSenderProfileProvider', () => {
     const queries = await mockCountedRepo()
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.get(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
     provider.invalidate()
-    await provider.get(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
 
     expect(queries()).toBe(2)
   })
 
   it('serves the updated sender after being invalidated', async () => {
-    let rows = [record(EmailSenderProfile.System, 'old@example.com', 'Old')]
+    let rows = [record(EmailSenderType.System, 'old@example.com', 'Old')]
     await mockRepo(async () => rows)
     const provider = new DatabaseEmailSenderProfileProvider()
 
-    await provider.get(EmailSenderProfile.System)
-    rows = [record(EmailSenderProfile.System, 'new@example.com', 'New')]
+    await provider.get(EmailSenderType.System)
+    rows = [record(EmailSenderType.System, 'new@example.com', 'New')]
     provider.invalidate()
 
-    const sender = await provider.get(EmailSenderProfile.System)
+    const sender = await provider.get(EmailSenderType.System)
 
     expect(sender.email).toBe('new@example.com')
   })

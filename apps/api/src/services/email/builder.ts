@@ -8,7 +8,7 @@ import type {
 } from '@/emails'
 
 import {
-  EmailSenderProfile,
+  EmailSenderType,
   EmailVerificationEmailRenderer,
   PasswordResetEmailRenderer,
   UserInvitationEmailRenderer
@@ -35,7 +35,7 @@ export class VerificationEmailMessageBuilder extends EmailMessageBuilder<EmailVe
     socialLinksProvider: SocialLinksProvider
   ): Promise<EmailMessage> {
     const senderProfile = await senderProfileProvider.get(
-      EmailSenderProfile.System
+      EmailSenderType.System
     )
     const socialLinks = await socialLinksProvider.list()
 
@@ -62,7 +62,7 @@ export class PasswordResetEmailMessageBuilder extends EmailMessageBuilder<Passwo
     socialLinksProvider: SocialLinksProvider
   ): Promise<EmailMessage> {
     const senderProfile = await senderProfileProvider.get(
-      EmailSenderProfile.Security
+      EmailSenderType.Security
     )
     const socialLinks = await socialLinksProvider.list()
 
@@ -89,7 +89,7 @@ export class UserInvitationEmailMessageBuilder extends EmailMessageBuilder<UserI
     socialLinksProvider: SocialLinksProvider
   ): Promise<EmailMessage> {
     const senderProfile = await senderProfileProvider.get(
-      EmailSenderProfile.Support
+      EmailSenderType.Support
     )
     const socialLinks = await socialLinksProvider.list()
 

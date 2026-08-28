@@ -1,4 +1,4 @@
-import type { EmailSenderProfile } from '@/services/email'
+import type { EmailSenderType } from '@/services/email'
 
 import { systemRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
@@ -16,7 +16,7 @@ export const getSocialLinks = async () => {
   return { socialLinks }
 }
 
-export const getEmailSenderProfile = async (profile: EmailSenderProfile) => {
+export const getEmailSenderProfile = async (profile: EmailSenderType) => {
   const senderProfile = await systemRepo.findEmailSenderProfile(profile)
 
   if (!senderProfile) {
@@ -33,7 +33,7 @@ export interface UpdateEmailSenderProfileInput {
 }
 
 export const updateEmailSenderProfile = async (
-  profile: EmailSenderProfile,
+  profile: EmailSenderType,
   updates: UpdateEmailSenderProfileInput
 ) => {
   await getEmailSenderProfile(profile)

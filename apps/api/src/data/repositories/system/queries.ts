@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import type { EmailSenderProfile } from '@/services/email'
+import type { EmailSenderType } from '@/services/email'
 
 import type { Database } from '../../clients'
 import type { EmailSenderProfileRecord, SocialLinkRecord } from './types'
@@ -17,7 +17,7 @@ export const listEmailSenderProfiles = async (
 }
 
 export const findEmailSenderProfile = async (
-  profile: EmailSenderProfile,
+  profile: EmailSenderType,
   tx?: Database
 ): Promise<EmailSenderProfileRecord | undefined> => {
   const executor = tx || db

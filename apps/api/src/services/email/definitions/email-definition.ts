@@ -1,16 +1,16 @@
-import type { EmailRenderer, EmailSender } from '@/emails'
+import type { EmailRenderer, EmailSenderProfile } from '@/emails'
 
 import type { EmailType } from '../email-type'
 
 export interface EmailDefinition<T = any> {
   getType: () => EmailType
   getRenderer: () => Promise<EmailRenderer<T>>
-  getSender: () => Promise<EmailSender>
+  getSender: () => Promise<EmailSenderProfile>
 }
 
 export const defineEmail = <T = any>(
   type: EmailType,
-  resolveSender: () => Promise<EmailSender>,
+  resolveSender: () => Promise<EmailSenderProfile>,
   loadRenderer: () => Promise<EmailRenderer<T>>
 ): EmailDefinition<T> => ({
   getType: () => type,
