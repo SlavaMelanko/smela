@@ -9,14 +9,14 @@ export interface EmailMessage {
   text: string
 }
 
+export type EmailProviderType = 'resend' | 'ethereal' // | etc.
+
 export interface EmailSendInfo {
-  msg: string
-  subject: string
+  provider: EmailProviderType
   messageId: string
-  previewUrl: string
-  to: string | string[]
+  previewUrl?: string
 }
 
 export interface EmailProvider {
-  send: (msg: EmailMessage) => Promise<EmailSendInfo | void>
+  send: (msg: EmailMessage) => Promise<EmailSendInfo>
 }

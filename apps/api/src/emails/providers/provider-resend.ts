@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 import { exponentialBackoffDelay, sleepFor } from '@/utils/async'
 
-import type { EmailMessage, EmailProvider } from './provider'
+import type { EmailMessage, EmailProvider, EmailSendInfo } from './provider'
 
 export class ResendEmailProvider implements EmailProvider {
   private readonly resend: Resend
@@ -15,11 +15,11 @@ export class ResendEmailProvider implements EmailProvider {
     this.resend = new Resend(apiKey)
   }
 
-  async send(msg: EmailMessage): Promise<void> {
+  async send(msg: EmailMessage): Promise<EmailSendInfo> {
     const maxRetries = 2
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      const { error } = await this.resend.emails.send({
+      const { data, error } = await this.resend.emails.send({
         from: `${msg.from.name} <${msg.from.email}>`,
         to: Array.isArray(msg.to) ? msg.to : [msg.to],
         subject: msg.subject,
@@ -28,7 +28,7 @@ export class ResendEmailProvider implements EmailProvider {
       })
 
       if (!error) {
-        return
+        return { provider: 'resend', messageId: data.id }
       }
 
       if (attempt === maxRetries) {
@@ -39,5 +39,7 @@ export class ResendEmailProvider implements EmailProvider {
 
       await sleepFor(exponentialBackoffDelay(1000, attempt))
     }
+
+    throw new Error('Failed to send email: retries exhausted')
   }
 }

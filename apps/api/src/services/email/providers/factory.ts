@@ -1,10 +1,8 @@
-import type { EmailProvider } from '@/emails'
+import type { EmailProvider, EmailProviderType } from '@/emails'
 
 import { EtherealEmailProvider, ResendEmailProvider } from '@/emails'
 import env from '@/env'
 import { logger } from '@/logging'
-
-export type EmailProviderType = 'resend' | 'ethereal' // | etc.
 
 const getProviderType = (type?: EmailProviderType): EmailProviderType => {
   if (type) {

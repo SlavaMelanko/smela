@@ -57,9 +57,7 @@ export class EmailDispatcher {
         text
       })
 
-      if (info) {
-        logger.info(info)
-      }
+      logger.info({ ...info, to, subject }, 'Email sent')
     } catch (error) {
       logger.error({ error, to, subject }, 'Failed to send email')
       throw error

@@ -43,11 +43,9 @@ export class EtherealEmailProvider implements EmailProvider {
     const previewUrl = nodemailer.getTestMessageUrl(info)
 
     return {
-      msg: 'Ethereal email sent',
-      subject: msg.subject,
+      provider: 'ethereal',
       messageId: info.messageId,
-      previewUrl: previewUrl || 'No preview URL available',
-      to: msg.to
+      previewUrl: previewUrl || undefined
     }
   }
 }
