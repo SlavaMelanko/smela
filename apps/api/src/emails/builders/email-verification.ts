@@ -20,7 +20,7 @@ export class VerificationEmailMessageBuilder extends EmailMessageBuilder<EmailVe
     const renderer = new EmailVerificationEmailRenderer()
     const { subject, html, text } = await renderer.render(
       this.data,
-      this.preferences,
+      this.getPreferences(),
       socialLinks
     )
 

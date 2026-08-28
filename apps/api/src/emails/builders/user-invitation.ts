@@ -20,7 +20,7 @@ export class UserInvitationEmailMessageBuilder extends EmailMessageBuilder<UserI
     const renderer = new UserInvitationEmailRenderer()
     const { subject, html, text } = await renderer.render(
       this.data,
-      this.preferences,
+      this.getPreferences(),
       socialLinks
     )
 

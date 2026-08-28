@@ -20,7 +20,7 @@ export class PasswordResetEmailMessageBuilder extends EmailMessageBuilder<Passwo
     const renderer = new PasswordResetEmailRenderer()
     const { subject, html, text } = await renderer.render(
       this.data,
-      this.preferences,
+      this.getPreferences(),
       socialLinks
     )
 
