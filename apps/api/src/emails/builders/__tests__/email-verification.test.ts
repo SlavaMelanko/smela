@@ -1,14 +1,14 @@
-import { describe, expect, it, mock } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 
 import type { CompanyProfile } from '../../company'
-import type {
-  EmailSenderProfile,
-  EmailSenderProfileResolver
-} from '../../sender-profile'
-import type { SocialLinksResolver } from '../../social-links'
+import type { EmailSenderProfile } from '../../sender-profile'
 
 import { EmailSenderType } from '../../sender-profile'
 import { VerificationEmailMessageBuilder } from '../email-verification'
+import {
+  buildSenderProfileResolver,
+  buildSocialLinksResolver
+} from './resolvers'
 
 const company: CompanyProfile = { name: 'SMELA' }
 
@@ -17,19 +17,9 @@ const senderProfile: EmailSenderProfile = {
   name: 'SMELA'
 }
 
-const buildSenderProfileResolver = (): EmailSenderProfileResolver => ({
-  get: mock(async () => senderProfile),
-  invalidate: mock(() => {})
-})
-
-const buildSocialLinksResolver = (): SocialLinksResolver => ({
-  list: mock(async () => []),
-  invalidate: mock(() => {})
-})
-
 describe('VerificationEmailMessageBuilder', () => {
   it('resolves the System sender profile', async () => {
-    const senderProfileResolver = buildSenderProfileResolver()
+    const senderProfileResolver = buildSenderProfileResolver(senderProfile)
 
     const builder = new VerificationEmailMessageBuilder('user@example.com', {
       firstName: 'John',
@@ -54,7 +44,7 @@ describe('VerificationEmailMessageBuilder', () => {
     })
 
     const message = await builder.build(
-      buildSenderProfileResolver(),
+      buildSenderProfileResolver(senderProfile),
       buildSocialLinksResolver(),
       company
     )

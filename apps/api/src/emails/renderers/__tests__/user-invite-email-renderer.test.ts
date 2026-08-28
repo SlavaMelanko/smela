@@ -1,105 +1,61 @@
 import { describe, expect, it } from 'bun:test'
 
 import type { CompanyProfile } from '../../company'
-import type { SocialLink } from '../../social-links'
-import type { UserPreferences } from '../../user-preferences'
 import type { UserInviteEmailData } from '../user-invite'
 
 import UserInviteEmailRenderer from '../user-invite'
+import { testRendererContract } from './renderer-contract'
 
-describe('User Invitation Email Renderer', () => {
-  const company: CompanyProfile = { name: 'SMELA' }
+const renderer = new UserInviteEmailRenderer()
 
-  const renderer = new UserInviteEmailRenderer()
+const INVITE_URL = 'https://example.com/accept-invite?token=abc123'
 
-  const mockData: UserInviteEmailData = {
+testRendererContract<UserInviteEmailData>({
+  name: 'User invite',
+  renderer,
+  data: {
     firstName: 'John',
-    inviteUrl: 'https://example.com/accept-invite?token=abc123',
+    inviteUrl: INVITE_URL,
     inviterName: 'Jane',
     teamName: 'Acme'
-  }
+  },
+  url: INVITE_URL,
+  otherData: {
+    firstName: 'Alice',
+    inviteUrl: 'https://example.com/accept-invite?token=other',
+    inviterName: 'Jane',
+    teamName: 'Acme'
+  },
+  englishSubject: /invited/,
+  ukrainianSubject: /запрошено/
+})
 
-  it('should render invite email with required fields', async () => {
-    const result = await renderer.render(mockData, { company })
+describe('UserInviteEmailRenderer', () => {
+  const company: CompanyProfile = { name: 'SMELA' }
 
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(result.subject.length).toBeGreaterThan(0)
-    expect(result.html).toContain(mockData.firstName)
-    expect(result.html).toContain(mockData.inviteUrl)
-    expect(result.text).toContain(mockData.firstName)
-    expect(result.text).toContain(mockData.inviteUrl)
-  })
-
-  it('should include the team name in the subject when provided', async () => {
-    const result = await renderer.render(mockData, { company })
+  it('puts the team name in the subject and the inviter in the body', async () => {
+    const result = await renderer.render(
+      {
+        firstName: 'John',
+        inviteUrl: INVITE_URL,
+        inviterName: 'Jane',
+        teamName: 'Acme'
+      },
+      { company }
+    )
 
     expect(result.subject).toContain('Acme')
+    expect(result.html).toContain('Jane')
   })
 
-  it('should render without inviterName or teamName', async () => {
-    const dataWithoutOptionalFields: UserInviteEmailData = {
-      firstName: 'John',
-      inviteUrl: 'https://example.com/accept-invite?token=abc123'
-    }
+  it('falls back to generic wording without an inviter or team name', async () => {
+    const result = await renderer.render(
+      { firstName: 'John', inviteUrl: INVITE_URL },
+      { company }
+    )
 
-    const result = await renderer.render(dataWithoutOptionalFields, { company })
-
-    expect(result.subject.length).toBeGreaterThan(0)
-    expect(result.html).toContain('John')
-    expect(result.html).toContain(dataWithoutOptionalFields.inviteUrl)
-  })
-
-  it('should render with Ukrainian locale and different themes', async () => {
-    const ukResult = await renderer.render(mockData, {
-      company,
-      preferences: { locale: 'uk', theme: 'light' }
-    })
-    const darkResult = await renderer.render(mockData, {
-      company,
-      preferences: { locale: 'en', theme: 'dark' } satisfies UserPreferences
-    })
-
-    expect(ukResult.subject.length).toBeGreaterThan(0)
-    expect(darkResult.html).toContain(mockData.firstName)
-  })
-
-  it('should include social links in the footer when provided', async () => {
-    const mockSocialLinks: SocialLink[] = [
-      {
-        network: 'facebook',
-        url: 'https://facebook.com/example',
-        svg: '<svg><path d="M0 0" /></svg>'
-      }
-    ]
-
-    const result = await renderer.render(mockData, {
-      company,
-      socialLinks: mockSocialLinks
-    })
-
-    expect(result.html).toContain('https://facebook.com/example')
-  })
-
-  it('should not leak data between different invites', async () => {
-    const inviteA: UserInviteEmailData = {
-      firstName: 'Alice',
-      inviteUrl: 'https://example.com/accept-invite?token=token1',
-      teamName: 'Team A'
-    }
-    const inviteB: UserInviteEmailData = {
-      firstName: 'Bob',
-      inviteUrl: 'https://example.com/accept-invite?token=token2',
-      teamName: 'Team B'
-    }
-
-    const resultA = await renderer.render(inviteA, { company })
-    const resultB = await renderer.render(inviteB, { company })
-
-    expect(resultA.html).toContain('Alice')
-    expect(resultA.html).not.toContain('Bob')
-    expect(resultB.html).toContain('Bob')
-    expect(resultB.html).not.toContain('Alice')
+    expect(result.subject).toContain('the team')
+    expect(result.html).toContain('Admin')
+    expect(result.html).toContain(INVITE_URL)
   })
 })

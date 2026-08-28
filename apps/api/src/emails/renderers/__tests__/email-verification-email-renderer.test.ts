@@ -1,153 +1,41 @@
 import { describe, expect, it } from 'bun:test'
 
 import type { CompanyProfile } from '../../company'
-import type { SocialLink } from '../../social-links'
-import type { UserPreferences } from '../../user-preferences'
 import type { EmailVerificationEmailData } from '../email-verification'
 
 import EmailVerificationEmailRenderer from '../email-verification'
+import { testRendererContract } from './renderer-contract'
 
-describe('Email Verification Email Renderer', () => {
+const renderer = new EmailVerificationEmailRenderer()
+
+const VERIFICATION_URL = 'https://example.com/verify?token=abc123'
+
+testRendererContract<EmailVerificationEmailData>({
+  name: 'Email verification',
+  renderer,
+  data: { firstName: 'John', verificationUrl: VERIFICATION_URL },
+  url: VERIFICATION_URL,
+  otherData: {
+    firstName: 'Alice',
+    verificationUrl: 'https://example.com/verify?token=other'
+  },
+  englishSubject: /verify|email|account/,
+  ukrainianSubject: /підтвердіть|електронну/
+})
+
+describe('EmailVerificationEmailRenderer', () => {
   const company: CompanyProfile = { name: 'SMELA' }
 
-  const renderer = new EmailVerificationEmailRenderer()
+  it('keeps long verification urls intact', async () => {
+    const verificationUrl =
+      'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456'
 
-  const mockData: EmailVerificationEmailData = {
-    firstName: 'John',
-    verificationUrl: 'https://example.com/verify?token=abc123'
-  }
+    const result = await renderer.render(
+      { firstName: 'John', verificationUrl },
+      { company }
+    )
 
-  it('should render email verification email with required fields', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(typeof result.subject).toBe('string')
-    expect(typeof result.html).toBe('string')
-    expect(typeof result.text).toBe('string')
-    expect(result.subject.length).toBeGreaterThan(0)
-    expect(result.html.length).toBeGreaterThan(0)
-    expect(result.text.length).toBeGreaterThan(0)
-  })
-
-  it('should include user data in rendered output', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    expect(result.html).toContain(mockData.firstName)
-    expect(result.html).toContain(mockData.verificationUrl)
-    expect(result.text).toContain(mockData.firstName)
-    expect(result.text).toContain(mockData.verificationUrl)
-  })
-
-  it('should render with English locale by default', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    // Basic check that subject is in English (contains common English words)
-    expect(result.subject.toLowerCase()).toMatch(/verify|email|account/)
-  })
-
-  it('should render with Ukrainian locale when specified', async () => {
-    const userPreferences: UserPreferences = {
-      locale: 'uk',
-      theme: 'light'
-    }
-
-    const result = await renderer.render(mockData, {
-      company,
-      preferences: userPreferences
-    })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(result.subject.length).toBeGreaterThan(0)
-  })
-
-  it('should render with different themes', async () => {
-    const lightPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'light'
-    }
-
-    const darkPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'dark'
-    }
-
-    const lightResult = await renderer.render(mockData, {
-      company,
-      preferences: lightPreferences
-    })
-    const darkResult = await renderer.render(mockData, {
-      company,
-      preferences: darkPreferences
-    })
-
-    // Both should render successfully
-    expect(lightResult).toHaveProperty('html')
-    expect(darkResult).toHaveProperty('html')
-    expect(lightResult.subject).toBe(darkResult.subject) // Subject should be same
-  })
-
-  it('should include social links in the footer when provided', async () => {
-    const mockSocialLinks: SocialLink[] = [
-      {
-        network: 'facebook',
-        url: 'https://facebook.com/example',
-        svg: '<svg><path d="M0 0" /></svg>'
-      }
-    ]
-
-    const result = await renderer.render(mockData, {
-      company,
-      socialLinks: mockSocialLinks
-    })
-
-    expect(result.html).toContain('https://facebook.com/example')
-    expect(result.html).toContain('<path d="M0 0" />')
-  })
-
-  it('should handle complete parameters', async () => {
-    const userPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'light'
-    }
-
-    const result = await renderer.render(mockData, {
-      company,
-      preferences: userPreferences
-    })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(result.html).toContain(mockData.firstName)
-    expect(result.html).toContain(mockData.verificationUrl)
-  })
-
-  it('should handle special characters in firstName', async () => {
-    const dataWithSpecialChars: EmailVerificationEmailData = {
-      firstName: 'José María',
-      verificationUrl: 'https://example.com/verify?token=abc123'
-    }
-
-    const result = await renderer.render(dataWithSpecialChars, { company })
-
-    expect(result.html).toContain('José María')
-    expect(result.text).toContain('José María')
-  })
-
-  it('should handle long verification URLs', async () => {
-    const dataWithLongUrl: EmailVerificationEmailData = {
-      firstName: 'John',
-      verificationUrl:
-        'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456'
-    }
-
-    const result = await renderer.render(dataWithLongUrl, { company })
-
-    expect(result.html).toContain(dataWithLongUrl.verificationUrl)
-    expect(result.text).toContain(dataWithLongUrl.verificationUrl)
+    expect(result.html).toContain(verificationUrl)
+    expect(result.text).toContain(verificationUrl)
   })
 })

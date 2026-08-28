@@ -1,190 +1,41 @@
 import { describe, expect, it } from 'bun:test'
 
 import type { CompanyProfile } from '../../company'
-import type { SocialLink } from '../../social-links'
-import type { UserPreferences } from '../../user-preferences'
 import type { PasswordResetEmailData } from '../password-reset'
 
 import PasswordResetEmailRenderer from '../password-reset'
+import { testRendererContract } from './renderer-contract'
 
-describe('Password Reset Email Renderer', () => {
+const renderer = new PasswordResetEmailRenderer()
+
+const RESET_URL = 'https://example.com/reset-password?token=xyz789'
+
+testRendererContract<PasswordResetEmailData>({
+  name: 'Password reset',
+  renderer,
+  data: { firstName: 'John', resetUrl: RESET_URL },
+  url: RESET_URL,
+  otherData: {
+    firstName: 'Alice',
+    resetUrl: 'https://example.com/reset-password?token=other'
+  },
+  englishSubject: /password|reset|recovery|forgot/,
+  ukrainianSubject: /скинути|пароль/
+})
+
+describe('PasswordResetEmailRenderer', () => {
   const company: CompanyProfile = { name: 'SMELA' }
 
-  const renderer = new PasswordResetEmailRenderer()
+  it('keeps long reset urls intact', async () => {
+    const resetUrl =
+      'https://example.com/reset-password?token=very-long-reset-token-that-might-be-used-in-production-environments-with-secure-random-generation-xyz789abc123'
 
-  const mockData: PasswordResetEmailData = {
-    firstName: 'John',
-    resetUrl: 'https://example.com/reset-password?token=xyz789'
-  }
-
-  it('should render password reset email with required fields', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(typeof result.subject).toBe('string')
-    expect(typeof result.html).toBe('string')
-    expect(typeof result.text).toBe('string')
-    expect(result.subject.length).toBeGreaterThan(0)
-    expect(result.html.length).toBeGreaterThan(0)
-    expect(result.text.length).toBeGreaterThan(0)
-  })
-
-  it('should include user data in rendered output', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    expect(result.html).toContain(mockData.firstName)
-    expect(result.html).toContain(mockData.resetUrl)
-    expect(result.text).toContain(mockData.firstName)
-    expect(result.text).toContain(mockData.resetUrl)
-  })
-
-  it('should render with English locale by default', async () => {
-    const result = await renderer.render(mockData, { company })
-
-    // Basic check that subject is in English (contains common English words)
-    expect(result.subject.toLowerCase()).toMatch(
-      /password|reset|recovery|forgot/
+    const result = await renderer.render(
+      { firstName: 'John', resetUrl },
+      { company }
     )
-  })
 
-  it('should render with Ukrainian locale when specified', async () => {
-    const userPreferences: UserPreferences = {
-      locale: 'uk',
-      theme: 'light'
-    }
-
-    const result = await renderer.render(mockData, {
-      company,
-      preferences: userPreferences
-    })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(result.subject.length).toBeGreaterThan(0)
-  })
-
-  it('should render with different themes', async () => {
-    const lightPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'light'
-    }
-
-    const darkPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'dark'
-    }
-
-    const lightResult = await renderer.render(mockData, {
-      company,
-      preferences: lightPreferences
-    })
-    const darkResult = await renderer.render(mockData, {
-      company,
-      preferences: darkPreferences
-    })
-
-    // Both should render successfully
-    expect(lightResult).toHaveProperty('html')
-    expect(darkResult).toHaveProperty('html')
-    expect(lightResult.subject).toBe(darkResult.subject) // Subject should be same
-  })
-
-  it('should include social links in the footer when provided', async () => {
-    const mockSocialLinks: SocialLink[] = [
-      {
-        network: 'facebook',
-        url: 'https://facebook.com/example',
-        svg: '<svg><path d="M0 0" /></svg>'
-      }
-    ]
-
-    const result = await renderer.render(mockData, {
-      company,
-      socialLinks: mockSocialLinks
-    })
-
-    expect(result.html).toContain('https://facebook.com/example')
-    expect(result.html).toContain('<path d="M0 0" />')
-  })
-
-  it('should handle complete parameters', async () => {
-    const userPreferences: UserPreferences = {
-      locale: 'en',
-      theme: 'light'
-    }
-
-    const result = await renderer.render(mockData, {
-      company,
-      preferences: userPreferences
-    })
-
-    expect(result).toHaveProperty('subject')
-    expect(result).toHaveProperty('html')
-    expect(result).toHaveProperty('text')
-    expect(result.html).toContain(mockData.firstName)
-    expect(result.html).toContain(mockData.resetUrl)
-  })
-
-  it('should handle special characters in firstName', async () => {
-    const dataWithSpecialChars: PasswordResetEmailData = {
-      firstName: 'José María',
-      resetUrl: 'https://example.com/reset-password?token=xyz789'
-    }
-
-    const result = await renderer.render(dataWithSpecialChars, { company })
-
-    expect(result.html).toContain('José María')
-    expect(result.text).toContain('José María')
-  })
-
-  it('should handle long reset URLs', async () => {
-    const dataWithLongUrl: PasswordResetEmailData = {
-      firstName: 'John',
-      resetUrl:
-        'https://example.com/reset-password?token=very-long-reset-token-that-might-be-used-in-production-environments-with-secure-random-generation-xyz789abc123'
-    }
-
-    const result = await renderer.render(dataWithLongUrl, { company })
-
-    expect(result.html).toContain(dataWithLongUrl.resetUrl)
-    expect(result.text).toContain(dataWithLongUrl.resetUrl)
-  })
-
-  it('should maintain consistency between password reset calls', async () => {
-    const result1 = await renderer.render(mockData, { company })
-    const result2 = await renderer.render(mockData, { company })
-
-    // Same input should produce the same subject and content
-    expect(result1.subject).toBe(result2.subject)
-    expect(result1.html).toContain(mockData.firstName)
-    expect(result2.html).toContain(mockData.firstName)
-    expect(result1.html).toContain(mockData.resetUrl)
-    expect(result2.html).toContain(mockData.resetUrl)
-  })
-
-  it('should handle different users with same reset URL pattern', async () => {
-    const userData1: PasswordResetEmailData = {
-      firstName: 'Alice',
-      resetUrl: 'https://example.com/reset-password?token=token1'
-    }
-
-    const userData2: PasswordResetEmailData = {
-      firstName: 'Bob',
-      resetUrl: 'https://example.com/reset-password?token=token2'
-    }
-
-    const result1 = await renderer.render(userData1, { company })
-    const result2 = await renderer.render(userData2, { company })
-
-    // Different data should produce different output
-    expect(result1.html).toContain('Alice')
-    expect(result1.html).toContain('token1')
-    expect(result2.html).toContain('Bob')
-    expect(result2.html).toContain('token2')
-    expect(result1.html).not.toContain('Bob')
-    expect(result2.html).not.toContain('Alice')
+    expect(result.html).toContain(resetUrl)
+    expect(result.text).toContain(resetUrl)
   })
 })
