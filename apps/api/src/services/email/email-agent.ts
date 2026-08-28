@@ -1,4 +1,4 @@
-import type { EmailSenderProfileProvider, SocialLinksProvider } from '@/emails'
+import type { EmailSenderProfileResolver, SocialLinksResolver } from '@/emails'
 import type { Role, UserPreferences } from '@/types'
 
 import env from '@/env'
@@ -6,40 +6,40 @@ import { isAdmin } from '@/types'
 
 import { EmailDispatcher } from './dispatcher'
 import { EmailType } from './email-type'
-import { createEmailProvider } from './providers'
+import { createEmailProvider } from './provider-factory'
 import { buildEmailRegistry } from './registry'
-import { DatabaseEmailSenderProfileProvider } from './sender-profile-database'
-import { DatabaseSocialLinksProvider } from './social-links'
+import { DatabaseEmailSenderProfileResolver } from './sender-profile'
+import { DatabaseSocialLinksResolver } from './social-links'
 
 const getFeBaseUrl = (role: Role) =>
   isAdmin(role) ? env.FE_ADMIN_URL : env.FE_USER_URL
 
 export class EmailAgent {
   private readonly dispatcher: EmailDispatcher
-  private readonly senderProfileProvider: EmailSenderProfileProvider
-  private readonly socialLinksProvider: SocialLinksProvider
+  private readonly senderProfileResolver: EmailSenderProfileResolver
+  private readonly socialLinksResolver: SocialLinksResolver
 
   constructor(
-    emailSenderProfileProvider: EmailSenderProfileProvider,
-    socialLinksProvider: SocialLinksProvider
+    emailSenderProfileResolver: EmailSenderProfileResolver,
+    socialLinksResolver: SocialLinksResolver
   ) {
-    this.senderProfileProvider = emailSenderProfileProvider
-    this.socialLinksProvider = socialLinksProvider
+    this.senderProfileResolver = emailSenderProfileResolver
+    this.socialLinksResolver = socialLinksResolver
     this.dispatcher = new EmailDispatcher(
       createEmailProvider(),
-      buildEmailRegistry(emailSenderProfileProvider),
-      socialLinksProvider
+      buildEmailRegistry(emailSenderProfileResolver),
+      socialLinksResolver
     )
   }
 
   // Sender profiles are cached in memory, so writes must drop the stale entry
   invalidateSenderProfiles() {
-    this.senderProfileProvider.invalidate()
+    this.senderProfileResolver.invalidate()
   }
 
   // Social links are cached in memory, so writes must drop the stale entry
   invalidateSocialLinks() {
-    this.socialLinksProvider.invalidate()
+    this.socialLinksResolver.invalidate()
   }
 
   async sendEmailVerificationEmail(
@@ -107,6 +107,6 @@ export class EmailAgent {
 }
 
 export const emailAgent = new EmailAgent(
-  new DatabaseEmailSenderProfileProvider(),
-  new DatabaseSocialLinksProvider()
+  new DatabaseEmailSenderProfileResolver(),
+  new DatabaseSocialLinksResolver()
 )

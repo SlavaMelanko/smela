@@ -1,6 +1,6 @@
 import type { EmailMessage } from '../providers'
-import type { EmailSenderProfileProvider } from '../sender-profile'
-import type { SocialLinksProvider } from '../social-links'
+import type { EmailSenderProfileResolver } from '../sender-profile'
+import type { SocialLinksResolver } from '../social-links'
 import type { UserPreferences } from '../user-preferences'
 
 export abstract class EmailMessageBuilder<T> {
@@ -11,7 +11,7 @@ export abstract class EmailMessageBuilder<T> {
   ) {}
 
   abstract build(
-    senderProfileProvider: EmailSenderProfileProvider,
-    socialLinksProvider: SocialLinksProvider
+    senderProfileResolver: EmailSenderProfileResolver,
+    socialLinksResolver: SocialLinksResolver
   ): Promise<EmailMessage>
 }

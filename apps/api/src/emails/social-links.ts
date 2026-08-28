@@ -4,7 +4,7 @@ export interface SocialLink {
   svg: string
 }
 
-export interface SocialLinksProvider {
+export interface SocialLinksResolver {
   list: () => Promise<SocialLink[]>
   invalidate: () => void
 }

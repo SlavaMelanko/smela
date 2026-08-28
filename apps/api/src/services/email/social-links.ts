@@ -1,4 +1,4 @@
-import type { SocialLink, SocialLinksProvider } from '@/emails'
+import type { SocialLink, SocialLinksResolver } from '@/emails'
 
 import { systemRepo } from '@/data'
 import { logger } from '@/logging'
@@ -18,7 +18,7 @@ const loadSocialLinks = async (): Promise<SocialLink[]> => {
   }
 }
 
-export class DatabaseSocialLinksProvider implements SocialLinksProvider {
+export class DatabaseSocialLinksResolver implements SocialLinksResolver {
   private readonly cache = new TtlCache(loadSocialLinks)
 
   async list(): Promise<SocialLink[]> {

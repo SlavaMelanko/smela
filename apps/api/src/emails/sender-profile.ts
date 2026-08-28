@@ -11,7 +11,7 @@ export interface EmailSenderProfile {
 
 export type EmailSenderProfiles = Map<EmailSenderType, EmailSenderProfile>
 
-export interface EmailSenderProfileProvider {
+export interface EmailSenderProfileResolver {
   // Returns the profile for the given type, or a fallback if the requested type is not found.
   get: (profile: EmailSenderType) => Promise<EmailSenderProfile>
 

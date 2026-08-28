@@ -17,13 +17,13 @@ export * from './renderers'
 
 export type {
   EmailSenderProfile,
-  EmailSenderProfileProvider,
+  EmailSenderProfileResolver,
   EmailSenderProfiles
 } from './sender-profile'
 
 export { EmailSenderType } from './sender-profile'
 
-export type { SocialLink, SocialLinksProvider } from './social-links'
+export type { SocialLink, SocialLinksResolver } from './social-links'
 
 export type {
   SupportedLocale,

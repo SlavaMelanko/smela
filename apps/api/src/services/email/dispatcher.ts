@@ -1,6 +1,6 @@
 import type {
   EmailProvider,
-  SocialLinksProvider,
+  SocialLinksResolver,
   UserPreferences
 } from '@/emails'
 
@@ -23,7 +23,7 @@ export class EmailDispatcher {
   constructor(
     private readonly provider: EmailProvider,
     private readonly registry: EmailRegistry,
-    private readonly socialLinksProvider: SocialLinksProvider
+    private readonly socialLinksResolver: SocialLinksResolver
   ) {}
 
   async send<T>(
@@ -38,7 +38,7 @@ export class EmailDispatcher {
 
     const renderer = await definition.getRenderer()
     const userPreferences = mergeWithDefaultPreferences(preferences)
-    const socialLinks = await this.socialLinksProvider.list()
+    const socialLinks = await this.socialLinksResolver.list()
     const { subject, html, text } = await renderer.render(
       data,
       userPreferences,

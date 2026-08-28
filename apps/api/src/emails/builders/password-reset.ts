@@ -1,7 +1,7 @@
 import type { EmailMessage } from '../providers'
 import type { PasswordResetEmailData } from '../renderers'
-import type { EmailSenderProfileProvider } from '../sender-profile'
-import type { SocialLinksProvider } from '../social-links'
+import type { EmailSenderProfileResolver } from '../sender-profile'
+import type { SocialLinksResolver } from '../social-links'
 
 import { PasswordResetEmailRenderer } from '../renderers'
 import { EmailSenderType } from '../sender-profile'
@@ -9,13 +9,13 @@ import { EmailMessageBuilder } from './builder'
 
 export class PasswordResetEmailMessageBuilder extends EmailMessageBuilder<PasswordResetEmailData> {
   async build(
-    senderProfileProvider: EmailSenderProfileProvider,
-    socialLinksProvider: SocialLinksProvider
+    senderProfileResolver: EmailSenderProfileResolver,
+    socialLinksResolver: SocialLinksResolver
   ): Promise<EmailMessage> {
-    const senderProfile = await senderProfileProvider.get(
+    const senderProfile = await senderProfileResolver.get(
       EmailSenderType.Security
     )
-    const socialLinks = await socialLinksProvider.list()
+    const socialLinks = await socialLinksResolver.list()
 
     const renderer = new PasswordResetEmailRenderer()
     const { subject, html, text } = await renderer.render(

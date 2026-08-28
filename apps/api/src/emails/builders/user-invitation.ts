@@ -1,7 +1,7 @@
 import type { EmailMessage } from '../providers'
 import type { UserInvitationEmailData } from '../renderers'
-import type { EmailSenderProfileProvider } from '../sender-profile'
-import type { SocialLinksProvider } from '../social-links'
+import type { EmailSenderProfileResolver } from '../sender-profile'
+import type { SocialLinksResolver } from '../social-links'
 
 import { UserInvitationEmailRenderer } from '../renderers'
 import { EmailSenderType } from '../sender-profile'
@@ -9,13 +9,13 @@ import { EmailMessageBuilder } from './builder'
 
 export class UserInvitationEmailMessageBuilder extends EmailMessageBuilder<UserInvitationEmailData> {
   async build(
-    senderProfileProvider: EmailSenderProfileProvider,
-    socialLinksProvider: SocialLinksProvider
+    senderProfileResolver: EmailSenderProfileResolver,
+    socialLinksResolver: SocialLinksResolver
   ): Promise<EmailMessage> {
-    const senderProfile = await senderProfileProvider.get(
+    const senderProfile = await senderProfileResolver.get(
       EmailSenderType.Support
     )
-    const socialLinks = await socialLinksProvider.list()
+    const socialLinks = await socialLinksResolver.list()
 
     const renderer = new UserInvitationEmailRenderer()
     const { subject, html, text } = await renderer.render(

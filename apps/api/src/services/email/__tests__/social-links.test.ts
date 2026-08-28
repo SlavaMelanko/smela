@@ -4,11 +4,11 @@ import type { SocialLinkRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 
-import { DatabaseSocialLinksProvider } from '../social-links'
+import { DatabaseSocialLinksResolver } from '../social-links'
 
 const ONE_HOUR_MS = 60 * 60 * 1000
 
-describe('DatabaseSocialLinksProvider', () => {
+describe('DatabaseSocialLinksResolver', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const record = (
@@ -52,7 +52,7 @@ describe('DatabaseSocialLinksProvider', () => {
 
   it('resolves social links from the database', async () => {
     await mockCountedRepo()
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     const socialLinks = await provider.list()
 
@@ -72,7 +72,7 @@ describe('DatabaseSocialLinksProvider', () => {
 
   it('returns an empty array when no social links exist', async () => {
     await mockRepo(async () => [])
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     const socialLinks = await provider.list()
 
@@ -83,7 +83,7 @@ describe('DatabaseSocialLinksProvider', () => {
     await mockRepo(async () => {
       throw new Error('Database unavailable')
     })
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     const socialLinks = await provider.list()
 
@@ -92,7 +92,7 @@ describe('DatabaseSocialLinksProvider', () => {
 
   it('serves repeated lookups from the cache within the TTL', async () => {
     const queries = await mockCountedRepo()
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     await provider.list()
     await provider.list()
@@ -103,7 +103,7 @@ describe('DatabaseSocialLinksProvider', () => {
   it('reloads from the database after the TTL expires', async () => {
     setSystemTime(new Date('2026-01-01T00:00:00Z'))
     const queries = await mockCountedRepo()
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     await provider.list()
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
@@ -114,7 +114,7 @@ describe('DatabaseSocialLinksProvider', () => {
 
   it('reloads from the database after being invalidated within the TTL', async () => {
     const queries = await mockCountedRepo()
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     await provider.list()
     provider.invalidate()
@@ -128,7 +128,7 @@ describe('DatabaseSocialLinksProvider', () => {
       record('facebook', 'https://facebook.com/old', '<svg>old</svg>')
     ]
     await mockRepo(async () => rows)
-    const provider = new DatabaseSocialLinksProvider()
+    const provider = new DatabaseSocialLinksResolver()
 
     await provider.list()
     rows = [record('facebook', 'https://facebook.com/new', '<svg>new</svg>')]

@@ -1,6 +1,6 @@
 import type {
   EmailSenderProfile,
-  EmailSenderProfileProvider,
+  EmailSenderProfileResolver,
   EmailSenderProfiles
 } from '@/emails'
 
@@ -24,19 +24,13 @@ const loadProfiles = async (): Promise<EmailSenderProfiles> => {
   }
 }
 
-export class DatabaseEmailSenderProfileProvider implements EmailSenderProfileProvider {
+export class DatabaseEmailSenderProfileResolver implements EmailSenderProfileResolver {
   private readonly cache = new TtlCache(loadProfiles)
 
   async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
     const profiles = await this.cache.get()
 
-    const sender = profiles.get(profile) ?? profiles.get(EmailSenderType.System)
-
-    if (!sender) {
-      throw new Error(`No email sender profile found for: ${profile}`)
-    }
-
-    return sender
+    return profiles.get(profile) ?? profiles.get(EmailSenderType.System)!
   }
 
   invalidate() {
