@@ -9,7 +9,7 @@ import { EmailSenderType } from '@/emails'
 import { logger } from '@/logging'
 import { TtlCache } from '@/utils/ttl-cache'
 
-const loadProfiles = async (): Promise<EmailSenderProfiles> => {
+const loadSenderProfiles = async (): Promise<EmailSenderProfiles> => {
   try {
     const records = await systemRepo.listEmailSenderProfiles()
 
@@ -25,7 +25,7 @@ const loadProfiles = async (): Promise<EmailSenderProfiles> => {
 }
 
 export class ApiEmailSenderProfileResolver implements EmailSenderProfileResolver {
-  private readonly cache = new TtlCache(loadProfiles)
+  private readonly cache = new TtlCache(loadSenderProfiles)
 
   async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
     const profiles = await this.cache.get()

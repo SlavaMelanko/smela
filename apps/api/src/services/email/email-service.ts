@@ -18,7 +18,6 @@ export class EmailService {
     private readonly socialLinksResolver: SocialLinksResolver
   ) {}
 
-  // Never rejects, so callers can fire and forget
   async send<T>(builder: EmailMessageBuilder<T>): Promise<void> {
     try {
       const message = await builder.build(
