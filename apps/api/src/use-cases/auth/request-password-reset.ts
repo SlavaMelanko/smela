@@ -1,9 +1,12 @@
 import type { UserPreferences } from '@/types'
 
 import { db, tokenRepo, userRepo } from '@/data'
-import { logger } from '@/logging'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services'
+import {
+  buildResetPasswordUrl,
+  emailService,
+  PasswordResetEmailMessageBuilder
+} from '@/services'
 import { isActive } from '@/types'
 
 const createPasswordResetToken = async (userId: string) => {
@@ -31,20 +34,16 @@ export const requestPasswordReset = async (
   if (user && isActive(user.status)) {
     const token = await createPasswordResetToken(user.id)
 
-    emailAgent
-      .sendResetPasswordEmail(
-        user.firstName,
+    void emailService.send(
+      new PasswordResetEmailMessageBuilder(
         user.email,
-        user.role,
-        token,
+        {
+          firstName: user.firstName,
+          resetUrl: buildResetPasswordUrl(user.role, token)
+        },
         preferences
       )
-      .catch((error: unknown) => {
-        logger.error(
-          { error },
-          `Failed to send password reset email to ${user.email}`
-        )
-      })
+    )
   }
 
   return { success: true }

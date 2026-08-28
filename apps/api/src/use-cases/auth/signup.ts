@@ -3,10 +3,13 @@ import type { UserPreferences } from '@/types'
 
 import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { logger } from '@/logging'
 import { hashPassword } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services'
+import {
+  buildVerificationUrl,
+  emailService,
+  VerificationEmailMessageBuilder
+} from '@/services'
 import {
   AuthProvider,
   getSelfServeUserDefaultPermissions,
@@ -102,19 +105,16 @@ export const signUpWithEmail = async (
   )
 
   // Send email verification (fire-and-forget, outside transaction)
-  emailAgent
-    .sendEmailVerificationEmail(
-      newUser.firstName,
+  void emailService.send(
+    new VerificationEmailMessageBuilder(
       newUser.email,
-      verificationToken,
+      {
+        firstName: newUser.firstName,
+        verificationUrl: buildVerificationUrl(verificationToken)
+      },
       preferences
     )
-    .catch((error: unknown) => {
-      logger.error(
-        { error },
-        `Failed to send email verification email to ${newUser.email}`
-      )
-    })
+  )
 
   const permissions = await resolvePermissionList(newUser.id)
 

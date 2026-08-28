@@ -5,6 +5,7 @@ import type { User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
+import { UserInvitationEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
 import { cancelAdminInvite, inviteAdmin, resendAdminInvite } from '../invites'
@@ -93,9 +94,9 @@ describe('inviteAdmin', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail
-      }
+      buildInviteUrl: () =>
+        'https://admin.example.com/accept-invite?token=test',
+      emailService: { send: mockSendUserInvitationEmail }
     }))
 
     await moduleMocker.mock('@/env', () => ({
@@ -143,16 +144,11 @@ describe('inviteAdmin', () => {
     expect(result).toEqual({ admin: mockAdmin })
   })
 
-  it('should call email agent with correct parameters', async () => {
+  it('should send the invitation email', async () => {
     await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
 
     expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
-      'New',
-      'newadmin@example.com',
-      Role.Admin,
-      'invitation-token-123',
-      'New',
-      'Test Company'
+      expect.any(UserInvitationEmailMessageBuilder)
     )
   })
 })
@@ -222,9 +218,9 @@ describe('resendAdminInvite', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail
-      }
+      buildInviteUrl: () =>
+        'https://admin.example.com/accept-invite?token=test',
+      emailService: { send: mockSendUserInvitationEmail }
     }))
 
     await moduleMocker.mock('@/env', () => ({
@@ -336,12 +332,7 @@ describe('resendAdminInvite', () => {
       expect.anything()
     )
     expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
-      'Admin',
-      'admin@example.com',
-      Role.Admin,
-      'new-invitation-token',
-      'Owner',
-      'Test Company'
+      expect.any(UserInvitationEmailMessageBuilder)
     )
     expect(result).toEqual({ success: true })
   })

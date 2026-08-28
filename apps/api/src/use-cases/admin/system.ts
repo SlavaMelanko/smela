@@ -2,7 +2,7 @@ import type { EmailSenderType } from '@/services/email'
 
 import { systemRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { emailAgent } from '@/services'
+import { emailService } from '@/services'
 
 export const getEmailSenderProfiles = async () => {
   const senderProfiles = await systemRepo.listEmailSenderProfiles()
@@ -43,7 +43,7 @@ export const updateEmailSenderProfile = async (
     updates
   )
 
-  emailAgent.invalidateSenderProfiles()
+  emailService.invalidateSenderProfiles()
 
   return { senderProfile }
 }

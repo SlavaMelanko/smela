@@ -5,7 +5,11 @@ import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services/email'
+import {
+  buildInviteUrl,
+  emailService,
+  UserInvitationEmailMessageBuilder
+} from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
 export interface InviteMemberInput {
@@ -98,13 +102,13 @@ export const inviteMember = async (
     }
   })
 
-  await emailAgent.sendUserInvitationEmail(
-    newMember.firstName,
-    newMember.email,
-    Role.User,
-    token,
-    inviter.firstName,
-    team.name
+  void emailService.send(
+    new UserInvitationEmailMessageBuilder(newMember.email, {
+      firstName: newMember.firstName,
+      inviteUrl: buildInviteUrl(Role.User, token),
+      inviterName: inviter.firstName,
+      teamName: team.name
+    })
   )
 
   return { member: newMember }
@@ -139,13 +143,13 @@ export const resendMemberInvite = async (
     return token
   })
 
-  await emailAgent.sendUserInvitationEmail(
-    member.firstName,
-    member.email,
-    Role.User,
-    token,
-    inviter.firstName,
-    team.name
+  void emailService.send(
+    new UserInvitationEmailMessageBuilder(member.email, {
+      firstName: member.firstName,
+      inviteUrl: buildInviteUrl(Role.User, token),
+      inviterName: inviter.firstName,
+      teamName: team.name
+    })
   )
 
   return { success: true }

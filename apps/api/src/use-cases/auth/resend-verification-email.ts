@@ -1,9 +1,12 @@
 import type { UserPreferences } from '@/types'
 
 import { db, tokenRepo, userRepo } from '@/data'
-import { logger } from '@/logging'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services'
+import {
+  buildVerificationUrl,
+  emailService,
+  VerificationEmailMessageBuilder
+} from '@/services'
 import { UserStatus } from '@/types'
 
 const createEmailVerificationToken = async (userId: string) => {
@@ -31,19 +34,16 @@ export const resendVerificationEmail = async (
   if (user?.status === UserStatus.New) {
     const token = await createEmailVerificationToken(user.id)
 
-    emailAgent
-      .sendEmailVerificationEmail(
-        user.firstName,
+    void emailService.send(
+      new VerificationEmailMessageBuilder(
         user.email,
-        token,
+        {
+          firstName: user.firstName,
+          verificationUrl: buildVerificationUrl(token)
+        },
         preferences
       )
-      .catch((error: unknown) => {
-        logger.error(
-          { error },
-          `Failed to send email verification email to ${user.email}`
-        )
-      })
+    )
   }
 
   return { success: true }

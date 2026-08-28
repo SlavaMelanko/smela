@@ -117,7 +117,7 @@ describe('updateEmailSenderProfile', () => {
     }))
 
     await moduleMocker.mock('@/services', () => ({
-      emailAgent: { invalidateSenderProfiles: mockInvalidateSenderProfiles }
+      emailService: { invalidateSenderProfiles: mockInvalidateSenderProfiles }
     }))
   })
 
