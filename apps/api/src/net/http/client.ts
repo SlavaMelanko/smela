@@ -1,7 +1,39 @@
 import { AppError, ErrorCode } from '@/errors'
-import { withTimeout } from '@/utils/async'
 
 import { makeUrl, removeTrailingSlash } from '../url'
+
+/**
+ * Wraps an async function with a timeout mechanism using AbortController.
+ * If the function doesn't complete within the specified timeout, the promise
+ * will be rejected with a timeout error.
+ *
+ * @param asyncFn - The async function to execute
+ * @param timeoutMs - Timeout in milliseconds (default: 10 seconds)
+ * @returns Promise that resolves with the function result or rejects on timeout
+ * @throws Throws 'Timeout.' error when the timeout is exceeded
+ */
+const withTimeout = async <T>(
+  asyncFn: () => Promise<T>,
+  timeoutMs: number = 10000
+): Promise<T> => {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const result = await Promise.race([
+      asyncFn(),
+      new Promise<never>((_, reject) => {
+        controller.signal.addEventListener('abort', () =>
+          reject(new Error('Timeout.'))
+        )
+      })
+    ])
+
+    return result
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
 
 export type Headers = Record<string, string>
 export type Body = string | FormData | URLSearchParams

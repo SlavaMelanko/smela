@@ -1,8 +1,8 @@
 import { Resend } from 'resend'
 
-import { exponentialBackoffDelay, sleepFor } from '@/utils/async'
-
 import type { EmailMessage, EmailProvider, EmailSendInfo } from './provider'
+
+import { exponentialBackoffDelay, sleepFor } from './retry'
 
 export class ResendEmailProvider implements EmailProvider {
   private readonly resend: Resend

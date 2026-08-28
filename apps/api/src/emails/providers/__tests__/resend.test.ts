@@ -36,7 +36,7 @@ beforeEach(async () => {
     }
   }))
 
-  await moduleMocker.mock('@/utils/async', () => ({
+  await moduleMocker.mock('../retry', () => ({
     sleepFor: mockSleepFor,
     exponentialBackoffDelay: (base: number, attempt: number) =>
       base * 2 ** attempt
