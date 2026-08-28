@@ -8,7 +8,7 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 
-import { EmailSenderProfile } from '@/types'
+import { EmailSenderProfile } from '@/services/email'
 
 import { createPgEnum } from '../utils'
 

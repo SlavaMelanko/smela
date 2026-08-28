@@ -1,15 +1,8 @@
-import type { SocialLink } from '@/emails'
+import type { SocialLink, SocialLinksProvider } from '@/emails'
 
 import { systemRepo } from '@/data'
 import { logger } from '@/logging'
 import { TtlCache } from '@/utils/ttl-cache'
-
-export type { SocialLink }
-
-export interface SocialLinksProvider {
-  list: () => Promise<SocialLink[]>
-  invalidate: () => void
-}
 
 const loadSocialLinks = async (): Promise<SocialLink[]> => {
   try {

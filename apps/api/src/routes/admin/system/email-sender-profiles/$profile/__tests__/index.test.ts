@@ -13,7 +13,8 @@ import {
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { EmailSenderProfile, Permission, Role } from '@/types'
+import { EmailSenderProfile } from '@/services/email'
+import { Permission, Role } from '@/types'
 
 import { adminSystemRoute } from '../../..'
 

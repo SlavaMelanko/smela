@@ -1,21 +1,13 @@
+import type {
+  EmailSender,
+  EmailSenderProfileProvider,
+  EmailSenders
+} from '@/emails'
+
 import { systemRepo } from '@/data'
+import { EmailSenderProfile } from '@/emails'
 import { logger } from '@/logging'
-import { EmailSenderProfile } from '@/types'
 import { TtlCache } from '@/utils/ttl-cache'
-
-export { EmailSenderProfile }
-
-export interface EmailSender {
-  email: string
-  name: string
-}
-
-type EmailSenders = Map<EmailSenderProfile, EmailSender>
-
-export interface EmailSenderProfileProvider {
-  get: (profile: EmailSenderProfile) => Promise<EmailSender>
-  invalidate: () => void
-}
 
 const loadProfiles = async (): Promise<EmailSenders> => {
   try {

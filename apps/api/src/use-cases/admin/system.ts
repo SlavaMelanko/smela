@@ -1,4 +1,4 @@
-import type { EmailSenderProfile } from '@/types'
+import type { EmailSenderProfile } from '@/services/email'
 
 import { systemRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'

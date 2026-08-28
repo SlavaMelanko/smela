@@ -3,9 +3,9 @@ import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
-import { EmailSenderProfile } from '@/types'
+import { EmailSenderProfile } from '@/services/email'
 
-import { DatabaseEmailSenderProfileProvider } from '../sender-profile'
+import { DatabaseEmailSenderProfileProvider } from '../sender-profile-database'
 
 const ONE_HOUR_MS = 60 * 60 * 1000
 

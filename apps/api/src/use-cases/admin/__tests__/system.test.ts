@@ -4,7 +4,7 @@ import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 import { ErrorCode } from '@/errors'
-import { EmailSenderProfile } from '@/types'
+import { EmailSenderProfile } from '@/services/email'
 
 import {
   getEmailSenderProfile,

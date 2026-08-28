@@ -1,16 +1,14 @@
+import type { EmailSenderProfileProvider, SocialLinksProvider } from '@/emails'
 import type { Role, UserPreferences } from '@/types'
 
 import env from '@/env'
 import { isAdmin } from '@/types'
 
-import type { EmailSenderProfileProvider } from './sender-profile'
-import type { SocialLinksProvider } from './social-links'
-
 import { EmailDispatcher } from './dispatcher'
 import { EmailType } from './email-type'
 import { createEmailProvider } from './providers'
 import { buildEmailRegistry } from './registry'
-import { DatabaseEmailSenderProfileProvider } from './sender-profile'
+import { DatabaseEmailSenderProfileProvider } from './sender-profile-database'
 import { DatabaseSocialLinksProvider } from './social-links'
 
 const getFeBaseUrl = (role: Role) =>

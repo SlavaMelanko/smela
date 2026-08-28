@@ -1,21 +1,20 @@
 import type {
+  EmailSenderProfileProvider,
   EmailVerificationEmailData,
   PasswordResetEmailData,
+  SocialLinksProvider,
   UserInvitationEmailData,
   UserPreferences
 } from '@/emails'
 
 import {
+  EmailSenderProfile,
   EmailVerificationEmailRenderer,
   PasswordResetEmailRenderer,
   UserInvitationEmailRenderer
 } from '@/emails'
 
 import type { EmailMessage } from './providers'
-import type { EmailSenderProfileProvider } from './sender-profile'
-import type { SocialLinksProvider } from './social-links'
-
-import { EmailSenderProfile } from './sender-profile'
 
 export abstract class EmailMessageBuilder<T> {
   protected constructor(

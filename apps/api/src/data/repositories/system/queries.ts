@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import type { EmailSenderProfile } from '@/types'
+import type { EmailSenderProfile } from '@/services/email'
 
 import type { Database } from '../../clients'
 import type { EmailSenderProfileRecord, SocialLinkRecord } from './types'

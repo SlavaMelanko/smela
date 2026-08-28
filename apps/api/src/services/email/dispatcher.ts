@@ -1,9 +1,8 @@
-import type { UserPreferences } from '@/emails'
+import type { SocialLinksProvider, UserPreferences } from '@/emails'
 
 import type { EmailType } from './email-type'
 import type { EmailProvider } from './providers'
 import type { EmailRegistry } from './registry'
-import type { SocialLinksProvider } from './social-links'
 
 const mergeWithDefaultPreferences = (
   preferences?: UserPreferences

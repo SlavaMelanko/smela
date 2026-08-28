@@ -1,4 +1,5 @@
-import type { EmailSenderProfileProvider } from '../sender-profile'
+import type { EmailSenderProfileProvider } from '@/emails'
+
 import type { EmailRegistry } from './registry'
 
 import {

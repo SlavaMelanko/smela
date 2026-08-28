@@ -15,14 +15,8 @@ import { eq, sql } from 'drizzle-orm'
 
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
-import {
-  Action,
-  AuthProvider,
-  EmailSenderProfile,
-  Resource,
-  Role,
-  UserStatus
-} from '@/types'
+import { EmailSenderProfile } from '@/services/email'
+import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
 import {
