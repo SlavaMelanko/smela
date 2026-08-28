@@ -1,3 +1,10 @@
+export {
+  EmailMessageBuilder,
+  PasswordResetEmailMessageBuilder,
+  UserInvitationEmailMessageBuilder,
+  VerificationEmailMessageBuilder
+} from './builders'
+
 export { EtherealEmailProvider, ResendEmailProvider } from './providers'
 
 export type {
