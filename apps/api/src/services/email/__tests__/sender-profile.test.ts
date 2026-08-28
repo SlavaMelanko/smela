@@ -3,17 +3,17 @@ import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 import type { EmailSenderProfileRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
-import { EmailSenderProfile } from '@/types'
+import { EmailSenderType } from '@/services/email'
 
-import { DatabaseEmailSenderProfileProvider } from '../sender-profile'
+import { ApiEmailSenderProfileResolver } from '../sender-profile'
 
 const ONE_HOUR_MS = 60 * 60 * 1000
 
-describe('DatabaseEmailSenderProfileProvider', () => {
+describe('ApiEmailSenderProfileResolver', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const record = (
-    profile: EmailSenderProfile,
+    profile: EmailSenderType,
     email: string,
     name: string
   ): EmailSenderProfileRecord => ({
@@ -26,15 +26,15 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   })
 
   const records = [
-    record(EmailSenderProfile.System, 'system@example.com', 'System'),
-    record(EmailSenderProfile.Support, 'support@example.com', 'Support')
+    record(EmailSenderType.System, 'system@example.com', 'System'),
+    record(EmailSenderType.Support, 'support@example.com', 'Support')
   ]
 
   const mockRepo = async (
-    findEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
+    listEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
   ) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { findEmailSenderProfiles }
+      systemRepo: { listEmailSenderProfiles }
     }))
 
   const mockCountedRepo = async (rows = records) => {
@@ -55,42 +55,37 @@ describe('DatabaseEmailSenderProfileProvider', () => {
 
   it('resolves the sender for a known profile', async () => {
     await mockCountedRepo()
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    const sender = await provider.getSender(EmailSenderProfile.Support)
+    const sender = await provider.get(EmailSenderType.Support)
 
     expect(sender).toEqual({ email: 'support@example.com', name: 'Support' })
   })
 
-  it('falls back to the system profile for an unknown profile', async () => {
+  it('falls back to the system profile for an unconfigured type', async () => {
     await mockCountedRepo()
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    const sender = await provider.getSender(EmailSenderProfile.Security)
+    const sender = await provider.get(EmailSenderType.Security)
 
     expect(sender).toEqual({ email: 'system@example.com', name: 'System' })
   })
 
-  it('throws when neither the profile nor the system fallback exist', async () => {
+  it('resolves to undefined when neither the profile nor the system fallback exist', async () => {
     await mockRepo(async () => [])
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    expect.hasAssertions()
-    try {
-      await provider.getSender(EmailSenderProfile.Security)
-    } catch (error) {
-      expect((error as Error).message).toBe(
-        'No email sender profile found for: security'
-      )
-    }
+    const sender = await provider.get(EmailSenderType.Security)
+
+    expect(sender).toBeUndefined()
   })
 
   it('serves repeated lookups from the cache within the TTL', async () => {
     const queries = await mockCountedRepo()
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    await provider.getSender(EmailSenderProfile.Support)
-    await provider.getSender(EmailSenderProfile.System)
+    await provider.get(EmailSenderType.Support)
+    await provider.get(EmailSenderType.System)
 
     expect(queries()).toBe(1)
   })
@@ -98,36 +93,36 @@ describe('DatabaseEmailSenderProfileProvider', () => {
   it('reloads from the database after the TTL expires', async () => {
     setSystemTime(new Date('2026-01-01T00:00:00Z'))
     const queries = await mockCountedRepo()
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
     setSystemTime(new Date(Date.now() + ONE_HOUR_MS))
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
 
     expect(queries()).toBe(2)
   })
 
   it('reloads from the database after being invalidated within the TTL', async () => {
     const queries = await mockCountedRepo()
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
     provider.invalidate()
-    await provider.getSender(EmailSenderProfile.Support)
+    await provider.get(EmailSenderType.Support)
 
     expect(queries()).toBe(2)
   })
 
   it('serves the updated sender after being invalidated', async () => {
-    let rows = [record(EmailSenderProfile.System, 'old@example.com', 'Old')]
+    let rows = [record(EmailSenderType.System, 'old@example.com', 'Old')]
     await mockRepo(async () => rows)
-    const provider = new DatabaseEmailSenderProfileProvider()
+    const provider = new ApiEmailSenderProfileResolver()
 
-    await provider.getSender(EmailSenderProfile.System)
-    rows = [record(EmailSenderProfile.System, 'new@example.com', 'New')]
+    await provider.get(EmailSenderType.System)
+    rows = [record(EmailSenderType.System, 'new@example.com', 'New')]
     provider.invalidate()
 
-    const sender = await provider.getSender(EmailSenderProfile.System)
+    const sender = await provider.get(EmailSenderType.System)
 
     expect(sender.email).toBe('new@example.com')
   })

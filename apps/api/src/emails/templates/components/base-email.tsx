@@ -2,17 +2,20 @@
 
 import { Body, Container, Head, Html, Preview } from '@react-email/components'
 
-import type { Metadata } from '../../metadata'
+import type { CompanyProfile } from '../../company'
+import type { SocialLink } from '../../social-links'
 import type { ThemeStyles } from '../../styles'
 
-import { Footer, Header } from '.'
 import { getThemeStyles } from '../../styles'
+import Footer from './footer'
+import Header from './header'
 
 export interface Props {
   subject: string
   previewText: string
   styles: ThemeStyles
-  metadata?: Metadata
+  company: CompanyProfile
+  socialLinks?: SocialLink[]
   children: React.ReactNode
 }
 
@@ -34,7 +37,8 @@ export const BaseEmail = ({
   subject,
   previewText,
   styles,
-  metadata,
+  company,
+  socialLinks,
   children
 }: Props) => {
   const emailStyles = getStyles(styles)
@@ -50,7 +54,7 @@ export const BaseEmail = ({
           <Header styles={styles} />
           {children}
         </Container>
-        <Footer styles={styles} metadata={metadata} />
+        <Footer styles={styles} company={company} socialLinks={socialLinks} />
       </Body>
     </Html>
   )
@@ -59,7 +63,8 @@ export const BaseEmail = ({
 BaseEmail.PreviewProps = {
   subject: 'Email Subject',
   previewText: 'Email Preview Text',
-  styles: getThemeStyles('light')
+  styles: getThemeStyles('light'),
+  company: { name: 'Company Name' }
 } as Props
 
 export default BaseEmail

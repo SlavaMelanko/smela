@@ -2,16 +2,20 @@ import type { ReactElement } from 'react'
 
 import { render } from '@react-email/components'
 
-import type { Metadata } from '../metadata'
+import type { CompanyProfile } from '../company'
+import type { SocialLink } from '../social-links'
+
+interface TemplateProps<T> {
+  data: T
+  content: any
+  styles: any
+  company: CompanyProfile
+  socialLinks?: SocialLink[]
+}
 
 export const renderEmail = async <T>(
-  template: (props: {
-    data: T
-    content: any
-    styles: any
-    metadata?: Metadata
-  }) => ReactElement,
-  props: { data: T; content: any; styles: any; metadata?: Metadata }
+  template: (props: TemplateProps<T>) => ReactElement,
+  props: TemplateProps<T>
 ): Promise<{ html: string; text: string }> => {
   const reactElement = template(props)
 

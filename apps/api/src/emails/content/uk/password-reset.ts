@@ -1,10 +1,9 @@
 import type PasswordResetEmailContent from '../password-reset'
 
-import { config } from '../../config'
-
 export const content: PasswordResetEmailContent = {
   subject: 'Скинути пароль',
-  previewText: `Скинути пароль для облікового запису ${config.company.name}`,
+  previewText: (companyName: string) =>
+    `Скинути пароль для облікового запису ${companyName}`,
   greeting: (firstName?: string) =>
     `Вітаю ${firstName || 'дорогий користувач'},`,
   body: 'Ми отримали запит на скидання вашого пароля. Перейдіть за посиланням нижче, щоб встановити новий пароль:',
@@ -12,10 +11,10 @@ export const content: PasswordResetEmailContent = {
   expiryNotice: 'З міркувань безпеки це посилання дійсне протягом 1 години.',
   disclaimer:
     'Якщо ви не запитували скидання пароля, ви можете безпечно ігнорувати цей лист.',
-  signature: {
+  signature: (companyName: string) => ({
     thanks: 'Дякуємо,',
-    who: `Команда ${config.company.name}`
-  }
+    who: `Команда ${companyName}`
+  })
 }
 
 export default content

@@ -5,7 +5,11 @@ import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services/email'
+import {
+  buildInviteUrl,
+  emailService,
+  UserInviteEmailMessageBuilder
+} from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
 export interface InviteAdminInput {
@@ -45,7 +49,7 @@ export const inviteAdmin = async (
       tx
     )
 
-    // Use random password and admin sets real password when accepting invitation
+    // Use random password and admin sets real password when accepting invite
     const passwordHash = await generatePasswordHash()
 
     await authRepo.create(
@@ -85,13 +89,13 @@ export const inviteAdmin = async (
     return { admin: { ...newAdmin, role }, token }
   })
 
-  await emailAgent.sendUserInvitationEmail(
-    newAdmin.firstName,
-    newAdmin.email,
-    Role.Admin,
-    token,
-    inviter.firstName,
-    env.COMPANY_NAME
+  void emailService.send(
+    new UserInviteEmailMessageBuilder(newAdmin.email, {
+      firstName: newAdmin.firstName,
+      inviteUrl: buildInviteUrl(Role.Admin, token),
+      inviterName: inviter.firstName,
+      teamName: env.COMPANY_NAME
+    })
   )
 
   return { admin: newAdmin }
@@ -129,13 +133,13 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     return token
   })
 
-  await emailAgent.sendUserInvitationEmail(
-    admin.firstName,
-    admin.email,
-    Role.Admin,
-    token,
-    inviter.firstName,
-    env.COMPANY_NAME
+  void emailService.send(
+    new UserInviteEmailMessageBuilder(admin.email, {
+      firstName: admin.firstName,
+      inviteUrl: buildInviteUrl(Role.Admin, token),
+      inviterName: inviter.firstName,
+      teamName: env.COMPANY_NAME
+    })
   )
 
   return { success: true }

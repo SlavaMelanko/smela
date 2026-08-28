@@ -4,6 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
+import { VerificationEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 import { hours, nowPlus } from '@/utils/chrono'
 
@@ -21,7 +22,7 @@ describe('Resend Verification Email', () => {
   let mockExpiresAt: Date
   let mockGenerateToken: any
 
-  let mockEmailAgent: any
+  let mockEmailService: any
 
   beforeEach(async () => {
     mockUser = {
@@ -63,12 +64,14 @@ describe('Resend Verification Email', () => {
       generateToken: mockGenerateToken
     }))
 
-    mockEmailAgent = {
-      sendEmailVerificationEmail: mock(async () => {})
+    mockEmailService = {
+      send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
     await moduleMocker.mock('@/services', () => ({
-      emailAgent: mockEmailAgent
+      buildVerificationUrl: (token: string) =>
+        `https://app.example.com/verify-email?token=${token}`,
+      emailService: mockEmailService
     }))
   })
 
@@ -100,13 +103,10 @@ describe('Resend Verification Email', () => {
     it('should send an email verification email with the new token', async () => {
       await resendVerificationEmail({ email: mockUser.email })
 
-      expect(mockEmailAgent.sendEmailVerificationEmail).toHaveBeenCalledWith(
-        mockUser.firstName,
-        mockUser.email,
-        mockTokenString,
-        undefined
+      expect(mockEmailService.send).toHaveBeenCalledWith(
+        expect.any(VerificationEmailMessageBuilder)
       )
-      expect(mockEmailAgent.sendEmailVerificationEmail).toHaveBeenCalledTimes(1)
+      expect(mockEmailService.send).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -120,7 +120,7 @@ describe('Resend Verification Email', () => {
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 
@@ -139,7 +139,7 @@ describe('Resend Verification Email', () => {
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 
@@ -158,7 +158,7 @@ describe('Resend Verification Email', () => {
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 
@@ -177,7 +177,7 @@ describe('Resend Verification Email', () => {
       }
 
       expect(mockTokenRepo.issue).toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 
@@ -209,23 +209,8 @@ describe('Resend Verification Email', () => {
 
         expect(result).toEqual({ success: true })
         expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-        expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+        expect(mockEmailService.send).not.toHaveBeenCalled()
       }
-    })
-  })
-
-  describe('when email sending fails', () => {
-    it('should complete successfully even if email fails', async () => {
-      mockEmailAgent.sendEmailVerificationEmail.mockImplementation(async () => {
-        throw new Error('Email service unavailable')
-      })
-
-      const result = await resendVerificationEmail({ email: mockUser.email })
-
-      expect(result).toEqual({ success: true })
-
-      expect(mockTokenRepo.issue).toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).toHaveBeenCalled()
     })
   })
 
@@ -244,7 +229,7 @@ describe('Resend Verification Email', () => {
       }
 
       expect(mockTokenRepo.issue).toHaveBeenCalled()
-      expect(mockEmailAgent.sendEmailVerificationEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 })

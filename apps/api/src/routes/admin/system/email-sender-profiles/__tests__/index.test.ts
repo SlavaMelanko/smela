@@ -12,7 +12,8 @@ import {
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { EmailSenderProfile, Permission, Role } from '@/types'
+import { EmailSenderType } from '@/services/email'
+import { Permission, Role } from '@/types'
 
 import { adminSystemRoute } from '../..'
 
@@ -38,7 +39,7 @@ describe('admin /system/email-sender-profiles', () => {
   beforeEach(async () => {
     mockSenderProfiles = [
       {
-        profile: EmailSenderProfile.System,
+        profile: EmailSenderType.System,
         email: 'noreply@smela.me',
         name: 'SMELA',
         description: 'Transactional and system notifications',
@@ -72,7 +73,7 @@ describe('admin /system/email-sender-profiles', () => {
       const data = await res.json()
       expect(data.senderProfiles).toHaveLength(1)
       expect(data.senderProfiles[0]).toMatchObject({
-        profile: EmailSenderProfile.System,
+        profile: EmailSenderType.System,
         email: 'noreply@smela.me',
         name: 'SMELA'
       })

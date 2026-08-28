@@ -1,12 +1,12 @@
 export default interface EmailVerificationContent {
   subject: string
-  previewText: string
+  previewText: (companyName: string) => string
   greeting: (firstName?: string) => string
   body: string
   ctaText: string
   expiryNotice: string
   disclaimer: string
-  signature: {
+  signature: (companyName: string) => {
     thanks: string
     who: string
   }

@@ -5,6 +5,7 @@ import type { TeamMemberDetails, TeamWithMemberCount, User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
+import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
 import {
@@ -29,7 +30,7 @@ describe('inviteMember', () => {
   let mockTokenRepoIssue: any
   let mockRbacSet: any
   let mockTransaction: any
-  let mockEmailAgent: any
+  let mockEmailService: any
 
   const inviteParams = {
     firstName: 'John',
@@ -86,8 +87,8 @@ describe('inviteMember', () => {
         return callback({})
       }
     )
-    mockEmailAgent = {
-      sendUserInvitationEmail: mock(async () => {})
+    mockEmailService = {
+      send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
     await moduleMocker.mock('@/data', () => ({
@@ -113,14 +114,15 @@ describe('inviteMember', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'invitation-token-123',
+        token: 'invite-token-123',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: mockEmailAgent
+      buildInviteUrl: () => 'https://app.example.com/accept-invite?token=test',
+      emailService: mockEmailService
     }))
   })
 
@@ -170,16 +172,11 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should send invitation email', async () => {
+  it('should send invite email', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
-    expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
-      'John',
-      'john@example.com',
-      Role.User,
-      'invitation-token-123',
-      'Admin',
-      'Acme Corp'
+    expect(mockEmailService.send).toHaveBeenCalledWith(
+      expect.any(UserInviteEmailMessageBuilder)
     )
   })
 
@@ -208,7 +205,7 @@ describe('resendMemberInvite', () => {
   let mockUserRepoFindById: any
   let mockTokenRepoIssue: any
   let mockTransaction: any
-  let mockEmailAgent: any
+  let mockEmailService: any
 
   beforeEach(async () => {
     mockTeam = {
@@ -253,8 +250,8 @@ describe('resendMemberInvite', () => {
         return callback({})
       }
     )
-    mockEmailAgent = {
-      sendUserInvitationEmail: mock(async () => {})
+    mockEmailService = {
+      send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
     await moduleMocker.mock('@/data', () => ({
@@ -266,14 +263,15 @@ describe('resendMemberInvite', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: mockEmailAgent
+      buildInviteUrl: () => 'https://app.example.com/accept-invite?token=test',
+      emailService: mockEmailService
     }))
   })
 
@@ -317,23 +315,18 @@ describe('resendMemberInvite', () => {
       {
         userId: USER_1,
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: expect.any(Date)
       },
       expect.anything()
     )
   })
 
-  it('should send invitation email with current inviter name', async () => {
+  it('should send invite email with current inviter name', async () => {
     await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
-    expect(mockEmailAgent.sendUserInvitationEmail).toHaveBeenCalledWith(
-      'John',
-      'john@example.com',
-      Role.User,
-      'new-invitation-token',
-      'Admin',
-      'Acme Corp'
+    expect(mockEmailService.send).toHaveBeenCalledWith(
+      expect.any(UserInviteEmailMessageBuilder)
     )
   })
 

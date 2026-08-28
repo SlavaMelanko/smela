@@ -68,7 +68,6 @@ describe('Environment Configuration', () => {
 
     // Company defaults
     expect(devEnv.COMPANY_NAME).toBe('SMELA')
-    expect(devEnv.COMPANY_SOCIAL_LINKS).toEqual({})
 
     // POSTGRES_URL construction
     expect(devEnv.POSTGRES_URL).toBe(
@@ -298,32 +297,5 @@ describe('Environment Configuration', () => {
       JWT_SECRET_PREVIOUS: 'short'
     })
     expect(processExitMock).toHaveBeenCalledWith(1)
-  })
-
-  test('should parse valid JSON configurations', () => {
-    const customEnv = {
-      ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: JSON.stringify({
-        twitter: 'https://twitter.com/company',
-        github: 'https://github.com/company'
-      })
-    }
-
-    const env = validateEnvVars(customEnv)
-
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({
-      twitter: 'https://twitter.com/company',
-      github: 'https://github.com/company'
-    })
-  })
-
-  test('should handle invalid JSON gracefully', () => {
-    const customEnv = {
-      ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: 'invalid-json'
-    }
-
-    const env = validateEnvVars(customEnv)
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({})
   })
 })

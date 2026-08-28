@@ -1,20 +1,19 @@
 import type PasswordResetEmailContent from '../password-reset'
 
-import { config } from '../../config'
-
 export const content: PasswordResetEmailContent = {
   subject: 'Reset your password',
-  previewText: `Reset your password for ${config.company.name} account`,
+  previewText: (companyName: string) =>
+    `Reset your password for ${companyName} account`,
   greeting: (firstName?: string) => `Hi ${firstName || 'there'},`,
   body: 'We received a request to reset your password. Click the link below to set a new password:',
   ctaText: 'Reset password',
   expiryNotice: 'This link expires in 1 hour for security reasons.',
   disclaimer:
     "If you didn't request a password reset, you can safely ignore this email.",
-  signature: {
+  signature: (companyName: string) => ({
     thanks: 'Thanks,',
-    who: `The ${config.company.name} team`
-  }
+    who: `The ${companyName} team`
+  })
 }
 
 export default content

@@ -5,6 +5,7 @@ import type { User } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
+import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
 import { cancelAdminInvite, inviteAdmin, resendAdminInvite } from '../invites'
@@ -21,7 +22,7 @@ describe('inviteAdmin', () => {
   let mockTokenIssue: any
   let mockRbacSet: any
   let mockTransaction: any
-  let mockSendUserInvitationEmail: any
+  let mockSendUserInviteEmail: any
 
   const inviteAdminParams = {
     firstName: 'New',
@@ -53,7 +54,7 @@ describe('inviteAdmin', () => {
     mockAuthCreate = mock(async () => ({}))
     mockTokenIssue = mock(async () => ({}))
     mockRbacSet = mock(async () => {})
-    mockSendUserInvitationEmail = mock(async () => {})
+    mockSendUserInviteEmail = mock(async () => {})
 
     // eslint-disable-next-line ts/no-unsafe-return
     mockTransaction = mock(async (callback: any) => callback({}))
@@ -86,16 +87,16 @@ describe('inviteAdmin', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'invitation-token-123',
+        token: 'invite-token-123',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail
-      }
+      buildInviteUrl: () =>
+        'https://admin.example.com/accept-invite?token=test',
+      emailService: { send: mockSendUserInviteEmail }
     }))
 
     await moduleMocker.mock('@/env', () => ({
@@ -143,16 +144,11 @@ describe('inviteAdmin', () => {
     expect(result).toEqual({ admin: mockAdmin })
   })
 
-  it('should call email agent with correct parameters', async () => {
+  it('should send the invite email', async () => {
     await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
 
-    expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
-      'New',
-      'newadmin@example.com',
-      Role.Admin,
-      'invitation-token-123',
-      'New',
-      'Test Company'
+    expect(mockSendUserInviteEmail).toHaveBeenCalledWith(
+      expect.any(UserInviteEmailMessageBuilder)
     )
   })
 })
@@ -165,7 +161,7 @@ describe('resendAdminInvite', () => {
   let mockFindById: any
   let mockTokenIssue: any
   let mockTransaction: any
-  let mockSendUserInvitationEmail: any
+  let mockSendUserInviteEmail: any
 
   beforeEach(async () => {
     mockAdmin = {
@@ -201,7 +197,7 @@ describe('resendAdminInvite', () => {
       return undefined
     })
     mockTokenIssue = mock(async () => ({}))
-    mockSendUserInvitationEmail = mock(async () => {})
+    mockSendUserInviteEmail = mock(async () => {})
 
     // eslint-disable-next-line ts/no-unsafe-return
     mockTransaction = mock(async (callback: any) => callback({}))
@@ -215,16 +211,16 @@ describe('resendAdminInvite', () => {
     await moduleMocker.mock('@/security/token', () => ({
       generateToken: () => ({
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: new Date('2024-01-08')
       }),
       TokenType: { UserInvite: 'user_invite' }
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailAgent: {
-        sendUserInvitationEmail: mockSendUserInvitationEmail
-      }
+      buildInviteUrl: () =>
+        'https://admin.example.com/accept-invite?token=test',
+      emailService: { send: mockSendUserInviteEmail }
     }))
 
     await moduleMocker.mock('@/env', () => ({
@@ -322,7 +318,7 @@ describe('resendAdminInvite', () => {
     })
   })
 
-  it('should issue new token and send invitation email with current inviter name', async () => {
+  it('should issue new token and send invite email with current inviter name', async () => {
     const result = await resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
 
     expect(mockTokenIssue).toHaveBeenCalledWith(
@@ -330,18 +326,13 @@ describe('resendAdminInvite', () => {
       {
         userId: testUuids.ADMIN_1,
         type: 'user_invite',
-        token: 'new-invitation-token',
+        token: 'new-invite-token',
         expiresAt: expect.any(Date)
       },
       expect.anything()
     )
-    expect(mockSendUserInvitationEmail).toHaveBeenCalledWith(
-      'Admin',
-      'admin@example.com',
-      Role.Admin,
-      'new-invitation-token',
-      'Owner',
-      'Test Company'
+    expect(mockSendUserInviteEmail).toHaveBeenCalledWith(
+      expect.any(UserInviteEmailMessageBuilder)
     )
     expect(result).toEqual({ success: true })
   })

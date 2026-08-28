@@ -2,8 +2,9 @@
 
 import { Link, Text } from '@react-email/components'
 
+import type { CompanyProfile } from '../company'
 import type { EmailVerificationContent } from '../content'
-import type { Metadata } from '../metadata'
+import type { SocialLink } from '../social-links'
 import type { ThemeStyles } from '../styles'
 
 import getContent from '../content'
@@ -18,23 +19,26 @@ interface Props {
   }
   content: EmailVerificationContent
   styles: ThemeStyles
-  metadata?: Metadata
+  company: CompanyProfile
+  socialLinks?: SocialLink[]
 }
 
 const EmailVerificationEmail = ({
   data,
   content: c,
   styles: s,
-  metadata
+  company,
+  socialLinks
 }: Props) => {
   const { firstName, verificationUrl } = data
 
   return (
     <BaseEmail
       subject={c.subject}
-      previewText={c.previewText}
+      previewText={c.previewText(company.name)}
       styles={s}
-      metadata={metadata}
+      company={company}
+      socialLinks={socialLinks}
     >
       <Text style={s.text.body}>{c.greeting(firstName)}</Text>
 
@@ -50,7 +54,7 @@ const EmailVerificationEmail = ({
         {`• ${c.disclaimer}`}
       </Text>
 
-      <Signature styles={s} signature={c.signature} />
+      <Signature styles={s} signature={c.signature(company.name)} />
     </BaseEmail>
   )
 }
@@ -61,7 +65,8 @@ EmailVerificationEmail.PreviewProps = {
     verificationUrl: `http://localhost:5173/auth/verify-email?token=eb6a0c90a8e75d4c9d5a93def2911d7b`
   },
   content: getContent('uk').emailVerification,
-  styles: getThemeStyles('dark')
+  styles: getThemeStyles('dark'),
+  company: { name: 'SMELA' }
 } as Props
 
 export default EmailVerificationEmail

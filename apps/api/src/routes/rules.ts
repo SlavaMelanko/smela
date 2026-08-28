@@ -11,7 +11,8 @@ import {
 import { z } from 'zod'
 
 import { TOKEN_LENGTH } from '@/security/token'
-import { EmailSenderProfile, Resource, Role, UserStatus } from '@/types'
+import { EmailSenderType } from '@/services/email'
+import { Resource, Role, UserStatus } from '@/types'
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
 
@@ -94,6 +95,7 @@ export const rules = {
     limit: z.coerce.number().int().min(1).max(100).default(25)
   },
 
+  // Keep these literals in sync with apps/api/src/emails/user-preferences.ts
   preferences: {
     locale: z.enum(['en', 'uk']).default('en'),
     theme: z.enum(['light', 'dark']).default('light')
@@ -109,7 +111,7 @@ export const rules = {
   },
 
   emailSenderProfile: {
-    profile: z.enum(EmailSenderProfile),
+    profile: z.enum(EmailSenderType),
     email,
     name: displayName,
     description

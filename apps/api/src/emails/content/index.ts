@@ -1,11 +1,11 @@
-import type { SupportedLocale } from '@/types'
+import type { SupportedLocale } from '../user-preferences'
 
 import * as en from './en'
 import * as uk from './uk'
 
 export type { default as EmailVerificationContent } from './email-verification'
 export type { default as PasswordResetEmailContent } from './password-reset'
-export type { default as UserInvitationContent } from './user-invitation'
+export type { default as UserInviteContent } from './user-invite'
 
 export type LocaleContent = typeof en
 

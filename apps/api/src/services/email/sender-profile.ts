@@ -1,66 +1,39 @@
+import type {
+  EmailSenderProfile,
+  EmailSenderProfileResolver,
+  EmailSenderProfiles
+} from '@/emails'
+
 import { systemRepo } from '@/data'
-import { EmailSenderProfile } from '@/types'
+import { EmailSenderType } from '@/emails'
+import { logger } from '@/logging'
+import { TtlCache } from '@/utils/ttl-cache'
 
-export { EmailSenderProfile }
+const loadSenderProfiles = async (): Promise<EmailSenderProfiles> => {
+  try {
+    const records = await systemRepo.listEmailSenderProfiles()
 
-export interface EmailSender {
-  email: string
-  name: string
-}
-
-type EmailSenders = Map<EmailSenderProfile, EmailSender>
-
-export interface EmailSenderProfileProvider {
-  getSender: (profile: EmailSenderProfile) => Promise<EmailSender>
-  invalidate: () => void
-}
-
-class InMemorySource {
-  private static readonly TTL_MS = 60 * 60 * 1000 // 1 hour
-
-  private senders?: EmailSenders
-  private expiresAt = 0
-
-  async get(): Promise<EmailSenders> {
-    if (!this.senders || Date.now() >= this.expiresAt) {
-      this.senders = await this.load()
-      this.expiresAt = Date.now() + InMemorySource.TTL_MS
-    }
-
-    return this.senders
-  }
-
-  invalidate() {
-    this.senders = undefined
-    this.expiresAt = 0
-  }
-
-  private async load(): Promise<EmailSenders> {
-    const records = await systemRepo.findEmailSenderProfiles()
+    logger.debug({ count: records.length }, 'Loaded email sender profiles')
 
     return new Map(
       records.map(({ profile, email, name }) => [profile, { email, name }])
     )
+  } catch (error) {
+    logger.error({ error }, 'Failed to load email sender profiles')
+    throw error
   }
 }
 
-export class DatabaseEmailSenderProfileProvider implements EmailSenderProfileProvider {
-  private readonly source = new InMemorySource()
+export class ApiEmailSenderProfileResolver implements EmailSenderProfileResolver {
+  private readonly cache = new TtlCache(loadSenderProfiles)
 
-  async getSender(profile: EmailSenderProfile): Promise<EmailSender> {
-    const senders = await this.source.get()
+  async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
+    const profiles = await this.cache.get()
 
-    const sender =
-      senders.get(profile) ?? senders.get(EmailSenderProfile.System)
-
-    if (!sender) {
-      throw new Error(`No email sender profile found for: ${profile}`)
-    }
-
-    return sender
+    return profiles.get(profile) ?? profiles.get(EmailSenderType.System)!
   }
 
   invalidate() {
-    this.source.invalidate()
+    this.cache.invalidate()
   }
 }

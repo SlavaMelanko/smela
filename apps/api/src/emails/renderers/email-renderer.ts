@@ -1,6 +1,6 @@
-import type { UserPreferences } from '@/types'
-
-import type { Metadata } from '../metadata'
+import type { CompanyProfile } from '../company'
+import type { SocialLink } from '../social-links'
+import type { UserPreferences } from '../user-preferences'
 
 export interface RenderedEmail {
   subject: string
@@ -8,10 +8,12 @@ export interface RenderedEmail {
   text: string
 }
 
+export interface RenderContext {
+  company: CompanyProfile
+  preferences?: UserPreferences
+  socialLinks?: SocialLink[]
+}
+
 export interface EmailRenderer<T = any> {
-  render: (
-    data: T,
-    userPreferences?: UserPreferences,
-    metadata?: Metadata
-  ) => Promise<RenderedEmail>
+  render: (data: T, context: RenderContext) => Promise<RenderedEmail>
 }

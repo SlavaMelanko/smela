@@ -1,6 +1,5 @@
 export { default as Action } from './action'
 export { default as AuthProvider } from './auth-providers'
-export { default as EmailSenderProfile } from './email-sender-profile'
 export {
   getAdminBasePermissions,
   getAdminDefaultPermissions,
@@ -18,14 +17,10 @@ export {
   isUserOrAdmin,
   default as Role
 } from './role'
-export type {
-  SupportedLocale,
-  Theme,
-  UserPreferences
-} from './user-preferences'
 export {
   isActive,
   isActiveOnly,
   isNewOrActive,
   default as UserStatus
 } from './user-status'
+export type { UserPreferences } from '@/services/email'

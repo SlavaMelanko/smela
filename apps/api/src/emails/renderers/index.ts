@@ -1,16 +1,20 @@
-export type { EmailRenderer, RenderedEmail } from './email-renderer'
+export type {
+  EmailRenderer,
+  RenderContext,
+  RenderedEmail
+} from './email-renderer'
 
 export {
   type EmailVerificationEmailData,
   default as EmailVerificationEmailRenderer
-} from './email-renderer-email-verification'
+} from './email-verification'
 
 export {
   type PasswordResetEmailData,
   default as PasswordResetEmailRenderer
-} from './email-renderer-password-reset'
+} from './password-reset'
 
 export {
-  type UserInvitationEmailData,
-  default as UserInvitationEmailRenderer
-} from './email-renderer-user-invitation'
+  type UserInviteEmailData,
+  default as UserInviteEmailRenderer
+} from './user-invite'
