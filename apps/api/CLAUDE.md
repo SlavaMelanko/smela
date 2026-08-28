@@ -7,244 +7,121 @@ auth. Provides authentication, user management, and role-based access control.
 
 ## Key Commands
 
-All available commands are defined in [package.json](package.json). Key commands
-include:
+See [package.json](package.json) for all commands. Most used:
 
 - **Development**: `bun run dev` (hot reload on port 3000)
-- **Build**: `bun run build` (production, minified), `bun run build:staging`
-  (staging, with source maps)
-- **Testing**: `bun test` (all tests), `bun test [file]` (specific test file),
-  `bun run coverage`
-- **Database Dev**: `bun run db:dev:up` (start dev DB), `bun run db:dev:down`
-  (stop dev DB), `bun run db:dev:reset` (reset dev DB), `bun run db:init`
-  (generate + migrate + seed), `bun run db:ui` (Drizzle Studio)
-- **Code Quality**: `bun run lint`, `bun run lint:fix`, `bun run check` (lint +
-  tsc + test)
+- **Testing**: `bun test [file]`, `bun run coverage`
+- **Code Quality**: `bun run check` (lint + tsc + test)
+- **Database Dev**: `bun run db:dev:up`, `bun run db:dev:reset`,
+  `bun run db:init` (generate + migrate + seed), `bun run db:ui` (Drizzle
+  Studio)
 - **Email Dev**: `bun run emails` (React Email dev server on port 3001)
 
-## Architecture Overview
+## Architecture
 
-**For detailed architecture documentation, see
-[src/README.md](src/README.md)** - Describes the layered architecture, module
+**Read [src/README.md](src/README.md)** for the layered architecture, module
 organization, and dependency rules.
 
-### Route Organization
+- **Routes**: `/api/v1/auth/*` (public), `/api/v1/user/*` (JWT),
+  `/api/v1/user/verified/*` (JWT + verified), `/api/v1/admin/*`,
+  `/api/v1/owner/*`. Full endpoint list in [postman.json](postman.json).
+- **Schema**: [src/data/schema/](src/data/schema/) — Drizzle table definitions.
+- **Middleware order matters** — see [src/server.ts](src/server.ts).
+- **Search**: ILIKE with GIN index (`gin_trgm_ops`). Index-query coupling and
+  limitations in
+  [src/data/migrations/custom/README.md](src/data/migrations/custom/README.md).
 
-- Public routes: `/` (currently empty)
-- Auth routes: `/api/v1/auth/*` (login, signup, email verification, resend
-  verification, password reset)
-- User routes: `/api/v1/user/*` (JWT-protected endpoints, allows new users)
-- User verified routes: `/api/v1/user/verified/*` (JWT-protected endpoints,
-  requires verified users)
-- Admin routes: `/api/v1/admin/*` (JWT-protected endpoints, admin roles only)
-- Owner routes: `/api/v1/owner/*` (JWT-protected endpoints, owner role only)
+### Auth Flow
 
-### API Routes Reference
+Signup → email verification (required before login) → JWT returned in
+`Set-Cookie`. Password reset uses one-time tokens.
 
-See [postman.json](postman.json) for all API endpoints (import into Postman or
-read directly).
+Email links point to frontend URLs; the frontend extracts the token and POSTs it
+to the API in the JSON body, never as a URL parameter — this keeps tokens out of
+server logs.
 
-### Database Schema
+### Service Integrations
 
-See [src/data/schema/](src/data/schema/) for Drizzle ORM table definitions.
-Tables: auth, users, companies, tokens, etc.
+For external services (CAPTCHA, payment, SMS, storage), follow the Modular
+Service Design Pattern: `.claude/skills/service-integration/SKILL.md`. Reference
+implementations: `/src/services/captcha/` (single provider),
+`/src/services/email/` (multiple providers).
 
-### Search Implementation
-
-ILIKE with GIN index (`gin_trgm_ops`). See
-[src/data/migrations/custom/README.md](src/data/migrations/custom/README.md) for
-details on index-query coupling, capabilities, and limitations.
-
-### Database Connection
-
-The project uses **PostgreSQL running in Docker** with connection pooling via
-postgres.js (2 connections for dev/test, 10 for staging/prod). Database client
-is configured in [src/data/clients/db.ts](src/data/clients/db.ts) using Drizzle
-ORM with full transaction support.
-
-### Authentication Flow
-
-Signup → email verification (required before login) → JWT for authenticated
-requests (returned in Set-Cookie header). Password reset uses one-time tokens.
-
-### Frontend-Backend Architecture
-
-- Email links point to frontend URLs (e.g.,
-  `https://app.example.com/auth/verify-email?token=...`)
-- Frontend extracts tokens from URL and makes POST requests to backend API
-- Backend API validates tokens sent in JSON body (not URL parameters)
-- This approach prevents tokens from appearing in server logs and provides
-  better security
-
-### Testing
+## Testing
 
 **Read the testing skill before writing or modifying tests:**
-`../../.claude/skills/api-testing/SKILL.md`
+`../../.claude/skills/api-testing/SKILL.md` (mocking patterns:
+`references/mocking-patterns.md`).
 
-For detailed mocking patterns:
-`../../.claude/skills/api-testing/references/mocking-patterns.md`
+## Security
 
-### Security Considerations
+Security decisions that aren't obvious from the code:
 
-#### Authentication & Authorization
+- **Token expiration**: access 15min (`JWT_EXPIRATION`), refresh 30 days
+  (`COOKIE_REFRESH_TOKEN_EXPIRATION`), rotated on each use with the old token
+  revoked. Short access-token life reduces attack surface per OAuth 2.0
+  guidance.
+- **JWT secret rotation**: signing uses `JWT_SECRET`, verification falls back to
+  optional `JWT_SECRET_PREVIOUS` during the grace period. Runbook:
+  [README.md](README.md#-jwt-secret-rotation).
+- **Email enumeration**: auth endpoints return consistent responses whether or
+  not the account exists.
+- **Zod strictness**: use `.strict()` on body schemas for auth, payment, and
+  internal (owner/admin) routes; default strip behavior for public APIs and
+  webhooks. Query and param schemas intentionally omit `.strict()`.
+- **Rate limits**: 5 auth attempts/15min (production), 100 requests/15min
+  general. Request size caps: 10KB auth, 100KB general, 5MB uploads.
 
-- JWT tokens with role-based access control (User, Admin, Owner)
-- **Token Expiration Strategy**:
-  - Access tokens: 15 minutes (configurable via JWT_EXPIRATION) - Short-lived
-    for security
-  - Refresh tokens: 30 days (configurable via COOKIE_REFRESH_TOKEN_EXPIRATION) -
-    Stored in httpOnly cookies
-  - Token rotation: New refresh token generated on each use, old token revoked
-  - Rationale: Reduces attack surface, aligns with OAuth 2.0 best practices
-- **JWT Secret Rotation**: Two-secret pattern — signing uses `JWT_SECRET`,
-  verification falls back to optional `JWT_SECRET_PREVIOUS` during the grace
-  period. Runbook: [README.md](README.md#-jwt-secret-rotation)
-- Flexible authentication support (cookies for web, Bearer tokens for
-  API/mobile)
-- bcrypt password hashing with configurable salt rounds (default: 10 rounds)
-- Email verification and secure password reset flows
-- One-time use tokens for password reset with expiration
-- Email enumeration attack prevention (consistent error responses)
-- Environment variable validation on startup
+CSP, HSTS, and other security headers are configured per environment; CAPTCHA
+(reCAPTCHA v2 invisible) guards auth endpoints.
 
-#### Request Protection
+## Coding Standards
 
-- Rate limiting: 5 auth attempts/15min (production), 100 requests/15min
-  (general)
-- Request size limits: 10KB (auth), 100KB (general), 5MB (uploads)
-- CORS with environment-specific origin validation
-- Input validation using Zod schemas
-- CAPTCHA protection: Google reCAPTCHA v2 (invisible) on auth endpoints
-- **Zod schema strictness rule**:
-  - Use `.strict()` on body schemas for: auth routes, payment endpoints,
-    internal APIs (owner/admin)
-  - Use default strip behavior for: public APIs, webhooks, backward-compatible
-    endpoints
-  - Query and param schemas intentionally omit `.strict()`
+- **ESLint**: @antfu/eslint-config, strict. Class member order is enforced by
+  `ts/member-ordering` in
+  [packages/eslint/src/typescript.js](../../packages/eslint/src/typescript.js).
+- **Files**: kebab-case (except README.md, CLAUDE.md).
+- **Imports**: `@/` path alias for src.
+- **Style**: arrow functions, 2-space indent, no semicolons, single quotes,
+  curly braces always.
+- **Naming**: camelCase for objects/arrays, SCREAMING_SNAKE_CASE for primitive
+  constants, PascalCase for classes/types/interfaces/enums.
+- **Env vars**: access via the `env` object, never `process.env` directly.
+- **Return types**: lean on inference; annotate when returns are conditional,
+  when you want protection against contract drift, or when the inferred type is
+  unclear.
+- **Comments**: see [Comment Formatting](../../CLAUDE.md#comment-formatting).
 
-#### Security Headers
+### Interface Implementation Naming
 
-- Content Security Policy (CSP) with strict directives
-- HSTS, X-Frame-Options, X-Content-Type-Options
-- Permissions Policy restricting browser features
-- Environment-specific configurations (dev/staging/production)
-
-### Service Architecture Patterns
-
-For external service integrations (CAPTCHA, payment, SMS, file storage,
-analytics), use the **Modular Service Design Pattern**. This pattern provides
-feature isolation, interface abstraction, and factory-based instantiation.
-
-**See:** `.claude/skills/service-integration/SKILL.md` for complete pattern
-guide with real examples from the codebase.
-
-**Real implementations:**
-
-- Simple example: `/src/services/captcha/` (single provider - Google reCAPTCHA)
-- Advanced example: `/src/services/email/` (multiple providers - Ethereal +
-  Resend with registry pattern)
-
-### Coding Standards
-
-- **ESLint Configuration**: Using @antfu/eslint-config with strict rules
-- **File Naming**: Kebab-case for all files (except README.md, CLAUDE.md)
-- **Import Style**: Path aliases using `@/` for src directory imports
-- **Function Style**: Arrow functions preferred (`const funcName = () => {}`)
-- **Code Style**: 2-space indentation, no semicolons, single quotes
-- **Curly Braces**: Always required, even for single-line blocks
-- **Environment Variables**: Access via `env` object, not `process.env` directly
-- **Variable Naming Conventions**:
-  - **camelCase**: Objects, arrays, and complex data structures (e.g.,
-    `tokenTypeOptions`, `userConfig`)
-  - **SCREAMING_SNAKE_CASE**: Primitives and simple constants (e.g.,
-    `MAX_RETRY_COUNT`, `API_TIMEOUT`)
-  - **PascalCase**: Classes, types, interfaces, and enums (e.g., `UserService`,
-    `Status`, `EmailRenderer`)
-- **Class Member Ordering**: Enforced via `@typescript-eslint/member-ordering`
-  (see `eslint.config.mjs` for exact ordering)
-- **Return Types**: Lean on TypeScript inference for simple functions. Add
-  explicit return types when:
-  - The function has complex conditional returns
-  - You want compile-time protection against accidental contract changes
-  - The inferred type is less clear than an explicit annotation
-
-#### Comment Formatting Standards
-
-See [Comment Formatting](../../CLAUDE.md#comment-formatting) in the root
-CLAUDE.md.
-
-#### Interface Implementation Naming Convention
-
-When creating interfaces with multiple implementations, follow this naming
-pattern:
-
-**Interface Files:**
-
-- **Filename**: Use kebab-case ending with the interface concept (e.g.,
-  `email-renderer.ts`)
-- **Interface Name**: Use PascalCase matching the concept (e.g.,
-  `EmailRenderer`)
-
-**Implementation Files:**
-
-- **Filename**: Name for the concept it implements (e.g., `password-reset.ts`,
-  `welcome.ts`). Prefix with the interface filename only when the concept name
-  alone would be ambiguous within that directory.
-- **Class Name**: Use PascalCase ending with interface name (e.g.,
-  `PasswordResetEmailRenderer`, `WelcomeEmailRenderer`)
-
-**Example Structures:**
-
-_Email Renderers:_
+Interface file is named for the concept (`email-renderer.ts` → `EmailRenderer`).
+Implementation files are named for what they implement (`password-reset.ts` →
+`PasswordResetEmailRenderer`), prefixed with the interface name only when the
+bare concept would be ambiguous in that directory.
 
 ```text
 src/emails/renderers/
-├── email-renderer.ts                    # Interface: EmailRenderer
-├── password-reset.ts                    # Class: PasswordResetEmailRenderer
-├── welcome.ts                           # Class: WelcomeEmailRenderer
-└── helper.ts                            # Utilities
+├── email-renderer.ts    # Interface: EmailRenderer
+├── password-reset.ts    # Class: PasswordResetEmailRenderer
+└── helper.ts            # Utilities
 ```
 
-_Email Providers:_
+### Utils Directory
 
-```text
-src/emails/providers/
-├── provider.ts                          # Interface: EmailProvider
-├── ethereal.ts                          # Class: EtherealEmailProvider
-├── resend.ts                            # Class: ResendEmailProvider
-└── index.ts                             # Public exports
+`/src/utils/` is for genuinely generic utilities only: not domain-specific, used
+in 2+ modules, single responsibility, documented with JSDoc. Name files by
+domain (`async.ts`, `string.ts`), never `helpers.ts` or `common.ts`. Single-use
+utilities co-locate with their usage instead.
 
-src/services/email/providers/
-└── factory.ts                           # Factory function (consumer side)
-```
+## Configuration
 
-#### Utils Directory Guidelines
-
-`/src/utils/` is for genuinely generic utilities only: not domain-specific,
-used in 2+ modules, single responsibility, documented with JSDoc. Name files by
-domain (`async.ts`, `string.ts`), never `helpers.ts` or `common.ts`.
-Single-use utilities must co-locate with their usage instead.
-
-### Environment Configuration
-
-**Bun Native Environment Loading:** Bun automatically loads environment files
-based on `NODE_ENV` without requiring the `dotenv` package. See `.env.example`
-for complete environment variable documentation, supported environments, and
-configuration examples.
-
-### Email Configuration
-
-Ethereal for development (no real emails sent, preview URLs logged to
-console); Resend for staging/production (requires `EMAIL_RESEND_API_KEY`).
-Sender profiles live in the `email_sender_profiles` table, resolved at send
-time.
-
-### Middleware Stack Order
-
-Middleware order matters — see [src/server.ts](src/server.ts) for the exact
-stack.
-
-### CORS Configuration
-
-In production/staging, `ALLOWED_ORIGINS` must be a comma-separated list of
-allowed frontend URLs. Development/test allow localhost/all origins.
+- **Env loading**: Bun loads env files natively by `NODE_ENV` — no dotenv. See
+  `.env.example` for all variables.
+- **Email**: Ethereal in development (preview URLs logged, no real sends),
+  Resend for staging/production (`EMAIL_RESEND_API_KEY`). Sender profiles live
+  in the `email_sender_profiles` table, resolved at send time.
+- **Database**: PostgreSQL in Docker, pooled via postgres.js (2 connections
+  dev/test, 10 staging/prod). Client:
+  [src/data/clients/db.ts](src/data/clients/db.ts).
+- **CORS**: production/staging require `ALLOWED_ORIGINS` as a comma-separated
+  list; development/test allow localhost.
