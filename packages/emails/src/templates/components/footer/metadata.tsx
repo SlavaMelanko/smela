@@ -1,7 +1,9 @@
 /** @jsxImportSource react */
 
+import { randomUUID } from 'node:crypto'
+
 const createMetadata = () => ({
-  'Email-ID': Bun.randomUUIDv7(),
+  'Email-ID': randomUUID(),
   'Sent-At': new Date().toISOString()
 })
 
