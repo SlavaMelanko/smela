@@ -71,5 +71,7 @@ comments. When a comment is necessary:
 
 ## Dev Notes
 
-- When upgrading React, update the `version` field in
-  `packages/eslint/src/react.js` → `settings.react.version`.
+- Keep the React version in sync across `packages/ui`, `packages/emails`,
+  `apps/web`, and `apps/admin`. When upgrading React, update all of them
+  together, then update the `version` field in `packages/eslint/src/react.js`
+  → `settings.react.version`.
