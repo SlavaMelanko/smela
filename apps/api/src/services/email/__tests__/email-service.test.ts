@@ -1,5 +1,3 @@
-import { describe, expect, it, mock } from 'bun:test'
-
 import type {
   CompanyProfile,
   EmailMessage,
@@ -7,7 +5,9 @@ import type {
   EmailProvider,
   EmailSenderProfileResolver,
   SocialLinksResolver
-} from '@/emails'
+} from '@smela/emails'
+
+import { describe, expect, it, mock } from 'bun:test'
 
 import { EmailService } from '../email-service'
 

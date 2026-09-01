@@ -6,11 +6,11 @@ export {
   buildVerificationUrl
 } from './email-urls'
 
-export type { UserPreferences } from '@/emails'
+export type { UserPreferences } from '@smela/emails'
 
 export {
   EmailSenderType,
   PasswordResetEmailMessageBuilder,
   UserInviteEmailMessageBuilder,
   VerificationEmailMessageBuilder
-} from '@/emails'
+} from '@smela/emails'

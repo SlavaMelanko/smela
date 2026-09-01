@@ -4,7 +4,7 @@ import type {
   EmailProvider,
   EmailSenderProfileResolver,
   SocialLinksResolver
-} from '@/emails'
+} from '@smela/emails'
 
 import env from '@/env'
 import { logger } from '@/logging'

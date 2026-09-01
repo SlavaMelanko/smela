@@ -26,6 +26,7 @@ multi-tenancy, role-based access control, and permission-based access.
   validation constraints)
 - `packages/e2e` — E2E testing utilities (see
   [packages/e2e/README.md](packages/e2e/README.md))
+- `packages/emails` — Email templates, renderers, and providers (React Email)
 - `packages/eslint` — ESLint configurations
 - `packages/i18n` — Internationalization utilities
 - `packages/ui` — Shared UI components

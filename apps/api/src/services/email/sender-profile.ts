@@ -2,10 +2,11 @@ import type {
   EmailSenderProfile,
   EmailSenderProfileResolver,
   EmailSenderProfiles
-} from '@/emails'
+} from '@smela/emails'
+
+import { EmailSenderType } from '@smela/emails'
 
 import { systemRepo } from '@/data'
-import { EmailSenderType } from '@/emails'
 import { logger } from '@/logging'
 import { TtlCache } from '@/utils/ttl-cache'
 
