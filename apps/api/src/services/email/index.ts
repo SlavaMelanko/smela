@@ -6,7 +6,7 @@ export {
   buildVerificationUrl
 } from './email-urls'
 
-export type { UserPreferences } from '@smela/emails'
+export type { SupportedLocale, Theme, UserPreferences } from '@smela/emails'
 
 export {
   EmailSenderType,
