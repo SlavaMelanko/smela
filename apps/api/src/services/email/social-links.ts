@@ -1,4 +1,4 @@
-import type { SocialLink, SocialLinksResolver } from '@/emails'
+import type { SocialLink, SocialLinksResolver } from '@smela/emails'
 
 import { systemRepo } from '@/data'
 import { logger } from '@/logging'

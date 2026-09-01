@@ -26,6 +26,7 @@ multi-tenancy, role-based access control, and permission-based access.
   validation constraints)
 - `packages/e2e` — E2E testing utilities (see
   [packages/e2e/README.md](packages/e2e/README.md))
+- `packages/emails` — Email templates, renderers, and providers (React Email)
 - `packages/eslint` — ESLint configurations
 - `packages/i18n` — Internationalization utilities
 - `packages/ui` — Shared UI components
@@ -34,6 +35,8 @@ multi-tenancy, role-based access control, and permission-based access.
 
 - [Git](https://git-scm.com/)
 - [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
+- [Node.js](https://nodejs.org/) — required by the `react-email` dev server
+  (`packages/emails`)
 - [tmux](https://github.com/tmux/tmux/wiki)
 - [Docker](https://www.docker.com/) for running PostgreSQL
 
@@ -70,5 +73,7 @@ comments. When a comment is necessary:
 
 ## Dev Notes
 
-- When upgrading React, update the `version` field in
-  `packages/eslint/src/react.js` → `settings.react.version`.
+- Keep the React version in sync across `packages/ui`, `packages/emails`,
+  `apps/web`, and `apps/admin`. When upgrading React, update all of them
+  together, then update the `version` field in `packages/eslint/src/react.js` →
+  `settings.react.version`.

@@ -6,6 +6,7 @@
     { "path": "apps/admin", "name": "admin" },
     { "path": "packages/contracts", "name": "contracts" },
     { "path": "packages/e2e", "name": "e2e" },
+    { "path": "packages/emails", "name": "emails" },
     { "path": "packages/i18n", "name": "i18n" },
     { "path": "packages/eslint", "name": "eslint" },
     { "path": "packages/ui", "name": "ui" }

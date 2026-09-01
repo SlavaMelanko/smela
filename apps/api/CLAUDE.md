@@ -15,7 +15,8 @@ See [package.json](package.json) for all commands. Most used:
 - **Database Dev**: `bun run db:dev:up`, `bun run db:dev:reset`,
   `bun run db:init` (generate + migrate + seed), `bun run db:ui` (Drizzle
   Studio)
-- **Email Dev**: `bun run emails` (React Email dev server on port 3001)
+- **Email Dev**: `bun run dev` in `packages/emails` (React Email dev server on
+  port 3001)
 
 ## Architecture
 
@@ -45,7 +46,7 @@ server logs.
 For external services (CAPTCHA, payment, SMS, storage), follow the Modular
 Service Design Pattern: `.claude/skills/service-integration/SKILL.md`. Reference
 implementations: `/src/services/captcha/` (single provider),
-`/src/services/email/` (multiple providers).
+`/src/services/email/` (multiple providers, wiring `@smela/emails`).
 
 ## Testing
 
@@ -100,7 +101,7 @@ Implementation files are named for what they implement (`password-reset.ts` →
 bare concept would be ambiguous in that directory.
 
 ```text
-src/emails/renderers/
+packages/emails/src/renderers/
 ├── email-renderer.ts    # Interface: EmailRenderer
 ├── password-reset.ts    # Class: PasswordResetEmailRenderer
 └── helper.ts            # Utilities

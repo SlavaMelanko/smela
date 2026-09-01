@@ -104,7 +104,6 @@ export const signUpWithEmail = async (
     password
   )
 
-  // Send email verification (fire-and-forget, outside transaction)
   void emailService.send(
     new VerificationEmailMessageBuilder(
       newUser.email,
