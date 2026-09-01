@@ -13,6 +13,12 @@ export const WebsiteConstraint = {
   MAX_LENGTH: 255
 }
 
+// Pasted SVG markup for a social link's icon
+export const SvgConstraint = {
+  MIN_LENGTH: 1,
+  MAX_LENGTH: 10_000
+}
+
 // Free-text descriptions across entities (team, email sender profile, etc.)
 export const DescriptionConstraint = {
   MAX_LENGTH: 500

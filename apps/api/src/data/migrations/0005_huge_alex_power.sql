@@ -1,0 +1,1 @@
+ALTER TABLE "social_links" ALTER COLUMN "network" SET DATA TYPE varchar(50);

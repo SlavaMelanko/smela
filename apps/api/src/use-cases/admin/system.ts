@@ -26,6 +26,23 @@ export const getSocialLink = async (network: string) => {
   return { socialLink }
 }
 
+export interface UpdateSocialLinkInput {
+  network?: string
+  url?: string
+  svg?: string
+}
+
+export const updateSocialLink = async (
+  network: string,
+  updates: UpdateSocialLinkInput
+) => {
+  await getSocialLink(network)
+
+  const socialLink = await systemRepo.updateSocialLink(network, updates)
+
+  return { socialLink }
+}
+
 export const getEmailSenderProfile = async (profile: EmailSenderType) => {
   const senderProfile = await systemRepo.findEmailSenderProfile(profile)
 

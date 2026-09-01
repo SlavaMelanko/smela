@@ -36,6 +36,20 @@
       "when": 1787577839766,
       "tag": "0004_nosy_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788274714373,
+      "tag": "0005_huge_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788274853433,
+      "tag": "0006_curious_doctor_octopus",
+      "breakpoints": true
     }
   ]
 }

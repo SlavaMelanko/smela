@@ -4,6 +4,7 @@ export {
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from './constraints'
 export { Role } from './role'

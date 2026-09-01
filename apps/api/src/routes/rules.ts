@@ -6,6 +6,7 @@ import {
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from '@smela/contracts'
 import { z } from 'zod'
@@ -119,7 +120,17 @@ export const rules = {
   },
 
   socialLink: {
-    network: z.string().trim().min(1).max(32)
+    network: z
+      .string()
+      .trim()
+      .min(NameConstraint.MIN_LENGTH)
+      .max(NameConstraint.MAX_LENGTH),
+    url: z.url().max(WebsiteConstraint.MAX_LENGTH),
+    svg: z
+      .string()
+      .trim()
+      .min(SvgConstraint.MIN_LENGTH)
+      .max(SvgConstraint.MAX_LENGTH)
   },
 
   userFilter: {

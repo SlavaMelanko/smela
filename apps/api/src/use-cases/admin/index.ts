@@ -3,7 +3,8 @@ export {
   getEmailSenderProfiles,
   getSocialLink,
   getSocialLinks,
-  updateEmailSenderProfile
+  updateEmailSenderProfile,
+  updateSocialLink
 } from './system'
 
 export { createTeam, getTeams } from './teams'
