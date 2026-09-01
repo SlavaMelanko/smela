@@ -1,25 +1,25 @@
 import { createResolver, rules } from '@ui/lib/validation'
 
 export const FieldName = {
-  NETWORK: 'network',
+  NAME: 'name',
   URL: 'url',
   SVG: 'svg'
 }
 
 export const getDefaultValues = () => ({
-  [FieldName.NETWORK]: '',
+  [FieldName.NAME]: '',
   [FieldName.URL]: '',
   [FieldName.SVG]: ''
 })
 
-export const getValues = ({ network, url, svg }) => ({
-  [FieldName.NETWORK]: network ?? '',
+export const getValues = ({ name, url, svg }) => ({
+  [FieldName.NAME]: name ?? '',
   [FieldName.URL]: url ?? '',
   [FieldName.SVG]: svg ?? ''
 })
 
 export const resolver = createResolver({
-  [FieldName.NETWORK]: rules.displayName,
+  [FieldName.NAME]: rules.displayName,
   [FieldName.URL]: rules.url.required,
   [FieldName.SVG]: rules.socialLink.svg
 })

@@ -7,7 +7,7 @@ export const SocialLinkSection = ({ socialLink, canManageSystem = false }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
   const { mutate: updateSocialLink, isPending: isUpdating } =
-    useUpdateSocialLink(socialLink.network)
+    useUpdateSocialLink(socialLink.id)
 
   const handleUpdateSocialLink = data => {
     updateSocialLink(data, {

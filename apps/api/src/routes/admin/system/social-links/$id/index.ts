@@ -9,31 +9,31 @@ import { getSocialLink, updateSocialLink } from '@/use-cases/admin'
 
 import { socialLinkParamsSchema, updateSocialLinkBodySchema } from './schema'
 
-export const adminSocialLinkByNetworkRoute = new Hono<AppContext>()
+export const adminSocialLinkByIdRoute = new Hono<AppContext>()
 
-adminSocialLinkByNetworkRoute.get(
+adminSocialLinkByIdRoute.get(
   '/',
   validateParams(socialLinkParamsSchema),
   requirePermission(Permission.ViewSystem),
   async c => {
-    const { network } = c.req.valid('param')
+    const { id } = c.req.valid('param')
 
-    const result = await getSocialLink(network)
+    const result = await getSocialLink(id)
 
     return c.json(result, HttpStatus.OK)
   }
 )
 
-adminSocialLinkByNetworkRoute.patch(
+adminSocialLinkByIdRoute.patch(
   '/',
   validateParams(socialLinkParamsSchema),
   validateBody(updateSocialLinkBodySchema),
   requirePermission(Permission.ManageSystem),
   async c => {
-    const { network } = c.req.valid('param')
+    const { id } = c.req.valid('param')
     const body = c.req.valid('json')
 
-    const result = await updateSocialLink(network, body)
+    const result = await updateSocialLink(id, body)
 
     return c.json(result, HttpStatus.OK)
   }

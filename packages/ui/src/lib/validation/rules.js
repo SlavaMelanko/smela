@@ -22,6 +22,11 @@ const optionalStr = () =>
     .transform(v => v || undefined)
     .pipe(z.string().optional())
 
+// z.url() alone accepts "https:example.com" (no //) since https: normalizes
+// to https:// per the WHATWG URL spec — require the literal prefix too
+const isValidHttpsUrl = value =>
+  value.startsWith('https://') && z.url().safeParse(value).success
+
 export const firstName = requiredStr('firstName.error.required')
   .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')
   .max(NameConstraint.MAX_LENGTH, 'firstName.error.max')
@@ -61,7 +66,7 @@ export const password = {
 export const url = {
   optional: optionalStr()
     .refine(
-      value => value === undefined || z.url().safeParse(value).success,
+      value => value === undefined || isValidHttpsUrl(value),
       'url.error.format'
     )
     .refine(
@@ -72,7 +77,7 @@ export const url = {
 
   required: requiredStr('url.error.required')
     .max(WebsiteConstraint.MAX_LENGTH, 'url.error.max')
-    .refine(value => z.url().safeParse(value).success, 'url.error.format')
+    .refine(isValidHttpsUrl, 'url.error.format')
 }
 
 export const socialLink = {

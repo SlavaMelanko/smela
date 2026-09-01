@@ -28,14 +28,14 @@ export const systemApi = {
     return apiClient.patch(path, data)
   },
 
-  getSocialLink(network) {
-    const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { network })
+  getSocialLink(id) {
+    const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { id })
 
     return apiClient.get(path)
   },
 
-  updateSocialLink(network, data) {
-    const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { network })
+  updateSocialLink(id, data) {
+    const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { id })
 
     return apiClient.patch(path, data)
   }

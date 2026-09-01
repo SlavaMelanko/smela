@@ -30,7 +30,7 @@ export const SocialLinksTab = () => {
   const columns = getSocialLinksColumns(t, formatDate)
 
   const viewSocialLink = socialLink =>
-    navigate(`/system/social-links/${socialLink.network}`, {
+    navigate(`/system/social-links/${socialLink.id}`, {
       state: { socialLink }
     })
 

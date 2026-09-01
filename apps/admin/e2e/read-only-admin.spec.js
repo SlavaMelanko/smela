@@ -77,7 +77,7 @@ test.describe('Read-Only Admin: Users', () => {
   }) => {
     // Navigate via the team members list to get a user with a membership
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, 'Deckow, Kemmer and Conn')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
@@ -147,7 +147,7 @@ test.describe('Read-Only Admin: Teams', () => {
     t
   }) => {
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, 'Deckow, Kemmer and Conn')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)

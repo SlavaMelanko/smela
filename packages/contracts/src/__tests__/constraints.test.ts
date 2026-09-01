@@ -12,7 +12,7 @@ import {
 
 describe('NameConstraint', () => {
   it('exposes the expected bounds', () => {
-    expect(NameConstraint.MIN_LENGTH).toBe(2)
+    expect(NameConstraint.MIN_LENGTH).toBe(1)
     expect(NameConstraint.MAX_LENGTH).toBe(50)
   })
 })

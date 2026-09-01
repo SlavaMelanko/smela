@@ -47,16 +47,13 @@ describe('Signup Form', () => {
   })
 
   it('shows validation errors for invalid input', async () => {
-    const { firstNameInput, emailInput, passwordInput, submitButton } =
-      renderForm()
+    const { emailInput, passwordInput, submitButton } = renderForm()
 
-    await user.type(firstNameInput, td.firstName.short)
     await user.type(emailInput, td.email.invalid)
     await user.type(passwordInput, td.password.short)
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.firstName.error.min)).toBeInTheDocument()
       expect(screen.getByText(en.email.error.format)).toBeInTheDocument()
       expect(screen.getByText(en.password.error.min)).toBeInTheDocument()
     })

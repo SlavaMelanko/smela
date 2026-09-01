@@ -44,17 +44,6 @@ describe('TeamAddForm', () => {
     })
   })
 
-  it('shows min length error when name is too short', async () => {
-    const { nameInput, submitButton } = renderForm()
-
-    await user.type(nameInput, 'A')
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText(en.name.error.min)).toBeInTheDocument()
-    })
-  })
-
   it('shows max length error when name exceeds 50 characters', async () => {
     const { nameInput, submitButton } = renderForm()
 

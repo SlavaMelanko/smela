@@ -370,10 +370,7 @@
   },
   "signUp": "Зареєструватися",
   "socialLink": {
-    "empty": "Соціальних посилань поки немає.",
-    "network": {
-      "label": "Соцмережа"
-    },
+    "empty": "Соцмереж немає.",
     "svg": {
       "error": {
         "max": "SVG іконка не може перевищувати 10000 символів.",
@@ -407,7 +404,7 @@
     "description": "Налаштуйте системні параметри.",
     "tabs": {
       "emailSenderProfiles": "Профілі відправника email",
-      "socialLinks": "Соціальні мережі"
+      "socialLinks": "Соцмережі"
     },
     "title": "Система"
   },
@@ -436,7 +433,7 @@
     },
     "socialLinks": {
       "createdAt": "$t(createdAt)",
-      "network": "Соц. мережа",
+      "name": "$t(name.label)",
       "svg": "Іконка",
       "updatedAt": "$t(updatedAt)",
       "url": "Посилання"
@@ -512,7 +509,7 @@
   "updatedAt": "Оновлено",
   "url": {
     "error": {
-      "format": "Введіть правильну URL-адресу.",
+      "format": "Введіть правильну URL-адресу, що починається з https://.",
       "max": "URL не може перевищувати 255 символів.",
       "required": "URL обовʼязковий."
     }

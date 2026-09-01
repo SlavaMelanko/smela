@@ -120,7 +120,7 @@ export const router = createBrowserRouter([
             element: <EmailSenderProfilePage />
           },
           {
-            path: 'system/social-links/:network',
+            path: 'system/social-links/:id',
             element: <SocialLinkPage />
           }
         ]

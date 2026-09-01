@@ -7,12 +7,12 @@ import {
   PageHeaderWebsite
 } from './PageHeader'
 
-export const SocialLinkPageHeader = ({ network, url, svg }) => (
+export const SocialLinkPageHeader = ({ name, url, svg }) => (
   <PageHeader>
     <PageHeaderGroup>
-      <PageHeaderSvgIcon svg={svg} label={network} />
+      <PageHeaderSvgIcon svg={svg} label={name} />
       <PageHeaderContent>
-        <PageHeaderTitle>{network}</PageHeaderTitle>
+        <PageHeaderTitle>{name}</PageHeaderTitle>
         <PageHeaderWebsite url={url} />
       </PageHeaderContent>
     </PageHeaderGroup>

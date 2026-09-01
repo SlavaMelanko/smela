@@ -9,7 +9,7 @@ import { useLocation, useParams } from '@ui/hooks/useRouter'
 import { useSocialLink } from '@ui/hooks/useSystem'
 
 export const SocialLinkPage = () => {
-  const { network } = useParams()
+  const { id } = useParams()
   const { state } = useLocation()
   const { can } = useCurrentUser()
 
@@ -21,10 +21,14 @@ export const SocialLinkPage = () => {
     isError,
     error,
     refetch
-  } = useSocialLink(network, {
+  } = useSocialLink(id, {
+    // Router state (and thus initialData) survives a hard reload via
+    // window.history.state, so it can be stale — mark it stale immediately
+    // to avoid the loading flicker while still refetching in the background
     initialData: state?.socialLink
       ? { socialLink: state.socialLink }
-      : undefined
+      : undefined,
+    initialDataUpdatedAt: state?.socialLink ? 0 : undefined
   })
 
   if (isError) {
@@ -41,7 +45,7 @@ export const SocialLinkPage = () => {
         <BackButton />
       </div>
       <SocialLinkPageHeader
-        network={socialLink.network}
+        name={socialLink.name}
         url={socialLink.url}
         svg={socialLink.svg}
       />

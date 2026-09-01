@@ -365,9 +365,6 @@
   "signUp": "Sign up",
   "socialLink": {
     "empty": "No social links yet.",
-    "network": {
-      "label": "Network"
-    },
     "svg": {
       "error": {
         "max": "Icon SVG can't be longer than 10000 characters.",
@@ -430,7 +427,7 @@
     },
     "socialLinks": {
       "createdAt": "$t(createdAt)",
-      "network": "Network",
+      "name": "$t(name.label)",
       "svg": "Icon",
       "updatedAt": "$t(updatedAt)",
       "url": "URL"
@@ -506,7 +503,7 @@
   "updatedAt": "Updated at",
   "url": {
     "error": {
-      "format": "Enter a valid URL.",
+      "format": "Enter a valid URL starting with https://.",
       "max": "URL can't be longer than 255 characters.",
       "required": "URL is required."
     }

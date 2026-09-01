@@ -12,12 +12,12 @@ describe('ApiSocialLinksResolver', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const record = (
-    network: string,
+    name: string,
     url: string,
     svg: string
   ): SocialLinkRecord => ({
     id: crypto.randomUUID(),
-    network,
+    name,
     url,
     svg,
     createdAt: new Date(),
@@ -58,12 +58,12 @@ describe('ApiSocialLinksResolver', () => {
 
     expect(socialLinks).toEqual([
       {
-        network: 'facebook',
+        name: 'facebook',
         url: 'https://facebook.com/example',
         svg: '<svg>facebook</svg>'
       },
       {
-        network: 'github',
+        name: 'github',
         url: 'https://github.com/example',
         svg: '<svg>github</svg>'
       }

@@ -50,14 +50,11 @@ export const SocialLinkForm = ({
       <FormFields>
         <FormRow>
           <FormField
-            label={t('socialLink.network.label')}
-            name={FieldName.NETWORK}
-            error={errors[FieldName.NETWORK]}
+            label={t('name.label')}
+            name={FieldName.NAME}
+            error={errors[FieldName.NAME]}
           >
-            <Input
-              {...register(FieldName.NETWORK)}
-              readOnly={!canManageSystem}
-            />
+            <Input {...register(FieldName.NAME)} readOnly={!canManageSystem} />
           </FormField>
 
           <FormField

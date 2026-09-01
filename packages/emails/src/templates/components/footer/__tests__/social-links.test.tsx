@@ -14,7 +14,7 @@ describe('SocialLinks', () => {
   it('renders a link with the stored svg for each social link', async () => {
     const socialLinks: SocialLink[] = [
       {
-        network: 'facebook',
+        name: 'facebook',
         url: 'https://facebook.com/example',
         svg: '<svg><path d="M0 0" /></svg>'
       }
@@ -31,8 +31,8 @@ describe('SocialLinks', () => {
 
   it('skips links missing a url or svg', async () => {
     const socialLinks: SocialLink[] = [
-      { network: 'facebook', url: '', svg: '<svg></svg>' },
-      { network: 'github', url: 'https://github.com/example', svg: '' }
+      { name: 'facebook', url: '', svg: '<svg></svg>' },
+      { name: 'github', url: 'https://github.com/example', svg: '' }
     ]
 
     const html = await render(

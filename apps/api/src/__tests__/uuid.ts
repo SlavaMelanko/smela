@@ -14,7 +14,8 @@ const TYPE_CODES = {
   ownr: '0e', // owner
   tokn: 'f0', // token
   test: '00', // generic test
-  none: 'ff' // non-existent
+  none: 'ff', // non-existent
+  slnk: '9d' // social link
 } as const
 
 /**
@@ -67,6 +68,10 @@ export const testUuids = {
   // Teams (c0c0 = team type)
   TEAM_1: '00000000-0000-4000-c0c0-000000000001',
   TEAM_2: '00000000-0000-4000-c0c0-000000000002',
+
+  // Social links (9d9d = social link type)
+  SOCIAL_LINK_1: '00000000-0000-4000-9d9d-000000000001',
+  SOCIAL_LINK_2: '00000000-0000-4000-9d9d-000000000002',
 
   // Non-existent (ffff = none type)
   NON_EXISTENT: '00000000-0000-4000-bfff-000000000000'

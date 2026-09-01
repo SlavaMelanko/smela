@@ -12,7 +12,7 @@ const DARK_BACKGROUND = '#0a0a0a'
 
 const socialLinks: SocialLink[] = [
   {
-    network: 'facebook',
+    name: 'facebook',
     url: 'https://facebook.com/example',
     svg: '<svg><path d="M0 0" /></svg>'
   }

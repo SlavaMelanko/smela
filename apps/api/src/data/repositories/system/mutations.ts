@@ -39,7 +39,7 @@ export const updateEmailSenderProfile = async (
 }
 
 export const updateSocialLink = async (
-  network: string,
+  id: string,
   updates: UpdateSocialLinkInput,
   tx?: Database
 ): Promise<SocialLinkRecord> => {
@@ -48,7 +48,7 @@ export const updateSocialLink = async (
   const [socialLink] = await executor
     .update(socialLinksTable)
     .set({ ...updates, updatedAt: new Date() })
-    .where(eq(socialLinksTable.network, network))
+    .where(eq(socialLinksTable.id, id))
     .returning()
 
   if (!socialLink) {

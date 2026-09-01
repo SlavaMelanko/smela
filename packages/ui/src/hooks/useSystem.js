@@ -6,7 +6,7 @@ export const systemKeys = {
   emailSenderProfiles: () => [...systemKeys.all(), 'emailSenderProfiles'],
   emailSenderProfile: profile => [...systemKeys.emailSenderProfiles(), profile],
   socialLinks: () => [...systemKeys.all(), 'socialLinks'],
-  socialLink: network => [...systemKeys.socialLinks(), network]
+  socialLink: id => [...systemKeys.socialLinks(), id]
 }
 
 // Rarely changes — safe to cache longer than admin-facing team/user data.
@@ -48,25 +48,25 @@ export const useSocialLinks = () => {
   }
 }
 
-export const useSocialLink = (network, options = {}) => {
+export const useSocialLink = (id, options = {}) => {
   return useQuery({
-    queryKey: systemKeys.socialLink(network),
-    queryFn: () => systemApi.getSocialLink(network),
+    queryKey: systemKeys.socialLink(id),
+    queryFn: () => systemApi.getSocialLink(id),
     select: data => data?.socialLink,
-    enabled: !!network,
+    enabled: !!id,
     ...systemQueryOptions,
     ...options
   })
 }
 
-export const useUpdateSocialLink = network => {
+export const useUpdateSocialLink = id => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: data => systemApi.updateSocialLink(network, data),
+    mutationFn: data => systemApi.updateSocialLink(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: systemKeys.socialLink(network),
+        queryKey: systemKeys.socialLink(id),
         exact: true
       })
 
