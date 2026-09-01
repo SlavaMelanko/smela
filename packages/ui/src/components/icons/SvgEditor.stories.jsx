@@ -17,27 +17,33 @@ export default {
   ]
 }
 
-export const Playground = {
-  render: () => {
-    const [value, setValue] = useState(facebookSvg)
+const PlaygroundStory = () => {
+  const [value, setValue] = useState(facebookSvg)
 
-    return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
-  }
+  return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
+}
+
+export const Playground = {
+  render: () => <PlaygroundStory />
+}
+
+const EmptyStory = () => {
+  const [value, setValue] = useState('')
+
+  return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
 }
 
 export const Empty = {
-  render: () => {
-    const [value, setValue] = useState('')
-
-    return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
-  }
+  render: () => <EmptyStory />
 }
 
 // Malformed markup should just render nothing in the preview, not throw
-export const Invalid = {
-  render: () => {
-    const [value, setValue] = useState('<svg><path d="M0 0"')
+const InvalidStory = () => {
+  const [value, setValue] = useState('<svg><path d="M0 0"')
 
-    return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
-  }
+  return <SvgEditor value={value} onChange={e => setValue(e.target.value)} />
+}
+
+export const Invalid = {
+  render: () => <InvalidStory />
 }
