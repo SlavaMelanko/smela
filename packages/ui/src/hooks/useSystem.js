@@ -59,6 +59,25 @@ export const useSocialLink = (network, options = {}) => {
   })
 }
 
+export const useUpdateSocialLink = network => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: data => systemApi.updateSocialLink(network, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: systemKeys.socialLink(network),
+        exact: true
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: systemKeys.socialLinks(),
+        exact: true
+      })
+    }
+  })
+}
+
 export const useEmailSenderProfile = (profile, options = {}) => {
   return useQuery({
     queryKey: systemKeys.emailSenderProfile(profile),

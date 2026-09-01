@@ -1,45 +1,31 @@
-import {
-  FormField,
-  FormFields,
-  FormReadOnly,
-  FormRow
-} from '@ui/components/form'
-import { SvgEditor } from '@ui/components/svg'
-import { Input } from '@ui/components/ui'
+import { SocialLinkForm } from '@ui/components/form'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useState } from 'react'
+import { useUpdateSocialLink } from '@ui/hooks/useSystem'
+import { useToast } from '@ui/hooks/useToast'
 
-export const SocialLinkSection = ({ socialLink }) => {
-  const { t, formatDate } = useLocale()
+export const SocialLinkSection = ({ socialLink, canManageSystem = false }) => {
+  const { t, te } = useLocale()
+  const { showSuccessToast, showErrorToast } = useToast()
+  const { mutate: updateSocialLink, isPending: isUpdating } =
+    useUpdateSocialLink(socialLink.network)
 
-  const [network, setNetwork] = useState(socialLink.network)
-  const [url, setUrl] = useState(socialLink.url)
-  const [svg, setSvg] = useState(socialLink.svg)
+  const handleUpdateSocialLink = data => {
+    updateSocialLink(data, {
+      onSuccess: () => {
+        showSuccessToast(t('changesSaved'))
+      },
+      onError: error => {
+        showErrorToast(te(error))
+      }
+    })
+  }
 
   return (
-    <FormFields>
-      <FormRow>
-        <FormField label={t('socialLink.network.label')} optional>
-          <Input value={network} onChange={e => setNetwork(e.target.value)} />
-        </FormField>
-
-        <FormField label={t('socialLink.url.label')} optional>
-          <Input value={url} onChange={e => setUrl(e.target.value)} />
-        </FormField>
-      </FormRow>
-
-      <FormField label={t('socialLink.svg.label')} optional>
-        <SvgEditor value={svg} onChange={e => setSvg(e.target.value)} />
-      </FormField>
-
-      <FormRow forceColumns>
-        <FormField label={t('createdAt')} optional>
-          <FormReadOnly>{formatDate(socialLink.createdAt)}</FormReadOnly>
-        </FormField>
-        <FormField label={t('updatedAt')} optional>
-          <FormReadOnly>{formatDate(socialLink.updatedAt)}</FormReadOnly>
-        </FormField>
-      </FormRow>
-    </FormFields>
+    <SocialLinkForm
+      socialLink={socialLink}
+      isSubmitting={isUpdating}
+      onSubmit={handleUpdateSocialLink}
+      canManageSystem={canManageSystem}
+    />
   )
 }

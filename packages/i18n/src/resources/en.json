@@ -369,6 +369,10 @@
       "label": "Network"
     },
     "svg": {
+      "error": {
+        "max": "Icon SVG can't be longer than 10000 characters.",
+        "required": "Icon SVG is required."
+      },
       "label": "Icon"
     },
     "url": {
@@ -478,10 +482,6 @@
       }
     },
     "website": {
-      "error": {
-        "format": "Enter a valid URL.",
-        "max": "Website can't be longer than 255 characters."
-      },
       "label": "Website"
     }
   },
@@ -504,5 +504,12 @@
     }
   },
   "updatedAt": "Updated at",
+  "url": {
+    "error": {
+      "format": "Enter a valid URL.",
+      "max": "URL can't be longer than 255 characters.",
+      "required": "URL is required."
+    }
+  },
   "you": "You"
 }

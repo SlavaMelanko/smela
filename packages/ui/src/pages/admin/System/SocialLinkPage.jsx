@@ -4,12 +4,16 @@ import { SocialLinkPageHeader } from '@ui/components/PageHeader'
 import { Spinner } from '@ui/components/Spinner'
 import { ErrorState } from '@ui/components/states'
 import { SocialLinkSection } from '@ui/components/system'
+import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useLocation, useParams } from '@ui/hooks/useRouter'
 import { useSocialLink } from '@ui/hooks/useSystem'
 
 export const SocialLinkPage = () => {
   const { network } = useParams()
   const { state } = useLocation()
+  const { can } = useCurrentUser()
+
+  const canManageSystem = can('manage:system')
 
   const {
     data: socialLink,
@@ -41,7 +45,10 @@ export const SocialLinkPage = () => {
         url={socialLink.url}
         svg={socialLink.svg}
       />
-      <SocialLinkSection key={socialLink.network} socialLink={socialLink} />
+      <SocialLinkSection
+        socialLink={socialLink}
+        canManageSystem={canManageSystem}
+      />
     </PageContent>
   )
 }

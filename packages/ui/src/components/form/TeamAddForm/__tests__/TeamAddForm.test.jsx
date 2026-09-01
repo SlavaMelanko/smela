@@ -86,7 +86,7 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.website.error.format)).toBeInTheDocument()
+      expect(screen.getByText(en.url.error.format)).toBeInTheDocument()
     })
   })
 
@@ -99,7 +99,7 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.website.error.max)).toBeInTheDocument()
+      expect(screen.getByText(en.url.error.max)).toBeInTheDocument()
     })
   })
 })

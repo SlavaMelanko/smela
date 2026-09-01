@@ -9,6 +9,7 @@ import {
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from './constants'
 
@@ -57,17 +58,29 @@ export const password = {
     .regex(PasswordConstraint.STRONG, 'password.error.strong')
 }
 
-export const url = errorMessage =>
-  optionalStr()
+export const url = {
+  optional: optionalStr()
     .refine(
       value => value === undefined || z.url().safeParse(value).success,
-      errorMessage
+      'url.error.format'
     )
     .refine(
       value =>
         value === undefined || value.length <= WebsiteConstraint.MAX_LENGTH,
-      'team.website.error.max'
-    )
+      'url.error.max'
+    ),
+
+  required: requiredStr('url.error.required')
+    .max(WebsiteConstraint.MAX_LENGTH, 'url.error.max')
+    .refine(value => z.url().safeParse(value).success, 'url.error.format')
+}
+
+export const socialLink = {
+  svg: requiredStr('socialLink.svg.error.required').max(
+    SvgConstraint.MAX_LENGTH,
+    'socialLink.svg.error.max'
+  )
+}
 
 export const displayName = requiredStr('name.error.required')
   .min(NameConstraint.MIN_LENGTH, 'name.error.min')

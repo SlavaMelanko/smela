@@ -20,6 +20,6 @@ export const getValues = ({ name, website, description }) => ({
 
 export const resolver = createResolver({
   [FieldName.NAME]: rules.displayName,
-  [FieldName.WEBSITE]: rules.url('team.website.error.format'),
+  [FieldName.WEBSITE]: rules.url.optional,
   [FieldName.DESCRIPTION]: rules.description
 })

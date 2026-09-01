@@ -4,5 +4,6 @@ export {
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from '@smela/contracts'

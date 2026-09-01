@@ -78,20 +78,21 @@ test.describe('Owner: System', () => {
       page.getByRole('link', { name: 'https://facebook.com/smela' })
     ).toBeVisible()
 
-    await expect(page.getByText(t.socialLink.network.label)).toBeVisible()
-    await expect(page.locator('input[value="facebook"]')).toBeVisible()
+    const networkInput = page.getByRole('textbox', {
+      name: t.socialLink.network.label
+    })
 
-    await expect(page.getByText(t.socialLink.url.label)).toBeVisible()
-    await expect(
-      page.locator('input[value="https://facebook.com/smela"]')
-    ).toBeVisible()
+    await expect(networkInput).toHaveValue('facebook')
+
+    const urlInput = page.getByRole('textbox', { name: t.socialLink.url.label })
+
+    await expect(urlInput).toHaveValue('https://facebook.com/smela')
 
     // Icon editor shows the raw SVG markup and a live preview
-    await expect(page.getByText(t.socialLink.svg.label)).toBeVisible()
+    const svgTextarea = page.getByRole('textbox', {
+      name: t.socialLink.svg.label
+    })
 
-    const svgTextarea = page.locator('textarea')
-
-    await expect(svgTextarea).toBeVisible()
     await expect(svgTextarea).toHaveValue(/<svg[\s\S]*<\/svg>/)
 
     await expect(page.getByText(t.createdAt)).toBeVisible()
