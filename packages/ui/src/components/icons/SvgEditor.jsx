@@ -29,7 +29,7 @@ const SvgEditorPreview = ({ svg, sizes }) => (
         <SvgWrapper key={size} svg={svg ?? ''} size={size} />
       ))}
     </div>
-    <span className='text-center text-xs text-muted-foreground'>
+    <span className='mt-4 text-center text-xs text-muted-foreground'>
       Same icon shown at {sizes.join('/')}px
     </span>
   </div>
