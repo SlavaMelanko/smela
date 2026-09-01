@@ -6,8 +6,11 @@ import {
   Table,
   useTableConfig
 } from '@ui/components/table'
+import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useNavigate } from '@ui/hooks/useRouter'
 import { useSocialLinks } from '@ui/hooks/useSystem'
+import { Link } from 'lucide-react'
 
 import { getSocialLinksColumns } from './socialLinksColumns'
 
@@ -20,10 +23,18 @@ const SocialLinksToolbar = ({ children }) => (
 )
 
 export const SocialLinksTab = () => {
+  const navigate = useNavigate()
   const { t, formatDate } = useLocale()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
 
   const columns = getSocialLinksColumns(t, formatDate)
+
+  const viewSocialLink = socialLink =>
+    navigate(`/system/social-links/${socialLink.network}`, {
+      state: { socialLink }
+    })
+
+  const contextMenu = [createOpenItem(t, viewSocialLink, Link)]
 
   const config = useTableConfig('social-links', {
     features: staticTableFeatures,
@@ -52,7 +63,11 @@ export const SocialLinksTab = () => {
         />
       </SocialLinksToolbar>
 
-      <Table config={config} />
+      <Table
+        config={config}
+        onRowClick={viewSocialLink}
+        contextMenu={contextMenu}
+      />
     </SocialLinksRoot>
   )
 }

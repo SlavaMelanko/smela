@@ -364,7 +364,16 @@
   },
   "signUp": "Sign up",
   "socialLink": {
-    "empty": "No social links yet."
+    "empty": "No social links yet.",
+    "network": {
+      "label": "Network"
+    },
+    "svg": {
+      "label": "Icon"
+    },
+    "url": {
+      "label": "URL"
+    }
   },
   "status": {
     "error": {

@@ -118,6 +118,10 @@ export const rules = {
     description
   },
 
+  socialLink: {
+    network: z.string().trim().min(1).max(32)
+  },
+
   userFilter: {
     search: z.string().trim(),
 

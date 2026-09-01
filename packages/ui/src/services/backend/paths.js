@@ -24,6 +24,7 @@ export const ADMIN_SYSTEM_PATH = '/api/v1/admin/system'
 export const ADMIN_EMAIL_SENDER_PROFILES_PATH = `${ADMIN_SYSTEM_PATH}/email-sender-profiles`
 export const ADMIN_EMAIL_SENDER_PROFILE_PATH = `${ADMIN_EMAIL_SENDER_PROFILES_PATH}/:profile`
 export const ADMIN_SOCIAL_LINKS_PATH = `${ADMIN_SYSTEM_PATH}/social-links`
+export const ADMIN_SOCIAL_LINK_PATH = `${ADMIN_SOCIAL_LINKS_PATH}/:network`
 
 // Verified user/admin team operations
 export const TEAMS_PATH = '/api/v1/user/verified/teams/:teamId'

@@ -1,6 +1,7 @@
 export {
   getEmailSenderProfile,
   getEmailSenderProfiles,
+  getSocialLink,
   getSocialLinks,
   updateEmailSenderProfile
 } from './system'

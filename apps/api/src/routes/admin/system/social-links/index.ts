@@ -7,6 +7,8 @@ import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
 import { getSocialLinks } from '@/use-cases/admin'
 
+import { adminSocialLinkByNetworkRoute } from './$network'
+
 export const adminSocialLinksRoute = new Hono<AppContext>()
 
 adminSocialLinksRoute.get(
@@ -18,3 +20,5 @@ adminSocialLinksRoute.get(
     return c.json(result, HttpStatus.OK)
   }
 )
+
+adminSocialLinksRoute.route('/:network', adminSocialLinkByNetworkRoute)
