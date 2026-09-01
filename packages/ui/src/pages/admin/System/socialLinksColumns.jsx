@@ -1,4 +1,4 @@
-import { SvgWrapper } from '@ui/components/icons'
+import { SvgWrapper } from '@ui/components/svg'
 
 export const getSocialLinksColumns = (t, formatDate) => {
   const label = key => t(`table.socialLinks.${key}`)

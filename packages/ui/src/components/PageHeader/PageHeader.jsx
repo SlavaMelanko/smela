@@ -1,6 +1,6 @@
-import { SvgWrapper } from '@ui/components/icons'
 import { Link } from '@ui/components/links'
 import { EmailLink } from '@ui/components/links/EmailLink'
+import { SvgWrapper } from '@ui/components/svg'
 import { cn } from '@ui/lib/utils'
 import { Globe } from 'lucide-react'
 

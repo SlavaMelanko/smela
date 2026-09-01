@@ -1,5 +1,3 @@
 export { ChevronIcon } from './ChevronIcon'
 export { GoogleIcon } from './GoogleIcon'
 export { Logo } from './Logo'
-export { SvgEditor } from './SvgEditor'
-export { SvgWrapper } from './SvgWrapper'

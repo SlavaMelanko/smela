@@ -4,7 +4,7 @@ import {
   FormReadOnly,
   FormRow
 } from '@ui/components/form'
-import { SvgEditor } from '@ui/components/icons'
+import { SvgEditor } from '@ui/components/svg'
 import { Input } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useState } from 'react'
