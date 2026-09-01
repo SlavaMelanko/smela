@@ -10,7 +10,7 @@ export default {
   parameters: { layout: 'centered' },
   decorators: [
     Story => (
-      <div className='w-xl'>
+      <div className='w-full max-w-xl'>
         <Story />
       </div>
     )
