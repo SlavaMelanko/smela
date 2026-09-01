@@ -54,4 +54,49 @@ test.describe('Owner: System', () => {
 
     await logOut(page, t)
   })
+
+  test('shows social link details with icon editor', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(ownerCredentials)
+
+    await page.getByRole('button', { name: t.sidebar.system }).click()
+    await expect(page).toHaveURL('/system')
+
+    await page.getByRole('tab', { name: t.system.tabs.socialLinks }).click()
+
+    // Matches the social link seeded by apps/api/src/data/scripts/seed.ts
+    await page.getByRole('row', { name: /facebook/ }).click()
+
+    await expect(page).toHaveURL('/system/social-links/facebook')
+
+    await expect(page.getByRole('heading', { name: 'facebook' })).toBeVisible()
+
+    await expect(
+      page.getByRole('link', { name: 'https://facebook.com/smela' })
+    ).toBeVisible()
+
+    await expect(page.getByText(t.socialLink.network.label)).toBeVisible()
+    await expect(page.locator('input[value="facebook"]')).toBeVisible()
+
+    await expect(page.getByText(t.socialLink.url.label)).toBeVisible()
+    await expect(
+      page.locator('input[value="https://facebook.com/smela"]')
+    ).toBeVisible()
+
+    // Icon editor shows the raw SVG markup and a live preview
+    await expect(page.getByText(t.socialLink.svg.label)).toBeVisible()
+
+    const svgTextarea = page.locator('textarea')
+
+    await expect(svgTextarea).toBeVisible()
+    await expect(svgTextarea).toHaveValue(/<svg[\s\S]*<\/svg>/)
+
+    await expect(page.getByText(t.createdAt)).toBeVisible()
+    await expect(page.getByText(t.updatedAt)).toBeVisible()
+
+    await logOut(page, t)
+  })
 })
