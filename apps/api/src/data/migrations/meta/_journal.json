@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781112447304,
-      "tag": "0000_eminent_bucky",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1782849037786,
-      "tag": "0001_rare_wolf_cub",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1783365230782,
-      "tag": "0002_powerful_union_jack",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1787577187939,
-      "tag": "0003_true_titania",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1787577839766,
-      "tag": "0004_nosy_sunfire",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1788274714373,
-      "tag": "0005_huge_alex_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1788274853433,
-      "tag": "0006_curious_doctor_octopus",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1788277935590,
-      "tag": "0007_rename_social_link_network_to_name",
+      "when": 1788359616748,
+      "tag": "0000_chunky_scrambler",
       "breakpoints": true
     }
   ]

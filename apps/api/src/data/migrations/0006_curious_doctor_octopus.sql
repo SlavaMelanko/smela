@@ -1,1 +1,0 @@
-ALTER TABLE "email_sender_profiles" ALTER COLUMN "name" SET DATA TYPE varchar(50);
