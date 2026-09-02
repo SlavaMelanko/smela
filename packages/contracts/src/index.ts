@@ -8,4 +8,5 @@ export {
   WebsiteConstraint
 } from './constraints'
 export { Role } from './role'
+export { isHttpsUrl } from './url'
 export { UserStatus } from './user-status'

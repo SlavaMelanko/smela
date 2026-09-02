@@ -3,6 +3,7 @@
 import {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
@@ -35,11 +36,10 @@ const displayName = z
 
 const description = z.string().trim().max(DescriptionConstraint.MAX_LENGTH)
 
-// z.url() alone accepts "https:example.com" (no //) since https: normalizes
-// to https:// per the WHATWG URL spec — require the literal prefix too
 const httpsUrl = z
-  .url({ protocol: /^https$/ })
-  .refine(value => value.startsWith('https://'), 'Invalid URL')
+  .string()
+  .max(WebsiteConstraint.MAX_LENGTH)
+  .refine(isHttpsUrl, 'Invalid URL')
 
 export const rules = {
   user: {
@@ -112,7 +112,7 @@ export const rules = {
   team: {
     id: z.uuid(),
     name: displayName,
-    website: httpsUrl.max(WebsiteConstraint.MAX_LENGTH),
+    website: httpsUrl,
     description,
     position: z.string().trim().max(PositionConstraint.MAX_LENGTH),
     search: z.string().trim().max(100)
@@ -128,7 +128,7 @@ export const rules = {
   socialLink: {
     id: z.uuid(),
     name: displayName,
-    url: httpsUrl.max(WebsiteConstraint.MAX_LENGTH),
+    url: httpsUrl,
     svg: z
       .string()
       .trim()

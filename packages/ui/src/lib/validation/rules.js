@@ -6,6 +6,7 @@ import { allUserStatuses } from '../types/index.js'
 import {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
@@ -21,11 +22,6 @@ const optionalStr = () =>
     .trim()
     .transform(v => v || undefined)
     .pipe(z.string().optional())
-
-// z.url() alone accepts "https:example.com" (no //) since https: normalizes
-// to https:// per the WHATWG URL spec — require the literal prefix too
-const isValidHttpsUrl = value =>
-  value.startsWith('https://') && z.url().safeParse(value).success
 
 export const firstName = requiredStr('firstName.error.required')
   .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')
@@ -66,7 +62,7 @@ export const password = {
 export const url = {
   optional: optionalStr()
     .refine(
-      value => value === undefined || isValidHttpsUrl(value),
+      value => value === undefined || isHttpsUrl(value),
       'url.error.format'
     )
     .refine(
@@ -77,7 +73,7 @@ export const url = {
 
   required: requiredStr('url.error.required')
     .max(WebsiteConstraint.MAX_LENGTH, 'url.error.max')
-    .refine(isValidHttpsUrl, 'url.error.format')
+    .refine(isHttpsUrl, 'url.error.format')
 }
 
 export const socialLink = {

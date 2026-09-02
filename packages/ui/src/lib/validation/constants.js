@@ -1,6 +1,7 @@
 export {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
