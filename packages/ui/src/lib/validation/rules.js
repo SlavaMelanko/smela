@@ -76,12 +76,10 @@ export const url = {
     .refine(isHttpsUrl, 'url.error.format')
 }
 
-export const socialLink = {
-  svg: requiredStr('socialLink.svg.error.required').max(
-    SvgConstraint.MAX_LENGTH,
-    'socialLink.svg.error.max'
-  )
-}
+export const svg = requiredStr('svg.error.required').max(
+  SvgConstraint.MAX_LENGTH,
+  'svg.error.max'
+)
 
 export const displayName = requiredStr('name.error.required')
   .min(NameConstraint.MIN_LENGTH, 'name.error.min')

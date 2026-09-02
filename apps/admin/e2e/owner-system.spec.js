@@ -45,7 +45,7 @@ test.describe('Owner: System', () => {
     await page.getByRole('button', { name: t.sidebar.system }).click()
     await expect(page).toHaveURL('/system')
 
-    await page.getByRole('tab', { name: t.system.tabs.socialLinks }).click()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
 
     await expect(page.getByRole('table')).toBeVisible()
 
@@ -65,7 +65,7 @@ test.describe('Owner: System', () => {
     await page.getByRole('button', { name: t.sidebar.system }).click()
     await expect(page).toHaveURL('/system')
 
-    await page.getByRole('tab', { name: t.system.tabs.socialLinks }).click()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
 
     // Matches the social link seeded by apps/api/src/data/scripts/seed.ts
     await page.getByRole('row', { name: /Facebook/ }).click()
@@ -85,13 +85,13 @@ test.describe('Owner: System', () => {
 
     await expect(nameInput).toHaveValue('Facebook')
 
-    const urlInput = page.getByRole('textbox', { name: t.socialLink.url.label })
+    const urlInput = page.getByRole('textbox', { name: t.url.label })
 
     await expect(urlInput).toHaveValue('https://facebook.com/smela')
 
     // Icon editor shows the raw SVG markup and a live preview
     const svgTextarea = page.getByRole('textbox', {
-      name: t.socialLink.svg.label
+      name: t.svg.label
     })
 
     await expect(svgTextarea).toHaveValue(/<svg[\s\S]*<\/svg>/)
@@ -112,7 +112,7 @@ test.describe('Owner: System', () => {
     await page.getByRole('button', { name: t.sidebar.system }).click()
     await expect(page).toHaveURL('/system')
 
-    await page.getByRole('tab', { name: t.system.tabs.socialLinks }).click()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
 
     // Matches the social link seeded by apps/api/src/data/scripts/seed.ts
     await page.getByRole('row', { name: /LinkedIn/ }).click()

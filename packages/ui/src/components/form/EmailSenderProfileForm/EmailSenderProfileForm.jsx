@@ -44,7 +44,7 @@ export const EmailSenderProfileForm = ({
   return (
     <FormRoot onSubmit={handleSubmit(onSubmit)}>
       <FormFields>
-        <FormField label={t('emailSenderProfile.profile.label')} optional>
+        <FormField label={t('profile.label')} optional>
           <FormReadOnly>
             {senderProfile.profile.charAt(0).toUpperCase() +
               senderProfile.profile.slice(1)}

@@ -21,5 +21,5 @@ export const getValues = ({ name, url, svg }) => ({
 export const resolver = createResolver({
   [FieldName.NAME]: rules.displayName,
   [FieldName.URL]: rules.url.required,
-  [FieldName.SVG]: rules.socialLink.svg
+  [FieldName.SVG]: rules.svg
 })

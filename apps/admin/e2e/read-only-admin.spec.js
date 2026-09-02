@@ -125,11 +125,7 @@ test.describe('Read-Only Admin: Teams', () => {
     await page.getByRole('row').nth(1).click()
 
     // General tab: fields must be read-only, Save button hidden
-    for (const label of [
-      t.name.label,
-      t.team.website.label,
-      t.description.label
-    ]) {
+    for (const label of [t.name.label, t.website.label, t.description.label]) {
       await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
     }
 

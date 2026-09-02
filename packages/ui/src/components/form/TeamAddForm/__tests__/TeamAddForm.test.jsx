@@ -17,7 +17,7 @@ const renderForm = (onSubmit = vi.fn()) => {
 
   return {
     nameInput: screen.getByLabelText(en.name.label, { exact: false }),
-    websiteInput: screen.getByLabelText(en.team.website.label, {
+    websiteInput: screen.getByLabelText(en.website.label, {
       exact: false
     }),
     descriptionInput: screen.getByLabelText(en.description.label, {

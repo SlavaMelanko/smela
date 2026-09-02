@@ -58,7 +58,7 @@ export const SocialLinkForm = ({
           </FormField>
 
           <FormField
-            label={t('socialLink.url.label')}
+            label={t('url.label')}
             name={FieldName.URL}
             error={errors[FieldName.URL]}
           >
@@ -67,7 +67,7 @@ export const SocialLinkForm = ({
         </FormRow>
 
         <FormField
-          label={t('socialLink.svg.label')}
+          label={t('svg.label')}
           name={FieldName.SVG}
           error={errors[FieldName.SVG]}
         >
