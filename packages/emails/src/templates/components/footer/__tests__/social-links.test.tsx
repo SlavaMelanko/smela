@@ -14,7 +14,7 @@ describe('SocialLinks', () => {
   it('renders a link with the stored svg for each social link', async () => {
     const socialLinks: SocialLink[] = [
       {
-        name: 'facebook',
+        name: 'Facebook',
         url: 'https://facebook.com/example',
         svg: '<svg><path d="M0 0" /></svg>'
       }
