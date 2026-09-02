@@ -3,9 +3,11 @@
 import {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from '@smela/contracts'
 import { z } from 'zod'
@@ -33,6 +35,11 @@ const displayName = z
   .max(NameConstraint.MAX_LENGTH)
 
 const description = z.string().trim().max(DescriptionConstraint.MAX_LENGTH)
+
+const httpsUrl = z
+  .string()
+  .max(WebsiteConstraint.MAX_LENGTH)
+  .refine(isHttpsUrl, 'Invalid URL')
 
 export const rules = {
   user: {
@@ -105,7 +112,7 @@ export const rules = {
   team: {
     id: z.uuid(),
     name: displayName,
-    website: z.url().max(WebsiteConstraint.MAX_LENGTH),
+    website: httpsUrl,
     description,
     position: z.string().trim().max(PositionConstraint.MAX_LENGTH),
     search: z.string().trim().max(100)
@@ -116,6 +123,17 @@ export const rules = {
     email,
     name: displayName,
     description
+  },
+
+  socialLink: {
+    id: z.uuid(),
+    name: displayName,
+    url: httpsUrl,
+    svg: z
+      .string()
+      .trim()
+      .min(SvgConstraint.MIN_LENGTH)
+      .max(SvgConstraint.MAX_LENGTH)
   },
 
   userFilter: {

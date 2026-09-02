@@ -10,7 +10,7 @@ const loadSocialLinks = async (): Promise<SocialLink[]> => {
 
     logger.debug({ count: records.length }, 'Loaded social links')
 
-    return records.map(({ network, url, svg }) => ({ network, url, svg }))
+    return records.map(({ name, url, svg }) => ({ name, url, svg }))
   } catch (error) {
     logger.error({ error }, 'Failed to load social links')
 

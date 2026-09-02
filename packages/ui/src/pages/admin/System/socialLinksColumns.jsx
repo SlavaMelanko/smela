@@ -1,4 +1,4 @@
-import { SvgWrapper } from '@ui/components/icons'
+import { SvgWrapper } from '@ui/components/svg'
 
 export const getSocialLinksColumns = (t, formatDate) => {
   const label = key => t(`table.socialLinks.${key}`)
@@ -8,13 +8,13 @@ export const getSocialLinksColumns = (t, formatDate) => {
       accessorKey: 'svg',
       header: label('svg'),
       cell: info => (
-        <SvgWrapper svg={info.getValue()} label={info.row.original.network} />
+        <SvgWrapper svg={info.getValue()} label={info.row.original.name} />
       ),
       enableSorting: false
     },
     {
-      accessorKey: 'network',
-      header: label('network'),
+      accessorKey: 'name',
+      header: label('name'),
       sortFn: 'alphanumeric'
     },
     {

@@ -1,6 +1,8 @@
-// Shared bounds for user-facing names and entity labels
+// Shared bounds for user-facing names and entity labels. Min is 1 — real
+// single-letter names exist (e.g. "J"), as do single-letter network names
+// (e.g. "X", formerly Twitter)
 export const NameConstraint = {
-  MIN_LENGTH: 2,
+  MIN_LENGTH: 1,
   MAX_LENGTH: 50
 }
 
@@ -11,6 +13,12 @@ export const PositionConstraint = {
 
 export const WebsiteConstraint = {
   MAX_LENGTH: 255
+}
+
+// Pasted SVG markup for a social link's icon
+export const SvgConstraint = {
+  MIN_LENGTH: 1,
+  MAX_LENGTH: 10_000
 }
 
 // Free-text descriptions across entities (team, email sender profile, etc.)

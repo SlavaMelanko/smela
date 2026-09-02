@@ -7,11 +7,13 @@ import { AppError, ErrorCode } from '@/errors'
 import type { Database } from '../../clients'
 import type {
   EmailSenderProfileRecord,
-  UpdateEmailSenderProfileInput
+  SocialLinkRecord,
+  UpdateEmailSenderProfileInput,
+  UpdateSocialLinkInput
 } from './types'
 
 import { db } from '../../clients'
-import { emailSenderProfilesTable } from '../../schema'
+import { emailSenderProfilesTable, socialLinksTable } from '../../schema'
 
 export const updateEmailSenderProfile = async (
   profile: EmailSenderType,
@@ -34,4 +36,24 @@ export const updateEmailSenderProfile = async (
   }
 
   return senderProfile
+}
+
+export const updateSocialLink = async (
+  id: string,
+  updates: UpdateSocialLinkInput,
+  tx?: Database
+): Promise<SocialLinkRecord> => {
+  const executor = tx || db
+
+  const [socialLink] = await executor
+    .update(socialLinksTable)
+    .set({ ...updates, updatedAt: new Date() })
+    .where(eq(socialLinksTable.id, id))
+    .returning()
+
+  if (!socialLink) {
+    throw new AppError(ErrorCode.InternalError, 'Failed to update social link')
+  }
+
+  return socialLink
 }

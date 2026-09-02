@@ -6,12 +6,13 @@ import {
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from '../constraints'
 
 describe('NameConstraint', () => {
   it('exposes the expected bounds', () => {
-    expect(NameConstraint.MIN_LENGTH).toBe(2)
+    expect(NameConstraint.MIN_LENGTH).toBe(1)
     expect(NameConstraint.MAX_LENGTH).toBe(50)
   })
 })
@@ -32,6 +33,13 @@ describe('WebsiteConstraint', () => {
 describe('DescriptionConstraint', () => {
   it('exposes the expected bound', () => {
     expect(DescriptionConstraint.MAX_LENGTH).toBe(500)
+  })
+})
+
+describe('SvgConstraint', () => {
+  it('exposes the expected bounds', () => {
+    expect(SvgConstraint.MIN_LENGTH).toBe(1)
+    expect(SvgConstraint.MAX_LENGTH).toBe(10_000)
   })
 })
 

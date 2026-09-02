@@ -1,5 +1,5 @@
 export interface SocialLink {
-  network: string
+  name: string
   url: string
   svg: string
 }

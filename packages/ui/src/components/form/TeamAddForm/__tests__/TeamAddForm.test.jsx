@@ -17,7 +17,7 @@ const renderForm = (onSubmit = vi.fn()) => {
 
   return {
     nameInput: screen.getByLabelText(en.name.label, { exact: false }),
-    websiteInput: screen.getByLabelText(en.team.website.label, {
+    websiteInput: screen.getByLabelText(en.website.label, {
       exact: false
     }),
     descriptionInput: screen.getByLabelText(en.description.label, {
@@ -41,17 +41,6 @@ describe('TeamAddForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(en.name.error.required)).toBeInTheDocument()
-    })
-  })
-
-  it('shows min length error when name is too short', async () => {
-    const { nameInput, submitButton } = renderForm()
-
-    await user.type(nameInput, 'A')
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText(en.name.error.min)).toBeInTheDocument()
     })
   })
 
@@ -86,7 +75,7 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.website.error.format)).toBeInTheDocument()
+      expect(screen.getByText(en.url.error.format)).toBeInTheDocument()
     })
   })
 
@@ -99,7 +88,7 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.website.error.max)).toBeInTheDocument()
+      expect(screen.getByText(en.url.error.max)).toBeInTheDocument()
     })
   })
 })

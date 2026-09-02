@@ -54,7 +54,7 @@ export const TeamGeneralForm = ({
           </FormField>
 
           <FormField
-            label={t('team.website.label')}
+            label={t('website.label')}
             name={FieldName.WEBSITE}
             error={errors[FieldName.WEBSITE]}
             optional

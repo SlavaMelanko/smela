@@ -6,9 +6,11 @@ import { allUserStatuses } from '../types/index.js'
 import {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
   PositionConstraint,
+  SvgConstraint,
   WebsiteConstraint
 } from './constants'
 
@@ -57,17 +59,27 @@ export const password = {
     .regex(PasswordConstraint.STRONG, 'password.error.strong')
 }
 
-export const url = errorMessage =>
-  optionalStr()
+export const url = {
+  optional: optionalStr()
     .refine(
-      value => value === undefined || z.url().safeParse(value).success,
-      errorMessage
+      value => value === undefined || isHttpsUrl(value),
+      'url.error.format'
     )
     .refine(
       value =>
         value === undefined || value.length <= WebsiteConstraint.MAX_LENGTH,
-      'team.website.error.max'
-    )
+      'url.error.max'
+    ),
+
+  required: requiredStr('url.error.required')
+    .max(WebsiteConstraint.MAX_LENGTH, 'url.error.max')
+    .refine(isHttpsUrl, 'url.error.format')
+}
+
+export const svg = requiredStr('svg.error.required').max(
+  SvgConstraint.MAX_LENGTH,
+  'svg.error.max'
+)
 
 export const displayName = requiredStr('name.error.required')
   .min(NameConstraint.MIN_LENGTH, 'name.error.min')

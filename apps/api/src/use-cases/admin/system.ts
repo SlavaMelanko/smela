@@ -16,6 +16,33 @@ export const getSocialLinks = async () => {
   return { socialLinks }
 }
 
+export const getSocialLink = async (id: string) => {
+  const socialLink = await systemRepo.findSocialLink(id)
+
+  if (!socialLink) {
+    throw new AppError(ErrorCode.NotFound, 'Social link not found')
+  }
+
+  return { socialLink }
+}
+
+export interface UpdateSocialLinkInput {
+  name?: string
+  url?: string
+  svg?: string
+}
+
+export const updateSocialLink = async (
+  id: string,
+  updates: UpdateSocialLinkInput
+) => {
+  await getSocialLink(id)
+
+  const socialLink = await systemRepo.updateSocialLink(id, updates)
+
+  return { socialLink }
+}
+
 export const getEmailSenderProfile = async (profile: EmailSenderType) => {
   const senderProfile = await systemRepo.findEmailSenderProfile(profile)
 

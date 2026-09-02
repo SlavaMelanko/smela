@@ -4,6 +4,7 @@ import {
   DashboardPage,
   EmailSenderProfilePage,
   SettingsPage as AdminSettingsPage,
+  SocialLinkPage,
   SystemPage,
   TeamPage,
   TeamsPage,
@@ -117,6 +118,10 @@ export const router = createBrowserRouter([
           {
             path: 'system/email-sender-profiles/:profile',
             element: <EmailSenderProfilePage />
+          },
+          {
+            path: 'system/social-links/:id',
+            element: <SocialLinkPage />
           }
         ]
       },

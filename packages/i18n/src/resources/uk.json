@@ -84,9 +84,7 @@
   },
   "emailSenderProfile": {
     "empty": "Профілів відправника email ще немає.",
-    "profile": {
-      "label": "Профіль"
-    }
+    "label": "Профілі відправника email"
   },
   "error": {
     "forbidden": {
@@ -342,6 +340,7 @@
   },
   "processing": "В процесі...",
   "profile": {
+    "label": "Профіль",
     "title": "Профіль"
   },
   "save": "Зберегти",
@@ -370,7 +369,8 @@
   },
   "signUp": "Зареєструватися",
   "socialLink": {
-    "empty": "Соціальних посилань поки немає."
+    "empty": "Соцмереж немає.",
+    "label": "Соцмережі"
   },
   "status": {
     "error": {
@@ -390,12 +390,15 @@
     }
   },
   "support": "Підтримка",
+  "svg": {
+    "error": {
+      "max": "SVG іконка не може перевищувати 10000 символів.",
+      "required": "SVG іконка обовʼязкова."
+    },
+    "label": "Іконка"
+  },
   "system": {
     "description": "Налаштуйте системні параметри.",
-    "tabs": {
-      "emailSenderProfiles": "Профілі відправника email",
-      "socialLinks": "Соціальні мережі"
-    },
     "title": "Система"
   },
   "table": {
@@ -406,7 +409,7 @@
       "description": "$t(description.label)",
       "email": "$t(email.label)",
       "name": "$t(name.label)",
-      "profile": "$t(emailSenderProfile.profile.label)",
+      "profile": "$t(profile.label)",
       "updatedAt": "$t(updatedAt)"
     },
     "filter": "Фільтр",
@@ -423,10 +426,10 @@
     },
     "socialLinks": {
       "createdAt": "$t(createdAt)",
-      "network": "Соц. мережа",
-      "svg": "Іконка",
+      "name": "$t(name.label)",
+      "svg": "$t(svg.label)",
       "updatedAt": "$t(updatedAt)",
-      "url": "Посилання"
+      "url": "$t(url.label)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
@@ -434,7 +437,7 @@
       "memberCount": "Учасники",
       "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
-      "website": "Сайт"
+      "website": "$t(website.label)"
     },
     "users": {
       "createdAt": "$t(createdAt)",
@@ -473,13 +476,6 @@
         "label": "Учасники",
         "withCount": "Учасники ({{count}})"
       }
-    },
-    "website": {
-      "error": {
-        "format": "Введіть правильну URL-адресу.",
-        "max": "Вебсайт не може перевищувати 255 символів."
-      },
-      "label": "Вебсайт"
     }
   },
   "termsAndPrivacy": {
@@ -501,5 +497,16 @@
     }
   },
   "updatedAt": "Оновлено",
+  "url": {
+    "error": {
+      "format": "Введіть правильну URL-адресу, що починається з https://.",
+      "max": "URL не може перевищувати 255 символів.",
+      "required": "URL обовʼязковий."
+    },
+    "label": "URL"
+  },
+  "website": {
+    "label": "Вебсайт"
+  },
   "you": "Ви"
 }

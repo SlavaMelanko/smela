@@ -37,3 +37,17 @@ export const listSocialLinks = async (
 
   return executor.select().from(socialLinksTable)
 }
+
+export const findSocialLink = async (
+  id: string,
+  tx?: Database
+): Promise<SocialLinkRecord | undefined> => {
+  const executor = tx || db
+
+  const [socialLink] = await executor
+    .select()
+    .from(socialLinksTable)
+    .where(eq(socialLinksTable.id, id))
+
+  return socialLink
+}

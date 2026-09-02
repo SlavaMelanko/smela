@@ -1,5 +1,6 @@
 import { Link } from '@ui/components/links'
 import { EmailLink } from '@ui/components/links/EmailLink'
+import { SvgWrapper } from '@ui/components/svg'
 import { cn } from '@ui/lib/utils'
 import { Globe } from 'lucide-react'
 
@@ -14,6 +15,12 @@ export const PageHeaderGroup = ({ children, className }) => (
 export const PageHeaderIcon = ({ icon: Icon }) => (
   <div className='flex size-10 items-center justify-center'>
     <Icon className='size-8 text-primary' />
+  </div>
+)
+
+export const PageHeaderSvgIcon = ({ svg, label }) => (
+  <div className='flex size-10 items-center justify-center'>
+    <SvgWrapper svg={svg} size={32} label={label} />
   </div>
 )
 

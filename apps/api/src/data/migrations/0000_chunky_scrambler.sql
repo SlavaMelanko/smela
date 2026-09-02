@@ -1,7 +1,8 @@
 CREATE TYPE "public"."auth_provider" AS ENUM('local', 'google', 'github');--> statement-breakpoint
 CREATE TYPE "public"."action" AS ENUM('view', 'manage');--> statement-breakpoint
-CREATE TYPE "public"."resource" AS ENUM('users', 'admins', 'teams', 'dashboard');--> statement-breakpoint
+CREATE TYPE "public"."resource" AS ENUM('users', 'admins', 'teams', 'dashboard', 'system');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('owner', 'admin', 'user');--> statement-breakpoint
+CREATE TYPE "public"."email_sender_profile" AS ENUM('system', 'support', 'security');--> statement-breakpoint
 CREATE TYPE "public"."token_status" AS ENUM('pending', 'used', 'deprecated', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."token_type" AS ENUM('email_verification', 'password_reset', 'refresh_token', 'user_invite');--> statement-breakpoint
 CREATE TYPE "public"."status" AS ENUM('new', 'verified', 'trial', 'active', 'suspended', 'archived', 'pending');--> statement-breakpoint
@@ -44,6 +45,24 @@ CREATE TABLE "refresh_tokens" (
 	"revoked_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "refresh_tokens_token_hash_unique" UNIQUE("token_hash")
+);
+--> statement-breakpoint
+CREATE TABLE "email_sender_profiles" (
+	"profile" "email_sender_profile" PRIMARY KEY NOT NULL,
+	"email" varchar(255) NOT NULL,
+	"name" varchar(50) NOT NULL,
+	"description" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "social_links" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"name" varchar(50) NOT NULL,
+	"url" text NOT NULL,
+	"svg" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "team_members" (
@@ -100,6 +119,7 @@ ALTER TABLE "team_members" ADD CONSTRAINT "team_members_invited_by_users_id_fk" 
 ALTER TABLE "tokens" ADD CONSTRAINT "tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "auth_user_id_index" ON "auth" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_permission" ON "permissions" USING btree ("action","resource");--> statement-breakpoint
+CREATE UNIQUE INDEX "unique_social_link_name" ON "social_links" USING btree ("name");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_team_member" ON "team_members" USING btree ("user_id","team_id");--> statement-breakpoint
 CREATE INDEX "team_members_team_index" ON "team_members" USING btree ("team_id");--> statement-breakpoint
 CREATE INDEX "tokens_user_id_type_index" ON "tokens" USING btree ("user_id","type");

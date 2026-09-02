@@ -156,13 +156,6 @@ describe('auth /signup', () => {
         }, // empty firstName
         {
           firstName: 'John',
-          lastName: 'X',
-          email: 'test@example.com',
-          password: 'ValidPass123!',
-          captcha: { token: VALID_CAPTCHA_TOKEN }
-        }, // lastName too short (1 char)
-        {
-          firstName: 'John',
           lastName: 'Doe',
           email: 'invalid',
           password: 'ValidPass123!',

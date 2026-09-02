@@ -24,12 +24,12 @@ export const SystemPage = () => {
     {
       value: SystemTab.EMAIL_SENDER_PROFILES,
       icon: Mail,
-      label: () => t('system.tabs.emailSenderProfiles')
+      label: () => t('emailSenderProfile.label')
     },
     {
       value: SystemTab.SOCIAL_LINKS,
       icon: Link,
-      label: () => t('system.tabs.socialLinks')
+      label: () => t('socialLink.label')
     }
   ]
 

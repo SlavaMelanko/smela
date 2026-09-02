@@ -22,7 +22,7 @@ export const emailSenderProfilesTable = pgTable('email_sender_profiles', {
     .primaryKey()
     .$type<EmailSenderType>(),
   email: varchar('email', { length: 255 }).notNull(),
-  name: varchar('name', { length: 255 }).notNull(),
+  name: varchar('name', { length: 50 }).notNull(),
   description: text('description'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
@@ -38,7 +38,7 @@ export const socialLinksTable = pgTable(
     id: uuid('id')
       .primaryKey()
       .$defaultFn(() => sql`uuidv7()`),
-    network: varchar('network', { length: 32 }).notNull(),
+    name: varchar('name', { length: 50 }).notNull(),
     url: text('url').notNull(),
     svg: text('svg').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true })
@@ -48,5 +48,5 @@ export const socialLinksTable = pgTable(
       .notNull()
       .defaultNow()
   },
-  table => [uniqueIndex('unique_social_link_network').on(table.network)]
+  table => [uniqueIndex('unique_social_link_name').on(table.name)]
 )

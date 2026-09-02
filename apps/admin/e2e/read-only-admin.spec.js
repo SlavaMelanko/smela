@@ -77,7 +77,7 @@ test.describe('Read-Only Admin: Users', () => {
   }) => {
     // Navigate via the team members list to get a user with a membership
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, 'Deckow, Kemmer and Conn')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
@@ -125,11 +125,7 @@ test.describe('Read-Only Admin: Teams', () => {
     await page.getByRole('row').nth(1).click()
 
     // General tab: fields must be read-only, Save button hidden
-    for (const label of [
-      t.name.label,
-      t.team.website.label,
-      t.description.label
-    ]) {
+    for (const label of [t.name.label, t.website.label, t.description.label]) {
       await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
     }
 
@@ -147,7 +143,7 @@ test.describe('Read-Only Admin: Teams', () => {
     t
   }) => {
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, 'Deckow, Kemmer and Conn')
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)

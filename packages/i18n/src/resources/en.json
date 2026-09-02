@@ -84,9 +84,7 @@
   },
   "emailSenderProfile": {
     "empty": "No email sender profiles yet.",
-    "profile": {
-      "label": "Profile"
-    }
+    "label": "Email sender profiles"
   },
   "error": {
     "forbidden": {
@@ -336,6 +334,7 @@
   },
   "processing": "Processing...",
   "profile": {
+    "label": "Profile",
     "title": "Profile"
   },
   "save": "Save",
@@ -364,7 +363,8 @@
   },
   "signUp": "Sign up",
   "socialLink": {
-    "empty": "No social links yet."
+    "empty": "No social links yet.",
+    "label": "Social links"
   },
   "status": {
     "error": {
@@ -384,12 +384,15 @@
     }
   },
   "support": "Support",
+  "svg": {
+    "error": {
+      "max": "SVG icon can't be longer than 10000 characters.",
+      "required": "SVG icon is required."
+    },
+    "label": "Icon"
+  },
   "system": {
     "description": "Configure system-level settings.",
-    "tabs": {
-      "emailSenderProfiles": "Email sender profiles",
-      "socialLinks": "Social links"
-    },
     "title": "System"
   },
   "table": {
@@ -400,7 +403,7 @@
       "description": "$t(description.label)",
       "email": "$t(email.label)",
       "name": "$t(name.label)",
-      "profile": "$t(emailSenderProfile.profile.label)",
+      "profile": "$t(profile.label)",
       "updatedAt": "$t(updatedAt)"
     },
     "filter": "Filter",
@@ -417,10 +420,10 @@
     },
     "socialLinks": {
       "createdAt": "$t(createdAt)",
-      "network": "Network",
-      "svg": "Icon",
+      "name": "$t(name.label)",
+      "svg": "$t(svg.label)",
       "updatedAt": "$t(updatedAt)",
-      "url": "URL"
+      "url": "$t(url.label)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
@@ -428,7 +431,7 @@
       "memberCount": "Members",
       "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
-      "website": "Website"
+      "website": "$t(website.label)"
     },
     "users": {
       "createdAt": "$t(createdAt)",
@@ -467,13 +470,6 @@
         "label": "Members",
         "withCount": "Members ({{count}})"
       }
-    },
-    "website": {
-      "error": {
-        "format": "Enter a valid URL.",
-        "max": "Website can't be longer than 255 characters."
-      },
-      "label": "Website"
     }
   },
   "termsAndPrivacy": {
@@ -495,5 +491,16 @@
     }
   },
   "updatedAt": "Updated at",
+  "url": {
+    "error": {
+      "format": "Enter a valid URL starting with https://.",
+      "max": "URL can't be longer than 255 characters.",
+      "required": "URL is required."
+    },
+    "label": "URL"
+  },
+  "website": {
+    "label": "Website"
+  },
   "you": "You"
 }

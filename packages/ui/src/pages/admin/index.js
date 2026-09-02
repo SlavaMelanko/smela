@@ -1,6 +1,6 @@
 export { DashboardPage } from './Dashboard'
 export { SettingsPage } from './Settings'
-export { EmailSenderProfilePage, SystemPage } from './System'
+export { EmailSenderProfilePage, SocialLinkPage, SystemPage } from './System'
 export { TeamPage } from './Team'
 export { TeamsPage } from './Teams'
 export { UserPage } from './User'
