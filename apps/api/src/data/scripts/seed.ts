@@ -183,7 +183,8 @@ const seedTeams = async () => {
       description: faker.company.catchPhrase()
     },
     {
-      name: faker.company.name(),
+      // Fixed name so e2e tests can find the team its members are linked to
+      name: 'Kemmer and Co',
       website: faker.internet.url(),
       description: faker.company.catchPhrase()
     }
