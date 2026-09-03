@@ -57,3 +57,12 @@ export const updateSocialLink = async (
 
   return socialLink
 }
+
+export const deleteSocialLink = async (
+  id: string,
+  tx?: Database
+): Promise<void> => {
+  const executor = tx || db
+
+  await executor.delete(socialLinksTable).where(eq(socialLinksTable.id, id))
+}

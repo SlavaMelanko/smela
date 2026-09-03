@@ -1,4 +1,5 @@
 export {
+  deleteSocialLink,
   getEmailSenderProfile,
   getEmailSenderProfiles,
   getSocialLink,

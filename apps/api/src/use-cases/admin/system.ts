@@ -43,6 +43,14 @@ export const updateSocialLink = async (
   return { socialLink }
 }
 
+export const deleteSocialLink = async (id: string) => {
+  await getSocialLink(id)
+
+  await systemRepo.deleteSocialLink(id)
+
+  return { success: true }
+}
+
 export const getEmailSenderProfile = async (profile: EmailSenderType) => {
   const senderProfile = await systemRepo.findEmailSenderProfile(profile)
 
