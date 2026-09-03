@@ -36,3 +36,9 @@ export const patch = async (
   body?: any,
   headers: Record<string, string> = DEFAULT_HEADERS
 ) => doRequest(app, url, 'PATCH', body, headers)
+
+export const del = async (
+  app: Hono,
+  url: string,
+  headers?: Record<string, string>
+) => doRequest(app, url, 'DELETE', undefined, headers)

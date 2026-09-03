@@ -3,6 +3,9 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useUpdateSocialLink } from '@ui/hooks/useSystem'
 import { useToast } from '@ui/hooks/useToast'
 
+import { TextSeparator } from '../Separator'
+import { DeleteSocialLinkItem } from './DeleteSocialLinkItem'
+
 export const SocialLinkSection = ({ socialLink, canManageSystem = false }) => {
   const { t, te } = useLocale()
   const { showSuccessToast, showErrorToast } = useToast()
@@ -21,11 +24,19 @@ export const SocialLinkSection = ({ socialLink, canManageSystem = false }) => {
   }
 
   return (
-    <SocialLinkForm
-      socialLink={socialLink}
-      isSubmitting={isUpdating}
-      onSubmit={handleUpdateSocialLink}
-      canManageSystem={canManageSystem}
-    />
+    <>
+      <SocialLinkForm
+        socialLink={socialLink}
+        isSubmitting={isUpdating}
+        onSubmit={handleUpdateSocialLink}
+        canManageSystem={canManageSystem}
+      />
+      {canManageSystem && (
+        <>
+          <TextSeparator />
+          <DeleteSocialLinkItem socialLink={socialLink} />
+        </>
+      )}
+    </>
   )
 }

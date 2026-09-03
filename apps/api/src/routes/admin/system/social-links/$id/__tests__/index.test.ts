@@ -6,6 +6,7 @@ import type { SocialLinkRecord } from '@/data'
 
 import {
   createTestApp,
+  del,
   get,
   ModuleMocker,
   patch,
@@ -27,6 +28,7 @@ describe('admin /system/social-links/:id', () => {
   let mockSocialLink: SocialLinkRecord
   let mockGetSocialLink: any
   let mockUpdateSocialLink: any
+  let mockDeleteSocialLink: any
 
   const buildApp = (permissions: string[]) =>
     createTestApp('/api/v1/admin', adminSystemRoute, [
@@ -49,8 +51,10 @@ describe('admin /system/social-links/:id', () => {
 
     mockGetSocialLink = mock(async () => ({ socialLink: mockSocialLink }))
     mockUpdateSocialLink = mock(async () => ({ socialLink: mockSocialLink }))
+    mockDeleteSocialLink = mock(async () => ({ success: true }))
 
     await moduleMocker.mock('@/use-cases/admin', () => ({
+      deleteSocialLink: mockDeleteSocialLink,
       getSocialLink: mockGetSocialLink,
       getSocialLinks: mock(async () => ({ socialLinks: [] })),
       updateSocialLink: mockUpdateSocialLink
@@ -144,6 +148,44 @@ describe('admin /system/social-links/:id', () => {
       })
 
       const res = await patch(app, SOCIAL_LINK_URL, body)
+
+      expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('DELETE /system/social-links/:id', () => {
+    it('should delete social link and return OK status', async () => {
+      const res = await del(app, SOCIAL_LINK_URL)
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockDeleteSocialLink).toHaveBeenCalledWith(testUuids.SOCIAL_LINK_1)
+
+      const data = await res.json()
+      expect(data).toEqual({ success: true })
+    })
+
+    it('should reject invalid id param', async () => {
+      const res = await del(app, '/api/v1/admin/system/social-links/not-a-uuid')
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockDeleteSocialLink).not.toHaveBeenCalled()
+    })
+
+    it('should return 403 when claims lack manage permission', async () => {
+      const viewOnlyApp = buildApp([Permission.ViewSystem])
+
+      const res = await del(viewOnlyApp, SOCIAL_LINK_URL)
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+      expect(mockDeleteSocialLink).not.toHaveBeenCalled()
+    })
+
+    it('should return error status when use case throws', async () => {
+      mockDeleteSocialLink.mockImplementation(async () => {
+        throw new Error('Social link not found')
+      })
+
+      const res = await del(app, SOCIAL_LINK_URL)
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
     })
