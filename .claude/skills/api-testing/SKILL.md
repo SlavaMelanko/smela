@@ -13,6 +13,8 @@ description:
 - **App**: `apps/api`
 - **Framework**: bun:test
 - **File pattern**: `*.test.ts` inside `__tests__` directories
+- **Runner**: `bun test src --parallel` — each file gets a fresh global (see
+  [Test Isolation](#test-isolation))
 - **Module mocking**: Use `ModuleMocker` from `@/__tests__` (see
   [patterns](references/mocking-patterns.md))
 - **Coverage target**: 60–80% (focus on important logic, not 100%)
@@ -75,6 +77,37 @@ endpoint tests through the mounted route:
 See `src/routes/admin/users/$id/__tests__/index.test.ts` for the canonical
 example.
 
+## Test Isolation
+
+`test` and `coverage` run with `--parallel`, which implies Bun's `--isolate`:
+every test file gets its own `JSGlobalObject`, so module mocks, `globalThis`
+mutations, and leaked handles cannot cross file boundaries.
+
+What this does and does not change:
+
+- **Across files**: isolation handles it. A `mock.module()` in one file can no
+  longer affect another, which is the bug `ModuleMocker` was written for.
+- **Within a file**: nothing changed. Mocks still persist from one `it()` to
+  the next, so `afterEach` cleanup is still required — see
+  [Cleanup](#cleanup).
+
+Keep using `ModuleMocker`. It is still the pattern in ~56 files, and removing
+it is tracked separately in
+[#32](https://github.com/SlavaMelanko/smela/issues/32); `--isolate` is still
+experimental in Bun, so the suite should not depend on it exclusively yet.
+
+Two practical consequences:
+
+- **Don't rely on cross-file state.** Anything a test needs must be set up in
+  that file. This was always true in principle; it is now enforced.
+- **Never log through a worker-backed transport in tests.**
+  `pino.transport()` spawns a thread per global and crashes under isolation.
+  `src/logging/logger.ts` uses `pino.destination({ sync: true })` when
+  `isTestEnv()` — keep it that way.
+
+Running a single file (`bun test path/to/file.test.ts`) skips `--parallel` and
+is fine for local iteration.
+
 ## Environment Setup
 
 - Use `apps/api/.env.test` for test-specific variables
@@ -111,6 +144,10 @@ afterEach(async () => {
   await moduleMocker.clear() // restore mocked modules
 })
 ```
+
+Still required under `--isolate`. Isolation is per-file, not per-test: a
+module mocked in one `it()` stays mocked for the rest of that file. The fresh
+global only arrives with the next file.
 
 Use `.mockClear()` on individual bun:test mocks when call history must reset
 between tests.
