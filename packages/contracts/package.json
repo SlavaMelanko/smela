@@ -25,6 +25,6 @@
   },
   "devDependencies": {
     "@smela/eslint": "workspace:*",
-    "@types/bun": "^1.3.14"
+    "@types/bun": "^1.4.2"
   }
 }
