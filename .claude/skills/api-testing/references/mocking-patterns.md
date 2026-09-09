@@ -4,11 +4,28 @@ Detailed patterns for ModuleMocker and mock setup in bun:test.
 
 ## Table of Contents
 
-1. [Variable Declaration Order](#variable-declaration-order)
-2. [Initial Mock Setup in beforeEach](#initial-mock-setup-in-beforeeach)
-3. [Module Mocking Rules](#module-mocking-rules)
-4. [Updating Mock Behavior](#updating-mock-behavior)
-5. [Complete Example](#complete-example)
+1. [Why ModuleMocker](#why-modulemocker)
+2. [Variable Declaration Order](#variable-declaration-order)
+3. [Initial Mock Setup in beforeEach](#initial-mock-setup-in-beforeeach)
+4. [Module Mocking Rules](#module-mocking-rules)
+5. [Updating Mock Behavior](#updating-mock-behavior)
+6. [Complete Example](#complete-example)
+
+## Why ModuleMocker
+
+`mock.module()` writes to a global module registry, and `mock.restore()` does
+not undo it ([oven-sh/bun#7823](https://github.com/oven-sh/bun/issues/7823),
+still open). `ModuleMocker` re-applies the original module in `afterEach`.
+
+The suite also runs with `--parallel`, so each file gets a fresh global and
+mocks can no longer leak _between files_. That covers the cross-file half of the
+problem, but not the within-file half: a module mocked in one `it()` stays
+mocked for the remainder of that file.
+
+So `ModuleMocker` is still the pattern here — keep using it, and keep the
+`afterEach` cleanup. Replacing it is tracked in
+[#32](https://github.com/SlavaMelanko/smela/issues/32) and is on hold while
+`--isolate` is experimental.
 
 ## Variable Declaration Order
 
@@ -175,12 +192,14 @@ describe('AuthService', () => {
     }))
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     mockUserRepo.findByEmail.mockClear()
     mockUserRepo.update.mockClear()
     mockAuthRepo.findByUserId.mockClear()
     mockVerifyPassword.mockClear()
     mockSignToken.mockClear()
+
+    await moduleMocker.clear()
   })
 
   it('should login successfully with valid credentials', async () => {

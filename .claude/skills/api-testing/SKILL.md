@@ -13,6 +13,8 @@ description:
 - **App**: `apps/api`
 - **Framework**: bun:test
 - **File pattern**: `*.test.ts` inside `__tests__` directories
+- **Runner**: `bun test src --parallel` — each file gets a fresh global (see
+  [Test Isolation](#test-isolation))
 - **Module mocking**: Use `ModuleMocker` from `@/__tests__` (see
   [patterns](references/mocking-patterns.md))
 - **Coverage target**: 60–80% (focus on important logic, not 100%)
@@ -24,8 +26,8 @@ Before writing custom test helpers, check existing utilities:
 
 - **`createTestApp(basePath, route, middleware[])`** - Creates test Hono app
   with error handler, logger, and optional middleware
-- **`withClaims(claims?)`** - Claims-injection middleware that stands in for
-  the real auth guard in route endpoint tests (pass role/permissions overrides)
+- **`withClaims(claims?)`** - Claims-injection middleware that stands in for the
+  real auth guard in route endpoint tests (pass role/permissions overrides)
 - **`ModuleMocker(import.meta.url)`** - Module mocking utility (see
   [mocking patterns](references/mocking-patterns.md))
 - **`post(app, url, body, headers)`** - POST request helper
@@ -53,27 +55,57 @@ const response = await post(app, '/api/v1/auth/signup', {
 
 ## Route Tests (`index.test.ts` convention)
 
-Route handlers are inlined in `index.ts` (Hono best practice), so they cannot
-be imported directly — never write direct handler unit tests. Instead, write
+Route handlers are inlined in `index.ts` (Hono best practice), so they cannot be
+imported directly — never write direct handler unit tests. Instead, write
 endpoint tests through the mounted route:
 
 - One `index.test.ts` per route `index.ts`, co-located in `__tests__/` — the
   test tree mirrors the route tree
-- Mount the top of the resource group (e.g. `adminUsersRoute`), never the
-  leaf, so `:id` params and nesting run the real chain
+- Mount the top of the resource group (e.g. `adminUsersRoute`), never the leaf,
+  so `:id` params and nesting run the real chain
 - Top-level describe is the mount context (e.g. `'admin /users'`), nested
   describes per route (e.g. `'GET /users/:id'`, `'PATCH /users/:id'`)
-- Replace the group-level auth guard with `withClaims(...)`; the guard itself
-  is covered in `middleware/auth/__tests__/`
+- Replace the group-level auth guard with `withClaims(...)`; the guard itself is
+  covered in `middleware/auth/__tests__/`
 - Per route, in chain order (~5–7 tests):
   1. Happy path — status, use case called with parsed input, response shape
-  2. Validation — one reject per input source (param/query/body), assert the
-     use case `not.toHaveBeenCalled()`; don't re-test `rules.ts` exhaustively
+  2. Validation — one reject per input source (param/query/body), assert the use
+     case `not.toHaveBeenCalled()`; don't re-test `rules.ts` exhaustively
   3. Permission — one 403 with claims missing the permission
   4. Error propagation — use case throws → status via `onError`
 
 See `src/routes/admin/users/$id/__tests__/index.test.ts` for the canonical
 example.
+
+## Test Isolation
+
+`test` and `coverage` run with `--parallel`, which implies Bun's `--isolate`:
+every test file gets its own `JSGlobalObject`, so module mocks, `globalThis`
+mutations, and leaked handles cannot cross file boundaries.
+
+What this does and does not change:
+
+- **Across files**: isolation handles it. A `mock.module()` in one file can no
+  longer affect another, which is the bug `ModuleMocker` was written for.
+- **Within a file**: nothing changed. Mocks still persist from one `it()` to the
+  next, so `afterEach` cleanup is still required — see [Cleanup](#cleanup).
+
+Keep using `ModuleMocker`. It is still the pattern in ~56 files, and removing it
+is tracked separately in [#32](https://github.com/SlavaMelanko/smela/issues/32);
+`--isolate` is still experimental in Bun, so the suite should not depend on it
+exclusively yet.
+
+Two practical consequences:
+
+- **Don't rely on cross-file state.** Anything a test needs must be set up in
+  that file. This was always true in principle; it is now enforced.
+- **Never log through a worker-backed transport in tests.** `pino.transport()`
+  spawns a thread per global and crashes under isolation.
+  `src/logging/logger.ts` uses `pino.destination({ sync: true })` when
+  `isTestEnv()` — keep it that way.
+
+Running a single file (`bun test path/to/file.test.ts`) skips `--parallel` and
+is fine for local iteration.
 
 ## Environment Setup
 
@@ -111,6 +143,10 @@ afterEach(async () => {
   await moduleMocker.clear() // restore mocked modules
 })
 ```
+
+Still required under `--isolate`. Isolation is per-file, not per-test: a module
+mocked in one `it()` stays mocked for the rest of that file. The fresh global
+only arrives with the next file.
 
 Use `.mockClear()` on individual bun:test mocks when call history must reset
 between tests.
