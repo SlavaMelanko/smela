@@ -5,7 +5,11 @@ import type { AppContext } from '@/context'
 import { requirePermission, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-import { getSocialLink, updateSocialLink } from '@/use-cases/admin'
+import {
+  deleteSocialLink,
+  getSocialLink,
+  updateSocialLink
+} from '@/use-cases/admin'
 
 import { socialLinkParamsSchema, updateSocialLinkBodySchema } from './schema'
 
@@ -34,6 +38,19 @@ adminSocialLinkByIdRoute.patch(
     const body = c.req.valid('json')
 
     const result = await updateSocialLink(id, body)
+
+    return c.json(result, HttpStatus.OK)
+  }
+)
+
+adminSocialLinkByIdRoute.delete(
+  '/',
+  validateParams(socialLinkParamsSchema),
+  requirePermission(Permission.ManageSystem),
+  async c => {
+    const { id } = c.req.valid('param')
+
+    const result = await deleteSocialLink(id)
 
     return c.json(result, HttpStatus.OK)
   }

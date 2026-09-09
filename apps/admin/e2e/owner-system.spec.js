@@ -1,4 +1,10 @@
 import { logOut } from '@smela/e2e/actions'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { HttpStatus } from '@smela/ui/lib/net'
+import {
+  ADMIN_SOCIAL_LINK_PATH,
+  ADMIN_SOCIAL_LINKS_PATH
+} from '@smela/ui/services/backend/paths'
 
 import { expect, test } from './config/fixtures'
 
@@ -145,6 +151,114 @@ test.describe('Owner: System', () => {
     await nameInput.fill('LinkedIn')
     await page.getByRole('button', { name: t.save }).click()
     await expect(page.getByText(t.changesSaved)).toBeVisible()
+
+    await logOut(page, t)
+  })
+
+  test('cancelling the delete dialog keeps the social link', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(ownerCredentials)
+
+    await page.getByRole('button', { name: t.sidebar.system }).click()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
+
+    // Matches the social link seeded by apps/api/src/data/scripts/seed.ts
+    await page.getByRole('row', { name: /GitHub/ }).click()
+
+    const { pathname } = new URL(page.url())
+
+    // The danger zone trigger and the dialog confirm share the 'Delete' label,
+    // so clicks made while the dialog is open must be scoped to it
+    await page.getByRole('button', { name: t.socialLink.delete.cta }).click()
+
+    const dialog = page.getByRole('dialog')
+
+    await expect(
+      dialog.getByText(
+        t.socialLink.delete.description.replace('{{name}}', 'GitHub')
+      )
+    ).toBeVisible()
+
+    await dialog.getByRole('button', { name: t.cancel }).click()
+
+    await expect(dialog).not.toBeVisible()
+
+    // Dismissing the dialog must neither delete nor navigate away
+    await expect(page).toHaveURL(pathname)
+    await expect(page.getByRole('heading', { name: 'GitHub' })).toBeVisible()
+
+    await logOut(page, t)
+  })
+
+  // Deletion is irreversible — there is no create endpoint yet, so this test
+  // consumes the only seeded link no other test depends on. Re-run the seed
+  // (bun run db:init) to restore it before running this spec again
+  test('deletes a social link from the danger zone', async ({
+    page,
+    t,
+    login
+  }) => {
+    await login(ownerCredentials)
+
+    await page.getByRole('button', { name: t.sidebar.system }).click()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
+
+    const socialLinkRow = page.getByRole('row', { name: /^X/ })
+
+    await expect(socialLinkRow).toBeVisible()
+
+    // The detail route carries the id needed to watch the DELETE call
+    const detailPromise = waitForApiCall(page, {
+      path: ADMIN_SOCIAL_LINKS_PATH,
+      method: 'GET',
+      status: HttpStatus.OK,
+      validateResponse: body => !!body?.socialLink?.id
+    })
+
+    await socialLinkRow.click()
+    const { body } = await detailPromise
+
+    const socialLinkId = body.socialLink.id
+
+    await page.getByRole('button', { name: t.socialLink.delete.cta }).click()
+
+    const apiPromises = waitForApiCalls(page, [
+      {
+        path: ADMIN_SOCIAL_LINK_PATH.replace(':id', socialLinkId),
+        method: 'DELETE',
+        status: HttpStatus.OK
+      },
+      {
+        path: ADMIN_SOCIAL_LINKS_PATH,
+        method: 'GET',
+        status: HttpStatus.OK
+      }
+    ])
+
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: t.socialLink.delete.cta })
+      .click()
+
+    await apiPromises
+
+    await expect(page.getByText(t.socialLink.delete.success)).toBeVisible()
+
+    // The detail route is gone, so the flow must land back on the list
+    await expect(page).toHaveURL('/system')
+
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
+
+    await expect(socialLinkRow).not.toBeVisible()
+
+    // A hard reload proves the row is gone from the server, not just the cache
+    await page.reload()
+    await page.getByRole('tab', { name: t.socialLink.label }).click()
+
+    await expect(socialLinkRow).not.toBeVisible()
 
     await logOut(page, t)
   })

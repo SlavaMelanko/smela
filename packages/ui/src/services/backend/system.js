@@ -38,5 +38,11 @@ export const systemApi = {
     const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { id })
 
     return apiClient.patch(path, data)
+  },
+
+  deleteSocialLink(id) {
+    const path = buildPath(ADMIN_SOCIAL_LINK_PATH, { id })
+
+    return apiClient.delete(path)
   }
 }

@@ -78,6 +78,25 @@ export const useUpdateSocialLink = id => {
   })
 }
 
+export const useRemoveSocialLink = id => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => systemApi.deleteSocialLink(id),
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: systemKeys.socialLink(id),
+        exact: true
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: systemKeys.socialLinks(),
+        exact: true
+      })
+    }
+  })
+}
+
 export const useEmailSenderProfile = (profile, options = {}) => {
   return useQuery({
     queryKey: systemKeys.emailSenderProfile(profile),

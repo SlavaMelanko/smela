@@ -363,6 +363,12 @@
   },
   "signUp": "Sign up",
   "socialLink": {
+    "delete": {
+      "cta": "Delete",
+      "description": "Are you sure you want to delete {{name}}?",
+      "success": "Social link deleted.",
+      "title": "Delete social link"
+    },
     "empty": "No social links yet.",
     "label": "Social links"
   },

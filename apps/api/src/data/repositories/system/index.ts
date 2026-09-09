@@ -1,4 +1,8 @@
-import { updateEmailSenderProfile, updateSocialLink } from './mutations'
+import {
+  deleteSocialLink,
+  updateEmailSenderProfile,
+  updateSocialLink
+} from './mutations'
 import {
   findEmailSenderProfile,
   findSocialLink,
@@ -9,6 +13,7 @@ import {
 export * from './types'
 
 export const systemRepo = {
+  deleteSocialLink,
   findEmailSenderProfile,
   findSocialLink,
   listEmailSenderProfiles,
