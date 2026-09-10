@@ -5,6 +5,11 @@ on:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'packages/ui/**'
+      - 'packages/i18n/**'
+      - 'packages/contracts/**'
+      - 'bun.lock'
+      - '.github/workflows/web-bundle-analysis.yml'
 
 env:
   HUSKY: 0
