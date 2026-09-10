@@ -11,6 +11,7 @@ import getContent from '../content'
 import { getThemeStyles } from '../styles'
 import { Signature } from './components'
 import BaseEmail from './components/base-email'
+import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
@@ -68,7 +69,8 @@ UserInviteEmail.PreviewProps = {
   },
   content: getContent('en').userInvite,
   styles: getThemeStyles('dark'),
-  company: { name: 'SMELA' }
+  company: { name: 'SMELA' },
+  socialLinks: previewSocialLinks
 } as Props
 
 export default UserInviteEmail

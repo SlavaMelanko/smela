@@ -35,12 +35,12 @@ export const get = (theme: Theme = 'light') => ({
   },
 
   icon: {
+    display: 'inline-block',
     width: '24px',
     height: '24px',
-    stroke: color[theme].text.tertiary,
+    color: color[theme].link,
+    stroke: color[theme].link,
     strokeWidth: '1.5',
-    fill: 'none',
-    transition: 'stroke 0.2s ease-in-out',
-    cursor: 'pointer'
+    fill: 'none'
   }
 })

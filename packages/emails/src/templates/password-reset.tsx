@@ -11,6 +11,7 @@ import getContent from '../content'
 import { getThemeStyles } from '../styles'
 import { Signature } from './components'
 import BaseEmail from './components/base-email'
+import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
@@ -66,7 +67,8 @@ PasswordResetEmail.PreviewProps = {
   },
   content: getContent('en').passwordReset,
   styles: getThemeStyles('light'),
-  company: { name: 'SMELA' }
+  company: { name: 'SMELA' },
+  socialLinks: previewSocialLinks
 } as Props
 
 export default PasswordResetEmail
