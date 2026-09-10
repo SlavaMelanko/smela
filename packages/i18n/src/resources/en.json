@@ -84,7 +84,7 @@
   },
   "emailSenderProfile": {
     "empty": "No email sender profiles yet.",
-    "label": "Email sender profiles"
+    "label": "Sender profiles"
   },
   "error": {
     "forbidden": {

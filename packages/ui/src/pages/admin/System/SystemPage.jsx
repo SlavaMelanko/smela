@@ -5,11 +5,11 @@ import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
 import { Link, Mail } from 'lucide-react'
 
-import { EmailSenderProfilesTab } from './EmailSenderProfilesTab'
-import { SocialLinksTab } from './SocialLinksTab'
+import { EmailTab } from './Email'
+import { SocialLinksTab } from './SocialLinks'
 
 const SystemTab = {
-  EMAIL_SENDER_PROFILES: 'email-sender-profiles',
+  EMAIL: 'email',
   SOCIAL_LINKS: 'social-links'
 }
 
@@ -17,14 +17,14 @@ export const SystemPage = () => {
   const { t } = useLocale()
   const [activeTab, setActiveTab] = useHashTab(
     Object.values(SystemTab),
-    SystemTab.EMAIL_SENDER_PROFILES
+    SystemTab.EMAIL
   )
 
   const tabs = [
     {
-      value: SystemTab.EMAIL_SENDER_PROFILES,
+      value: SystemTab.EMAIL,
       icon: Mail,
-      label: () => t('emailSenderProfile.label')
+      label: () => t('email.label')
     },
     {
       value: SystemTab.SOCIAL_LINKS,
@@ -41,8 +41,8 @@ export const SystemPage = () => {
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={tabs} />
-        <TabsContent value={SystemTab.EMAIL_SENDER_PROFILES}>
-          <EmailSenderProfilesTab />
+        <TabsContent value={SystemTab.EMAIL}>
+          <EmailTab />
         </TabsContent>
         <TabsContent value={SystemTab.SOCIAL_LINKS}>
           <SocialLinksTab />

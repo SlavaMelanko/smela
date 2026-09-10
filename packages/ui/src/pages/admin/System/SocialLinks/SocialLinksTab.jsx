@@ -14,7 +14,7 @@ import { useNavigate } from '@ui/hooks/useRouter'
 import { useSocialLinks } from '@ui/hooks/useSystem'
 import { Link } from 'lucide-react'
 
-import { getSocialLinksColumns } from './socialLinksColumns'
+import { getColumns } from './columns'
 
 const SocialLinksRoot = ({ children }) => (
   <div className='flex flex-col gap-4'>{children}</div>
@@ -30,7 +30,7 @@ export const SocialLinksTab = () => {
   const { openCreateSocialLinkDialog } = useCreateSocialLink()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
 
-  const columns = getSocialLinksColumns(t, formatDate)
+  const columns = getColumns(t, formatDate)
 
   const viewSocialLink = socialLink =>
     navigate(`/system/social-links/${socialLink.id}`, {

@@ -14,15 +14,15 @@ import { Mail } from 'lucide-react'
 
 import { getColumns } from './columns'
 
-const EmailSenderProfilesRoot = ({ children }) => (
+const Root = ({ children }) => (
   <div className='flex flex-col gap-4'>{children}</div>
 )
 
-const EmailSenderProfilesToolbar = ({ children }) => (
+const Toolbar = ({ children }) => (
   <div className='flex min-h-11 justify-end gap-4'>{children}</div>
 )
 
-export const EmailSenderProfilesTab = () => {
+export const EmailSenderProfiles = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
   const { senderProfiles, isPending, isError, error, refetch } =
@@ -56,19 +56,19 @@ export const EmailSenderProfilesTab = () => {
   }
 
   return (
-    <EmailSenderProfilesRoot>
-      <EmailSenderProfilesToolbar>
+    <Root>
+      <Toolbar>
         <ColumnVisibilityDropdown
           config={config}
           createLabel={id => t(`table.emailSenderProfiles.${id}`)}
         />
-      </EmailSenderProfilesToolbar>
+      </Toolbar>
 
       <Table
         config={config}
         onRowClick={viewEmailSenderProfile}
         contextMenu={contextMenu}
       />
-    </EmailSenderProfilesRoot>
+    </Root>
   )
 }

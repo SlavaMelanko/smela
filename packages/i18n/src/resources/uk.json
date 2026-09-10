@@ -84,7 +84,7 @@
   },
   "emailSenderProfile": {
     "empty": "Профілів відправника email ще немає.",
-    "label": "Профілі відправника email"
+    "label": "Профілі відправника"
   },
   "error": {
     "forbidden": {
