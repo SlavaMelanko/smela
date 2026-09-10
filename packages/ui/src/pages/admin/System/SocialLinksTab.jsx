@@ -1,4 +1,5 @@
 import { AddButton } from '@ui/components/buttons'
+import { CreateSocialLinkDialog } from '@ui/components/dialogs'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
@@ -9,6 +10,7 @@ import {
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
 import { useLocale } from '@ui/hooks/useLocale'
+import { useModal } from '@ui/hooks/useModal'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useSocialLinks } from '@ui/hooks/useSystem'
 import { Link } from 'lucide-react'
@@ -26,6 +28,7 @@ const SocialLinksToolbar = ({ children }) => (
 export const SocialLinksTab = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
+  const { openModal } = useModal()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
 
   const columns = getSocialLinksColumns(t, formatDate)
@@ -35,8 +38,17 @@ export const SocialLinksTab = () => {
       state: { socialLink }
     })
 
-  // TODO: open the create dialog once the API exposes a create endpoint
-  const createSocialLink = () => {}
+  const createSocialLink = () => {
+    const close = openModal({
+      children: (
+        <CreateSocialLinkDialog
+          onClose={() => close()}
+          // TODO: submit to the API once it exposes a create endpoint
+          onSubmit={() => close()}
+        />
+      )
+    })
+  }
 
   const contextMenu = [createOpenItem(t, viewSocialLink, Link)]
 

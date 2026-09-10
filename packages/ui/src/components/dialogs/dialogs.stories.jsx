@@ -5,6 +5,7 @@ import { useTeamMemberDefaultPermissions } from '@ui/hooks/useTeam'
 import {
   CreateAdminDialog,
   CreateMemberDialog,
+  CreateSocialLinkDialog,
   CreateTeamDialog,
   PricingSliderDialog,
   RemoveTeamMemberDialog
@@ -48,6 +49,15 @@ export const CreateTeam = {
   render: ({ size }) => (
     <DialogWrapper size={size}>
       <CreateTeamDialog onClose={noop} onSubmit={noop} />
+    </DialogWrapper>
+  )
+}
+
+export const CreateSocialLink = {
+  args: { size: 'sm' },
+  render: ({ size }) => (
+    <DialogWrapper size={size}>
+      <CreateSocialLinkDialog onClose={noop} onSubmit={noop} />
     </DialogWrapper>
   )
 }
