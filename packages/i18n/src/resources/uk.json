@@ -1,6 +1,7 @@
 {
   "add": "Додати",
   "alreadyHaveAccount": "Вже свій?",
+  "appearance": "Вигляд",
   "back": "Назад",
   "backend": {
     "auth/already-verified": "Невірний запит. Спробуйте увійти в обліковий запис.",

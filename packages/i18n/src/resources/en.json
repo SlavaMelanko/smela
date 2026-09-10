@@ -1,6 +1,7 @@
 {
   "add": "Add",
   "alreadyHaveAccount": "Already have an account?",
+  "appearance": "Appearance",
   "back": "Back",
   "backend": {
     "auth/already-verified": "Invalid request. Please try logging in.",

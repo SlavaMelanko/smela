@@ -1,8 +1,9 @@
-import { Key, Lock, User, Users } from 'lucide-react'
+import { Key, Lock, Palette, User, Users } from 'lucide-react'
 
 export const ProfileTab = {
   PROFILE: 'profile',
   GENERAL: 'general',
+  APPEARANCE: 'appearance',
   SECURITY: 'security',
   MEMBERSHIP: 'membership',
   PERMISSIONS: 'permissions'
@@ -59,6 +60,11 @@ export const getProfileTabs = t => [
     value: ProfileTab.GENERAL,
     icon: User,
     label: () => t('general')
+  },
+  {
+    value: ProfileTab.APPEARANCE,
+    icon: Palette,
+    label: () => t('appearance')
   },
   {
     value: ProfileTab.SECURITY,

@@ -12,6 +12,7 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
 
+import { AppearanceTab } from './AppearanceTab'
 import { ProfileTab } from './ProfileTab'
 import { SecurityTab } from './SecurityTab'
 
@@ -39,6 +40,9 @@ export const ProfilePage = () => {
         <TabsLine tabs={getProfileTabs(t)} />
         <TabsContent value={Tab.GENERAL}>
           <ProfileTab user={me} />
+        </TabsContent>
+        <TabsContent value={Tab.APPEARANCE}>
+          <AppearanceTab />
         </TabsContent>
         <TabsContent value={Tab.SECURITY}>
           <SecurityTab />
