@@ -3,21 +3,21 @@ import { datePreset } from '@ui/lib/format/date'
 import { Calendar } from 'lucide-react'
 
 import {
-  SettingsLabel,
-  SettingsOption,
-  SettingsOptions,
-  SettingsSection
-} from '../Settings'
+  AppearanceLabel,
+  AppearanceOption,
+  AppearanceOptions,
+  AppearanceSection
+} from '../Appearance'
 
 export const DateFormat = ({ value, onChange }) => {
   const { t, formatDate } = useLocale()
 
   return (
-    <SettingsSection>
-      <SettingsLabel icon={Calendar}>{t('format.date.name')}</SettingsLabel>
-      <SettingsOptions>
+    <AppearanceSection>
+      <AppearanceLabel icon={Calendar}>{t('format.date.name')}</AppearanceLabel>
+      <AppearanceOptions>
         {Object.entries(datePreset).map(([key, options]) => (
-          <SettingsOption
+          <AppearanceOption
             key={key}
             selected={value === key}
             onClick={() => onChange(key)}
@@ -25,7 +25,7 @@ export const DateFormat = ({ value, onChange }) => {
             description={formatDate(new Date(), options)}
           />
         ))}
-      </SettingsOptions>
-    </SettingsSection>
+      </AppearanceOptions>
+    </AppearanceSection>
   )
 }

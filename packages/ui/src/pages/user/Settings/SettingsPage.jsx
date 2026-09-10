@@ -1,6 +1,6 @@
+import { DateTimeFormat } from '@ui/components/appearance'
 import { PageContent } from '@ui/components/PageContent'
 import { SettingsPageHeader } from '@ui/components/PageHeader'
-import { DateTimeSettings } from '@ui/components/settings'
 import { Tabs, TabsContent, TabsLine } from '@ui/components/ui'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
@@ -34,7 +34,7 @@ export const SettingsPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={tabs} />
         <TabsContent value={SettingsTab.GENERAL}>
-          <DateTimeSettings />
+          <DateTimeFormat />
         </TabsContent>
       </Tabs>
     </PageContent>

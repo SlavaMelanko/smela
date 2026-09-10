@@ -2,11 +2,11 @@ import { cn } from '@ui/lib/utils'
 import { Check } from 'lucide-react'
 import { useId } from 'react'
 
-export const SettingsSection = ({ children }) => (
+export const AppearanceSection = ({ children }) => (
   <section className='flex flex-col gap-4'>{children}</section>
 )
 
-export const SettingsLabel = ({ icon: Icon, children }) => (
+export const AppearanceLabel = ({ icon: Icon, children }) => (
   <div className='flex items-center gap-2'>
     <Icon className='size-4 text-muted-foreground' />
     <span className='text-base leading-normal text-muted-foreground'>
@@ -15,7 +15,7 @@ export const SettingsLabel = ({ icon: Icon, children }) => (
   </div>
 )
 
-export const SettingsOptions = ({
+export const AppearanceOptions = ({
   children,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledby
@@ -30,7 +30,7 @@ export const SettingsOptions = ({
   </div>
 )
 
-export const SettingsOption = ({ selected, onClick, label, description }) => {
+export const AppearanceOption = ({ selected, onClick, label, description }) => {
   const id = useId()
   const descId = `${id}-desc`
 

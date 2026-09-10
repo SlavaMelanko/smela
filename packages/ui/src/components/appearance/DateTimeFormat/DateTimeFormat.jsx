@@ -3,7 +3,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { DateFormat } from './DateFormat'
 import { TimeFormat } from './TimeFormat'
 
-export const DateTimeSettings = () => {
+export const DateTimeFormat = () => {
   const { formatPreferences, changeFormatPreference } = useLocale()
 
   return (
