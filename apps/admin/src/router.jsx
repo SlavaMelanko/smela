@@ -3,7 +3,6 @@ import { adminActiveStatuses, Role } from '@smela/ui/lib/types'
 import {
   DashboardPage,
   EmailSenderProfilePage,
-  SettingsPage as AdminSettingsPage,
   SocialLinkPage,
   SystemPage,
   TeamPage,
@@ -125,8 +124,7 @@ export const router = createBrowserRouter([
           }
         ]
       },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'settings', element: <AdminSettingsPage /> }
+      { path: 'profile', element: <ProfilePage /> }
     ]
   },
   {
