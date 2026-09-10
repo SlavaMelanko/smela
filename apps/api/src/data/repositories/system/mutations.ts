@@ -6,6 +6,7 @@ import { AppError, ErrorCode } from '@/errors'
 
 import type { Database } from '../../clients'
 import type {
+  CreateSocialLinkInput,
   EmailSenderProfileRecord,
   SocialLinkRecord,
   UpdateEmailSenderProfileInput,
@@ -36,6 +37,24 @@ export const updateEmailSenderProfile = async (
   }
 
   return senderProfile
+}
+
+export const createSocialLink = async (
+  input: CreateSocialLinkInput,
+  tx?: Database
+): Promise<SocialLinkRecord> => {
+  const executor = tx || db
+
+  const [socialLink] = await executor
+    .insert(socialLinksTable)
+    .values(input)
+    .returning()
+
+  if (!socialLink) {
+    throw new AppError(ErrorCode.InternalError, 'Failed to create social link')
+  }
+
+  return socialLink
 }
 
 export const updateSocialLink = async (

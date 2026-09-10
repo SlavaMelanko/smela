@@ -59,6 +59,20 @@ export const useSocialLink = (id, options = {}) => {
   })
 }
 
+export const useCreateSocialLink = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: data => systemApi.createSocialLink(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: systemKeys.socialLinks(),
+        exact: true
+      })
+    }
+  })
+}
+
 export const useUpdateSocialLink = id => {
   const queryClient = useQueryClient()
 

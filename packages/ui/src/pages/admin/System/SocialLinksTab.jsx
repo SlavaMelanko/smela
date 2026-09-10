@@ -1,5 +1,4 @@
 import { AddButton } from '@ui/components/buttons'
-import { CreateSocialLinkDialog } from '@ui/components/dialogs'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
@@ -9,8 +8,8 @@ import {
   useTableConfig
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
+import { useCreateSocialLink } from '@ui/hooks/useCreateSocialLink'
 import { useLocale } from '@ui/hooks/useLocale'
-import { useModal } from '@ui/hooks/useModal'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useSocialLinks } from '@ui/hooks/useSystem'
 import { Link } from 'lucide-react'
@@ -28,7 +27,7 @@ const SocialLinksToolbar = ({ children }) => (
 export const SocialLinksTab = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
-  const { openModal } = useModal()
+  const { openCreateSocialLinkDialog } = useCreateSocialLink()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
 
   const columns = getSocialLinksColumns(t, formatDate)
@@ -37,18 +36,6 @@ export const SocialLinksTab = () => {
     navigate(`/system/social-links/${socialLink.id}`, {
       state: { socialLink }
     })
-
-  const createSocialLink = () => {
-    const close = openModal({
-      children: (
-        <CreateSocialLinkDialog
-          onClose={() => close()}
-          // TODO: submit to the API once it exposes a create endpoint
-          onSubmit={() => close()}
-        />
-      )
-    })
-  }
 
   const contextMenu = [createOpenItem(t, viewSocialLink, Link)]
 
@@ -71,7 +58,7 @@ export const SocialLinksTab = () => {
       <EmptyState text={t('socialLink.empty')}>
         <AddButton
           label={t('socialLink.add.cta')}
-          onClick={createSocialLink}
+          onClick={openCreateSocialLinkDialog}
           hideTextOnMobile={false}
         />
       </EmptyState>
@@ -85,7 +72,10 @@ export const SocialLinksTab = () => {
           config={config}
           createLabel={id => t(`table.socialLinks.${id}`)}
         />
-        <AddButton label={t('socialLink.add.cta')} onClick={createSocialLink} />
+        <AddButton
+          label={t('socialLink.add.cta')}
+          onClick={openCreateSocialLinkDialog}
+        />
       </SocialLinksToolbar>
 
       <Table
