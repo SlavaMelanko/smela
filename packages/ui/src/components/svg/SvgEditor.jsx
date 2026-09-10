@@ -21,7 +21,6 @@ export const SvgEditor = ({
   onChange,
   previewSizes = [16, 24, 32, 48],
   stacked = false,
-  rows = 7,
   className,
   error,
   ...props
@@ -30,7 +29,7 @@ export const SvgEditor = ({
     className={cn('grid w-full gap-3', !stacked && 'md:grid-cols-2', className)}
   >
     <Textarea
-      rows={rows}
+      rows={7}
       className='font-mono text-xs'
       value={value}
       onChange={onChange}
