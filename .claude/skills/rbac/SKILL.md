@@ -174,6 +174,6 @@ do not rely on instant revocation.
 
 - **Auth routes** (`/api/v1/auth/*`, `/login`, `/signup`, etc.) — public, no
   JWT, no user context
-- **`profile` and `settings` routes** — personal preferences, no resource
-  ownership, no permission needed
+- **`profile` route** — personal preferences, no resource ownership, no
+  permission needed
 - **Error pages** — unguarded by design
