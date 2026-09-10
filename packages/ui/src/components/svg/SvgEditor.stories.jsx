@@ -47,3 +47,16 @@ const InvalidStory = () => {
 export const Invalid = {
   render: () => <InvalidStory />
 }
+
+// Narrow containers, such as dialogs, stack the editor above the preview
+const StackedStory = () => {
+  const [value, setValue] = useState(facebookSvg)
+
+  return (
+    <SvgEditor stacked value={value} onChange={e => setValue(e.target.value)} />
+  )
+}
+
+export const Stacked = {
+  render: () => <StackedStory />
+}

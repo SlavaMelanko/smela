@@ -8,6 +8,7 @@ import {
   createTestApp,
   get,
   ModuleMocker,
+  post,
   testUuids,
   withClaims
 } from '@/__tests__'
@@ -25,6 +26,13 @@ describe('admin /system/social-links', () => {
 
   let mockSocialLinks: SocialLinkRecord[]
   let mockGetSocialLinks: any
+  let mockCreateSocialLink: any
+
+  const validBody = {
+    name: 'Mastodon',
+    url: 'https://mastodon.social/@smela',
+    svg: '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z" /></svg>'
+  }
 
   const buildApp = (permissions: string[]) =>
     createTestApp('/api/v1/admin', adminSystemRoute, [
@@ -51,11 +59,16 @@ describe('admin /system/social-links', () => {
       socialLinks: mockSocialLinks
     }))
 
-    await moduleMocker.mock('@/use-cases/admin', () => ({
-      getSocialLinks: mockGetSocialLinks
+    mockCreateSocialLink = mock(async () => ({
+      socialLink: { ...mockSocialLinks[0], ...validBody }
     }))
 
-    app = buildApp([Permission.ViewSystem])
+    await moduleMocker.mock('@/use-cases/admin', () => ({
+      getSocialLinks: mockGetSocialLinks,
+      createSocialLink: mockCreateSocialLink
+    }))
+
+    app = buildApp([Permission.ViewSystem, Permission.ManageSystem])
   })
 
   afterEach(async () => {
@@ -78,7 +91,7 @@ describe('admin /system/social-links', () => {
     })
 
     it('should return 403 when claims lack view permission', async () => {
-      const noPermissionApp = buildApp([])
+      const noPermissionApp = buildApp([Permission.ManageSystem])
 
       const res = await get(noPermissionApp, SOCIAL_LINKS_URL)
 
@@ -92,6 +105,59 @@ describe('admin /system/social-links', () => {
       })
 
       const res = await get(app, SOCIAL_LINKS_URL)
+
+      expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('POST /system/social-links', () => {
+    it('should create a social link with CREATED status', async () => {
+      const res = await post(app, SOCIAL_LINKS_URL, validBody)
+
+      expect(res.status).toBe(HttpStatus.CREATED)
+      expect(mockCreateSocialLink).toHaveBeenCalledWith(validBody)
+
+      const data = await res.json()
+      expect(data.socialLink).toMatchObject({
+        name: validBody.name,
+        url: validBody.url
+      })
+    })
+
+    it('should reject a body with an invalid url', async () => {
+      const res = await post(app, SOCIAL_LINKS_URL, {
+        ...validBody,
+        url: 'not-a-url'
+      })
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockCreateSocialLink).not.toHaveBeenCalled()
+    })
+
+    it('should reject a body missing the svg', async () => {
+      const { name, url } = validBody
+
+      const res = await post(app, SOCIAL_LINKS_URL, { name, url })
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockCreateSocialLink).not.toHaveBeenCalled()
+    })
+
+    it('should return 403 when claims lack manage permission', async () => {
+      const noPermissionApp = buildApp([Permission.ViewSystem])
+
+      const res = await post(noPermissionApp, SOCIAL_LINKS_URL, validBody)
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+      expect(mockCreateSocialLink).not.toHaveBeenCalled()
+    })
+
+    it('should return error status when use case throws', async () => {
+      mockCreateSocialLink.mockImplementation(async () => {
+        throw new Error('Database unavailable')
+      })
+
+      const res = await post(app, SOCIAL_LINKS_URL, validBody)
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
     })

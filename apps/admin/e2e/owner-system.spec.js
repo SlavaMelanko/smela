@@ -1,5 +1,5 @@
 import { logOut } from '@smela/e2e/actions'
-import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import { waitForApiCall } from '@smela/e2e/api'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
   ADMIN_SOCIAL_LINK_PATH,
@@ -15,6 +15,13 @@ const ownerCredentials = {
 
 // Matches profiles seeded by apps/api/src/data/scripts/seed.ts
 const seededEmailSenderProfiles = ['System', 'Support', 'Security']
+
+// Unique per run so a crashed run leaves no name collision behind
+const newSocialLink = {
+  name: `Mastodon ${Date.now()}`,
+  url: 'https://mastodon.social/@smela',
+  svg: '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z" /></svg>'
+}
 
 test.describe('Owner: System', () => {
   test('shows page header and seeded email sender profiles', async ({
@@ -193,10 +200,9 @@ test.describe('Owner: System', () => {
     await logOut(page, t)
   })
 
-  // Deletion is irreversible — there is no create endpoint yet, so this test
-  // consumes the only seeded link no other test depends on. Re-run the seed
-  // (bun run db:init) to restore it before running this spec again
-  test('deletes a social link from the danger zone', async ({
+  // Creates its own link so the run never consumes a seeded one, leaving the
+  // spec safe to re-run without re-seeding
+  test('creates a social link and deletes it from the danger zone', async ({
     page,
     t,
     login
@@ -206,44 +212,56 @@ test.describe('Owner: System', () => {
     await page.getByRole('button', { name: t.sidebar.system }).click()
     await page.getByRole('tab', { name: t.socialLink.label }).click()
 
-    const socialLinkRow = page.getByRole('row', { name: /^X/ })
+    await page.getByRole('button', { name: t.socialLink.add.cta }).click()
+
+    const dialog = page.getByRole('dialog')
+
+    await dialog
+      .getByRole('textbox', { name: t.name.label })
+      .fill(newSocialLink.name)
+
+    await dialog
+      .getByRole('textbox', { name: t.url.label })
+      .fill(newSocialLink.url)
+
+    await dialog
+      .getByRole('textbox', { name: t.svg.label })
+      .fill(newSocialLink.svg)
+
+    const createPromise = waitForApiCall(page, {
+      path: ADMIN_SOCIAL_LINKS_PATH,
+      method: 'POST',
+      status: HttpStatus.CREATED
+    })
+
+    await dialog.getByRole('button', { name: t.socialLink.add.cta }).click()
+
+    await createPromise
+
+    await expect(page.getByText(t.socialLink.add.success)).toBeVisible()
+
+    const socialLinkRow = page.getByRole('row', { name: newSocialLink.name })
 
     await expect(socialLinkRow).toBeVisible()
 
-    // The detail route carries the id needed to watch the DELETE call
-    const detailPromise = waitForApiCall(page, {
-      path: ADMIN_SOCIAL_LINKS_PATH,
-      method: 'GET',
-      status: HttpStatus.OK,
-      validateResponse: body => !!body?.socialLink?.id
-    })
-
     await socialLinkRow.click()
-    const { body } = await detailPromise
 
-    const socialLinkId = body.socialLink.id
+    // The detail route is keyed by id, which the delete call needs
+    await expect(page).toHaveURL(/\/system\/social-links\/[\w-]+$/)
+
+    const socialLinkId = new URL(page.url()).pathname.split('/').pop()
 
     await page.getByRole('button', { name: t.socialLink.delete.cta }).click()
 
-    const apiPromises = waitForApiCalls(page, [
-      {
-        path: ADMIN_SOCIAL_LINK_PATH.replace(':id', socialLinkId),
-        method: 'DELETE',
-        status: HttpStatus.OK
-      },
-      {
-        path: ADMIN_SOCIAL_LINKS_PATH,
-        method: 'GET',
-        status: HttpStatus.OK
-      }
-    ])
+    const deletePromise = waitForApiCall(page, {
+      path: ADMIN_SOCIAL_LINK_PATH.replace(':id', socialLinkId),
+      method: 'DELETE',
+      status: HttpStatus.OK
+    })
 
-    await page
-      .getByRole('dialog')
-      .getByRole('button', { name: t.socialLink.delete.cta })
-      .click()
+    await dialog.getByRole('button', { name: t.socialLink.delete.cta }).click()
 
-    await apiPromises
+    await deletePromise
 
     await expect(page.getByText(t.socialLink.delete.success)).toBeVisible()
 

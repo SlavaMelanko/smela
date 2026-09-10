@@ -1,3 +1,4 @@
+import { AddButton } from '@ui/components/buttons'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
@@ -7,6 +8,7 @@ import {
   useTableConfig
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
+import { useCreateSocialLink } from '@ui/hooks/useCreateSocialLink'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { useSocialLinks } from '@ui/hooks/useSystem'
@@ -25,6 +27,7 @@ const SocialLinksToolbar = ({ children }) => (
 export const SocialLinksTab = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
+  const { openCreateSocialLinkDialog } = useCreateSocialLink()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
 
   const columns = getSocialLinksColumns(t, formatDate)
@@ -51,7 +54,15 @@ export const SocialLinksTab = () => {
   }
 
   if (!socialLinks.length) {
-    return <EmptyState text={t('socialLink.empty')} />
+    return (
+      <EmptyState text={t('socialLink.empty')}>
+        <AddButton
+          label={t('socialLink.add.cta')}
+          onClick={openCreateSocialLinkDialog}
+          hideTextOnMobile={false}
+        />
+      </EmptyState>
+    )
   }
 
   return (
@@ -60,6 +71,10 @@ export const SocialLinksTab = () => {
         <ColumnVisibilityDropdown
           config={config}
           createLabel={id => t(`table.socialLinks.${id}`)}
+        />
+        <AddButton
+          label={t('socialLink.add.cta')}
+          onClick={openCreateSocialLinkDialog}
         />
       </SocialLinksToolbar>
 

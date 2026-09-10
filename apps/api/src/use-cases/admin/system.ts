@@ -26,6 +26,24 @@ export const getSocialLink = async (id: string) => {
   return { socialLink }
 }
 
+export interface CreateSocialLinkInput {
+  name: string
+  url: string
+  svg: string
+}
+
+export const createSocialLink = async (input: CreateSocialLinkInput) => {
+  const duplicate = await systemRepo.findSocialLinkByName(input.name)
+
+  if (duplicate) {
+    throw new AppError(ErrorCode.Conflict, 'Social link name already taken')
+  }
+
+  const socialLink = await systemRepo.createSocialLink(input)
+
+  return { socialLink }
+}
+
 export interface UpdateSocialLinkInput {
   name?: string
   url?: string

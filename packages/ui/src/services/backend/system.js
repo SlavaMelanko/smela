@@ -16,6 +16,10 @@ export const systemApi = {
     return apiClient.get(ADMIN_SOCIAL_LINKS_PATH)
   },
 
+  createSocialLink(data) {
+    return apiClient.post(ADMIN_SOCIAL_LINKS_PATH, data)
+  },
+
   getEmailSenderProfile(profile) {
     const path = buildPath(ADMIN_EMAIL_SENDER_PROFILE_PATH, { profile })
 

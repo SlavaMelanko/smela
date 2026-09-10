@@ -1,4 +1,5 @@
 import {
+  createSocialLink,
   deleteSocialLink,
   updateEmailSenderProfile,
   updateSocialLink
@@ -6,6 +7,7 @@ import {
 import {
   findEmailSenderProfile,
   findSocialLink,
+  findSocialLinkByName,
   listEmailSenderProfiles,
   listSocialLinks
 } from './queries'
@@ -13,9 +15,11 @@ import {
 export * from './types'
 
 export const systemRepo = {
+  createSocialLink,
   deleteSocialLink,
   findEmailSenderProfile,
   findSocialLink,
+  findSocialLinkByName,
   listEmailSenderProfiles,
   listSocialLinks,
   updateEmailSenderProfile,
