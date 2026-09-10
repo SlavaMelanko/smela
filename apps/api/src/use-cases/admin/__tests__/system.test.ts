@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { EmailSenderProfileRecord } from '@/data'
+import type { EmailSenderProfileRecord, SocialLinkRecord } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { EmailSenderType } from '@/services/email'
 
 import {
+  createSocialLink,
   getEmailSenderProfile,
   getEmailSenderProfiles,
   updateEmailSenderProfile
@@ -156,5 +157,63 @@ describe('updateEmailSenderProfile', () => {
     expect(error).toMatchObject({ code: ErrorCode.NotFound })
     expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()
     expect(mockInvalidateSenderProfiles).not.toHaveBeenCalled()
+  })
+})
+
+describe('createSocialLink', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  const input = {
+    name: 'Mastodon',
+    url: 'https://mastodon.social/@smela',
+    svg: '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z" /></svg>'
+  }
+
+  const socialLink = {
+    id: '01a08a35-63db-759e-ba12-0f9477b8b191',
+    ...input,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01')
+  }
+
+  let mockDuplicate: SocialLinkRecord | undefined
+  let mockFindSocialLinkByName: any
+  let mockCreateSocialLink: any
+
+  beforeEach(async () => {
+    mockDuplicate = undefined
+
+    mockFindSocialLinkByName = mock(async () => mockDuplicate)
+    mockCreateSocialLink = mock(async () => socialLink)
+
+    await moduleMocker.mock('@/data', () => ({
+      systemRepo: {
+        findSocialLinkByName: mockFindSocialLinkByName,
+        createSocialLink: mockCreateSocialLink
+      }
+    }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  it('should create the social link when the name is free', async () => {
+    const result = await createSocialLink(input)
+
+    expect(mockFindSocialLinkByName).toHaveBeenCalledWith(input.name)
+    expect(mockCreateSocialLink).toHaveBeenCalledWith(input)
+    expect(result).toEqual({ socialLink })
+  })
+
+  // The name column is unique, so the guard keeps the insert from surfacing a
+  // raw database error
+  it('should throw and skip the insert when the name is taken', async () => {
+    mockDuplicate = socialLink
+
+    const error: any = await createSocialLink(input).catch((e: unknown) => e)
+
+    expect(error).toMatchObject({ code: ErrorCode.Conflict })
+    expect(mockCreateSocialLink).not.toHaveBeenCalled()
   })
 })
