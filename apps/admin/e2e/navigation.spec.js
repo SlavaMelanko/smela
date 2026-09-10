@@ -21,8 +21,7 @@ test.describe('Owner: Sidebar Navigation', () => {
       { label: t.sidebar.users, url: '/users' },
       { label: t.sidebar.teams, url: '/teams' },
       { label: t.sidebar.admins, url: '/admins' },
-      { label: t.sidebar.system, url: '/system' },
-      { label: t.sidebar.settings, url: '/settings' }
+      { label: t.sidebar.system, url: '/system' }
     ]
 
     for (const { label, url } of items) {
@@ -45,8 +44,7 @@ test.describe('Admin: Sidebar Navigation', () => {
       { label: t.sidebar.dashboard, url: '/dashboard' },
       { label: t.sidebar.users, url: '/users' },
       { label: t.sidebar.teams, url: '/teams' },
-      { label: t.sidebar.system, url: '/system' },
-      { label: t.sidebar.settings, url: '/settings' }
+      { label: t.sidebar.system, url: '/system' }
     ]
 
     for (const { label, url } of items) {

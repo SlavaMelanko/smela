@@ -344,10 +344,6 @@
     "users": "Search by ID, name, email..."
   },
   "security": "Security",
-  "settings": {
-    "description": "Your app-wide preferences.",
-    "title": "Settings"
-  },
   "sidebar": {
     "admins": "Admins",
     "dashboard": "Dashboard",
@@ -357,7 +353,6 @@
     "proxies": "Proxies",
     "residential": "Residential",
     "serpApi": "SERP API",
-    "settings": "Settings",
     "system": "System",
     "teams": "Teams",
     "users": "Users"

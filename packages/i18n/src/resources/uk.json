@@ -350,10 +350,6 @@
     "users": "Шукати за ID, ім'ям, email..."
   },
   "security": "Безпека",
-  "settings": {
-    "description": "Ваші налаштування для всього застосунку.",
-    "title": "Налаштування"
-  },
   "sidebar": {
     "admins": "Адміни",
     "dashboard": "Адмін-панель",
@@ -363,7 +359,6 @@
     "proxies": "Проксі",
     "residential": "Резидентні",
     "serpApi": "SERP API",
-    "settings": "Налаштування",
     "system": "Система",
     "teams": "Команди",
     "users": "Користувачі"
