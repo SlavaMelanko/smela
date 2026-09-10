@@ -1,3 +1,3 @@
-export { EmailSenderProfilePage } from './EmailSenderProfilePage'
-export { SocialLinkPage } from './SocialLinkPage'
+export { EmailSenderProfilePage } from './Email'
+export { SocialLinkPage } from './SocialLinks'
 export { SystemPage } from './SystemPage'
