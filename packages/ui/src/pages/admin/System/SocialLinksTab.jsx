@@ -1,3 +1,4 @@
+import { AddButton } from '@ui/components/buttons'
 import { Spinner } from '@ui/components/Spinner'
 import { EmptyState, ErrorState } from '@ui/components/states'
 import {
@@ -34,6 +35,9 @@ export const SocialLinksTab = () => {
       state: { socialLink }
     })
 
+  // TODO: open the create dialog once the API exposes a create endpoint
+  const createSocialLink = () => {}
+
   const contextMenu = [createOpenItem(t, viewSocialLink, Link)]
 
   const config = useTableConfig('social-links', {
@@ -51,7 +55,15 @@ export const SocialLinksTab = () => {
   }
 
   if (!socialLinks.length) {
-    return <EmptyState text={t('socialLink.empty')} />
+    return (
+      <EmptyState text={t('socialLink.empty')}>
+        <AddButton
+          label={t('socialLink.add.cta')}
+          onClick={createSocialLink}
+          hideTextOnMobile={false}
+        />
+      </EmptyState>
+    )
   }
 
   return (
@@ -61,6 +73,7 @@ export const SocialLinksTab = () => {
           config={config}
           createLabel={id => t(`table.socialLinks.${id}`)}
         />
+        <AddButton label={t('socialLink.add.cta')} onClick={createSocialLink} />
       </SocialLinksToolbar>
 
       <Table
