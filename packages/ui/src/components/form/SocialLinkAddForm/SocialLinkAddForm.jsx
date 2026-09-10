@@ -1,9 +1,11 @@
 import {
+  FormController,
   FormField,
   FormFields,
   FormRoot,
   SubmitButton
 } from '@ui/components/form'
+import { SvgEditor } from '@ui/components/svg'
 import { Input } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useForm } from 'react-hook-form'
@@ -16,6 +18,7 @@ export const SocialLinkAddForm = ({ isLoading, submitLabel, onSubmit }) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting }
   } = useForm({
     resolver,
@@ -40,6 +43,14 @@ export const SocialLinkAddForm = ({ isLoading, submitLabel, onSubmit }) => {
         >
           <Input {...register(FieldName.URL)} placeholder='https://' />
         </FormField>
+
+        <FormController
+          name={FieldName.SVG}
+          label={t('svg.label')}
+          control={control}
+          error={errors[FieldName.SVG]}
+          render={({ field, id }) => <SvgEditor {...field} id={id} stacked />}
+        />
       </FormFields>
 
       <SubmitButton isLoading={isSubmitting || isLoading}>

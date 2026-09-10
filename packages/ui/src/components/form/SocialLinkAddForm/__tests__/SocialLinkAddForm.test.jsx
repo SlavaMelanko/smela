@@ -6,6 +6,8 @@ const en = resources.en.translation
 
 import { SocialLinkAddForm } from '..'
 
+const validSvg = '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z" /></svg>'
+
 const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(
     <SocialLinkAddForm
@@ -18,6 +20,7 @@ const renderForm = (onSubmit = vi.fn()) => {
   return {
     nameInput: screen.getByLabelText(en.name.label, { exact: false }),
     urlInput: screen.getByLabelText(en.url.label, { exact: false }),
+    svgInput: screen.getByLabelText(en.svg.label, { exact: false }),
     submitButton: screen.getByRole('button', { name: en.socialLink.add.cta })
   }
 }
@@ -29,7 +32,7 @@ describe('SocialLinkAddForm', () => {
     user = userEvent.setup()
   })
 
-  it('shows required errors when both fields are empty', async () => {
+  it('shows required errors when every field is empty', async () => {
     const { submitButton } = renderForm()
 
     await user.click(submitButton)
@@ -39,6 +42,7 @@ describe('SocialLinkAddForm', () => {
     })
 
     expect(screen.getByText(en.url.error.required)).toBeInTheDocument()
+    expect(screen.getByText(en.svg.error.required)).toBeInTheDocument()
   })
 
   it('shows format error when the URL is invalid', async () => {
@@ -53,18 +57,20 @@ describe('SocialLinkAddForm', () => {
     })
   })
 
-  it('submits the name and URL when both are valid', async () => {
+  it('submits every field once the form is valid', async () => {
     const onSubmit = vi.fn()
-    const { nameInput, urlInput, submitButton } = renderForm(onSubmit)
+    const { nameInput, urlInput, svgInput, submitButton } = renderForm(onSubmit)
 
     await user.type(nameInput, 'Mastodon')
     await user.type(urlInput, 'https://mastodon.social/@smela')
+    await user.type(svgInput, validSvg)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: 'Mastodon',
-        url: 'https://mastodon.social/@smela'
+        url: 'https://mastodon.social/@smela',
+        svg: validSvg
       })
     })
   })
