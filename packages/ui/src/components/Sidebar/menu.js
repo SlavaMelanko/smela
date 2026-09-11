@@ -4,7 +4,6 @@ import {
   Home,
   LayoutDashboard,
   MapPinCheckInside,
-  Settings,
   ShieldCheck,
   User,
   Users
@@ -30,11 +29,6 @@ export const getUserMenuItems = () => [
     icon: BookOpen,
     external: true,
     url: 'https://google.com'
-  },
-  {
-    title: 'sidebar.settings',
-    url: '/settings',
-    icon: Settings
   }
 ]
 
@@ -66,10 +60,5 @@ export const getAdminMenuItems = () => [
     url: '/system',
     icon: Cog,
     permission: 'view:system'
-  },
-  {
-    title: 'sidebar.settings',
-    url: '/settings',
-    icon: Settings
   }
 ]

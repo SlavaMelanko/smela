@@ -18,7 +18,6 @@ import { PricingPage } from '@smela/ui/pages/public'
 import {
   HomePage,
   ProfilePage,
-  SettingsPage as UserSettingsPage,
   TeamGeneralPage,
   TeamMemberPage,
   TeamMembersPage
@@ -161,8 +160,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         )
       },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'settings', element: <UserSettingsPage /> }
+      { path: 'profile', element: <ProfilePage /> }
     ]
   },
   {

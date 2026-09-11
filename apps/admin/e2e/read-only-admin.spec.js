@@ -104,6 +104,47 @@ test.describe('Read-Only Admin: Users', () => {
   })
 })
 
+test.describe('Read-Only Admin: Profile', () => {
+  test.beforeEach(async ({ login }) => {
+    await login(supportCredentials)
+  })
+
+  test.afterEach(async ({ page, t }) => {
+    await logOut(page, t)
+  })
+
+  test('Date format picked on Appearance tab applies to General tab dates', async ({
+    page,
+    t
+  }) => {
+    const dateFields = ['#createdAt', '#updatedAt']
+
+    const formats = [
+      {
+        label: t.format.date.values.short,
+        pattern: /^[A-Za-z]{3} \d{1,2}, \d{4}$/
+      }, // Sep 10, 2026
+      {
+        label: t.format.date.values.full,
+        pattern: /^[A-Za-z]+day, [A-Za-z]+ \d{1,2}, \d{4}$/
+      }, // Thursday, September 10, 2026
+      { label: t.format.date.values.numeric, pattern: /^\d{2}\/\d{2}\/\d{4}$/ } // 09/10/2026
+    ]
+
+    await page.goto('/profile')
+
+    for (const { label, pattern } of formats) {
+      await page.getByRole('tab', { name: t.appearance }).click()
+      await page.getByRole('radio', { name: label }).click()
+      await page.getByRole('tab', { name: t.general }).click()
+
+      for (const field of dateFields) {
+        await expect(page.locator(field)).toHaveText(pattern)
+      }
+    }
+  })
+})
+
 test.describe('Read-Only Admin: Teams', () => {
   test.beforeEach(async ({ login }) => {
     await login(supportCredentials)

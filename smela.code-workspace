@@ -17,10 +17,15 @@
       "packages": true
     },
     "search.exclude": {
+      "**/*.lcov": true,
+      "**/.turbo": true,
       "**/build": true,
       "**/coverage": true,
       "**/dist": true,
-      "**/node_modules": true
+      "**/html-report": true,
+      "**/node_modules": true,
+      "**/playwright-report": true,
+      "**/test-results": true
     },
     "cSpell.words": ["anthropics", "smela"]
   }

@@ -1,6 +1,5 @@
 export { EmailSenderProfilePageHeader } from './EmailSenderProfilePageHeader'
 export { ProfilePageHeader } from './ProfilePageHeader'
-export { SettingsPageHeader } from './SettingsPageHeader'
 export { SocialLinkPageHeader } from './SocialLinkPageHeader'
 export { SystemPageHeader } from './SystemPageHeader'
 export { TeamPageHeader } from './TeamPageHeader'

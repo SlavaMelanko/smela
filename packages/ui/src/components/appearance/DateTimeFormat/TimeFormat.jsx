@@ -2,11 +2,11 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { Clock } from 'lucide-react'
 
 import {
-  SettingsLabel,
-  SettingsOption,
-  SettingsOptions,
-  SettingsSection
-} from '../Settings'
+  AppearanceLabel,
+  AppearanceOption,
+  AppearanceOptions,
+  AppearanceSection
+} from '../Appearance'
 
 const timeFormats = [
   { value: '12', hour12: true },
@@ -17,11 +17,11 @@ export const TimeFormat = ({ value, onChange }) => {
   const { t, formatTime } = useLocale()
 
   return (
-    <SettingsSection>
-      <SettingsLabel icon={Clock}>{t('format.time.name')}</SettingsLabel>
-      <SettingsOptions>
+    <AppearanceSection>
+      <AppearanceLabel icon={Clock}>{t('format.time.name')}</AppearanceLabel>
+      <AppearanceOptions>
         {timeFormats.map(option => (
-          <SettingsOption
+          <AppearanceOption
             key={option.value}
             selected={value === option.value}
             onClick={() => onChange(option.value)}
@@ -29,7 +29,7 @@ export const TimeFormat = ({ value, onChange }) => {
             description={formatTime(new Date(), option.hour12)}
           />
         ))}
-      </SettingsOptions>
-    </SettingsSection>
+      </AppearanceOptions>
+    </AppearanceSection>
   )
 }
