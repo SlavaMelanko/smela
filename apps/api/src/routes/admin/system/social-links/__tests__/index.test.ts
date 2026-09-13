@@ -47,8 +47,8 @@ describe('admin /system/social-links', () => {
     mockSocialLinks = [
       {
         id: testUuids.ADMIN_1,
-        name: 'x',
-        url: 'https://x.com/smela',
+        name: 'GitHub',
+        url: 'https://github.com/smela',
         svg: '<svg></svg>',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01')
@@ -85,8 +85,8 @@ describe('admin /system/social-links', () => {
       const data = await res.json()
       expect(data.socialLinks).toHaveLength(1)
       expect(data.socialLinks[0]).toMatchObject({
-        name: 'x',
-        url: 'https://x.com/smela'
+        name: 'GitHub',
+        url: 'https://github.com/smela'
       })
     })
 
