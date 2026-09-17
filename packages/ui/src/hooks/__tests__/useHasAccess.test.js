@@ -6,7 +6,7 @@ import { useHasAccess } from '../useHasAccess'
 vi.mock('../useAuth')
 
 const authenticated = ({ permissions = [], ...overrides } = {}) => ({
-  isFetching: false,
+  isPending: false,
   isAuthenticated: true,
   permissions,
   canAll: perms => perms.every(p => permissions.includes(p)),
@@ -24,7 +24,7 @@ describe('useHasAccess', () => {
 
   it('denies when not authenticated', () => {
     useCurrentUser.mockReturnValue({
-      isFetching: false,
+      isPending: false,
       isAuthenticated: false,
       user: null
     })
@@ -42,16 +42,25 @@ describe('useHasAccess', () => {
     expect(result.current.hasAccess).toBe(true)
   })
 
-  it('returns isFetching true while fetching', () => {
+  it('returns isPending true while loading for the first time', () => {
     useCurrentUser.mockReturnValue({
-      isFetching: true,
+      isPending: true,
       isAuthenticated: false,
       user: null
     })
 
     const { result } = renderHook(() => useHasAccess())
 
-    expect(result.current.isFetching).toBe(true)
+    expect(result.current.isPending).toBe(true)
+  })
+
+  it('returns isPending false while refetching in the background', () => {
+    useCurrentUser.mockReturnValue({ ...authenticated(), isFetching: true })
+
+    const { result } = renderHook(() => useHasAccess())
+
+    expect(result.current.isPending).toBe(false)
+    expect(result.current.hasAccess).toBe(true)
   })
 
   describe('requireStatuses', () => {

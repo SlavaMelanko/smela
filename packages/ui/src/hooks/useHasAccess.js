@@ -5,7 +5,7 @@ export const useHasAccess = ({
   requireRoles = [],
   requirePermissions = []
 } = {}) => {
-  const { isFetching, isAuthenticated, user: me, canAll } = useCurrentUser()
+  const { isPending, isAuthenticated, user: me, canAll } = useCurrentUser()
 
   const hasRequiredStatus =
     requireStatuses.length === 0 || requireStatuses.includes(me?.status)
@@ -22,5 +22,5 @@ export const useHasAccess = ({
     hasRequiredRole &&
     hasRequiredPermissions
 
-  return { isFetching, isAuthenticated, hasAccess }
+  return { isPending, isAuthenticated, hasAccess }
 }

@@ -4,9 +4,9 @@ import { Navigate } from '@ui/hooks/useRouter'
 import { userActiveStatuses } from '@ui/lib/types'
 
 export const PublicRoute = ({ children }) => {
-  const { isFetching, isAuthenticated, user: me } = useCurrentUser()
+  const { isPending, isAuthenticated, user: me } = useCurrentUser()
 
-  if (isFetching) {
+  if (isPending) {
     return <Spinner />
   }
 
