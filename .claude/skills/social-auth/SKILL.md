@@ -48,7 +48,8 @@ account.
 - `net/http/cookie/<provider>-oauth.ts` (+ `index.ts`) — state cookie
   get/set/delete.
 - `use-cases/auth/<provider>-oauth.ts` — `logInOrSignUpWith<Provider>`:
-  find-or-create + link-by-email + activate `New→Active`.
+  find-or-create + link-by-email + promote `New→Verified`. A provider proves
+  email ownership only; `Active` is for subscribed users.
 - `routes/auth/<provider>-oauth/` (`index.ts` with inline handlers) + mount in
   `routes/auth/index.ts`.
 - `data/scripts/seed.ts` — optionally seed a provider-only user for E2E.
@@ -74,9 +75,9 @@ const existingAuth = await authRepo.findByProvider(AuthProvider.Provider, provid
 if (existingAuth) return { user: await userRepo.findById(existingAuth.userId), isNew: false }
 
 // link by email — user may already exist (e.g. signed up with a password)
-let user = await userRepo.findByEmail(email, tx) ?? await userRepo.create({ ..., status: Active }, tx)
+let user = await userRepo.findByEmail(email, tx) ?? await userRepo.create({ ..., status: Verified }, tx)
 await authRepo.create({ userId: user.id, provider: AuthProvider.Provider, identifier: providerId }, tx)
-if (user.status === UserStatus.New) user = await userRepo.update(user.id, { status: Active }, tx)
+if (user.status === UserStatus.New) user = await userRepo.update(user.id, { status: Verified }, tx)
 ```
 
 **Always mint tokens WITH permissions** (PR #141 regression) — every auth path
@@ -119,3 +120,56 @@ E2E-able without a real round-trip (seed a provider-only user):
 
 Needs a real round-trip (manual until an `exchangeCodeForProfile` stub exists):
 happy-path signup, email→provider linking, provider OAuth from the login page.
+
+### Resetting your own account between manual runs
+
+Re-testing signup needs the email free again. This frees it without deleting
+the old row — the account is parked on a `+timestamp` alias, which Gmail and
+most providers deliver to the same inbox, so verification mail still arrives:
+
+```sql
+DO $$
+DECLARE
+  v_local  TEXT := 'your.name';
+  v_domain TEXT := 'gmail.com';
+  v_email  TEXT := v_local || '@' || v_domain;
+  v_ts     TEXT := to_char(now(), 'YYYYMMDDHH24MISS');
+  v_uid    UUID;
+BEGIN
+  SELECT id INTO v_uid FROM users WHERE email = v_email;
+
+  IF v_uid IS NULL THEN
+    RAISE NOTICE 'User not found: %', v_email;
+  ELSE
+    DELETE FROM auth
+    WHERE user_id = v_uid AND provider = 'google';
+
+    UPDATE auth
+    SET identifier = v_local || '+' || v_ts || '@' || v_domain,
+        updated_at = now()
+    WHERE user_id = v_uid AND provider = 'local';
+
+    UPDATE users
+    SET email      = v_local || '+' || v_ts || '@' || v_domain,
+        status     = 'new',
+        updated_at = now()
+    WHERE id = v_uid;
+
+    RAISE NOTICE 'Reset done. Archived email: %+%@%', v_local, v_ts, v_domain;
+  END IF;
+END $$;
+```
+
+Why each statement:
+
+- **Deleting the provider `auth` row is required.** Lookup is by provider
+  account id (Google `sub`), not email — that id never changes, so leaving the
+  row makes the next sign-in find the *old* user instead of running signup.
+- **Renaming the `local` identifier** keeps it unique; its `identifier` is the
+  email, and `(provider, identifier)` is the primary key.
+- **No `user_permissions` delete needed** — `setUserPermissions` is idempotent
+  (grants with `onConflictDoNothing`, revokes anything outside the set).
+
+Caveats: the local password account moves to the alias with the user, so the
+freed address has no password login until you sign up again. Each run leaves
+another parked row; clean them out periodically.

@@ -40,7 +40,7 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
 
     if (!user) {
       user = await userRepo.create(
-        { firstName, lastName, email, status: UserStatus.Active },
+        { firstName, lastName, email, status: UserStatus.Verified },
         tx
       )
     }
@@ -56,9 +56,9 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
       tx
     )
 
-    // Activate if previously New — Google account implies email is verified
+    // Google account implies email is verified
     if (user.status === UserStatus.New) {
-      user = await userRepo.update(user.id, { status: UserStatus.Active }, tx)
+      user = await userRepo.update(user.id, { status: UserStatus.Verified }, tx)
     }
 
     return user
