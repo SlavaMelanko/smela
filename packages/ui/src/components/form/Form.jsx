@@ -64,7 +64,10 @@ export const FormInputWrapper = ({ children }) => (
 )
 
 export const FormReadOnly = ({ children, id }) => (
-  <div id={id} className='flex h-11 items-center text-base'>
+  <div
+    id={id}
+    className='flex h-11 items-center border border-transparent px-4 text-base'
+  >
     {children}
   </div>
 )
