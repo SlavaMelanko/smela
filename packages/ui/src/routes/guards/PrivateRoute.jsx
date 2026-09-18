@@ -10,13 +10,13 @@ export const PrivateRoute = ({
   requireRoles = [],
   requirePermissions = []
 }) => {
-  const { isFetching, isAuthenticated, hasAccess } = useHasAccess({
+  const { isPending, isAuthenticated, hasAccess } = useHasAccess({
     requireStatuses,
     requireRoles,
     requirePermissions
   })
 
-  if (isFetching) {
+  if (isPending) {
     return <Spinner />
   }
 
