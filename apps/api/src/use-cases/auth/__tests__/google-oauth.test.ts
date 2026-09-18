@@ -42,7 +42,7 @@ describe('Google OAuth', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Active,
+      status: UserStatus.Verified,
       role: Role.User,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
@@ -181,7 +181,7 @@ describe('Google OAuth', () => {
           firstName: mockGoogleProfile.firstName,
           lastName: mockGoogleProfile.lastName,
           email: mockGoogleProfile.email,
-          status: UserStatus.Active
+          status: UserStatus.Verified
         },
         expect.anything()
       )
@@ -231,7 +231,7 @@ describe('Google OAuth', () => {
       mockUserRepo.findByEmail.mockImplementation(async () => existingEmailUser)
       mockUserRepo.update.mockImplementation(async () => ({
         ...existingEmailUser,
-        status: UserStatus.Active
+        status: UserStatus.Verified
       }))
     })
 
@@ -250,20 +250,20 @@ describe('Google OAuth', () => {
       )
     })
 
-    it('should activate New user status after Google verification', async () => {
+    it('should verify New user status after Google verification', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockUserRepo.update).toHaveBeenCalledWith(
         existingEmailUser.id,
-        { status: UserStatus.Active },
+        { status: UserStatus.Verified },
         expect.anything()
       )
     })
 
-    it('should not update status for already-active user', async () => {
+    it('should not update status for already-verified user', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => ({
         ...existingEmailUser,
-        status: UserStatus.Active
+        status: UserStatus.Verified
       }))
 
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)

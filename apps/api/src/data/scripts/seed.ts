@@ -413,7 +413,7 @@ const seedGoogleUsers = async () => {
       lastName: faker.person.lastName(),
       email: 'user.google@gmail.com',
       googleId: 'mock-google-id-user-google',
-      status: UserStatus.Active,
+      status: UserStatus.Verified,
       permissions: [{ action: Action.Manage, resource: Resource.Dashboard }]
     }
   ]
