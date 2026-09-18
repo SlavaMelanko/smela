@@ -22,7 +22,7 @@ export const ProfilePage = () => {
 
   const [activeTab, setActiveTab] = useHashTab(
     getProfileTabValues(),
-    Tab.GENERAL
+    Tab.PERSONAL
   )
 
   if (isError) {
@@ -38,7 +38,7 @@ export const ProfilePage = () => {
       <ProfilePageHeader user={me} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getProfileTabs(t)} />
-        <TabsContent value={Tab.GENERAL}>
+        <TabsContent value={Tab.PERSONAL}>
           <ProfileTab user={me} />
         </TabsContent>
         <TabsContent value={Tab.APPEARANCE}>

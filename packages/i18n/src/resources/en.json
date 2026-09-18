@@ -145,7 +145,6 @@
       }
     }
   },
-  "general": "General",
   "invite": {
     "accept": {
       "cta": "Join",
@@ -276,6 +275,7 @@
       }
     }
   },
+  "personal": "Personal",
   "personalDetails": "Personal details",
   "position": {
     "default": "Team member",

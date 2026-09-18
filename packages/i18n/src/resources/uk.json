@@ -145,7 +145,6 @@
       }
     }
   },
-  "general": "Загальне",
   "invite": {
     "accept": {
       "cta": "Приєднатися",
@@ -282,6 +281,7 @@
       }
     }
   },
+  "personal": "Особисте",
   "personalDetails": "Персональні дані",
   "position": {
     "default": "Член команди",
