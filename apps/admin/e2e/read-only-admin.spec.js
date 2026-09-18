@@ -113,7 +113,7 @@ test.describe('Read-Only Admin: Profile', () => {
     await logOut(page, t)
   })
 
-  test('Date format picked on Appearance tab applies to General tab dates', async ({
+  test('Date format picked on Appearance tab applies to Personal tab dates', async ({
     page,
     t
   }) => {
@@ -136,7 +136,7 @@ test.describe('Read-Only Admin: Profile', () => {
     for (const { label, pattern } of formats) {
       await page.getByRole('tab', { name: t.appearance }).click()
       await page.getByRole('radio', { name: label }).click()
-      await page.getByRole('tab', { name: t.general }).click()
+      await page.getByRole('tab', { name: t.personal }).click()
 
       for (const field of dateFields) {
         await expect(page.locator(field)).toHaveText(pattern)
@@ -168,7 +168,7 @@ test.describe('Read-Only Admin: Teams', () => {
     // Open first team row
     await page.getByRole('row').nth(1).click()
 
-    // General tab: fields must be read-only, Save button hidden
+    // Personal tab: fields must be read-only, Save button hidden
     for (const label of [t.name.label, t.website.label, t.description.label]) {
       await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
     }

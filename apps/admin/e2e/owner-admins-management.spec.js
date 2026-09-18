@@ -281,8 +281,8 @@ test.describe.serial('Owner: Invite admin with full access', () => {
 
     await page.waitForURL('**/profile*')
 
-    // General tab should be active by default — verify it is visible
-    await expect(page.getByRole('tab', { name: t.general })).toBeVisible()
+    // Personal tab should be active by default — verify it is visible
+    await expect(page.getByRole('tab', { name: t.personal })).toBeVisible()
 
     // Switch to Security tab
     await page.getByRole('tab', { name: t.security }).click()
