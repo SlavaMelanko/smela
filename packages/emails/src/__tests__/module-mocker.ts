@@ -1,6 +1,6 @@
+import { mock } from 'bun:test'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { mock } from 'bun:test'
 
 export interface MockResult {
   clear: () => Promise<void>

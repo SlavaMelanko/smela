@@ -1,9 +1,9 @@
 /** @jsxImportSource react */
 
 import type { SocialLink } from '../../../../social-links'
-import { render } from '@react-email/components'
-
 import { describe, expect, it } from 'bun:test'
+
+import { render } from '@react-email/components'
 
 import { getThemeStyles } from '../../../../styles'
 import SocialLinks from '../social-links'
