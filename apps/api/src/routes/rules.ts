@@ -1,36 +1,80 @@
+// Server-side request validation (the enforced boundary).
+// Client-side counterpart: packages/ui/src/lib/validation/rules.js
+import {
+  DescriptionConstraint,
+  EmailConstraint,
+  isHttpsUrl,
+  NameConstraint,
+  PasswordConstraint,
+  PositionConstraint,
+  SvgConstraint,
+  WebsiteConstraint
+} from '@smela/contracts'
 import { z } from 'zod'
 
-import { PASSWORD_REGEX } from '@/security/password'
+import type { SupportedLocale, Theme } from '@/services/email'
+
 import { TOKEN_LENGTH } from '@/security/token'
-import { Role, UserStatus } from '@/types'
-import Resource from '@/types/resource'
+import { EmailSenderType } from '@/services/email'
+import { Resource, Role, UserStatus } from '@/types'
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
+
+const email = z
+  .string()
+  .transform(normalizeEmail)
+  .pipe(z.string().max(EmailConstraint.MAX_LENGTH))
+  .refine(value => EmailConstraint.STANDARD.test(value), {
+    message: 'Invalid email'
+  })
+
+const displayName = z
+  .string()
+  .trim()
+  .min(NameConstraint.MIN_LENGTH)
+  .max(NameConstraint.MAX_LENGTH)
+
+const description = z.string().trim().max(DescriptionConstraint.MAX_LENGTH)
+
+const httpsUrl = z
+  .string()
+  .max(WebsiteConstraint.MAX_LENGTH)
+  .refine(isHttpsUrl, 'Invalid URL')
 
 export const rules = {
   user: {
     id: z.uuid(),
 
-    email: z
+    email,
+
+    password: z
       .string()
-      .transform(normalizeEmail)
-      .refine(email => z.email().safeParse(email).success, {
-        message: 'Invalid email'
+      .min(PasswordConstraint.MIN_LENGTH)
+      .max(PasswordConstraint.MAX_LENGTH)
+      .regex(PasswordConstraint.STRONG, {
+        message:
+          'Minimum eight characters, at least one letter, one number and one special character'
       }),
 
-    password: z.string().min(8).regex(PASSWORD_REGEX, {
-      message:
-        'Minimum eight characters, at least one letter, one number and one special character'
-    }),
-
     // Required for signup, add .optional() for updates
-    firstName: z.string().trim().min(2).max(50),
+    firstName: z
+      .string()
+      .trim()
+      .min(NameConstraint.MIN_LENGTH)
+      .max(NameConstraint.MAX_LENGTH),
 
     // Normalizes null/'' → "", valid string → trimmed
     // undefined means "don't touch the field"
     lastName: z.preprocess(
       val => (val === null || val === '' ? '' : val),
-      z.union([z.literal(''), z.string().trim().min(2).max(50)])
+      z.union([
+        z.literal(''),
+        z
+          .string()
+          .trim()
+          .min(NameConstraint.MIN_LENGTH)
+          .max(NameConstraint.MAX_LENGTH)
+      ])
     ),
 
     role: z.enum(Role),
@@ -61,17 +105,35 @@ export const rules = {
   },
 
   preferences: {
-    locale: z.enum(['en', 'uk']).default('en'),
-    theme: z.enum(['light', 'dark']).default('light')
+    locale: z.enum(['en', 'uk'] satisfies SupportedLocale[]).default('en'),
+    theme: z.enum(['light', 'dark'] satisfies Theme[]).default('light')
   },
 
   team: {
     id: z.uuid(),
-    name: z.string().trim().min(1).max(255),
-    website: z.url().max(255),
-    description: z.string().trim().max(2000),
-    position: z.string().trim().max(100),
+    name: displayName,
+    website: httpsUrl,
+    description,
+    position: z.string().trim().max(PositionConstraint.MAX_LENGTH),
     search: z.string().trim().max(100)
+  },
+
+  emailSenderProfile: {
+    profile: z.enum(EmailSenderType),
+    email,
+    name: displayName,
+    description
+  },
+
+  socialLink: {
+    id: z.uuid(),
+    name: displayName,
+    url: httpsUrl,
+    svg: z
+      .string()
+      .trim()
+      .min(SvgConstraint.MIN_LENGTH)
+      .max(SvgConstraint.MAX_LENGTH)
   },
 
   userFilter: {

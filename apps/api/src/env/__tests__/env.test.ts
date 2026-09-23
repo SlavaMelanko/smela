@@ -24,9 +24,10 @@ describe('Environment Configuration', () => {
     POSTGRES_PORT: '5432',
     POSTGRES_DB: 'test_db',
     JWT_SECRET: 'test-jwt-secret-key-min-10-chars',
-    EMAIL_SENDER_PROFILES:
-      '{"system":{"email":"test@example.com","name":"Test System"}}',
-    CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890'
+    CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890',
+    GOOGLE_CLIENT_ID: 'test-google-client-id',
+    GOOGLE_CLIENT_SECRET: 'test-google-client-secret',
+    GOOGLE_REDIRECT_URI: 'http://localhost:3000/api/v1/auth/google/callback'
   })
 
   beforeEach(() => {
@@ -67,7 +68,6 @@ describe('Environment Configuration', () => {
 
     // Company defaults
     expect(devEnv.COMPANY_NAME).toBe('SMELA')
-    expect(devEnv.COMPANY_SOCIAL_LINKS).toEqual({})
 
     // POSTGRES_URL construction
     expect(devEnv.POSTGRES_URL).toBe(
@@ -253,16 +253,6 @@ describe('Environment Configuration', () => {
       { field: 'NODE_ENV', value: 'invalid-env', desc: 'invalid NODE_ENV' },
       { field: 'LOG_LEVEL', value: 'invalid-level', desc: 'invalid LOG_LEVEL' },
       {
-        field: 'EMAIL_SENDER_PROFILES',
-        value: 'invalid-json',
-        desc: 'invalid EMAIL_SENDER_PROFILES JSON'
-      },
-      {
-        field: 'EMAIL_SENDER_PROFILES',
-        value: '{"system":{"email":"not-an-email","name":"Test"}}',
-        desc: 'invalid email in profiles'
-      },
-      {
         field: 'CAPTCHA_SECRET_KEY',
         value: 'invalid-format',
         desc: 'invalid CAPTCHA format'
@@ -307,41 +297,5 @@ describe('Environment Configuration', () => {
       JWT_SECRET_PREVIOUS: 'short'
     })
     expect(processExitMock).toHaveBeenCalledWith(1)
-  })
-
-  test('should parse valid JSON configurations', () => {
-    const customEnv = {
-      ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: JSON.stringify({
-        twitter: 'https://twitter.com/company',
-        github: 'https://github.com/company'
-      }),
-      EMAIL_SENDER_PROFILES: JSON.stringify({
-        system: { email: 'noreply@example.com', name: 'Company' },
-        marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
-      })
-    }
-
-    const env = validateEnvVars(customEnv)
-
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({
-      twitter: 'https://twitter.com/company',
-      github: 'https://github.com/company'
-    })
-
-    expect(env.EMAIL_SENDER_PROFILES).toEqual({
-      system: { email: 'noreply@example.com', name: 'Company' },
-      marketing: { email: 'marketing@example.com', name: 'Marketing Team' }
-    })
-  })
-
-  test('should handle invalid JSON gracefully', () => {
-    const customEnv = {
-      ...createBaseEnv('development'),
-      COMPANY_SOCIAL_LINKS: 'invalid-json'
-    }
-
-    const env = validateEnvVars(customEnv)
-    expect(env.COMPANY_SOCIAL_LINKS).toEqual({})
   })
 })

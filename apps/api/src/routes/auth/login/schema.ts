@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import type { ValidatedJsonCtx } from '@/routes/validated-ctx'
-
 import { rules } from '@/routes/rules'
 
 export const loginBodySchema = z
@@ -15,6 +13,3 @@ export const loginBodySchema = z
       .strict()
   })
   .strict()
-
-export type LoginBody = z.infer<typeof loginBodySchema>
-export type LoginCtx = ValidatedJsonCtx<LoginBody>

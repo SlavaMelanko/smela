@@ -4,6 +4,7 @@ import { db, tokenRepo, userRepo } from '@/data'
 import { TokenStatus, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
+import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
 
 export interface VerifyEmailInput {
@@ -38,13 +39,16 @@ export const verifyEmail = async (
     )
   })
 
+  const permissions = await resolvePermissionList(updatedUser.id)
+
   const [accessToken, refreshToken] = await createAuthTokens(
     updatedUser,
-    deviceInfo
+    deviceInfo,
+    permissions
   )
 
   return {
-    data: { user: updatedUser, accessToken },
+    data: { user: updatedUser, permissions, accessToken },
     refreshToken
   }
 }

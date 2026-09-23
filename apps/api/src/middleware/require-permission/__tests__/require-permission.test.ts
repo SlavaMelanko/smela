@@ -7,8 +7,7 @@ import { testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
-import { Role, UserStatus } from '@/types'
-import Permission from '@/types/permission'
+import { Permission, Role, UserStatus } from '@/types'
 
 import {
   requirePermission,

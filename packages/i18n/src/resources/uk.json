@@ -1,13 +1,19 @@
 {
   "add": "Додати",
   "alreadyHaveAccount": "Вже свій?",
+  "appearance": "Вигляд",
   "back": "Назад",
   "backend": {
     "auth/already-verified": "Невірний запит. Спробуйте увійти в обліковий запис.",
     "auth/email-already-in-use": "Електронна адреса вже зайнята.",
     "auth/forbidden": "Доступ заборонено.",
+    "auth/google-email-not-verified": "Вашу електронну адресу Google не підтверджено. Підтвердьте її в Google і спробуйте ще раз.",
+    "auth/google-oauth-cancelled": "Вхід через Google скасовано. Спробуйте ще раз.",
+    "auth/google-oauth-failed": "Не вдалося увійти через Google. Спробуйте ще раз.",
+    "auth/google-oauth-invalid-state": "Щось пішло не так. Спробуйте ще раз.",
     "auth/invalid-credentials": "Невірна електронна адреса або пароль.",
     "auth/invalid-password": "Поточний пароль невірний.",
+    "auth/social-auth-only": "Цей обліковий запис використовує соціальний вхід. Будь ласка, увійдіть через свого соціального провайдера.",
     "auth/unauthorized": "Доступ заборонено. Увійдіть щоб продовжити.",
     "captcha/invalid-token": "Помилка перевірки безпеки. Спробуйте ще раз.",
     "captcha/validation-failed": "Помилка перевірки безпеки. Спробуйте ще раз.",
@@ -42,9 +48,14 @@
     "remove": "Видалити",
     "resend": "Надіслати повторно"
   },
-  "continueWithGoogle": "Продовжити з Google",
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Створено",
+  "description": {
+    "error": {
+      "max": "Опис не може перевищувати 500 символів."
+    },
+    "label": "Опис"
+  },
   "doNotHaveAccount": "Новенький тут?",
   "email": {
     "confirmation": {
@@ -59,6 +70,7 @@
     },
     "error": {
       "format": "Введіть правильну електронну адресу.",
+      "max": "Електронна адреса не може перевищувати 254 символи.",
       "required": "Електронна адреса обовʼязкова."
     },
     "label": "Електронна адреса",
@@ -70,6 +82,10 @@
       "loading": "Підтверджуємо електронну пошту...",
       "success": "Вітаю! Ваш обліковий запис готовий."
     }
+  },
+  "emailSenderProfile": {
+    "empty": "Профілів відправника email ще немає.",
+    "label": "Профілі відправника"
   },
   "error": {
     "forbidden": {
@@ -129,7 +145,6 @@
       }
     }
   },
-  "general": "Загальне",
   "invite": {
     "accept": {
       "cta": "Приєднатися",
@@ -182,6 +197,7 @@
     },
     "label": "Прізвище"
   },
+  "lastUsed": "Використано востаннє",
   "loading": "Завантаження...",
   "login": {
     "noun": "Увійти",
@@ -192,15 +208,24 @@
     "verb": "Вийти"
   },
   "membership": "Членство",
+  "name": {
+    "error": {
+      "max": "Назва не може перевищувати 50 символів.",
+      "min": "Назва має містити щонайменше 2 символи.",
+      "required": "Назва обовʼязкова."
+    },
+    "label": "Назва"
+  },
   "noNewNotifications": "Нових сповіщень немає.",
   "notifications": "Сповіщення",
-  "or": "або",
+  "orContinueWith": "або продовжити через",
   "pagination": {
     "limit": "Ліміт:",
     "of": "з"
   },
   "password": {
     "error": {
+      "max": "Пароль не може перевищувати 64 символи.",
       "min": "Пароль має містити щонайменше 8 символів.",
       "required": "Пароль обовʼязковий.",
       "same": "Має відрізнятися від поточного.",
@@ -243,23 +268,25 @@
     "resources": {
       "hints": {
         "dashboard": "Огляд ключових метрик. Перегляд завжди увімкнено, щоб коренева навігація працювала коректно.",
+        "system": "Системні налаштування та операційні елементи керування.",
         "teams": "Деталі команди, учасники та їхні рівні доступу.",
         "users": "Особисті дані окремих облікових записів."
       },
       "name": "Ресурси",
       "values": {
         "dashboard": "Дашборд",
+        "system": "Система",
         "teams": "Команди",
         "users": "Користувачі"
       }
     }
   },
+  "personal": "Особисте",
   "personalDetails": "Персональні дані",
   "position": {
     "default": "Член команди",
     "error": {
-      "max": "Посада не може бути довшою за 50 символів.",
-      "min": "Посада повинна містити щонайменше 2 символи."
+      "max": "Посада не може бути довшою за 100 символів."
     },
     "label": "Посада"
   },
@@ -314,6 +341,7 @@
   },
   "processing": "В процесі...",
   "profile": {
+    "label": "Профіль",
     "title": "Профіль"
   },
   "save": "Зберегти",
@@ -322,10 +350,6 @@
     "users": "Шукати за ID, ім'ям, email..."
   },
   "security": "Безпека",
-  "settings": {
-    "description": "Ваші налаштування для всього застосунку",
-    "title": "Налаштування"
-  },
   "sidebar": {
     "admins": "Адміни",
     "dashboard": "Адмін-панель",
@@ -335,11 +359,26 @@
     "proxies": "Проксі",
     "residential": "Резидентні",
     "serpApi": "SERP API",
-    "settings": "Налаштування",
+    "system": "Система",
     "teams": "Команди",
     "users": "Користувачі"
   },
   "signUp": "Зареєструватися",
+  "socialLink": {
+    "add": {
+      "cta": "Створити",
+      "success": "Соцмережу створено.",
+      "title": "Додати соцмережу"
+    },
+    "delete": {
+      "cta": "Видалити",
+      "description": "Ви впевнені, що хочете видалити {{name}}?",
+      "success": "Соцмережу видалено.",
+      "title": "Видалити соцмережу"
+    },
+    "empty": "Соцмереж немає.",
+    "label": "Соцмережі"
+  },
   "status": {
     "error": {
       "invalid": "Виберіть правильний статус.",
@@ -358,9 +397,28 @@
     }
   },
   "support": "Підтримка",
+  "svg": {
+    "error": {
+      "max": "SVG іконка не може перевищувати 10000 символів.",
+      "required": "SVG іконка обовʼязкова."
+    },
+    "label": "Іконка"
+  },
+  "system": {
+    "description": "Налаштуйте системні параметри.",
+    "title": "Система"
+  },
   "table": {
     "column": "Колонка",
     "column_plural": "Колонки",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "$t(description.label)",
+      "email": "$t(email.label)",
+      "name": "$t(name.label)",
+      "profile": "$t(profile.label)",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Фільтр",
     "filter_plural": "Фільтри",
     "members": {
@@ -370,16 +428,23 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
-      "position": "Посада",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
+    },
+    "socialLinks": {
+      "createdAt": "$t(createdAt)",
+      "name": "$t(name.label)",
+      "svg": "$t(svg.label)",
+      "updatedAt": "$t(updatedAt)",
+      "url": "$t(url.label)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Учасники",
-      "name": "Назва",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
-      "website": "Сайт"
+      "website": "$t(website.label)"
     },
     "users": {
       "createdAt": "$t(createdAt)",
@@ -390,7 +455,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Ім'я",
       "status": "$t(status.name)",
-      "team": "Команда",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },
@@ -399,12 +464,6 @@
       "cta": "Створити",
       "success": "Команду створено.",
       "title": "Додати команду"
-    },
-    "description": {
-      "error": {
-        "max": "Опис не може перевищувати 500 символів."
-      },
-      "label": "Опис"
     },
     "members": {
       "empty": "Учасників команди поки немає.",
@@ -416,12 +475,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Назва команди не може перевищувати 100 символів.",
-        "min": "Назва команди має містити щонайменше 2 символи.",
-        "required": "Назва команди обовʼязкова."
-      },
-      "label": "Назва",
       "label2": "Команда"
     },
     "tabs": {
@@ -430,12 +483,6 @@
         "label": "Учасники",
         "withCount": "Учасники ({{count}})"
       }
-    },
-    "website": {
-      "error": {
-        "format": "Введіть правильну URL-адресу."
-      },
-      "label": "Вебсайт"
     }
   },
   "termsAndPrivacy": {
@@ -457,5 +504,16 @@
     }
   },
   "updatedAt": "Оновлено",
+  "url": {
+    "error": {
+      "format": "Введіть правильну URL-адресу, що починається з https://.",
+      "max": "URL не може перевищувати 255 символів.",
+      "required": "URL обовʼязковий."
+    },
+    "label": "URL"
+  },
+  "website": {
+    "label": "Вебсайт"
+  },
   "you": "Ви"
 }

@@ -1,12 +1,4 @@
-enum UserStatus {
-  New = 'new',
-  Verified = 'verified',
-  Trial = 'trial',
-  Active = 'active',
-  Suspended = 'suspended',
-  Archived = 'archived',
-  Pending = 'pending'
-}
+import { UserStatus } from '@smela/contracts'
 
 export const isActive = (status: UserStatus) =>
   status === UserStatus.Verified ||

@@ -1,4 +1,6 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
+
+import type { AuthProvider } from '@/types'
 
 import type { Database } from '../../clients'
 import type { Auth } from './types'
@@ -16,6 +18,26 @@ export const findByUserId = async (
     .select()
     .from(authTable)
     .where(eq(authTable.userId, userId))
+
+  return foundAuth
+}
+
+export const findByProvider = async (
+  provider: AuthProvider,
+  identifier: string,
+  tx?: Database
+): Promise<Auth | undefined> => {
+  const executor = tx || db
+
+  const [foundAuth] = await executor
+    .select()
+    .from(authTable)
+    .where(
+      and(
+        eq(authTable.provider, provider),
+        eq(authTable.identifier, identifier)
+      )
+    )
 
   return foundAuth
 }

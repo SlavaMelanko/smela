@@ -1,5 +1,6 @@
 export { acceptInviteRoute } from './accept-invite'
 export { checkInviteRoute } from './check-invite'
+export { googleOAuthRoute } from './google-oauth'
 export { loginRoute } from './login'
 export { logoutRoute } from './logout'
 export { refreshTokenRoute } from './refresh-token'

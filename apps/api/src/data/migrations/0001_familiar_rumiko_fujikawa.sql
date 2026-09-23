@@ -1,1 +1,0 @@
-ALTER TYPE "public"."resource" ADD VALUE 'dashboard';

@@ -1,4 +1,5 @@
 // Auth endpoints
+export const GOOGLE_OAUTH_PATH = '/api/v1/auth/google'
 export const SIGNUP_PATH = '/api/v1/auth/signup'
 export const LOGIN_PATH = '/api/v1/auth/login'
 export const VERIFY_EMAIL_PATH = '/api/v1/auth/verify-email'
@@ -19,6 +20,11 @@ export const UPDATE_PASSWORD_PATH = '/api/v1/user/me/password'
 export const ADMIN_USERS_PATH = '/api/v1/admin/users'
 export const ADMIN_USER_PATH = `${ADMIN_USERS_PATH}/:userId`
 export const ADMIN_TEAMS_PATH = '/api/v1/admin/teams'
+export const ADMIN_SYSTEM_PATH = '/api/v1/admin/system'
+export const ADMIN_EMAIL_SENDER_PROFILES_PATH = `${ADMIN_SYSTEM_PATH}/email-sender-profiles`
+export const ADMIN_EMAIL_SENDER_PROFILE_PATH = `${ADMIN_EMAIL_SENDER_PROFILES_PATH}/:profile`
+export const ADMIN_SOCIAL_LINKS_PATH = `${ADMIN_SYSTEM_PATH}/social-links`
+export const ADMIN_SOCIAL_LINK_PATH = `${ADMIN_SOCIAL_LINKS_PATH}/:id`
 
 // Verified user/admin team operations
 export const TEAMS_PATH = '/api/v1/user/verified/teams/:teamId'

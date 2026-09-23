@@ -1,4 +1,14 @@
-# CLAUDE.md
+# smela
+
+This starter kit is a ready-to-use template for full-stack web applications.
+Copy it and build your business features on top of authentication,
+multi-tenancy, role-based access control, and permission-based access.
+
+## What Makes It Special
+
+- **Architecture first**: The project prioritizes clear architectural decisions
+  that simplify future development, extension, and maintenance. Its modular
+  design helps new business features grow without unnecessary complexity.
 
 ## Project Structure
 
@@ -12,54 +22,58 @@
 
 ### Packages
 
+- `packages/contracts` — Shared API/web contracts (roles, user statuses,
+  validation constraints)
 - `packages/e2e` — E2E testing utilities (see
   [packages/e2e/README.md](packages/e2e/README.md))
+- `packages/emails` — Email templates, renderers, and providers (React Email)
 - `packages/eslint` — ESLint configurations
 - `packages/i18n` — Internationalization utilities
 - `packages/ui` — Shared UI components
 
-## Dev Notes
-
-### Prerequisites
+## Prerequisites
 
 - [Git](https://git-scm.com/)
 - [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
+- [Node.js](https://nodejs.org/) — required by the `react-email` dev server
+  (`packages/emails`)
 - [tmux](https://github.com/tmux/tmux/wiki)
 - [Docker](https://www.docker.com/) for running PostgreSQL
 
-### Notes
+## Coding Standards
 
-- When upgrading React, update the `version` field in
-  `packages/eslint/src/react.js` → `settings.react.version`.
-- Keep comments general — describe intent, not current values or enumerated
-  items. Specific comments become stale when lists change and nobody remembers
-  to update them. Prefer `// Check hidden menu items` over
-  `// Invite and Remove actions must be hidden`.
+### Comment Formatting
 
-## Skills
+Prefer descriptive names for variables, functions, and classes instead of
+comments. When a comment is necessary:
 
-### apps/web
+- **Trailing comments**: keep short, no uppercase letter at beginning, no dot at
+  end
 
-- [react-artisan](.claude/skills/react-artisan/SKILL.md) — React component
-  patterns, hooks, composition, code quality, and file/folder organization
-- [tailwind-shadcn](.claude/skills/tailwind-shadcn/SKILL.md) — Tailwind CSS and
-  shadcn/ui styling conventions
-- [i18n](.claude/skills/i18n/SKILL.md) — Internationalization and translation
-  patterns
-- [e2e-testing](.claude/skills/e2e-testing/SKILL.md) — Playwright E2E test
-  writing and infrastructure
-- [review](.claude/skills/review/SKILL.md) — Code review against all web
-  conventions
+  ```typescript
+  const timeout = 5000 // milliseconds
+  ```
 
-### apps/api
+- **Full-line comments (single sentence)**: start with uppercase letter, no dot
+  at end
 
-- [api-testing](.claude/skills/api-testing/SKILL.md) — Bun/TypeScript test
-  writing with bun:test and mocking patterns
-- [service-integration](.claude/skills/service-integration/SKILL.md) — Modular
-  design pattern for external service integrations
+  ```typescript
+  // Validate user permissions before processing request
+  const hasPermission = await checkUserRole(userId)
+  ```
 
-### Shared
+- **Full-line comments (multiple sentences)**: start with uppercase letter, use
+  dots between sentences but not at the end
 
-- [rbac](.claude/skills/rbac/SKILL.md) — Role-based and permission-based access
-  control patterns across API and frontend (route guards, permission middleware,
-  JWT claims)
+  ```typescript
+  // Initialize database connection pool. This ensures optimal performance
+  // for concurrent requests. The pool size is configured via environment variables
+  const pool = createConnectionPool()
+  ```
+
+## Dev Notes
+
+- Keep the React version in sync across `packages/ui`, `packages/emails`,
+  `apps/web`, and `apps/admin`. When upgrading React, update all of them
+  together, then update the `version` field in `packages/eslint/src/react.js` →
+  `settings.react.version`.

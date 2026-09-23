@@ -4,6 +4,7 @@ import type { User } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
+import { PasswordResetEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 import { hour, nowPlus } from '@/utils/chrono'
 
@@ -21,7 +22,7 @@ describe('Request Password Reset', () => {
   let mockTokenString: string
   let mockExpiresAt: Date
 
-  let mockEmailAgent: any
+  let mockEmailService: any
 
   beforeEach(async () => {
     mockUser = {
@@ -62,12 +63,14 @@ describe('Request Password Reset', () => {
       }))
     }))
 
-    mockEmailAgent = {
-      sendResetPasswordEmail: mock(async () => {})
+    mockEmailService = {
+      send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
     await moduleMocker.mock('@/services', () => ({
-      emailAgent: mockEmailAgent
+      buildResetPasswordUrl: (_role: Role, token: string) =>
+        `https://app.example.com/reset-password?token=${token}`,
+      emailService: mockEmailService
     }))
   })
 
@@ -95,14 +98,10 @@ describe('Request Password Reset', () => {
       expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 
       // Send reset email
-      expect(mockEmailAgent.sendResetPasswordEmail).toHaveBeenCalledWith(
-        mockUser.firstName,
-        mockUser.email,
-        mockUser.role,
-        mockTokenString,
-        undefined
+      expect(mockEmailService.send).toHaveBeenCalledWith(
+        expect.any(PasswordResetEmailMessageBuilder)
       )
-      expect(mockEmailAgent.sendResetPasswordEmail).toHaveBeenCalledTimes(1)
+      expect(mockEmailService.send).toHaveBeenCalledTimes(1)
 
       expect(result).toEqual({ success: true })
     })
@@ -116,7 +115,7 @@ describe('Request Password Reset', () => {
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailAgent.sendResetPasswordEmail).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 
@@ -136,7 +135,7 @@ describe('Request Password Reset', () => {
 
         expect(result).toEqual({ success: true })
         expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-        expect(mockEmailAgent.sendResetPasswordEmail).not.toHaveBeenCalled()
+        expect(mockEmailService.send).not.toHaveBeenCalled()
       })
     })
   })
@@ -157,22 +156,7 @@ describe('Request Password Reset', () => {
       }
 
       expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
-      expect(mockEmailAgent.sendResetPasswordEmail).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('email sending failure scenarios', () => {
-    it('should complete successfully even if email fails', async () => {
-      mockEmailAgent.sendResetPasswordEmail.mockImplementation(async () => {
-        throw new Error('Email service unavailable')
-      })
-
-      const result = await requestPasswordReset({ email: mockUser.email })
-
-      expect(result).toEqual({ success: true })
-
-      expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
-      expect(mockEmailAgent.sendResetPasswordEmail).toHaveBeenCalledTimes(1)
+      expect(mockEmailService.send).not.toHaveBeenCalled()
     })
   })
 })

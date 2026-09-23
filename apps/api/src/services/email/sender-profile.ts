@@ -1,23 +1,40 @@
-import env from '@/env'
+import type {
+  EmailSenderProfile,
+  EmailSenderProfileResolver,
+  EmailSenderProfiles
+} from '@smela/emails'
 
-export enum SenderProfile {
-  SYSTEM = 'system',
-  SUPPORT = 'support',
-  CEO = 'ceo',
-  MARKETING = 'marketing'
+import { EmailSenderType } from '@smela/emails'
+
+import { systemRepo } from '@/data'
+import { logger } from '@/logging'
+import { TtlCache } from '@/utils/ttl-cache'
+
+const loadSenderProfiles = async (): Promise<EmailSenderProfiles> => {
+  try {
+    const records = await systemRepo.listEmailSenderProfiles()
+
+    logger.debug({ count: records.length }, 'Loaded email sender profiles')
+
+    return new Map(
+      records.map(({ profile, email, name }) => [profile, { email, name }])
+    )
+  } catch (error) {
+    logger.error({ error }, 'Failed to load email sender profiles')
+    throw error
+  }
 }
 
-export interface EmailSender {
-  email: string
-  name: string
-}
+export class ApiEmailSenderProfileResolver implements EmailSenderProfileResolver {
+  private readonly cache = new TtlCache(loadSenderProfiles)
 
-export const getSenderDetails = (senderProfile: SenderProfile): EmailSender => {
-  const profiles = env.EMAIL_SENDER_PROFILES
-  const profile = profiles[senderProfile] ?? profiles[SenderProfile.SYSTEM]
+  async get(profile: EmailSenderType): Promise<EmailSenderProfile> {
+    const profiles = await this.cache.get()
 
-  return {
-    email: profile.email,
-    name: profile.name
+    return profiles.get(profile) ?? profiles.get(EmailSenderType.System)!
+  }
+
+  invalidate() {
+    this.cache.invalidate()
   }
 }

@@ -1,16 +1,9 @@
-import {
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
+import { useTable } from '@tanstack/react-table'
 import { StatusBadge } from '@ui/components/UserStatus'
 import { Role, UserStatus } from '@ui/lib/types'
 import { useState } from 'react'
 
-import { Table } from '.'
-
-const coreRowModel = getCoreRowModel()
-const sortedRowModel = getSortedRowModel()
+import { sortableTableFeatures, Table } from '.'
 
 export default {
   title: 'Components/Table',
@@ -75,15 +68,13 @@ const columns = [
 const InteractiveTable = ({ data, onRowClick }) => {
   const [sorting, setSorting] = useState([])
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const config = useReactTable({
+  const config = useTable({
+    features: sortableTableFeatures,
     data,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: coreRowModel,
-    getSortedRowModel: sortedRowModel
+    columnResizeMode: 'onChange'
   })
 
   return <Table config={config} onRowClick={onRowClick} />

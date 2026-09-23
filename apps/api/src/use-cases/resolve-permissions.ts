@@ -1,5 +1,4 @@
-import type { Permission, PermissionMap } from '@/types'
-import type Resource from '@/types/resource'
+import type { Permission, PermissionMap, Resource } from '@/types'
 
 import { rbacRepo } from '@/data'
 

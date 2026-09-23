@@ -18,7 +18,6 @@ import { PricingPage } from '@smela/ui/pages/public'
 import {
   HomePage,
   ProfilePage,
-  SettingsPage as UserSettingsPage,
   TeamGeneralPage,
   TeamMemberPage,
   TeamMembersPage
@@ -87,6 +86,21 @@ export const router = createBrowserRouter([
     ]
   },
   {
+    // Unguarded: PublicRoute would redirect the user away the moment OAuth
+    // completes the session, before the welcome state reaches /home.
+    element: <AuthLayout />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: 'auth/google/callback',
+        lazy: () =>
+          import('@smela/ui/pages/auth').then(m => ({
+            Component: m.GoogleOAuthCallbackPage
+          }))
+      }
+    ]
+  },
+  {
     element: <LegalLayout />,
     errorElement: <ErrorBoundary />,
     children: [
@@ -146,8 +160,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         )
       },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'settings', element: <UserSettingsPage /> }
+      { path: 'profile', element: <ProfilePage /> }
     ]
   },
   {

@@ -46,7 +46,7 @@ export const TeamGeneralForm = ({
       <FormFields>
         <FormRow>
           <FormField
-            label={t('team.name.label')}
+            label={t('name.label')}
             name={FieldName.NAME}
             error={errors[FieldName.NAME]}
           >
@@ -54,7 +54,7 @@ export const TeamGeneralForm = ({
           </FormField>
 
           <FormField
-            label={t('team.website.label')}
+            label={t('website.label')}
             name={FieldName.WEBSITE}
             error={errors[FieldName.WEBSITE]}
             optional
@@ -68,7 +68,7 @@ export const TeamGeneralForm = ({
         </FormRow>
 
         <FormField
-          label={t('team.description.label')}
+          label={t('description.label')}
           name={FieldName.DESCRIPTION}
           error={errors[FieldName.DESCRIPTION]}
           optional

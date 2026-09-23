@@ -73,9 +73,13 @@ export const useCreateAdmin = () => {
     onMutate: async newAdmin => {
       await queryClient.cancelQueries({ queryKey })
 
-      const previous = queryClient.getQueriesData({ queryKey })
+      const previousAdmins = queryClient.getQueriesData({ queryKey })
 
       queryClient.setQueriesData({ queryKey }, old => {
+        if (!old) {
+          return old
+        }
+
         const now = new Date().toISOString()
         const optimisticAdmin = {
           ...newAdmin,
@@ -91,10 +95,10 @@ export const useCreateAdmin = () => {
         }
       })
 
-      return { previous }
+      return { previousAdmins }
     },
     onError: (_error, _newAdmin, context) => {
-      for (const [queryKey, data] of context.previous) {
+      for (const [queryKey, data] of context?.previousAdmins ?? []) {
         queryClient.setQueryData(queryKey, data)
       }
     },
@@ -149,14 +153,14 @@ export const useUpdateAdminPermissions = id => {
     onMutate: async data => {
       await queryClient.cancelQueries({ queryKey })
 
-      const previous = queryClient.getQueryData(queryKey)
+      const previousPermissions = queryClient.getQueryData(queryKey)
 
       queryClient.setQueryData(queryKey, data)
 
-      return { previous }
+      return { previousPermissions }
     },
     onError: (_error, _data, context) => {
-      queryClient.setQueryData(queryKey, context.previous)
+      queryClient.setQueryData(queryKey, context?.previousPermissions)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey })

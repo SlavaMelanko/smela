@@ -16,11 +16,11 @@ const renderForm = (onSubmit = vi.fn()) => {
   )
 
   return {
-    nameInput: screen.getByLabelText(en.team.name.label, { exact: false }),
-    websiteInput: screen.getByLabelText(en.team.website.label, {
+    nameInput: screen.getByLabelText(en.name.label, { exact: false }),
+    websiteInput: screen.getByLabelText(en.website.label, {
       exact: false
     }),
-    descriptionInput: screen.getByLabelText(en.team.description.label, {
+    descriptionInput: screen.getByLabelText(en.description.label, {
       exact: false
     }),
     submitButton: screen.getByRole('button', { name: en.team.add.cta })
@@ -40,29 +40,18 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.name.error.required)).toBeInTheDocument()
+      expect(screen.getByText(en.name.error.required)).toBeInTheDocument()
     })
   })
 
-  it('shows min length error when name is too short', async () => {
+  it('shows max length error when name exceeds 50 characters', async () => {
     const { nameInput, submitButton } = renderForm()
 
-    await user.type(nameInput, 'A')
+    await user.type(nameInput, 'A'.repeat(51))
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.name.error.min)).toBeInTheDocument()
-    })
-  })
-
-  it('shows max length error when name exceeds 100 characters', async () => {
-    const { nameInput, submitButton } = renderForm()
-
-    await user.type(nameInput, 'A'.repeat(101))
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText(en.team.name.error.max)).toBeInTheDocument()
+      expect(screen.getByText(en.name.error.max)).toBeInTheDocument()
     })
   })
 
@@ -74,9 +63,7 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(
-        screen.getByText(en.team.description.error.max)
-      ).toBeInTheDocument()
+      expect(screen.getByText(en.description.error.max)).toBeInTheDocument()
     })
   })
 
@@ -88,7 +75,20 @@ describe('TeamAddForm', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(en.team.website.error.format)).toBeInTheDocument()
+      expect(screen.getByText(en.url.error.format)).toBeInTheDocument()
+    })
+  })
+
+  it('shows max length error when website exceeds 255 characters', async () => {
+    const { nameInput, websiteInput, submitButton } = renderForm()
+    const longUrl = `https://example.com/${'a'.repeat(240)}`
+
+    await user.type(nameInput, 'Valid Team')
+    await user.type(websiteInput, longUrl)
+    await user.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(en.url.error.max)).toBeInTheDocument()
     })
   })
 })

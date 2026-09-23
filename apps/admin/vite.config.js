@@ -2,7 +2,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { reactCompilerOptions } from '@smela/ui/react-compiler'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -34,7 +33,7 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler', reactCompilerOptions]]
+        plugins: [['babel-plugin-react-compiler', {}]]
       }
     }),
     tailwindcss(),

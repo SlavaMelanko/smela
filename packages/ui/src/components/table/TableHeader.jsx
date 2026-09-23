@@ -13,7 +13,7 @@ export const TableHeader = ({ config }) => (
     {config.getHeaderGroups().map(headerGroup => (
       <TableRow key={headerGroup.id} className='border hover:bg-transparent'>
         {headerGroup.headers.map(header => {
-          const isSorted = header.column.getIsSorted()
+          const isSorted = header.column.getIsSorted?.()
 
           return (
             <TableHead

@@ -1,9 +1,7 @@
 export const localStorage = {
   get(key, fallback = null) {
     try {
-      const value = window.localStorage.getItem(key)
-
-      return value !== null ? value : fallback
+      return window.localStorage.getItem(key) ?? fallback
     } catch {
       return fallback
     }

@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "anthropic.claude-code",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "austenc.tailwind-docs",
+    "stivo.tailwind-fold",
+    "ms-playwright.playwright",
+    "streetsidesoftware.code-spell-checker",
+    "davidanson.vscode-markdownlint",
+    "redhat.vscode-yaml",
+    "github.vscode-pull-request-github",
+    "github.vscode-github-actions",
+    "aaron-bond.better-comments",
+    "fill-labs.dependi",
+    "usernamehw.errorlens",
+    "yoavbls.pretty-ts-errors"
+  ]
+}

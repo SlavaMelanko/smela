@@ -1,9 +1,9 @@
 import {
   BookOpen,
+  Cog,
   Home,
   LayoutDashboard,
   MapPinCheckInside,
-  Settings,
   ShieldCheck,
   User,
   Users
@@ -29,18 +29,10 @@ export const getUserMenuItems = () => [
     icon: BookOpen,
     external: true,
     url: 'https://google.com'
-  },
-  {
-    title: 'sidebar.settings',
-    url: '/settings',
-    icon: Settings
   }
 ]
 
-export const getAdminMenuItems = ({
-  canViewTeams = false,
-  canViewAdmins = false
-} = {}) => [
+export const getAdminMenuItems = () => [
   {
     title: 'sidebar.dashboard',
     url: '/dashboard',
@@ -51,15 +43,22 @@ export const getAdminMenuItems = ({
     url: '/users',
     icon: User
   },
-  ...(canViewTeams
-    ? [{ title: 'sidebar.teams', url: '/teams', icon: Users }]
-    : []),
-  ...(canViewAdmins
-    ? [{ title: 'sidebar.admins', url: '/admins', icon: ShieldCheck }]
-    : []),
   {
-    title: 'sidebar.settings',
-    url: '/settings',
-    icon: Settings
+    title: 'sidebar.teams',
+    url: '/teams',
+    icon: Users,
+    permission: 'view:teams'
+  },
+  {
+    title: 'sidebar.admins',
+    url: '/admins',
+    icon: ShieldCheck,
+    permission: 'view:admins'
+  },
+  {
+    title: 'sidebar.system',
+    url: '/system',
+    icon: Cog,
+    permission: 'view:system'
   }
 ]

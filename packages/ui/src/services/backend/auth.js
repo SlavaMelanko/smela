@@ -4,6 +4,7 @@ import {
   CHECK_INVITE_PATH,
   LOGIN_PATH,
   LOGOUT_PATH,
+  REFRESH_TOKEN_PATH,
   REQUEST_PASSWORD_RESET_PATH,
   RESEND_VERIFICATION_EMAIL_PATH,
   RESET_PASSWORD_PATH,
@@ -44,6 +45,10 @@ export const authApi = {
 
   acceptInvite(data) {
     return apiClient.post(ACCEPT_INVITE_PATH, data)
+  },
+
+  refreshToken() {
+    return apiClient.post(REFRESH_TOKEN_PATH)
   },
 
   logOut() {

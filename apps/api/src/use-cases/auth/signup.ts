@@ -1,14 +1,22 @@
 import type { DeviceInfo } from '@/net/http/device'
 import type { UserPreferences } from '@/types'
 
-import { authRepo, db, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { logger } from '@/logging'
 import { hashPassword } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'
-import { emailAgent } from '@/services'
-import { AuthProvider, UserStatus } from '@/types'
+import {
+  buildVerificationUrl,
+  emailService,
+  VerificationEmailMessageBuilder
+} from '@/services'
+import {
+  AuthProvider,
+  getSelfServeUserDefaultPermissions,
+  UserStatus
+} from '@/types'
 
+import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens } from '../tokens'
 
 const createNewUser = async (
@@ -57,6 +65,12 @@ const createNewUser = async (
       tx
     )
 
+    await rbacRepo.setUserPermissions(
+      newUser.id,
+      getSelfServeUserDefaultPermissions(),
+      tx
+    )
+
     return newUser
   })
 
@@ -90,28 +104,27 @@ export const signUpWithEmail = async (
     password
   )
 
-  // Send email verification (fire-and-forget, outside transaction)
-  emailAgent
-    .sendEmailVerificationEmail(
-      newUser.firstName,
+  void emailService.send(
+    new VerificationEmailMessageBuilder(
       newUser.email,
-      verificationToken,
+      {
+        firstName: newUser.firstName,
+        verificationUrl: buildVerificationUrl(verificationToken)
+      },
       preferences
     )
-    .catch((error: unknown) => {
-      logger.error(
-        { error },
-        `Failed to send email verification email to ${newUser.email}`
-      )
-    })
+  )
+
+  const permissions = await resolvePermissionList(newUser.id)
 
   const [accessToken, refreshToken] = await createAuthTokens(
     newUser,
-    deviceInfo
+    deviceInfo,
+    permissions
   )
 
   return {
-    data: { user: newUser, accessToken },
+    data: { user: newUser, permissions, accessToken },
     refreshToken
   }
 }

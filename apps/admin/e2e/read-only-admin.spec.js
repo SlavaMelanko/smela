@@ -10,6 +10,9 @@ const supportCredentials = {
   password: process.env.VITE_E2E_SUPPORT_PASSWORD
 }
 
+// The seeded team that test members are linked to
+const teamWithMembers = process.env.VITE_E2E_TEAM_WITH_MEMBERS
+
 const searchAndOpen = async (page, query) => {
   await page.getByRole('searchbox', { name: 'Search' }).fill(query)
   await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
@@ -23,22 +26,22 @@ test.describe('Read-Only Admin: Authentication', () => {
   }) => {
     await login(supportCredentials)
 
+    const expected = ['view:dashboard', 'view:teams', 'view:users']
+
     const mePromise = waitForApiCall(page, {
       path: ME_PATH,
       status: HttpStatus.OK,
-      validateResponse: body => {
-        const expected = ['view:dashboard', 'view:teams', 'view:users']
-
-        return (
-          Array.isArray(body.permissions) &&
-          body.permissions.length === expected.length &&
-          expected.every(p => body.permissions.includes(p))
-        )
-      }
+      validateResponse: body =>
+        Array.isArray(body.permissions) &&
+        body.permissions.length === expected.length &&
+        expected.every(p => body.permissions.includes(p))
     })
 
     await page.reload()
-    await mePromise
+    const { body } = await mePromise
+
+    expect(body.permissions).toEqual(expect.arrayContaining(expected))
+    expect(body.permissions).toHaveLength(expected.length)
   })
 })
 
@@ -77,7 +80,7 @@ test.describe('Read-Only Admin: Users', () => {
   }) => {
     // Navigate via the team members list to get a user with a membership
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, teamWithMembers)
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
@@ -98,6 +101,47 @@ test.describe('Read-Only Admin: Users', () => {
     await expect(
       page.getByRole('button', { name: t.team.members.remove.cta })
     ).not.toBeVisible()
+  })
+})
+
+test.describe('Read-Only Admin: Profile', () => {
+  test.beforeEach(async ({ login }) => {
+    await login(supportCredentials)
+  })
+
+  test.afterEach(async ({ page, t }) => {
+    await logOut(page, t)
+  })
+
+  test('Date format picked on Appearance tab applies to Personal tab dates', async ({
+    page,
+    t
+  }) => {
+    const dateFields = ['#createdAt', '#updatedAt']
+
+    const formats = [
+      {
+        label: t.format.date.values.short,
+        pattern: /^[A-Za-z]{3} \d{1,2}, \d{4}$/
+      }, // Sep 10, 2026
+      {
+        label: t.format.date.values.full,
+        pattern: /^[A-Za-z]+day, [A-Za-z]+ \d{1,2}, \d{4}$/
+      }, // Thursday, September 10, 2026
+      { label: t.format.date.values.numeric, pattern: /^\d{2}\/\d{2}\/\d{4}$/ } // 09/10/2026
+    ]
+
+    await page.goto('/profile')
+
+    for (const { label, pattern } of formats) {
+      await page.getByRole('tab', { name: t.appearance }).click()
+      await page.getByRole('radio', { name: label }).click()
+      await page.getByRole('tab', { name: t.personal }).click()
+
+      for (const field of dateFields) {
+        await expect(page.locator(field)).toHaveText(pattern)
+      }
+    }
   })
 })
 
@@ -124,12 +168,8 @@ test.describe('Read-Only Admin: Teams', () => {
     // Open first team row
     await page.getByRole('row').nth(1).click()
 
-    // General tab: fields must be read-only, Save button hidden
-    for (const label of [
-      t.team.name.label,
-      t.team.website.label,
-      t.team.description.label
-    ]) {
+    // Personal tab: fields must be read-only, Save button hidden
+    for (const label of [t.name.label, t.website.label, t.description.label]) {
       await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
     }
 
@@ -147,7 +187,7 @@ test.describe('Read-Only Admin: Teams', () => {
     t
   }) => {
     await page.goto('/teams')
-    await searchAndOpen(page, 'Wisozk - Sipes')
+    await searchAndOpen(page, teamWithMembers)
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)

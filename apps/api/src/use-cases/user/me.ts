@@ -10,7 +10,7 @@ import { resolvePermissionList } from '../resolve-permissions'
 const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
   return Object.fromEntries(
     Object.entries(updates).filter(([_, v]) => v !== undefined)
-  ) as UpdateUserInput
+  )
 }
 
 export const getUser = async (userId: string) => {

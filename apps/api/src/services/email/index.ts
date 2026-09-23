@@ -1,15 +1,16 @@
-export type { EmailConfig } from './configs'
-export { emailAgent, EmailAgent } from './email-agent'
-export { EmailType } from './email-type'
+export { EmailService, emailService } from './email-service'
+
 export {
-  createEmailProvider,
-  type EmailProvider,
-  type EmailProviderType
-} from './providers'
-export { buildEmailRegistry, type EmailRegistry } from './registry'
+  buildInviteUrl,
+  buildResetPasswordUrl,
+  buildVerificationUrl
+} from './email-urls'
+
+export type { SupportedLocale, Theme, UserPreferences } from '@smela/emails'
+
 export {
-  type EmailSender,
-  getSenderDetails,
-  SenderProfile as SenderProfileType
-} from './sender-profile'
-export { EmailService } from './service'
+  EmailSenderType,
+  PasswordResetEmailMessageBuilder,
+  UserInviteEmailMessageBuilder,
+  VerificationEmailMessageBuilder
+} from '@smela/emails'

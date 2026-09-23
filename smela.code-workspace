@@ -4,7 +4,9 @@
     { "path": "apps/api", "name": "api" },
     { "path": "apps/web", "name": "web" },
     { "path": "apps/admin", "name": "admin" },
+    { "path": "packages/contracts", "name": "contracts" },
     { "path": "packages/e2e", "name": "e2e" },
+    { "path": "packages/emails", "name": "emails" },
     { "path": "packages/i18n", "name": "i18n" },
     { "path": "packages/eslint", "name": "eslint" },
     { "path": "packages/ui", "name": "ui" }
@@ -15,10 +17,15 @@
       "packages": true
     },
     "search.exclude": {
+      "**/*.lcov": true,
+      "**/.turbo": true,
       "**/build": true,
       "**/coverage": true,
       "**/dist": true,
-      "**/node_modules": true
+      "**/html-report": true,
+      "**/node_modules": true,
+      "**/playwright-report": true,
+      "**/test-results": true
     },
     "cSpell.words": ["anthropics", "smela"]
   }

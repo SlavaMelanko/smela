@@ -3,7 +3,7 @@ import type { DeviceInfo } from '@/net/http/device'
 import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
 import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
-import UserStatus from '@/types/user-status'
+import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'

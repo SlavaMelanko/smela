@@ -6,8 +6,7 @@ import type { DeviceInfo } from '@/net/http/device'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
-import Role from '@/types/role'
-import UserStatus from '@/types/user-status'
+import { Role, UserStatus } from '@/types'
 import { hour, nowPlus } from '@/utils/chrono'
 
 import { resetPassword } from '../reset-password'
@@ -66,7 +65,7 @@ describe('Reset Password', () => {
       status: UserStatus.Active,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as User
+    }
 
     mockAccessToken = 'mock-access-token'
     mockRefreshToken = 'mock-refresh-token'

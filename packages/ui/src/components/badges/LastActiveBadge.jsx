@@ -32,9 +32,7 @@ export const LastActiveBadge = ({ date, className }) => {
 
   const { key, count } = getTranslationKey(date)
 
-  const label = key
-    ? t(key, count !== undefined ? { count } : undefined)
-    : formatDate(date)
+  const label = key ? t(key, { count }) : formatDate(date)
 
   return <span className={className}>{label}</span>
 }

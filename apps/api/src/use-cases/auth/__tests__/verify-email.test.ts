@@ -78,6 +78,12 @@ describe('Verify Email', () => {
       userRepo: mockUserRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
       authRepo: {},
+      rbacRepo: {
+        findUserPermissions: mock(async () => [
+          { action: 'view', resource: 'dashboard' },
+          { action: 'manage', resource: 'dashboard' }
+        ])
+      },
       db: mockTransaction
     }))
 

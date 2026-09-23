@@ -87,7 +87,7 @@ describe('Check Invite', () => {
   })
 
   describe('when token is valid for member invite', () => {
-    it('should return member type and team name for member invitation token', async () => {
+    it('should return member type and team name for member invite token', async () => {
       const result = await checkInvite(mockTokenString)
 
       expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
@@ -115,7 +115,7 @@ describe('Check Invite', () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
     })
 
-    it('should return admin type and company name for admin invitation token', async () => {
+    it('should return admin type and company name for admin invite token', async () => {
       const result = await checkInvite(mockTokenString)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(

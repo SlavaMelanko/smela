@@ -3,7 +3,6 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '@ui/tests'
 const en = resources.en.translation
 
-import { SettingsPageHeader } from '../SettingsPageHeader'
 import { TeamPageHeader } from '../TeamPageHeader'
 import { UserPageHeader } from '../UserPageHeader'
 
@@ -45,15 +44,6 @@ describe('PageHeader', () => {
 
     expect(link).toHaveAttribute('href', 'https://acme.com')
     expect(link).toHaveAttribute('target', '_blank')
-  })
-
-  it('SettingsPageHeader renders title and description', () => {
-    renderWithProviders(
-      <SettingsPageHeader title='Settings' description='Your preferences' />
-    )
-
-    expect(screen.getByText('Settings')).toBeInTheDocument()
-    expect(screen.getByText('Your preferences')).toBeInTheDocument()
   })
 })
 

@@ -103,10 +103,10 @@ export const UserInfoForm = ({
         )}
 
         <FormRow forceColumns>
-          <FormField label={t('createdAt')} optional>
+          <FormField name='createdAt' label={t('createdAt')} optional>
             <FormReadOnly>{formatDate(user?.createdAt)}</FormReadOnly>
           </FormField>
-          <FormField label={t('updatedAt')} optional>
+          <FormField name='updatedAt' label={t('updatedAt')} optional>
             <FormReadOnly>{formatDate(user?.updatedAt)}</FormReadOnly>
           </FormField>
         </FormRow>

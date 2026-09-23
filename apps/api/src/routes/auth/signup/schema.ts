@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import type { ValidatedJsonCtx } from '@/routes/validated-ctx'
-
 import { rules } from '@/routes/rules'
 
 export const signupBodySchema = z
@@ -24,6 +22,3 @@ export const signupBodySchema = z
       .optional()
   })
   .strict()
-
-export type SignupBody = z.infer<typeof signupBodySchema>
-export type SignupCtx = ValidatedJsonCtx<SignupBody>

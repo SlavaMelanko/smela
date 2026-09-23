@@ -1,7 +1,8 @@
-import { adminTeamsRoute, adminUsersRoute } from './admin'
+import { adminSystemRoute, adminTeamsRoute, adminUsersRoute } from './admin'
 import {
   acceptInviteRoute,
   checkInviteRoute,
+  googleOAuthRoute,
   loginRoute,
   logoutRoute,
   refreshTokenRoute,
@@ -17,6 +18,7 @@ import { meRoute, teamsRoute } from './user'
 export const authPublicRoutes = [
   acceptInviteRoute,
   checkInviteRoute,
+  googleOAuthRoute,
   loginRoute,
   logoutRoute,
   refreshTokenRoute,
@@ -31,6 +33,6 @@ export const userRoutesAllowNew = [meRoute]
 
 export const userRoutesVerifiedOnly = [teamsRoute]
 
-export const adminRoutes = [adminTeamsRoute, adminUsersRoute]
+export const adminRoutes = [adminSystemRoute, adminTeamsRoute, adminUsersRoute]
 
 export const ownerRoutes = [ownerAdminsRoute]

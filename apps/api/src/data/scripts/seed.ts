@@ -3,22 +3,27 @@
 /**
  * Seed initial data required to start the application
  *
- * Seeds: permissions, initial users (owner, admin, support admin, test users) with direct user permissions
+ * Always seeds: permissions, system users (owner, admin, support admin)
+ * Non-production only: teams and test users
  *
  * Usage:
  *   bun run db:seed
  */
 
 import { faker } from '@faker-js/faker'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
+import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
+import { EmailSenderType } from '@/services/email'
 import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
 import {
   authTable,
+  emailSenderProfilesTable,
   permissionsTable,
+  socialLinksTable,
   teamMembersTable,
   teamsTable,
   userPermissionsTable,
@@ -72,6 +77,78 @@ const seedPermissions = async () => {
   console.log(`✅ ${permissionsToInsert.length} permissions seeded`)
 }
 
+const seedEmailSenderProfiles = async () => {
+  const emailSenderProfiles = [
+    {
+      profile: EmailSenderType.System,
+      email: 'noreply@smela.me',
+      name: 'SMELA',
+      description: 'Transactional and system notifications'
+    },
+    {
+      profile: EmailSenderType.Support,
+      email: 'support@smela.me',
+      name: 'SMELA Support',
+      description: 'Customer support and help requests'
+    },
+    {
+      profile: EmailSenderType.Security,
+      email: 'security@smela.me',
+      name: 'SMELA Security',
+      description: 'Security alerts and account protection'
+    }
+  ]
+
+  await db
+    .insert(emailSenderProfilesTable)
+    .values(emailSenderProfiles)
+    .onConflictDoUpdate({
+      target: emailSenderProfilesTable.profile,
+      set: {
+        email: sql`excluded.email`,
+        name: sql`excluded.name`,
+        description: sql`excluded.description`,
+        updatedAt: new Date()
+      }
+    })
+
+  console.log(`✅ ${emailSenderProfiles.length} email sender profiles seeded`)
+}
+
+const seedSocialLinks = async () => {
+  const socialLinks = [
+    {
+      name: 'Facebook',
+      url: 'https://facebook.com/smela',
+      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>'
+    },
+    {
+      name: 'GitHub',
+      url: 'https://github.com/smela',
+      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></svg>'
+    },
+    {
+      name: 'LinkedIn',
+      url: 'https://linkedin.com/smela',
+      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>'
+    }
+  ]
+
+  await db
+    .insert(socialLinksTable)
+    .values(socialLinks)
+    .onConflictDoUpdate({
+      target: socialLinksTable.name,
+      set: {
+        url: sql`excluded.url`,
+        svg: sql`excluded.svg`,
+        updatedAt: new Date()
+      }
+    })
+
+  console.log(`✅ ${socialLinks.length} social links seeded`)
+}
+
 const setUserPermissions = async (
   userId: string,
   permissions: { action: Action; resource: Resource }[]
@@ -101,7 +178,8 @@ const seedTeams = async () => {
       description: faker.company.catchPhrase()
     },
     {
-      name: faker.company.name(),
+      // Fixed name so e2e tests can find the team its members are linked to
+      name: 'Kemmer and Co',
       website: faker.internet.url(),
       description: faker.company.catchPhrase()
     }
@@ -166,7 +244,8 @@ const seedSystemUsers = async () => {
         { action: Action.Manage, resource: Resource.Admins },
         { action: Action.Manage, resource: Resource.Users },
         { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard }
+        { action: Action.Manage, resource: Resource.Dashboard },
+        { action: Action.Manage, resource: Resource.System }
       ]
     },
     {
@@ -179,7 +258,8 @@ const seedSystemUsers = async () => {
       permissions: [
         { action: Action.Manage, resource: Resource.Users },
         { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard }
+        { action: Action.Manage, resource: Resource.Dashboard },
+        { action: Action.Manage, resource: Resource.System }
       ]
     },
     {
@@ -280,15 +360,15 @@ const seedTestUsers = async (teamId: string) => {
         .from(teamMembersTable)
         .where(eq(teamMembersTable.userId, existingUser.id))
 
-      if (!existingLink) {
+      if (existingLink) {
+        console.log(`✅ user ${user.email} already exists`)
+      } else {
         await db.insert(teamMembersTable).values({
           userId: existingUser.id,
           teamId,
           position: user.position
         })
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
-      } else {
-        console.log(`✅ user ${user.email} already exists`)
       }
 
       continue
@@ -325,11 +405,64 @@ const seedTestUsers = async (teamId: string) => {
   }
 }
 
+// Google OAuth users (no password, no team) - identifier is the Google account id (sub), not email
+const seedGoogleUsers = async () => {
+  const googleUsers = [
+    {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email: 'user.google@gmail.com',
+      googleId: 'mock-google-id-user-google',
+      status: UserStatus.Verified,
+      permissions: [{ action: Action.Manage, resource: Resource.Dashboard }]
+    }
+  ]
+
+  for (const user of googleUsers) {
+    const [existingUser] = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(eq(usersTable.email, user.email))
+
+    if (existingUser) {
+      console.log(`✅ Google user ${user.email} already exists`)
+      continue
+    }
+
+    const [createdUser] = await db
+      .insert(usersTable)
+      .values({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        status: user.status
+      })
+      .returning({ id: usersTable.id })
+
+    await db.insert(authTable).values({
+      userId: createdUser.id,
+      provider: AuthProvider.Google,
+      identifier: user.googleId,
+      passwordHash: null
+    })
+
+    await setUserPermissions(createdUser.id, user.permissions)
+
+    console.log(`✅ Google user ${user.email} seeded`)
+  }
+}
+
 const seed = async () => {
   await seedPermissions()
+  await seedEmailSenderProfiles()
+  await seedSocialLinks()
   await seedSystemUsers()
-  const teamId = await seedTeams()
-  await seedTestUsers(teamId)
+
+  if (!isProdEnv()) {
+    const teamId = await seedTeams()
+    await seedTestUsers(teamId)
+    await seedGoogleUsers()
+  }
 }
 
 seed().catch(err => {

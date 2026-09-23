@@ -1,5 +1,6 @@
 export { AcceptInvitePage } from './AcceptInvite'
 export { EmailConfirmationPage } from './EmailConfirmation'
+export { GoogleOAuthCallbackPage } from './GoogleOAuthCallback'
 export { LoginPage } from './Login'
 export { ResetPasswordPage } from './ResetPassword'
 export { SignupPage } from './Signup'

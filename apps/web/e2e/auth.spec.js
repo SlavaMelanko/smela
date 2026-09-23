@@ -13,6 +13,7 @@ import { Role, UserStatus } from '@smela/ui/lib/types'
 import {
   LOGIN_PATH,
   ME_PATH,
+  REFRESH_TOKEN_PATH,
   REQUEST_PASSWORD_RESET_PATH,
   RESEND_VERIFICATION_EMAIL_PATH,
   RESET_PASSWORD_PATH,
@@ -138,6 +139,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     })
 
     await page.waitForURL('/home')
+    await expect(page).toHaveURL(/\/home/)
 
     // Logout to ensure clean state for next test
     await logOut(page, t)
@@ -493,6 +495,55 @@ test.describe('Authentication: General', () => {
     }
   })
 
+  test('reset-password: reachable from login while unauthenticated', async ({
+    page,
+    t
+  }) => {
+    await page.goto('/login')
+
+    await page.getByRole('link', { name: t.forgotYourPassword }).click()
+
+    await page.waitForURL(/\/reset-password/)
+
+    await expect(
+      page.getByText(t.password.reset.request.description)
+    ).toBeVisible()
+  })
+
+  test('login: shows info and error notices from url params', async ({
+    page,
+    t
+  }) => {
+    const infoCode = 'refresh-token/missing'
+    const errorCode = 'auth/google-oauth-failed'
+
+    // Info notice — neutral (e.g. expired session redirect)
+    await page.goto(`/login?info=${encodeURIComponent(infoCode)}`)
+
+    const infoNotice = page.getByRole('alert')
+
+    await expect(infoNotice).toHaveText(t.backend[infoCode])
+    await expect(infoNotice).not.toHaveClass(/text-destructive/)
+
+    // Error notice — destructive (e.g. Google OAuth failure)
+    await page.goto(`/login?error=${encodeURIComponent(errorCode)}`)
+
+    const errorNotice = page.getByRole('alert')
+
+    await expect(errorNotice).toHaveText(t.backend[errorCode])
+    await expect(errorNotice).toHaveClass(/text-destructive/)
+
+    // Error takes precedence when both params are present
+    await page.goto(
+      `/login?info=${encodeURIComponent(infoCode)}&error=${encodeURIComponent(errorCode)}`
+    )
+
+    const notice = page.getByRole('alert')
+
+    await expect(notice).toHaveText(t.backend[errorCode])
+    await expect(notice).toHaveClass(/text-destructive/)
+  })
+
   test('login: redirects authenticated users from auth pages', async ({
     page,
     t,
@@ -585,5 +636,104 @@ test.describe('Authentication: General', () => {
     await expect(secondTab).toHaveURL(/\/login/)
 
     await secondTab.close()
+  })
+})
+
+/**
+ * Parallel tests - Google OAuth
+ * Cover the flows reachable without a real Google round-trip.
+ */
+test.describe('Authentication: Google OAuth', () => {
+  test('signup: prevents email signup for an existing Google account', async ({
+    page,
+    t
+  }) => {
+    await page.goto('/signup')
+
+    const apiPromise = waitForApiCall(page, {
+      path: SIGNUP_PATH,
+      status: HttpStatus.CONFLICT
+    })
+
+    await fillSignupFormAndSubmit(
+      page,
+      {
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        email: process.env.VITE_E2E_USER_GOOGLE_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
+      },
+      t
+    )
+
+    await apiPromise
+
+    await expect(
+      page.getByText(t.backend['auth/email-already-in-use'])
+    ).toBeVisible()
+  })
+
+  test('login: shows error for Google-only account using email login', async ({
+    page,
+    t
+  }) => {
+    await page.goto('/login')
+
+    const apiPromise = waitForApiCall(page, {
+      path: LOGIN_PATH,
+      status: HttpStatus.CONFLICT
+    })
+
+    await fillLoginFormAndSubmit(
+      page,
+      {
+        email: process.env.VITE_E2E_USER_GOOGLE_EMAIL,
+        password: process.env.VITE_E2E_USER_PASSWORD
+      },
+      t
+    )
+
+    await apiPromise
+
+    await expect(
+      page.getByText(t.backend['auth/social-auth-only'])
+    ).toBeVisible()
+  })
+
+  test('callback: redirects to login with error when session is missing', async ({
+    page,
+    t
+  }) => {
+    const apiPromise = waitForApiCall(page, {
+      path: REFRESH_TOKEN_PATH,
+      status: HttpStatus.BAD_REQUEST
+    })
+
+    // No refresh cookie is set without a real OAuth round-trip, so the token
+    // exchange fails and routes back to login with a neutral session notice.
+    await page.goto('/auth/google/callback')
+
+    await apiPromise
+    await page.waitForURL(/\/login/)
+
+    const notice = page.getByRole('alert')
+
+    await expect(notice).toHaveText(t.backend['refresh-token/missing'])
+    await expect(notice).not.toHaveClass(/text-destructive/)
+  })
+
+  test('callback: shows destructive error when the backend redirects with a failure', async ({
+    page,
+    t
+  }) => {
+    const errorCode = 'auth/google-oauth-failed'
+
+    // The backend funnels token-exchange / user-info failures to this redirect
+    await page.goto(`/login?error=${encodeURIComponent(errorCode)}`)
+
+    const notice = page.getByRole('alert')
+
+    await expect(notice).toHaveText(t.backend[errorCode])
+    await expect(notice).toHaveClass(/text-destructive/)
   })
 })

@@ -7,10 +7,8 @@ test.describe('Auth', () => {
   }) => {
     await page.goto('/login')
 
-    await expect(page.getByText(t.doNotHaveAccount)).not.toBeVisible()
-    await expect(
-      page.getByRole('button', { name: t.continueWithGoogle })
-    ).not.toBeVisible()
+    await expect(page.getByText(t.doNotHaveAccount)).toHaveCount(0)
+    await expect(page.getByTestId('google-oauth-button')).toHaveCount(0)
   })
 
   test('/signup route renders 404 page', async ({ page, t }) => {

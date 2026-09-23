@@ -217,8 +217,8 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     await page.getByRole('row').nth(1).click()
 
     // View + manage permission: Name and description fields must be editable
-    await expect(page.getByLabel(t.team.name.label)).not.toBeDisabled()
-    await expect(page.getByLabel(t.team.description.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.name.label)).not.toBeDisabled()
+    await expect(page.getByLabel(t.description.label)).not.toBeDisabled()
 
     await logOut(page, t)
   })
@@ -281,8 +281,8 @@ test.describe.serial('Owner: Invite admin with full access', () => {
 
     await page.waitForURL('**/profile*')
 
-    // General tab should be active by default — verify it is visible
-    await expect(page.getByRole('tab', { name: t.general })).toBeVisible()
+    // Personal tab should be active by default — verify it is visible
+    await expect(page.getByRole('tab', { name: t.personal })).toBeVisible()
 
     // Switch to Security tab
     await page.getByRole('tab', { name: t.security }).click()

@@ -2,14 +2,10 @@ import { useEffect, useRef } from 'react'
 
 import { useVerifyEmail } from './useAuth'
 
-/**
- * Handles email verification with StrictMode-safe guard to prevent double execution.
- *
- * Note: onSuccess is intentionally omitted. Use onSettled to show toasts
- * before navigation to prevent them from being lost during unmount.
- */
+// Runs verification once (StrictMode-safe). mutateAsync's promise is bound to
+// the mutation, not the observer, so onSettled survives an unmount mid-request.
 export const useVerifyEmailOnce = (token, { onSettled }) => {
-  const { mutate: verifyEmail } = useVerifyEmail({ onSettled })
+  const { mutateAsync: verifyEmail } = useVerifyEmail()
   const hasVerified = useRef(false)
 
   useEffect(() => {
@@ -19,6 +15,8 @@ export const useVerifyEmailOnce = (token, { onSettled }) => {
 
     hasVerified.current = true
 
-    verifyEmail({ token }, { onSettled })
+    verifyEmail({ token })
+      .then(data => onSettled(data, null))
+      .catch(error => onSettled(null, error))
   }, [token, verifyEmail, onSettled])
 }

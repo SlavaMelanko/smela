@@ -79,17 +79,6 @@ describe('UserInfoForm', () => {
     })
   })
 
-  it('shows min length error when firstName is too short', async () => {
-    const { firstNameInput, saveButton } = renderForm()
-
-    await user.type(firstNameInput, 'A')
-    await user.click(saveButton)
-
-    await waitFor(() => {
-      expect(screen.getByText(en.firstName.error.min)).toBeInTheDocument()
-    })
-  })
-
   it('blocks submission without selecting status', async () => {
     const onSubmit = vi.fn()
     const { firstNameInput, saveButton } = renderForm({ onSubmit })

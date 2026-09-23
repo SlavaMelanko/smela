@@ -1,6 +1,9 @@
 ---
 name: api-testing
-description: Testing guidelines for Bun/TypeScript projects using bun:test framework. Use when writing tests, creating test files, debugging test failures, setting up mocks, or reviewing test code. Triggers on *.test.ts files, test-related questions, mocking patterns, and coverage discussions.
+description:
+  Backend testing guidelines for apps/api (bun:test). Triggers - test, unit
+  test, *.test.ts, __tests__, bun:test, mock, ModuleMocker, spy, stub, coverage,
+  failing test, test setup, .env.test, describe, expect.
 ---
 
 # API Testing Skill
@@ -10,18 +13,26 @@ description: Testing guidelines for Bun/TypeScript projects using bun:test frame
 - **App**: `apps/api`
 - **Framework**: bun:test
 - **File pattern**: `*.test.ts` inside `__tests__` directories
-- **Module mocking**: Use `ModuleMocker` from `@/__tests__` (see [patterns](references/mocking-patterns.md))
+- **Runner**: `bun test src --parallel` — each file gets a fresh global (see
+  [Test Isolation](#test-isolation))
+- **Module mocking**: Use `ModuleMocker` from `@/__tests__` (see
+  [patterns](references/mocking-patterns.md))
 - **Coverage target**: 60–80% (focus on important logic, not 100%)
 - **Config**: `apps/api/.env.test` for test environment variables
 
-## Test Utilities (apps/api/src/__tests__/)
+## Test Utilities (`apps/api/src/__tests__/`)
 
 Before writing custom test helpers, check existing utilities:
 
-- **`createTestApp(basePath, route, middleware[])`** - Creates test Hono app with error handler, logger, and optional middleware
-- **`ModuleMocker(import.meta.url)`** - Module mocking utility (see [mocking patterns](references/mocking-patterns.md))
+- **`createTestApp(basePath, route, middleware[])`** - Creates test Hono app
+  with error handler, logger, and optional middleware
+- **`withClaims(claims?)`** - Claims-injection middleware that stands in for the
+  real auth guard in route endpoint tests (pass role/permissions overrides)
+- **`ModuleMocker(import.meta.url)`** - Module mocking utility (see
+  [mocking patterns](references/mocking-patterns.md))
 - **`post(app, url, body, headers)`** - POST request helper
 - **`get(app, url, headers)`** - GET request helper
+- **`patch(app, url, body, headers)`** - PATCH request helper
 - **`doRequest(app, url, method, body, headers)`** - Generic request helper
 
 Example:
@@ -32,7 +43,7 @@ import { createTestApp, post } from '@/__tests__'
 const app = createTestApp('/api/v1/auth', signupRoute, [verifyCaptcha()])
 const response = await post(app, '/api/v1/auth/signup', {
   email: 'test@example.com',
-  password: 'SecurePass123!',
+  password: 'SecurePass123!'
 })
 ```
 
@@ -42,12 +53,59 @@ const response = await post(app, '/api/v1/auth/signup', {
 - **Integration tests**: Use real database, mock external APIs only
 - **Endpoint tests**: Use `createTestApp()` with mocked services
 
-## Test Priorities
+## Route Tests (`index.test.ts` convention)
 
-1. Correct scenario(s)
-2. Error handling
-3. Boundary inputs
-4. Failure scenarios
+Route handlers are inlined in `index.ts` (Hono best practice), so they cannot be
+imported directly — never write direct handler unit tests. Instead, write
+endpoint tests through the mounted route:
+
+- One `index.test.ts` per route `index.ts`, co-located in `__tests__/` — the
+  test tree mirrors the route tree
+- Mount the top of the resource group (e.g. `adminUsersRoute`), never the leaf,
+  so `:id` params and nesting run the real chain
+- Top-level describe is the mount context (e.g. `'admin /users'`), nested
+  describes per route (e.g. `'GET /users/:id'`, `'PATCH /users/:id'`)
+- Replace the group-level auth guard with `withClaims(...)`; the guard itself is
+  covered in `middleware/auth/__tests__/`
+- Per route, in chain order (~5–7 tests):
+  1. Happy path — status, use case called with parsed input, response shape
+  2. Validation — one reject per input source (param/query/body), assert the use
+     case `not.toHaveBeenCalled()`; don't re-test `rules.ts` exhaustively
+  3. Permission — one 403 with claims missing the permission
+  4. Error propagation — use case throws → status via `onError`
+
+See `src/routes/admin/users/$id/__tests__/index.test.ts` for the canonical
+example.
+
+## Test Isolation
+
+`test` and `coverage` run with `--parallel`, which implies Bun's `--isolate`:
+every test file gets its own `JSGlobalObject`, so module mocks, `globalThis`
+mutations, and leaked handles cannot cross file boundaries.
+
+What this does and does not change:
+
+- **Across files**: isolation handles it. A `mock.module()` in one file can no
+  longer affect another, which is the bug `ModuleMocker` was written for.
+- **Within a file**: nothing changed. Mocks still persist from one `it()` to the
+  next, so `afterEach` cleanup is still required — see [Cleanup](#cleanup).
+
+Keep using `ModuleMocker`. It is still the pattern in ~56 files, and removing it
+is tracked separately in [#32](https://github.com/SlavaMelanko/smela/issues/32);
+`--isolate` is still experimental in Bun, so the suite should not depend on it
+exclusively yet.
+
+Two practical consequences:
+
+- **Don't rely on cross-file state.** Anything a test needs must be set up in
+  that file. This was always true in principle; it is now enforced.
+- **Never log through a worker-backed transport in tests.** `pino.transport()`
+  spawns a thread per global and crashes under isolation.
+  `src/logging/logger.ts` uses `pino.destination({ sync: true })` when
+  `isTestEnv()` — keep it that way.
+
+Running a single file (`bun test path/to/file.test.ts`) skips `--parallel` and
+is fine for local iteration.
 
 ## Environment Setup
 
@@ -58,40 +116,23 @@ const response = await post(app, '/api/v1/auth/signup', {
 ## Mocking Strategy
 
 - Mock only business logic dependencies (repositories, external APIs)
-- Use global mocks for shared services (CAPTCHA, email) — don't redefine per test
+- Route endpoint tests mock at the use-case boundary only (`@/use-cases/*` via
+  `ModuleMocker`) — validators, `requirePermission`, and `onError` run real
+- Use global mocks for shared services (CAPTCHA, email) — don't redefine per
+  test
 - No real database or network calls — all I/O must be mocked
 - Don't mock encapsulated dependencies — mock the public API/wrapper only
 
 ## Type Safety
 
-- Minimize `any` — prefer proper TypeScript types
-- Use type inference when possible
-- Use `Partial<T>` for mock objects
-- Exception: Use `any` only for complex mocks where full typing adds unnecessary complexity
-
-## Test Structure
-
-Use arrange → act → assert pattern with descriptive test names:
-
-```typescript
-describe('UserService', () => {
-  it('should return user when found by email', async () => {
-    // Arrange
-    const mockUser = { id: 1, email: 'test@example.com' }
-    mockUserRepo.findByEmail.mockResolvedValue(mockUser)
-
-    // Act
-    const result = await userService.findByEmail('test@example.com')
-
-    // Assert
-    expect(result).toEqual(mockUser)
-  })
-})
-```
+- Prefer proper types and `Partial<T>` for mocks; allow `any` only where full
+  typing adds unnecessary complexity
 
 ## Mocking Patterns
 
-For detailed mocking patterns including variable ordering, `beforeEach` setup, and ModuleMocker usage, see [references/mocking-patterns.md](references/mocking-patterns.md).
+For detailed mocking patterns including variable ordering, `beforeEach` setup,
+and ModuleMocker usage, see
+[references/mocking-patterns.md](references/mocking-patterns.md).
 
 ## Cleanup
 
@@ -100,6 +141,12 @@ Always clean up side effects after each test:
 ```typescript
 afterEach(async () => {
   await moduleMocker.clear() // restore mocked modules
-  vi.clearAllMocks() // or mock.mockClear() for individual mocks
 })
 ```
+
+Still required under `--isolate`. Isolation is per-file, not per-test: a module
+mocked in one `it()` stays mocked for the rest of that file. The fresh global
+only arrives with the next file.
+
+Use `.mockClear()` on individual bun:test mocks when call history must reset
+between tests.

@@ -96,6 +96,25 @@ describe('InviteForm', () => {
       expect(submittedData.permissions.teams).toHaveProperty('manage')
     })
 
+    it('accepts a single-character position', async () => {
+      const onSubmit = vi.fn()
+      const { firstNameInput, emailInput, positionInput, submitButton } =
+        renderForm({ onSubmit })
+
+      await user.type(firstNameInput, 'John')
+      await user.type(emailInput, 'john@example.com')
+      await user.type(positionInput, 'A')
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled()
+      })
+
+      const submittedData = onSubmit.mock.calls[0][0]
+
+      expect(submittedData).toHaveProperty('position', 'A')
+    })
+
     it('excludes hidden fields from submission', async () => {
       const onSubmit = vi.fn()
       const { firstNameInput, emailInput, submitButton } = renderForm({

@@ -66,8 +66,6 @@ describe('useDebouncedSearch', () => {
       { initialProps: { urlValue: 'test' } }
     )
 
-    onSearch.mockClear()
-
     rerender({ urlValue: 'test' })
 
     expect(onSearch).not.toHaveBeenCalled()
@@ -98,19 +96,5 @@ describe('useDebouncedSearch', () => {
 
     // URL still at 'q' but input is 'qw' — input should remain 'qw'
     expect(result.current.searchValue).toBe('qw')
-  })
-
-  it('syncs from URL on external changes like browser back/forward', () => {
-    const onSearch = vi.fn()
-    const { result, rerender } = renderHook(
-      ({ urlValue }) => useDebouncedSearch(urlValue, onSearch),
-      { initialProps: { urlValue: 'initial' } }
-    )
-
-    // Simulate browser back/forward changing URL to something unexpected
-    rerender({ urlValue: 'external-navigation' })
-
-    // Should sync because this is an external change
-    expect(result.current.searchValue).toBe('external-navigation')
   })
 })

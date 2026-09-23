@@ -1,8 +1,4 @@
-enum Role {
-  Owner = 'owner',
-  Admin = 'admin',
-  User = 'user'
-}
+import { Role } from '@smela/contracts'
 
 export const isUser = (role: Role) => role === Role.User
 

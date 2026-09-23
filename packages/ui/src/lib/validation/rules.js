@@ -1,12 +1,17 @@
+// Client-side form validation (UX only, not the enforced boundary).
+// Server-side counterpart: apps/api/src/routes/rules.ts
 import { z } from 'zod'
 
 import { allUserStatuses } from '../types/index.js'
 import {
   DescriptionConstraint,
   EmailConstraint,
+  isHttpsUrl,
   NameConstraint,
   PasswordConstraint,
-  TeamNameConstraint
+  PositionConstraint,
+  SvgConstraint,
+  WebsiteConstraint
 } from './constants'
 
 const requiredStr = errorMessage => z.string().trim().nonempty(errorMessage)
@@ -40,10 +45,9 @@ export const lastName = {
 }
 
 export const email = {
-  new: requiredStr('email.error.required').regex(
-    EmailConstraint.STANDARD,
-    'email.error.format'
-  )
+  new: requiredStr('email.error.required')
+    .max(EmailConstraint.MAX_LENGTH, 'email.error.max')
+    .regex(EmailConstraint.STANDARD, 'email.error.format')
 }
 
 export const captcha = requiredStr('captcha.error')
@@ -51,36 +55,46 @@ export const captcha = requiredStr('captcha.error')
 export const password = {
   new: requiredStr('password.error.required')
     .min(PasswordConstraint.MIN_LENGTH, 'password.error.min')
+    .max(PasswordConstraint.MAX_LENGTH, 'password.error.max')
     .regex(PasswordConstraint.STRONG, 'password.error.strong')
 }
 
-export const url = errorMessage =>
-  optionalStr().refine(
-    value => value === undefined || z.url().safeParse(value).success,
-    errorMessage
-  )
+export const url = {
+  optional: optionalStr()
+    .refine(
+      value => value === undefined || isHttpsUrl(value),
+      'url.error.format'
+    )
+    .refine(
+      value =>
+        value === undefined || value.length <= WebsiteConstraint.MAX_LENGTH,
+      'url.error.max'
+    ),
 
-export const teamName = errors =>
-  requiredStr(errors.required)
-    .min(TeamNameConstraint.MIN_LENGTH, errors.min)
-    .max(TeamNameConstraint.MAX_LENGTH, errors.max)
+  required: requiredStr('url.error.required')
+    .max(WebsiteConstraint.MAX_LENGTH, 'url.error.max')
+    .refine(isHttpsUrl, 'url.error.format')
+}
 
-export const description = errorMessage =>
-  optionalStr().refine(
-    value =>
-      value === undefined || value.length <= DescriptionConstraint.MAX_LENGTH,
-    errorMessage
-  )
+export const svg = requiredStr('svg.error.required').max(
+  SvgConstraint.MAX_LENGTH,
+  'svg.error.max'
+)
 
-export const position = optionalStr()
-  .refine(
-    value => !value || value.length >= NameConstraint.MIN_LENGTH,
-    'position.error.min'
-  )
-  .refine(
-    value => !value || value.length <= NameConstraint.MAX_LENGTH,
-    'position.error.max'
-  )
+export const displayName = requiredStr('name.error.required')
+  .min(NameConstraint.MIN_LENGTH, 'name.error.min')
+  .max(NameConstraint.MAX_LENGTH, 'name.error.max')
+
+export const description = optionalStr().refine(
+  value =>
+    value === undefined || value.length <= DescriptionConstraint.MAX_LENGTH,
+  'description.error.max'
+)
+
+export const position = optionalStr().refine(
+  value => !value || value.length <= PositionConstraint.MAX_LENGTH,
+  'position.error.max'
+)
 
 export const status = requiredStr('status.error.required').refine(
   value => allUserStatuses.includes(value),

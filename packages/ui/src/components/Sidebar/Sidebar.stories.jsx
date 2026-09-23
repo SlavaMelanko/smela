@@ -1,10 +1,4 @@
-import {
-  BookOpen,
-  Home,
-  MapPinCheckInside,
-  Settings,
-  Users
-} from 'lucide-react'
+import { BookOpen, Home, MapPinCheckInside, Users } from 'lucide-react'
 
 import { Sidebar } from '.'
 
@@ -42,8 +36,7 @@ export const AllFeatures = {
         url: 'https://docs.example.com',
         icon: BookOpen,
         external: true
-      },
-      { title: 'sidebar.settings', url: '/settings', icon: Settings }
+      }
     ]
   }
 }

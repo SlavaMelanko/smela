@@ -1,10 +1,10 @@
 ---
 name: rbac
 description:
-  Role-based and permission-based access control patterns for smela. Use when
-  adding routes, modifying auth guards, or implementing permission checks.
-  Triggers on server.ts, router.jsx, requirePermission, PrivateRoute,
-  requireAdminAuth, requireOwnerAuth.
+  Access control (RBAC/PBAC) patterns for smela. Triggers - role, permission,
+  access control, auth guard, protected route, admin route, 401, 403, forbidden,
+  requirePermission, PrivateRoute, requireAdminAuth, requireOwnerAuth,
+  action:resource, server.ts, router.jsx, permission.ts.
 ---
 
 # RBAC + PBAC Skill
@@ -98,18 +98,10 @@ middleware) and throws `Forbidden` if the permission string is absent.
 }
 ```
 
-### Permission enum values — `apps/api/src/types/permission.ts`
+### Permission enum — `apps/api/src/types/permission.ts`
 
-| Permission        | Value              |
-| ----------------- | ------------------ |
-| `ViewDashboard`   | `view:dashboard`   |
-| `ViewUsers`       | `view:users`       |
-| `ViewTeams`       | `view:teams`       |
-| `ViewAdmins`      | `view:admins`      |
-| `ManageDashboard` | `manage:dashboard` |
-| `ManageUsers`     | `manage:users`     |
-| `ManageTeams`     | `manage:teams`     |
-| `ManageAdmins`    | `manage:admins`    |
+Enum members follow `ViewX`/`ManageX` naming mapping to `view:x`/`manage:x`
+values — see the file for the current list.
 
 **Implicit grant rule**: `manage:X` implies `view:X`. `expandPermissions()`
 inserts synthetic `view` rows when resolving from DB — so never grant `view`
@@ -182,6 +174,6 @@ do not rely on instant revocation.
 
 - **Auth routes** (`/api/v1/auth/*`, `/login`, `/signup`, etc.) — public, no
   JWT, no user context
-- **`profile` and `settings` routes** — personal preferences, no resource
-  ownership, no permission needed
+- **`profile` route** — personal preferences, no resource ownership, no
+  permission needed
 - **Error pages** — unguarded by design

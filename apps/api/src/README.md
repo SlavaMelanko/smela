@@ -191,7 +191,8 @@ When adding new features, follow this pattern:
 
 1. **Define types** in `types/` (Layer 1) if needed
 2. **Create use case** in `use-cases/` (Layer 3) with business logic
-3. **Add route handler** in `routes/` (Layer 4) as thin HTTP wrapper
+3. **Add route** in `routes/` (Layer 4) with the handler inlined in `index.ts`
+   right after the path definition (Hono best practice) as a thin HTTP wrapper
 4. **Add tests** for both use case (business logic) and endpoint (HTTP
    interface)
 5. **Update barrel exports** in relevant `index.ts` files

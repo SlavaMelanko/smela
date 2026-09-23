@@ -88,7 +88,7 @@ export const findUserByIdExtended = async (
 
   const { team, ...user } = row
 
-  return team?.id != null ? { ...user, team } : user
+  return team ? { ...user, team } : user
 }
 
 export const findUserByEmail = async (email: string, tx?: Database) =>

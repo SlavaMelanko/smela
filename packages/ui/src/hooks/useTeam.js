@@ -93,7 +93,7 @@ export const useCreateTeam = () => {
       return { previousTeams }
     },
     onError: (_error, _newTeam, context) => {
-      queryClient.setQueryData(teamKeys.teamsList({}), context.previousTeams)
+      queryClient.setQueryData(teamKeys.teamsList({}), context?.previousTeams)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: teamKeys.teams() })
@@ -183,7 +183,7 @@ export const useInviteMember = teamId => {
     onError: (_error, _newMember, context) => {
       queryClient.setQueryData(
         teamKeys.members(teamId),
-        context.previousMembers
+        context?.previousMembers
       )
     },
     onSuccess: () => {
@@ -252,14 +252,14 @@ export const useUpdateTeamMemberPermissions = (teamId, memberId) => {
     onMutate: async data => {
       await queryClient.cancelQueries({ queryKey })
 
-      const previous = queryClient.getQueryData(queryKey)
+      const previousPermissions = queryClient.getQueryData(queryKey)
 
       queryClient.setQueryData(queryKey, data)
 
-      return { previous }
+      return { previousPermissions }
     },
     onError: (_error, _data, context) => {
-      queryClient.setQueryData(queryKey, context.previous)
+      queryClient.setQueryData(queryKey, context?.previousPermissions)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey })
@@ -323,10 +323,10 @@ export const useRemoveMember = teamId => {
     onError: (_error, _memberId, context) => {
       queryClient.setQueryData(
         teamKeys.members(teamId),
-        context.previousMembers
+        context?.previousMembers
       )
 
-      queryClient.setQueryData(teamKeys.team(teamId), context.previousTeam)
+      queryClient.setQueryData(teamKeys.team(teamId), context?.previousTeam)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: teamKeys.members(teamId) })

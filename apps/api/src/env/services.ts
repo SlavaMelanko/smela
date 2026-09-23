@@ -9,3 +9,17 @@ export const captchaEnvVars = {
 export const sentryEnvVars = {
   SENTRY_DSN: z.url().optional()
 }
+
+export const googleOAuthEnvVars = {
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+  GOOGLE_REDIRECT_URI: z
+    .url()
+    .default('http://localhost:3000/api/v1/auth/google/callback'),
+  GOOGLE_OAUTH_STATE_COOKIE: z.string().min(1).default('google-oauth-state'),
+  GOOGLE_OAUTH_STATE_COOKIE_MAX_AGE: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(600)
+}

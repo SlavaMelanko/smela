@@ -10,7 +10,8 @@
     "./vitest": "./src/vitest.js",
     "./playwright": "./src/playwright.js",
     "./shadcn": "./src/shadcn.js",
-    "./storybook": "./src/storybook.js"
+    "./storybook": "./src/storybook.js",
+    "./typescript": "./src/typescript.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -20,13 +21,14 @@
     "eslint": "^10"
   },
   "dependencies": {
+    "@antfu/eslint-config": "^9.2.0",
     "@eslint/js": "^10",
-    "@tanstack/eslint-plugin-query": "^5.96.2",
+    "@tanstack/eslint-plugin-query": "^5.101.4",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "eslint-plugin-simple-import-sort": "^13.0.0",
-    "eslint-plugin-storybook": "^10.3.5",
-    "globals": "^17.4.0"
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "eslint-plugin-storybook": "^10.5.5",
+    "globals": "^17.8.0"
   }
 }

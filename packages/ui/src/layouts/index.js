@@ -1,5 +1,5 @@
 export { AuthLayout } from './AuthLayout'
-export { ErrorLayout } from './ErrorLayout'
+export { ErrorInlineLayout, ErrorLayout } from './ErrorLayout'
 export { LegalLayout } from './LegalLayout'
 export { PublicLayout } from './PublicLayout'
 export { TeamLayout } from './TeamLayout'

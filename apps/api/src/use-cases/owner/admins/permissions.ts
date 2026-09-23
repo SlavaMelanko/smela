@@ -2,8 +2,7 @@ import type { PermissionsInput } from '@/types'
 
 import { rbacRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { Role } from '@/types'
-import { getAdminBasePermissions } from '@/types/permission'
+import { getAdminBasePermissions, Role } from '@/types'
 import { resolvePermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getAdminPermissions = async (adminId: string) => {

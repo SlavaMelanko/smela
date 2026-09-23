@@ -19,11 +19,7 @@ export const createRateLimiter = (
 ): MiddlewareHandler => {
   const {
     windowMs = 15 * 60 * 1000, // 15 minutes default
-    limit = config.limit !== undefined
-      ? config.limit
-      : isDevOrTestEnv()
-        ? 1_000
-        : 100,
+    limit = config.limit ?? (isDevOrTestEnv() ? 1_000 : 100),
     message = 'Too many requests, please try again later.',
     statusCode = 429,
     keyGenerator = getClientIp,

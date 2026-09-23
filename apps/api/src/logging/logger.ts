@@ -2,19 +2,22 @@ import type { DestinationStream } from 'pino'
 
 import pino from 'pino'
 
-import env from '@/env'
+import env, { isTestEnv } from '@/env'
 
 import { getTransports } from './transports'
 
-const transport = pino.transport({
-  targets: getTransports()
-}) as DestinationStream
+// Worker-backed transports spawn a thread per global, which breaks under `bun test --isolate`.
+// Tests log straight to stdout instead
+const createDestination = (): DestinationStream =>
+  isTestEnv()
+    ? pino.destination({ dest: 1, sync: true })
+    : pino.transport({ targets: getTransports() })
 
 const logger = pino(
   {
     level: env.LOG_LEVEL
   },
-  transport
+  createDestination()
 )
 
 export default logger

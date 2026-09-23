@@ -1,13 +1,19 @@
 {
   "add": "Add",
   "alreadyHaveAccount": "Already have an account?",
+  "appearance": "Appearance",
   "back": "Back",
   "backend": {
     "auth/already-verified": "Invalid request. Please try logging in.",
     "auth/email-already-in-use": "Email is already taken.",
     "auth/forbidden": "Access denied.",
+    "auth/google-email-not-verified": "Your Google email is not verified. Please verify it with Google and try again.",
+    "auth/google-oauth-cancelled": "Google sign-in was cancelled. Please try again.",
+    "auth/google-oauth-failed": "Google sign-in failed. Please try again.",
+    "auth/google-oauth-invalid-state": "Something went wrong. Please try again.",
     "auth/invalid-credentials": "Invalid email or password.",
     "auth/invalid-password": "Current password is incorrect.",
+    "auth/social-auth-only": "This account uses social login. Please sign in with your social provider.",
     "auth/unauthorized": "Access denied. Please try logging in again.",
     "captcha/invalid-token": "Security verification failed. Please try again.",
     "captcha/validation-failed": "Security verification failed. Please try again.",
@@ -42,9 +48,14 @@
     "remove": "Remove",
     "resend": "Resend"
   },
-  "continueWithGoogle": "Continue with Google",
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
+  "description": {
+    "error": {
+      "max": "Description can't exceed 500 characters."
+    },
+    "label": "Description"
+  },
   "doNotHaveAccount": "Don't have an account?",
   "email": {
     "confirmation": {
@@ -59,6 +70,7 @@
     },
     "error": {
       "format": "Enter a valid email.",
+      "max": "Email can't be longer than 254 characters.",
       "required": "Email is required."
     },
     "label": "Email",
@@ -70,6 +82,10 @@
       "loading": "Verifying email...",
       "success": "Welcome! Your account is ready."
     }
+  },
+  "emailSenderProfile": {
+    "empty": "No email sender profiles yet.",
+    "label": "Sender profiles"
   },
   "error": {
     "forbidden": {
@@ -129,7 +145,6 @@
       }
     }
   },
-  "general": "General",
   "invite": {
     "accept": {
       "cta": "Join",
@@ -176,6 +191,7 @@
     },
     "label": "Last name"
   },
+  "lastUsed": "Last used",
   "loading": "Loading...",
   "login": {
     "noun": "Login",
@@ -186,15 +202,24 @@
     "verb": "Log out"
   },
   "membership": "Membership",
+  "name": {
+    "error": {
+      "max": "Name can't exceed 50 characters.",
+      "min": "Name must be at least 2 characters.",
+      "required": "Name is required."
+    },
+    "label": "Name"
+  },
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",
-  "or": "or",
+  "orContinueWith": "or continue with",
   "pagination": {
     "limit": "Limit:",
     "of": "of"
   },
   "password": {
     "error": {
+      "max": "Password can't be longer than 64 characters.",
       "min": "Password must be at least 8 characters.",
       "required": "Password is required.",
       "same": "Must differ from current password.",
@@ -237,23 +262,25 @@
     "resources": {
       "hints": {
         "dashboard": "Key metrics overview. View is always enabled to ensure root navigation works correctly.",
+        "system": "System-level configuration and operational controls.",
         "teams": "Team details, members, and their access levels.",
         "users": "Personal details of individual accounts."
       },
       "name": "Resources",
       "values": {
         "dashboard": "Dashboard",
+        "system": "System",
         "teams": "Teams",
         "users": "Users"
       }
     }
   },
+  "personal": "Personal",
   "personalDetails": "Personal details",
   "position": {
     "default": "Team member",
     "error": {
-      "max": "Position can't be longer than 50 characters.",
-      "min": "Position must be at least 2 characters."
+      "max": "Position can't be longer than 100 characters."
     },
     "label": "Position"
   },
@@ -308,6 +335,7 @@
   },
   "processing": "Processing...",
   "profile": {
+    "label": "Profile",
     "title": "Profile"
   },
   "save": "Save",
@@ -316,10 +344,6 @@
     "users": "Search by ID, name, email..."
   },
   "security": "Security",
-  "settings": {
-    "description": "Your app-wide preferences",
-    "title": "Settings"
-  },
   "sidebar": {
     "admins": "Admins",
     "dashboard": "Dashboard",
@@ -329,11 +353,26 @@
     "proxies": "Proxies",
     "residential": "Residential",
     "serpApi": "SERP API",
-    "settings": "Settings",
+    "system": "System",
     "teams": "Teams",
     "users": "Users"
   },
   "signUp": "Sign up",
+  "socialLink": {
+    "add": {
+      "cta": "Create",
+      "success": "Social link created.",
+      "title": "Add social link"
+    },
+    "delete": {
+      "cta": "Delete",
+      "description": "Are you sure you want to delete {{name}}?",
+      "success": "Social link deleted.",
+      "title": "Delete social link"
+    },
+    "empty": "No social links yet.",
+    "label": "Social links"
+  },
   "status": {
     "error": {
       "invalid": "Select a valid status.",
@@ -352,9 +391,28 @@
     }
   },
   "support": "Support",
+  "svg": {
+    "error": {
+      "max": "SVG icon can't be longer than 10000 characters.",
+      "required": "SVG icon is required."
+    },
+    "label": "Icon"
+  },
+  "system": {
+    "description": "Configure system-level settings.",
+    "title": "System"
+  },
   "table": {
     "column": "Column",
     "column_plural": "Columns",
+    "emailSenderProfiles": {
+      "createdAt": "$t(createdAt)",
+      "description": "$t(description.label)",
+      "email": "$t(email.label)",
+      "name": "$t(name.label)",
+      "profile": "$t(profile.label)",
+      "updatedAt": "$t(updatedAt)"
+    },
     "filter": "Filter",
     "filter_plural": "Filters",
     "members": {
@@ -364,16 +422,23 @@
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
-      "position": "Position",
+      "position": "$t(position.label)",
       "status": "$t(status.name)"
+    },
+    "socialLinks": {
+      "createdAt": "$t(createdAt)",
+      "name": "$t(name.label)",
+      "svg": "$t(svg.label)",
+      "updatedAt": "$t(updatedAt)",
+      "url": "$t(url.label)"
     },
     "teams": {
       "createdAt": "$t(createdAt)",
       "id": "ID",
       "memberCount": "Members",
-      "name": "Name",
+      "name": "$t(name.label)",
       "updatedAt": "$t(updatedAt)",
-      "website": "Website"
+      "website": "$t(website.label)"
     },
     "users": {
       "createdAt": "$t(createdAt)",
@@ -384,7 +449,7 @@
       "lastActive": "$t(lastActive.label)",
       "name": "Name",
       "status": "$t(status.name)",
-      "team": "Team",
+      "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"
     }
   },
@@ -393,12 +458,6 @@
       "cta": "Create",
       "success": "Team created.",
       "title": "Add team"
-    },
-    "description": {
-      "error": {
-        "max": "Description can't exceed 500 characters."
-      },
-      "label": "Description"
     },
     "members": {
       "empty": "No team members yet.",
@@ -410,12 +469,6 @@
       }
     },
     "name": {
-      "error": {
-        "max": "Team name can't exceed 100 characters.",
-        "min": "Team name must be at least 2 characters.",
-        "required": "Team name is required."
-      },
-      "label": "Name",
       "label2": "Team"
     },
     "tabs": {
@@ -424,12 +477,6 @@
         "label": "Members",
         "withCount": "Members ({{count}})"
       }
-    },
-    "website": {
-      "error": {
-        "format": "Enter a valid URL."
-      },
-      "label": "Website"
     }
   },
   "termsAndPrivacy": {
@@ -451,5 +498,16 @@
     }
   },
   "updatedAt": "Updated at",
+  "url": {
+    "error": {
+      "format": "Enter a valid URL starting with https://.",
+      "max": "URL can't be longer than 255 characters.",
+      "required": "URL is required."
+    },
+    "label": "URL"
+  },
+  "website": {
+    "label": "Website"
+  },
   "you": "You"
 }

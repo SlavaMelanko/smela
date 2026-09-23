@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { accessTokenStorage } from '@ui/lib/storage'
+import env from '@ui/lib/env'
+import {
+  accessTokenStorage,
+  AuthMethod,
+  lastAuthMethodStorage
+} from '@ui/lib/storage'
 import { authApi, userApi } from '@ui/services/backend'
+import { GOOGLE_OAUTH_PATH } from '@ui/services/backend/paths'
 import {
   clearUser as clearErrorTrackerUser,
   setUser as setErrorTrackerUser
@@ -60,40 +66,48 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: authApi.logIn,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Email)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 
 export const useLoginWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      // Temporary implementation until Google OAuth is implemented
-      throw new Error('Google login not implemented for backend API yet')
-    },
-    meta: {
-      // When implemented, this will invalidate queries to refetch user data
-      invalidatesQueries: authKeys.user()
+      window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
+
+export const useCompleteGoogleLogin = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: authApi.refreshToken,
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Google)
+      cacheAuthResponse(queryClient, data)
+    }
+  })
+}
 
 export const useUserSignupWithEmail = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.signUp,
-    onSuccess: data => cacheAuthResponse(queryClient, data)
+    onSuccess: data => {
+      lastAuthMethodStorage.set(AuthMethod.Email)
+      cacheAuthResponse(queryClient, data)
+    }
   })
 }
 
 export const useUserSignupWithGoogle = () =>
   useMutation({
     mutationFn: async () => {
-      // Temporary implementation until Google OAuth is implemented
-      throw new Error('Google signup not implemented for backend API yet')
-    },
-    meta: {
-      // When implemented, this will invalidate queries to refetch user data
-      invalidatesQueries: authKeys.user()
+      window.location.href = `${env.BE_BASE_URL}${GOOGLE_OAUTH_PATH}`
     }
   })
 
@@ -115,13 +129,12 @@ export const useLogout = () => {
   })
 }
 
-export const useVerifyEmail = ({ onSettled }) => {
+export const useVerifyEmail = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: authApi.verifyEmail,
-    onSuccess: data => cacheAuthResponse(queryClient, data),
-    onSettled
+    onSuccess: data => cacheAuthResponse(queryClient, data)
   })
 }
 

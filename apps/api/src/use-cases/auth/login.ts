@@ -24,8 +24,12 @@ export const logInWithEmail = async (
 
   const auth = await authRepo.findById(user.id)
 
-  if (!auth?.passwordHash) {
+  if (!auth) {
     throw new AppError(ErrorCode.InvalidCredentials)
+  }
+
+  if (!auth.passwordHash) {
+    throw new AppError(ErrorCode.SocialAuthOnly)
   }
 
   const isPasswordValid = await comparePasswordHashes(

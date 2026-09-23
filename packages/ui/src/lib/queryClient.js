@@ -15,11 +15,11 @@ const redirectToNetworkErrorPage = error => {
   }
 }
 
-const redirectToLogin = reason => {
+const redirectToLogin = params => {
   const path = '/login'
 
   if (!window.location.pathname.includes(path)) {
-    window.location.href = withQuery(path, { reason })
+    window.location.href = withQuery(path, params)
   }
 }
 
@@ -35,7 +35,7 @@ const handleError = error => {
     error?.code === 'refresh-token/missing'
   ) {
     queryClient.clear()
-    redirectToLogin(error.code)
+    redirectToLogin({ info: error.code })
 
     return
   }
@@ -50,12 +50,15 @@ const queryCache = new QueryCache({
 const mutationCache = new MutationCache({
   onError: handleError,
   onSettled: (_data, _error, _variables, _context, mutation) => {
-    const invalidatesQueries = mutation.meta?.invalidatesQueries
-    const refetchType = mutation.meta?.refetchType
+    const { invalidatesQueries, refetchType } = mutation.meta ?? {}
 
-    // Only invalidate queries if refetchType is not 'none'
-    if (invalidatesQueries && refetchType !== 'none') {
-      queryClient.invalidateQueries({ queryKey: invalidatesQueries })
+    // refetchType 'none' marks queries stale without an active refetch,
+    // so optimistically updated data is reconciled on next mount
+    if (invalidatesQueries) {
+      queryClient.invalidateQueries({
+        queryKey: invalidatesQueries,
+        ...(refetchType && { refetchType })
+      })
     }
   }
 })

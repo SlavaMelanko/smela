@@ -21,8 +21,24 @@ const ErrorRegistry: Record<ErrorCode, ErrorDetails> = {
   [ErrorCode.InvalidPassword]: {
     error: 'Current password is incorrect.'
   },
+  [ErrorCode.SocialAuthOnly]: {
+    error:
+      'This account uses social login. Please sign in with your social provider.'
+  },
   [ErrorCode.Unauthorized]: {
     error: 'Unauthorized access.'
+  },
+  [ErrorCode.GoogleEmailNotVerified]: {
+    error: 'Google email is not verified.'
+  },
+  [ErrorCode.GoogleOAuthCancelled]: {
+    error: 'Google sign-in was cancelled.'
+  },
+  [ErrorCode.GoogleOAuthFailed]: {
+    error: 'Google sign-in failed.'
+  },
+  [ErrorCode.GoogleOAuthInvalidState]: {
+    error: 'Invalid Google sign-in state.'
   },
 
   // Token errors

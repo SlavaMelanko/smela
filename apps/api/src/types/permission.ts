@@ -2,7 +2,7 @@ import Action from './action'
 import Resource from './resource'
 
 export type PermissionsInput = Partial<
-  Record<Resource, { view: boolean; manage: boolean }>
+  Record<Resource, Record<Action, boolean>>
 >
 
 export type PermissionMap<
@@ -14,10 +14,12 @@ enum Permission {
   ViewUsers = 'view:users',
   ViewTeams = 'view:teams',
   ViewAdmins = 'view:admins',
+  ViewSystem = 'view:system',
   ManageDashboard = 'manage:dashboard',
   ManageUsers = 'manage:users',
   ManageTeams = 'manage:teams',
-  ManageAdmins = 'manage:admins'
+  ManageAdmins = 'manage:admins',
+  ManageSystem = 'manage:system'
 }
 
 // Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
@@ -25,7 +27,8 @@ enum Permission {
 export const getAdminBasePermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false },
   [Resource.Users]: { [Action.View]: false, [Action.Manage]: false },
-  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false }
+  [Resource.Teams]: { [Action.View]: false, [Action.Manage]: false },
+  [Resource.System]: { [Action.View]: false, [Action.Manage]: false }
 })
 
 export const getAdminDefaultPermissions = (): PermissionMap => ({
@@ -45,6 +48,10 @@ export const getMemberBasePermissions = (): PermissionMap => ({
 export const getMemberDefaultPermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
+})
+
+export const getSelfServeUserDefaultPermissions = (): PermissionsInput => ({
+  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true }
 })
 
 export default Permission

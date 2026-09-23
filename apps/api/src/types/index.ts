@@ -5,6 +5,7 @@ export {
   getAdminDefaultPermissions,
   getMemberBasePermissions,
   getMemberDefaultPermissions,
+  getSelfServeUserDefaultPermissions,
   default as Permission
 } from './permission'
 export type { PermissionMap, PermissionsInput } from './permission'
@@ -16,14 +17,10 @@ export {
   isUserOrAdmin,
   default as Role
 } from './role'
-export type {
-  SupportedLocale,
-  Theme,
-  UserPreferences
-} from './user-preferences'
 export {
   isActive,
   isActiveOnly,
   isNewOrActive,
   default as UserStatus
 } from './user-status'
+export type { UserPreferences } from '@/services/email'
