@@ -1,6 +1,7 @@
 {
   "name": "@smela/api",
   "version": "2026.06.02",
+  "private": true,
   "scripts": {
     "clean": "rm -rf node_modules",
     "dev": "bun --watch src/app.ts",
@@ -14,23 +15,23 @@
     "db:dev:down": "docker compose -f docker-compose-dev.yml --env-file .env.development down -v",
     "db:dev:reset": "bun run db:dev:down && bun run db:dev:up && bun run db:init",
     "db:ui": "drizzle-kit studio",
-    "format": "bunx prettier --cache --check src",
-    "format:fix": "bunx prettier --cache --write src",
-    "lint": "bunx eslint --cache src",
-    "lint:fix": "bunx eslint --cache --fix src",
+    "format": "prettier --cache --check src",
+    "format:fix": "prettier --cache --write src",
+    "lint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix",
     "lint:staged": "lint-staged",
-    "tsc": "bunx tsc",
+    "tsc": "tsc",
     "test": "NODE_ENV=test bun test src --parallel",
     "coverage": "NODE_ENV=test bun test src --parallel --coverage",
     "check": "bun run format:fix && bun run lint:fix && bun run tsc && bun run test"
   },
   "lint-staged": {
     "*.ts": [
-      "bunx prettier --write",
-      "bunx eslint --cache --fix"
+      "eslint --max-warnings=0 --fix",
+      "prettier --ignore-unknown --write"
     ],
     "*.json": [
-      "bunx prettier --write"
+      "prettier --ignore-unknown --write"
     ]
   },
   "dependencies": {
