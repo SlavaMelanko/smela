@@ -8,6 +8,7 @@ import {
   useTableConfig
 } from '@ui/components/table'
 import { createOpenItem } from '@ui/components/table/contextMenuItems'
+import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useCreateSocialLink } from '@ui/hooks/useCreateSocialLink'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
@@ -27,8 +28,11 @@ const SocialLinksToolbar = ({ children }) => (
 export const SocialLinksTab = () => {
   const navigate = useNavigate()
   const { t, formatDate } = useLocale()
+  const { can } = useCurrentUser()
   const { openCreateSocialLinkDialog } = useCreateSocialLink()
   const { socialLinks, isPending, isError, error, refetch } = useSocialLinks()
+
+  const canManageSystem = can('manage:system')
 
   const columns = getColumns(t, formatDate)
 
@@ -56,11 +60,13 @@ export const SocialLinksTab = () => {
   if (!socialLinks.length) {
     return (
       <EmptyState text={t('socialLink.empty')}>
-        <AddButton
-          label={t('socialLink.add.cta')}
-          onClick={openCreateSocialLinkDialog}
-          hideTextOnMobile={false}
-        />
+        {canManageSystem && (
+          <AddButton
+            label={t('socialLink.add.cta')}
+            onClick={openCreateSocialLinkDialog}
+            hideTextOnMobile={false}
+          />
+        )}
       </EmptyState>
     )
   }
@@ -72,10 +78,12 @@ export const SocialLinksTab = () => {
           config={config}
           createLabel={id => t(`table.socialLinks.${id}`)}
         />
-        <AddButton
-          label={t('socialLink.add.cta')}
-          onClick={openCreateSocialLinkDialog}
-        />
+        {canManageSystem && (
+          <AddButton
+            label={t('socialLink.add.cta')}
+            onClick={openCreateSocialLinkDialog}
+          />
+        )}
       </SocialLinksToolbar>
 
       <Table
