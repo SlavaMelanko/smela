@@ -9,8 +9,8 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "format": "prettier --cache --check .",
-    "format:fix": "prettier --cache --write .",
+    "format": "prettier --cache --check . --ignore-path ../../.prettierignore",
+    "format:fix": "prettier --cache --write . --ignore-path ../../.prettierignore",
     "lint": "eslint --cache src scripts",
     "lint:fix": "eslint --cache src scripts --fix",
     "lint:staged": "lint-staged",

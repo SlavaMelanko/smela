@@ -9,8 +9,8 @@ build/
 coverage/
 
 # Playwright
-e2e/artifacts/
-e2e/html-report/
+**/e2e/artifacts/
+**/e2e/html-report/
 blob-report/
 .playwright-mcp/
 
@@ -26,10 +26,13 @@ pnpm-lock.yaml
 # Generated files
 *.min.js
 *.min.css
+**/public/locales/
+postman.json
 
 # IDE
 .vscode/
 .idea/
+.claude/
 
 # OS files
 .DS_Store
