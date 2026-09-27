@@ -58,7 +58,11 @@ export const typescriptConfig = (options = {}, ...userConfigs) =>
           'error',
           {
             case: 'kebabCase',
-            ignore: ['README.md', '__tests__', ...(options.filenameCaseIgnore ?? [])]
+            ignore: [
+              'README.md',
+              '__tests__',
+              ...(options.filenameCaseIgnore ?? [])
+            ]
           }
         ],
         ...options.rules

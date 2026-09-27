@@ -25,8 +25,8 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "format": "prettier --cache --check .",
-    "format:fix": "prettier --cache --write .",
+    "format": "prettier --cache --check . --ignore-path ../../.prettierignore",
+    "format:fix": "prettier --cache --write . --ignore-path ../../.prettierignore",
     "lint": "eslint --cache src",
     "lint:fix": "eslint --cache src --fix",
     "lint:staged": "lint-staged",

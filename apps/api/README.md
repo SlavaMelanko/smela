@@ -65,5 +65,5 @@ Recommended rotation period: 90 days (2-3x longest token lifetime).
    buffer)
 5. Remove `JWT_SECRET_PREVIOUS`
 
-The system works without `JWT_SECRET_PREVIOUS`, so rotation causes zero
-breaking changes.
+The system works without `JWT_SECRET_PREVIOUS`, so rotation causes zero breaking
+changes.
