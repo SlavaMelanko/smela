@@ -8,14 +8,6 @@
   "engines": {
     "bun": ">=1.4.2"
   },
-  "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "eslint": "^10.8.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.2.0",
-    "prettier": "^3.9.6",
-    "typescript": "^6.0.3"
-  },
   "scripts": {
     "clean": "bun run --parallel --filter '*' clean & rm -rf node_modules & wait",
     "reinstall": "bun pm cache rm && bun run clean && bun install",
@@ -30,5 +22,13 @@
     "e2e:web:ui": "bash scripts/e2e.sh --web --ui",
     "e2e:admin": "bash scripts/e2e.sh --admin",
     "e2e:admin:ui": "bash scripts/e2e.sh --admin --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "eslint": "^10.8.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.2.0",
+    "prettier": "^3.9.6",
+    "typescript": "^6.0.3"
   }
 }

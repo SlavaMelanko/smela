@@ -11,16 +11,16 @@
     "format": "prettier --cache --check .",
     "format:fix": "prettier --cache --write .",
     "lint": "eslint --cache src",
-    "lint:fix": "eslint --cache --fix src",
+    "lint:fix": "eslint --cache src --fix",
     "lint:staged": "lint-staged",
-    "tsc": "bunx tsc",
+    "tsc": "tsc",
     "test": "bun test src",
     "check": "bun run format:fix && bun run lint:fix && bun run tsc && bun run test"
   },
   "lint-staged": {
     "*.ts": [
-      "bunx prettier --write",
-      "bunx eslint --cache --fix"
+      "eslint --max-warnings=0 --fix",
+      "prettier --ignore-unknown --write"
     ]
   },
   "devDependencies": {

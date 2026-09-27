@@ -3,6 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "exports": {
+    "./config": "./src/config.js",
+    "./env": "./src/env.js",
+    "./api": "./src/api.js",
+    "./email": "./src/email/index.js",
+    "./actions": "./src/actions/index.js"
+  },
   "scripts": {
     "clean": "rm -rf node_modules",
     "format": "prettier --cache --check .",
@@ -14,16 +21,9 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
+      "eslint --max-warnings=0 --fix",
       "prettier --ignore-unknown --write"
     ]
-  },
-  "exports": {
-    "./config": "./src/config.js",
-    "./env": "./src/env.js",
-    "./api": "./src/api.js",
-    "./email": "./src/email/index.js",
-    "./actions": "./src/actions/index.js"
   },
   "peerDependencies": {
     "@playwright/test": "^1.62.1"

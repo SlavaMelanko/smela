@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { copyFileSync, mkdirSync, readdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
