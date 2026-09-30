@@ -113,6 +113,10 @@ describe('Signup', () => {
    not underlying implementation
    - Example: If `@/net/http/cookie` wraps `hono/cookie`, only mock the wrapper
    - Prevents tight coupling to implementation details
+6. **Mock only I/O**: Keep pure and deterministic modules real (see Mocking
+   Strategy in [SKILL.md](../SKILL.md)). The examples below mock security
+   modules only to show the pattern
+7. **Type mocks**: Use `satisfies Partial<typeof realModule>` instead of `any`
 
 ## Updating Mock Behavior
 

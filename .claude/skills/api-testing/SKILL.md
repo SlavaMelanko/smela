@@ -49,9 +49,10 @@ const response = await post(app, '/api/v1/auth/signup', {
 
 ## Test Types
 
-- **Unit tests**: Mock all dependencies (repositories, services, APIs)
+- **Unit tests**: Run real code; mock only I/O you own (repositories, email,
+  external APIs)
 - **Integration tests**: Use real database, mock external APIs only
-- **Endpoint tests**: Use `createTestApp()` with mocked services
+- **Endpoint tests**: Use `createTestApp()` with mocked use cases
 
 ## Route Tests (`index.test.ts` convention)
 
@@ -115,18 +116,46 @@ is fine for local iteration.
 
 ## Mocking Strategy
 
-- Mock only business logic dependencies (repositories, external APIs)
+A mock is a copy of real behavior that nothing keeps in sync. After a refactor
+or library upgrade it can go stale while tests stay green. Prefer, in order:
+
+1. **Real code**: pure helpers, `@/env` values from `.env.test`, `@/types`,
+   deterministic security code (tokens, JWT, password hashing)
+2. **Fakes**: in-memory implementations that pass the real implementation's
+   contract tests
+3. **Mocks**: only for I/O you own — `@/data` repositories, `@/services/email`,
+   external API wrappers
+
+Rules:
+
+- Never mock third-party libraries (e.g. `hono/jwt`) — wrap them in own module
+  and mock the wrapper only if it does I/O
+- Don't mock encapsulated dependencies — mock the public API/wrapper only
 - Route endpoint tests mock at the use-case boundary only (`@/use-cases/*` via
   `ModuleMocker`) — validators, `requirePermission`, and `onError` run real
 - Use global mocks for shared services (CAPTCHA, email) — don't redefine per
   test
-- No real database or network calls — all I/O must be mocked
-- Don't mock encapsulated dependencies — mock the public API/wrapper only
+- No real database or network calls in unit tests — all I/O must be mocked
+- Prefer asserting results and state over call details; use
+  `toHaveBeenCalledWith` only when the call itself is the behavior (e.g. an
+  email was sent)
+- Move decisions into pure functions so they can be tested without mocks
 
 ## Type Safety
 
-- Prefer proper types and `Partial<T>` for mocks; allow `any` only where full
-  typing adds unnecessary complexity
+Type every mock against the real module, so a signature change breaks the
+compile instead of passing silently:
+
+```typescript
+import type { userRepo } from '@/data'
+
+const mockUserRepo = {
+  findByEmail: mock(async () => mockUser)
+} satisfies Partial<typeof userRepo>
+```
+
+Avoid `any` for mocks; allow it only where full typing adds unnecessary
+complexity
 
 ## Mocking Patterns
 
