@@ -33,6 +33,11 @@ Before writing custom test helpers, check existing utilities:
 - **`post(app, url, body, headers)`** - POST request helper
 - **`get(app, url, headers)`** - GET request helper
 - **`patch(app, url, body, headers)`** - PATCH request helper
+- **Fixtures** (`fixtures/`) - typed builders for shared test data:
+  `buildTeam`, `buildTeamMember`, `createTeamAccessRepoMock` (team-access guard),
+  `buildTokenRecord`, `buildInvalidTokenCases` (records the real
+  `TokenValidator` rejects). Add a builder here instead of copying a fixture
+  into a second file
 - **`doRequest(app, url, method, body, headers)`** - Generic request helper
 
 Example:
@@ -49,9 +54,10 @@ const response = await post(app, '/api/v1/auth/signup', {
 
 ## Test Types
 
-- **Unit tests**: Mock all dependencies (repositories, services, APIs)
+- **Unit tests**: Run real code; mock only I/O you own (repositories, email,
+  external APIs)
 - **Integration tests**: Use real database, mock external APIs only
-- **Endpoint tests**: Use `createTestApp()` with mocked services
+- **Endpoint tests**: Use `createTestApp()` with mocked use cases
 
 ## Route Tests (`index.test.ts` convention)
 
@@ -115,18 +121,80 @@ is fine for local iteration.
 
 ## Mocking Strategy
 
-- Mock only business logic dependencies (repositories, external APIs)
+A mock is a copy of real behavior that nothing keeps in sync. After a refactor
+or library upgrade it can go stale while tests stay green. Prefer, in order:
+
+1. **Real code**: pure helpers, `@/env` values from `.env.test`, `@/types`,
+   deterministic security code (tokens, JWT, password hashing)
+2. **Fakes**: in-memory implementations that pass the real implementation's
+   contract tests
+3. **Mocks**: only for I/O you own — `@/data` repositories, `@/services/email`,
+   external API wrappers
+
+Rules:
+
+- Never mock third-party libraries (e.g. `hono/jwt`) — wrap them in own module
+  and mock the wrapper only if it does I/O
+- Don't mock encapsulated dependencies — mock the public API/wrapper only
 - Route endpoint tests mock at the use-case boundary only (`@/use-cases/*` via
-  `ModuleMocker`) — validators, `requirePermission`, and `onError` run real
+  `ModuleMocker`) — validators, `requirePermission`, and `onError` run real.
+  Exception: middleware that calls repositories directly (e.g. the team-access
+  guard) needs a typed `@/data` mock limited to the methods it calls
 - Use global mocks for shared services (CAPTCHA, email) — don't redefine per
   test
-- No real database or network calls — all I/O must be mocked
-- Don't mock encapsulated dependencies — mock the public API/wrapper only
+- No real database or network calls in unit tests — all I/O must be mocked
+- Prefer asserting results and state over call details; use
+  `toHaveBeenCalledWith` only when the call itself is the behavior (e.g. an
+  email was sent)
+- Move decisions into pure functions so they can be tested without mocks
+- Mock only methods the code under test calls — delete mocks the code no longer
+  uses
+- Never write tests that only exercise a mock (e.g. "hashing mock throws, so
+  the use case throws")
+
+### Real Security Code
+
+Security modules run real in use-case tests:
+
+- Passwords: build a real hash with `hashPassword` in `beforeAll` (bcrypt is
+  slow) and assert stored hashes with `comparePasswordHashes`. Bcrypt reads at
+  most 72 bytes of input
+- One-time and refresh tokens: assert random values with `expect.any(String)`
+  and `expect.any(Date)`; assert stored hashes equal `await hashToken(raw)`
+- Access tokens: decode with `verifyJwt` and assert claims
+- Token validation: feed real `TokenRecord` fixtures (expired, used, wrong
+  type) to the real `TokenValidator`
 
 ## Type Safety
 
-- Prefer proper types and `Partial<T>` for mocks; allow `any` only where full
-  typing adds unnecessary complexity
+Type every mock against the real module, so a signature change breaks the
+compile instead of passing silently:
+
+```typescript
+import type { userRepo } from '@/data'
+
+mockUserRepo = {
+  findByEmail: mock(async () => mockUser)
+} satisfies Partial<typeof userRepo>
+
+await moduleMocker.mock('@/data', () => ({ userRepo: mockUserRepo }))
+```
+
+Rules:
+
+- Apply `satisfies` where the mock object is built. Assembling it from
+  individual `any` mocks checks nothing
+- Fixtures use real record types (`User`, `TeamMemberDetails`, `TokenRecord`)
+  with enum values, never plain strings
+- Return what the real repo returns — `undefined`, not `null`, when the type is
+  `T | undefined`
+- No casts (`as any`, `as unknown as T`) to silence a type error — fix the
+  fixture
+- Import types from public modules (`@/data`), never deep paths
+  (`@/data/repositories/...`)
+
+`let mockX: any` declarations are allowed, so later `mockImplementation()`
+overrides are not type-checked — keep them consistent with the real type
 
 ## Mocking Patterns
 
@@ -148,5 +216,23 @@ Still required under `--isolate`. Isolation is per-file, not per-test: a module
 mocked in one `it()` stays mocked for the rest of that file. The fresh global
 only arrives with the next file.
 
-Use `.mockClear()` on individual bun:test mocks when call history must reset
-between tests.
+Mocks built in `beforeEach` start with fresh call history, so `.mockClear()`
+is only needed for mocks created once outside `beforeEach`.
+
+## Assertions
+
+- Assert rejections with `expect(promise).rejects` (no `await`, per the
+  `ts/await-thenable` lint rule). Never use `try/catch` with
+  `expect(true).toBe(false)` — the catch swallows that failure too
+
+## Review Checklist
+
+Before finishing a test file:
+
+- [ ] Every mocked module is I/O you own — no `@/security/*`, `@/types`,
+      `@/crypto`, `@/env` values from `.env.test`, pure helpers, or libraries
+- [ ] Every repo mock uses `satisfies Partial<typeof repo>` where it is built
+- [ ] Fixtures match real types; no casts
+- [ ] Every mocked method is called by the code under test
+- [ ] No test only checks a mock's behavior
+- [ ] Rejections use `.rejects`, not `try/catch`

@@ -3,7 +3,7 @@ import { hashToken } from '@/security/token'
 import { getErrorTracker } from '@/services/error-tracker'
 
 const revokeRefreshToken = async (refreshToken: string | undefined) => {
-  if (!refreshToken) {
+  if (!refreshToken?.trim()) {
     return
   }
 

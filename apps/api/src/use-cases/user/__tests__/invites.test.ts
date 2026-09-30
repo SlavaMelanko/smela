@@ -1,10 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TeamMemberDetails, TeamWithMemberCount, User } from '@/data'
+import type {
+  authRepo,
+  db,
+  rbacRepo,
+  TeamMemberDetails,
+  teamRepo,
+  TeamWithMemberCount,
+  tokenRepo,
+  User,
+  userRepo
+} from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
+import { TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
@@ -95,29 +106,22 @@ describe('inviteMember', () => {
       teamRepo: {
         findById: mockTeamRepoFindById,
         createMember: mockTeamRepoCreateMember
-      },
+      } satisfies Partial<typeof teamRepo>,
       userRepo: {
         findByEmail: mockUserRepoFindByEmail,
         findById: mockUserRepoFindById,
         create: mockUserRepoCreate
-      },
-      authRepo: { create: mockAuthRepoCreate },
-      tokenRepo: { issue: mockTokenRepoIssue },
-      rbacRepo: { setUserPermissions: mockRbacSet },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/security/password', () => ({
-      generatePasswordHash: mock(async () => 'hashed-password')
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: () => ({
-        type: 'user_invite',
-        token: 'invite-token-123',
-        expiresAt: new Date('2024-01-08')
-      }),
-      TokenType: { UserInvite: 'user_invite' }
+      } satisfies Partial<typeof userRepo>,
+      authRepo: { create: mockAuthRepoCreate } satisfies Partial<
+        typeof authRepo
+      >,
+      tokenRepo: { issue: mockTokenRepoIssue } satisfies Partial<
+        typeof tokenRepo
+      >,
+      rbacRepo: { setUserPermissions: mockRbacSet } satisfies Partial<
+        typeof rbacRepo
+      >,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -166,6 +170,28 @@ describe('inviteMember', () => {
         teamId: TEAM_1,
         position: 'Developer',
         invitedBy: USER_2
+      },
+      expect.anything()
+    )
+  })
+
+  it('should store a random password hash and issue an invite token', async () => {
+    await inviteMember(mockTeam, inviteParams, USER_2)
+
+    expect(mockAuthRepoCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: USER_1,
+        passwordHash: expect.any(String)
+      }),
+      expect.anything()
+    )
+    expect(mockTokenRepoIssue).toHaveBeenCalledWith(
+      USER_1,
+      {
+        userId: USER_1,
+        type: TokenType.UserInvite,
+        token: expect.any(String),
+        expiresAt: expect.any(Date)
       },
       expect.anything()
     )
@@ -254,18 +280,13 @@ describe('resendMemberInvite', () => {
     }
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findById: mockUserRepoFindById },
-      tokenRepo: { issue: mockTokenRepoIssue },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: () => ({
-        type: 'user_invite',
-        token: 'new-invite-token',
-        expiresAt: new Date('2024-01-08')
-      }),
-      TokenType: { UserInvite: 'user_invite' }
+      userRepo: { findById: mockUserRepoFindById } satisfies Partial<
+        typeof userRepo
+      >,
+      tokenRepo: { issue: mockTokenRepoIssue } satisfies Partial<
+        typeof tokenRepo
+      >,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -312,8 +333,8 @@ describe('resendMemberInvite', () => {
       USER_1,
       {
         userId: USER_1,
-        type: 'user_invite',
-        token: 'new-invite-token',
+        type: TokenType.UserInvite,
+        token: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -372,13 +393,11 @@ describe('cancelMemberInvite', () => {
     )
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { update: mockUserUpdate },
-      tokenRepo: { deprecate: mockTokenDeprecate },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      TokenType: { UserInvite: 'user_invite' }
+      userRepo: { update: mockUserUpdate } satisfies Partial<typeof userRepo>,
+      tokenRepo: { deprecate: mockTokenDeprecate } satisfies Partial<
+        typeof tokenRepo
+      >,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
   })
 
@@ -401,7 +420,7 @@ describe('cancelMemberInvite', () => {
 
     expect(mockTokenDeprecate).toHaveBeenCalledWith(
       USER_1,
-      'user_invite',
+      TokenType.UserInvite,
       expect.anything()
     )
     expect(mockUserUpdate).toHaveBeenCalledWith(

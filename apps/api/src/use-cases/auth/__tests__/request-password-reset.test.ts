@@ -1,12 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { User } from '@/data'
+import type { tokenRepo, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
-import { PasswordResetEmailMessageBuilder } from '@/services/email'
+import {
+  buildResetPasswordUrl,
+  PasswordResetEmailMessageBuilder
+} from '@/services/email'
 import { Role, UserStatus } from '@/types'
-import { hour, nowPlus } from '@/utils/chrono'
 
 import { requestPasswordReset } from '../request-password-reset'
 
@@ -18,9 +20,6 @@ describe('Request Password Reset', () => {
   let mockUserRepo: any
   let mockTokenRepo: any
   let mockTransaction: any
-
-  let mockTokenString: string
-  let mockExpiresAt: Date
 
   let mockEmailService: any
 
@@ -37,10 +36,10 @@ describe('Request Password Reset', () => {
     }
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
-    }
+    } satisfies Partial<typeof userRepo>
     mockTokenRepo = {
       issue: mock(async () => {})
-    }
+    } satisfies Partial<typeof tokenRepo>
     mockTransaction = {
       transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
@@ -48,19 +47,7 @@ describe('Request Password Reset', () => {
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
       tokenRepo: mockTokenRepo,
-      authRepo: {},
       db: mockTransaction
-    }))
-
-    mockTokenString = 'reset-token-123'
-    mockExpiresAt = nowPlus(hour())
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: mock(() => ({
-        type: TokenType.PasswordReset,
-        token: mockTokenString,
-        expiresAt: mockExpiresAt
-      }))
     }))
 
     mockEmailService = {
@@ -88,8 +75,8 @@ describe('Request Password Reset', () => {
         {
           userId: mockUser.id,
           type: TokenType.PasswordReset,
-          token: mockTokenString,
-          expiresAt: mockExpiresAt
+          token: expect.any(String),
+          expiresAt: expect.any(Date)
         },
         {}
       )
@@ -100,6 +87,14 @@ describe('Request Password Reset', () => {
         expect.any(PasswordResetEmailMessageBuilder)
       )
       expect(mockEmailService.send).toHaveBeenCalledTimes(1)
+      expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
+        data: {
+          resetUrl: buildResetPasswordUrl(
+            mockUser.role,
+            mockTokenRepo.issue.mock.calls[0][1].token
+          )
+        }
+      })
 
       expect(result).toEqual({ success: true })
     })

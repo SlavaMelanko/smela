@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
+import type { db, teamRepo, userRepo } from '@/data'
+
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { UserStatus } from '@/types'
 
@@ -26,12 +28,12 @@ describe('removeTeamMember', () => {
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         deleteMember: mockTeamRepoDeleteMember
-      },
-      userRepo: { update: mockUserRepoUpdate },
-      db: { transaction: mockTransaction }
+      } satisfies Partial<typeof teamRepo>,
+      userRepo: { update: mockUserRepoUpdate } satisfies Partial<
+        typeof userRepo
+      >,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
-
-    await moduleMocker.mock('@/types', () => ({ UserStatus }))
   })
 
   afterEach(async () => {

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { Team } from '@/data'
+import type { Team, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 
@@ -13,9 +13,7 @@ describe('updateTeam', () => {
 
   let mockExistingTeam: Team
   let mockUpdatedTeam: Team
-  let mockTeamRepoFindById: any
-  let mockTeamRepoUpdate: any
-  let mockTeamRepoFindMember: any
+  let mockTeamRepo: any
 
   beforeEach(async () => {
     mockExistingTeam = {
@@ -33,19 +31,12 @@ describe('updateTeam', () => {
       updatedAt: new Date('2024-01-02')
     }
 
-    mockTeamRepoFindById = mock(async () => mockExistingTeam)
-    mockTeamRepoUpdate = mock(async () => mockUpdatedTeam)
-    mockTeamRepoFindMember = mock(async () => ({
-      userId: testUuids.USER_1,
-      teamId: TEAM_1
-    }))
+    mockTeamRepo = {
+      update: mock(async () => mockUpdatedTeam)
+    } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: {
-        findById: mockTeamRepoFindById,
-        update: mockTeamRepoUpdate,
-        findMember: mockTeamRepoFindMember
-      }
+      teamRepo: mockTeamRepo
     }))
   })
 
@@ -58,7 +49,7 @@ describe('updateTeam', () => {
 
     const result = await updateTeam(TEAM_1, params)
 
-    expect(mockTeamRepoUpdate).toHaveBeenCalledWith(TEAM_1, params)
+    expect(mockTeamRepo.update).toHaveBeenCalledWith(TEAM_1, params)
     expect(result).toEqual({ team: mockUpdatedTeam })
   })
 })

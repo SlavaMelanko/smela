@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { SearchResult, User } from '@/data'
+import type { SearchResult, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
@@ -15,7 +15,7 @@ describe('searchUsers', () => {
   const DEFAULT_PAGINATION = { page: 1, limit: 25 }
 
   let mockSearchResult: SearchResult
-  let mockUserRepoSearch: any
+  let mockUserRepo: any
 
   beforeEach(async () => {
     mockSearchResult = {
@@ -34,10 +34,12 @@ describe('searchUsers', () => {
       pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }
     }
 
-    mockUserRepoSearch = mock(async () => mockSearchResult)
+    mockUserRepo = {
+      search: mock(async () => mockSearchResult)
+    } satisfies Partial<typeof userRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { search: mockUserRepoSearch }
+      userRepo: mockUserRepo
     }))
   })
 
@@ -51,7 +53,7 @@ describe('searchUsers', () => {
       DEFAULT_PAGINATION
     )
 
-    expect(mockUserRepoSearch).toHaveBeenCalledWith(
+    expect(mockUserRepo.search).toHaveBeenCalledWith(
       { roles: [Role.User] },
       DEFAULT_PAGINATION
     )
@@ -60,7 +62,7 @@ describe('searchUsers', () => {
   it('should default to user roles when all roles are filtered out', async () => {
     await searchUsers({ roles: [Role.Admin, Role.Owner] }, DEFAULT_PAGINATION)
 
-    expect(mockUserRepoSearch).toHaveBeenCalledWith(
+    expect(mockUserRepo.search).toHaveBeenCalledWith(
       { roles: [Role.User] },
       DEFAULT_PAGINATION
     )
@@ -81,7 +83,7 @@ describe('searchUsers', () => {
       DEFAULT_PAGINATION
     )
 
-    expect(mockUserRepoSearch).toHaveBeenCalledWith(
+    expect(mockUserRepo.search).toHaveBeenCalledWith(
       { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
       DEFAULT_PAGINATION
     )
@@ -92,7 +94,7 @@ describe('getUser', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockUser: User
-  let mockFindByIdExtended: any
+  let mockUserRepo: any
 
   beforeEach(async () => {
     mockUser = {
@@ -106,10 +108,12 @@ describe('getUser', () => {
       updatedAt: new Date('2024-01-01')
     }
 
-    mockFindByIdExtended = mock(async () => mockUser)
+    mockUserRepo = {
+      findByIdExtended: mock(async (): Promise<User | undefined> => mockUser)
+    } satisfies Partial<typeof userRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findByIdExtended: mockFindByIdExtended }
+      userRepo: mockUserRepo
     }))
   })
 
@@ -120,12 +124,12 @@ describe('getUser', () => {
   it('should return user when found', async () => {
     const result = await getUser(testUuids.USER_1)
 
-    expect(mockFindByIdExtended).toHaveBeenCalledWith(testUuids.USER_1)
+    expect(mockUserRepo.findByIdExtended).toHaveBeenCalledWith(testUuids.USER_1)
     expect(result).toEqual({ user: mockUser })
   })
 
   it('should throw NotFound error when user does not exist', async () => {
-    mockFindByIdExtended.mockImplementation(async () => undefined)
+    mockUserRepo.findByIdExtended.mockImplementation(async () => undefined)
 
     expect(getUser(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
     expect(getUser(testUuids.NON_EXISTENT)).rejects.toMatchObject({

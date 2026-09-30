@@ -1,12 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { User } from '@/data'
+import type { tokenRepo, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { TokenType } from '@/security/token'
-import { VerificationEmailMessageBuilder } from '@/services/email'
+import {
+  buildVerificationUrl,
+  VerificationEmailMessageBuilder
+} from '@/services/email'
 import { Role, UserStatus } from '@/types'
-import { hours, nowPlus } from '@/utils/chrono'
 
 import { resendVerificationEmail } from '../resend-verification-email'
 
@@ -17,10 +19,6 @@ describe('Resend Verification Email', () => {
   let mockUserRepo: any
   let mockTokenRepo: any
   let mockTransaction: any
-
-  let mockTokenString: string
-  let mockExpiresAt: Date
-  let mockGenerateToken: any
 
   let mockEmailService: any
 
@@ -38,10 +36,10 @@ describe('Resend Verification Email', () => {
 
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
-    }
+    } satisfies Partial<typeof userRepo>
     mockTokenRepo = {
       issue: mock(async () => {})
-    }
+    } satisfies Partial<typeof tokenRepo>
     mockTransaction = {
       transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
@@ -50,18 +48,6 @@ describe('Resend Verification Email', () => {
       userRepo: mockUserRepo,
       tokenRepo: mockTokenRepo,
       db: mockTransaction
-    }))
-
-    mockTokenString = 'mock-resend-verification-token-123'
-    mockExpiresAt = nowPlus(hours(24))
-    mockGenerateToken = mock(() => ({
-      type: TokenType.EmailVerification,
-      token: mockTokenString,
-      expiresAt: mockExpiresAt
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: mockGenerateToken
     }))
 
     mockEmailService = {
@@ -88,8 +74,8 @@ describe('Resend Verification Email', () => {
         {
           userId: mockUser.id,
           type: TokenType.EmailVerification,
-          token: mockTokenString,
-          expiresAt: mockExpiresAt
+          token: expect.any(String),
+          expiresAt: expect.any(Date)
         },
         {}
       )
@@ -105,6 +91,13 @@ describe('Resend Verification Email', () => {
         expect.any(VerificationEmailMessageBuilder)
       )
       expect(mockEmailService.send).toHaveBeenCalledTimes(1)
+      expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
+        data: {
+          verificationUrl: buildVerificationUrl(
+            mockTokenRepo.issue.mock.calls[0][1].token
+          )
+        }
+      })
     })
   })
 

@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { User } from '@/data'
+import type { authRepo, db, rbacRepo, tokenRepo, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
+import { TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
@@ -64,33 +65,14 @@ describe('inviteAdmin', () => {
         findByEmail: mockFindByEmail,
         findById: mockUserFindById,
         create: mockUserCreate
-      },
+      } satisfies Partial<typeof userRepo>,
       rbacRepo: {
         assignRole: mockUserRoleAssign,
         setUserPermissions: mockRbacSet
-      },
-      authRepo: { create: mockAuthCreate },
-      tokenRepo: { issue: mockTokenIssue },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/crypto', () => ({
-      createRandomBytesGenerator: () => ({
-        generate: () => 'random-placeholder-password'
-      })
-    }))
-
-    await moduleMocker.mock('@/security/password', () => ({
-      hashPassword: async () => 'hashed-placeholder'
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: () => ({
-        type: 'user_invite',
-        token: 'invite-token-123',
-        expiresAt: new Date('2024-01-08')
-      }),
-      TokenType: { UserInvite: 'user_invite' }
+      } satisfies Partial<typeof rbacRepo>,
+      authRepo: { create: mockAuthCreate } satisfies Partial<typeof authRepo>,
+      tokenRepo: { issue: mockTokenIssue } satisfies Partial<typeof tokenRepo>,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -136,6 +118,28 @@ describe('inviteAdmin', () => {
       expect.anything()
     )
     expect(result).toEqual({ admin: mockAdmin })
+  })
+
+  it('should store a random password hash and issue an invite token', async () => {
+    await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
+
+    expect(mockAuthCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: mockAdmin.id,
+        passwordHash: expect.any(String)
+      }),
+      expect.anything()
+    )
+    expect(mockTokenIssue).toHaveBeenCalledWith(
+      mockAdmin.id,
+      {
+        userId: mockAdmin.id,
+        type: TokenType.UserInvite,
+        token: expect.any(String),
+        expiresAt: expect.any(Date)
+      },
+      expect.anything()
+    )
   })
 
   it('should send the invite email', async () => {
@@ -197,18 +201,9 @@ describe('resendAdminInvite', () => {
     mockTransaction = mock(async (callback: any) => callback({}))
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findById: mockFindById },
-      tokenRepo: { issue: mockTokenIssue },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateToken: () => ({
-        type: 'user_invite',
-        token: 'new-invite-token',
-        expiresAt: new Date('2024-01-08')
-      }),
-      TokenType: { UserInvite: 'user_invite' }
+      userRepo: { findById: mockFindById } satisfies Partial<typeof userRepo>,
+      tokenRepo: { issue: mockTokenIssue } satisfies Partial<typeof tokenRepo>,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -313,8 +308,8 @@ describe('resendAdminInvite', () => {
       testUuids.ADMIN_1,
       {
         userId: testUuids.ADMIN_1,
-        type: 'user_invite',
-        token: 'new-invite-token',
+        type: TokenType.UserInvite,
+        token: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -358,13 +353,14 @@ describe('cancelAdminInvite', () => {
     mockTransaction = mock(async (callback: any) => callback({}))
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findById: mockFindById, update: mockUserUpdate },
-      tokenRepo: { deprecate: mockTokenDeprecate },
-      db: { transaction: mockTransaction }
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      TokenType: { UserInvite: 'user_invite' }
+      userRepo: {
+        findById: mockFindById,
+        update: mockUserUpdate
+      } satisfies Partial<typeof userRepo>,
+      tokenRepo: { deprecate: mockTokenDeprecate } satisfies Partial<
+        typeof tokenRepo
+      >,
+      db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
   })
 
@@ -413,7 +409,7 @@ describe('cancelAdminInvite', () => {
 
     expect(mockTokenDeprecate).toHaveBeenCalledWith(
       testUuids.ADMIN_1,
-      'user_invite',
+      TokenType.UserInvite,
       expect.anything()
     )
     expect(mockUserUpdate).toHaveBeenCalledWith(

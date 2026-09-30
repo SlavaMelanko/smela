@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 
-import type { SocialLinkRecord } from '@/data'
+import type { SocialLinkRecord, systemRepo } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 
@@ -31,7 +31,7 @@ describe('ApiSocialLinksResolver', () => {
 
   const mockRepo = async (listSocialLinks: () => Promise<SocialLinkRecord[]>) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { listSocialLinks }
+      systemRepo: { listSocialLinks } satisfies Partial<typeof systemRepo>
     }))
 
   const mockCountedRepo = async (rows = records) => {

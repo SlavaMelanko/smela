@@ -2,11 +2,16 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
+import type { TeamWithMemberCount } from '@/data'
+
 import {
+  buildTeam,
+  createTeamAccessRepoMock,
   createTestApp,
   get,
   ModuleMocker,
   patch,
+  TEST_TEAM_ID,
   testUuids,
   withClaims
 } from '@/__tests__'
@@ -18,18 +23,11 @@ import { teamsRoute } from '../..'
 describe('user /teams/:teamId', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Local team id because testUuids.TEAM_1 fails z.uuid() (invalid variant nibble)
-  const TEAM_ID = '00000000-0000-4000-a0c0-000000000001'
-  const TEAM_URL = `/api/v1/user/verified/teams/${TEAM_ID}`
+  const TEAM_URL = `/api/v1/user/verified/teams/${TEST_TEAM_ID}`
 
   let app: Hono
 
-  let mockTeam: {
-    id: string
-    name: string
-    website: string
-    description: string
-  }
+  let mockTeam: TeamWithMemberCount
   let mockTeamRepo: any
 
   let mockUpdateTeam: any
@@ -44,20 +42,8 @@ describe('user /teams/:teamId', () => {
     ])
 
   beforeEach(async () => {
-    mockTeam = {
-      id: TEAM_ID,
-      name: 'Engineering',
-      website: 'https://example.com',
-      description: 'Engineering team'
-    }
-    mockTeamRepo = {
-      find: mock(async () => mockTeam),
-      findMember: mock(async (_teamId: string, memberId: string) => ({
-        id: memberId,
-        firstName: 'Alice',
-        email: 'alice@example.com'
-      }))
-    }
+    mockTeam = buildTeam({ description: 'Engineering team' })
+    mockTeamRepo = createTeamAccessRepoMock(mockTeam)
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo
@@ -81,11 +67,11 @@ describe('user /teams/:teamId', () => {
       const res = await get(app, TEAM_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepo.find).toHaveBeenCalledWith(TEAM_ID)
+      expect(mockTeamRepo.find).toHaveBeenCalledWith(TEST_TEAM_ID)
 
       const data = await res.json()
       expect(data.team).toMatchObject({
-        id: TEAM_ID,
+        id: TEST_TEAM_ID,
         name: 'Engineering'
       })
     })
@@ -107,7 +93,7 @@ describe('user /teams/:teamId', () => {
     })
 
     it('should return 404 when team does not exist', async () => {
-      mockTeamRepo.find.mockImplementation(async () => null)
+      mockTeamRepo.find.mockImplementation(async () => undefined)
 
       const res = await get(app, TEAM_URL)
 
@@ -115,7 +101,7 @@ describe('user /teams/:teamId', () => {
     })
 
     it('should return 403 when user is not a team member', async () => {
-      mockTeamRepo.findMember.mockImplementation(async () => null)
+      mockTeamRepo.findMember.mockImplementation(async () => undefined)
 
       const res = await get(app, TEAM_URL)
 
@@ -130,10 +116,10 @@ describe('user /teams/:teamId', () => {
       const res = await patch(app, TEAM_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockUpdateTeam).toHaveBeenCalledWith(TEAM_ID, body)
+      expect(mockUpdateTeam).toHaveBeenCalledWith(TEST_TEAM_ID, body)
 
       const data = await res.json()
-      expect(data.team).toMatchObject({ id: TEAM_ID })
+      expect(data.team).toMatchObject({ id: TEST_TEAM_ID })
     })
 
     it('should reject unknown body fields', async () => {

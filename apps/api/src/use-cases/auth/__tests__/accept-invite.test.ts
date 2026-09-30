@@ -1,23 +1,40 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TokenRecord, User } from '@/data'
+import type {
+  authRepo,
+  refreshTokenRepo,
+  teamRepo,
+  TokenRecord,
+  tokenRepo,
+  User,
+  userRepo
+} from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
-import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
+import {
+  buildInvalidTokenCases,
+  buildTokenRecord,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
+import { verifyJwt } from '@/security/jwt'
+import { comparePasswordHashes } from '@/security/password'
+import { hashToken, TokenStatus, TokenType } from '@/security/token'
 import { Role, UserStatus } from '@/types'
-import { hour, nowPlus } from '@/utils/chrono'
 
 import { acceptInvite } from '../accept-invite'
 
 describe('Accept Invite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
+  const INVITE_TOKEN = {
+    userId: testUuids.ADMIN_1,
+    type: TokenType.UserInvite
+  }
+
   let mockPassword: string
   let mockDeviceInfo: DeviceInfo
 
-  let mockTokenString: string
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
   let mockAuthRepo: any
@@ -26,35 +43,15 @@ describe('Accept Invite', () => {
   let mockTeamRepo: any
   let mockTransaction: any
 
-  let mockTokenValidator: any
-  let mockGenerateHashedToken: any
-
-  let mockHashedPassword: string
-  let mockHashPassword: any
-
   let mockUser: User
   let mockActivatedUser: User
-  let mockAccessToken: string
-  let mockRefreshToken: string
-  let mockSignJwt: any
   let mockResolvePermissions: any
 
   beforeEach(async () => {
     mockPassword = 'NewSecure@123'
     mockDeviceInfo = { ipAddress: '127.0.0.1', userAgent: 'test-agent' }
 
-    mockTokenString = `mock-invite-token-${'1'.repeat(TOKEN_LENGTH - 18)}`
-    mockTokenRecord = {
-      id: 1,
-      userId: testUuids.ADMIN_1,
-      type: TokenType.UserInvite,
-      token: mockTokenString,
-      status: TokenStatus.Pending,
-      expiresAt: nowPlus(hour()),
-      createdAt: new Date(),
-      usedAt: null,
-      metadata: null
-    }
+    mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
 
     mockUser = {
       id: testUuids.ADMIN_1,
@@ -72,25 +69,22 @@ describe('Accept Invite', () => {
       status: UserStatus.Active
     }
 
-    mockAccessToken = 'mock-access-token'
-    mockRefreshToken = 'mock-refresh-token'
-
     mockTokenRepo = {
       findByToken: mock(async () => mockTokenRecord),
       update: mock(async () => {})
-    }
+    } satisfies Partial<typeof tokenRepo>
     mockAuthRepo = {
       update: mock(async () => {})
-    }
+    } satisfies Partial<typeof authRepo>
     mockUserRepo = {
       update: mock(async () => mockActivatedUser)
-    }
+    } satisfies Partial<typeof userRepo>
     mockRefreshTokenRepo = {
-      create: mock(async () => {})
-    }
+      create: mock(async () => 1)
+    } satisfies Partial<typeof refreshTokenRepo>
     mockTeamRepo = {
       findUserTeam: mock(async () => undefined)
-    }
+    } satisfies Partial<typeof teamRepo>
     mockTransaction = {
       transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
@@ -102,32 +96,6 @@ describe('Accept Invite', () => {
       refreshTokenRepo: mockRefreshTokenRepo,
       teamRepo: mockTeamRepo,
       db: mockTransaction
-    }))
-
-    mockTokenValidator = {
-      validate: mock(() => mockTokenRecord)
-    }
-    mockGenerateHashedToken = mock(async () => ({
-      token: { raw: mockRefreshToken, hashed: 'hashed-refresh' },
-      expiresAt: nowPlus(hour())
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      TokenValidator: mockTokenValidator,
-      generateHashedToken: mockGenerateHashedToken
-    }))
-
-    mockHashedPassword = 'mock-hashed-new-password'
-    mockHashPassword = mock(async () => mockHashedPassword)
-
-    await moduleMocker.mock('@/security/password', () => ({
-      hashPassword: mockHashPassword
-    }))
-
-    mockSignJwt = mock(async () => mockAccessToken)
-
-    await moduleMocker.mock('@/security/jwt', () => ({
-      signJwt: mockSignJwt
     }))
 
     mockResolvePermissions = mock(async () => undefined)
@@ -142,19 +110,16 @@ describe('Accept Invite', () => {
   })
 
   describe('when token is valid and active', () => {
-    it('should validate token, hash password, mark token as used, update password, activate user, and return user with tokens', async () => {
+    it('should mark token as used, update password, activate user, and return user with tokens', async () => {
       const result = await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
+        { token: mockTokenRecord.token, password: mockPassword },
         mockDeviceInfo
       )
 
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
-
+      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
+        mockTokenRecord.token
+      )
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-
-      expect(mockHashPassword).toHaveBeenCalledWith(mockPassword)
-      expect(mockHashPassword).toHaveBeenCalledTimes(1)
 
       expect(mockTokenRepo.update).toHaveBeenCalledWith(
         mockTokenRecord.id,
@@ -164,134 +129,93 @@ describe('Accept Invite', () => {
         },
         {}
       )
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-
       expect(mockAuthRepo.update).toHaveBeenCalledWith(
         mockTokenRecord.userId,
-        {
-          passwordHash: mockHashedPassword
-        },
+        { passwordHash: expect.any(String) },
         {}
       )
-      expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
-
       expect(mockUserRepo.update).toHaveBeenCalledWith(
         mockTokenRecord.userId,
-        {
-          status: UserStatus.Active
-        },
+        { status: UserStatus.Active },
         {}
       )
-      expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
-
-      expect(mockSignJwt).toHaveBeenCalledTimes(1)
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)
 
       expect(result).toEqual({
         data: {
           user: mockActivatedUser,
           team: undefined,
           permissions: undefined,
-          accessToken: mockAccessToken
+          accessToken: expect.any(String)
         },
-        refreshToken: mockRefreshToken
+        refreshToken: expect.any(String)
       })
+    })
+
+    it('should store a hash that matches the new password', async () => {
+      await acceptInvite(
+        { token: mockTokenRecord.token, password: mockPassword },
+        mockDeviceInfo
+      )
+
+      const [, { passwordHash }] = mockAuthRepo.update.mock.calls[0]
+
+      expect(passwordHash).not.toBe(mockPassword)
+      expect(comparePasswordHashes(mockPassword, passwordHash)).resolves.toBe(
+        true
+      )
+    })
+
+    it('should sign an access token with activated user claims', async () => {
+      const result = await acceptInvite(
+        { token: mockTokenRecord.token, password: mockPassword },
+        mockDeviceInfo
+      )
+
+      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+        id: mockActivatedUser.id,
+        email: mockActivatedUser.email,
+        role: mockActivatedUser.role,
+        status: UserStatus.Active
+      })
+    })
+
+    it('should store only the hash of the returned refresh token', async () => {
+      const result = await acceptInvite(
+        { token: mockTokenRecord.token, password: mockPassword },
+        mockDeviceInfo
+      )
+
+      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: mockActivatedUser.id,
+          tokenHash: await hashToken(result.refreshToken),
+          expiresAt: expect.any(Date)
+        }),
+        undefined
+      )
     })
   })
 
   describe('when token validation fails', () => {
-    it('should throw the validation error without updating anything', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenNotFound)
-      })
+    buildInvalidTokenCases(
+      buildTokenRecord(INVITE_TOKEN),
+      TokenType.PasswordReset
+    ).forEach(({ name, record, code }) => {
+      it(`should throw ${code} without updating anything when token is ${name}`, async () => {
+        mockTokenRepo.findByToken.mockImplementation(async () => record)
 
-      try {
-        await acceptInvite(
-          { token: 'invalid-token', password: mockPassword },
+        const error = await acceptInvite(
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenNotFound)
-      }
+        ).catch((error: unknown) => error)
 
-      expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(mockTokenRepo.update).not.toHaveBeenCalled()
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
+        expect(error).toMatchObject({ name: 'AppError', code })
 
-  describe('when token is expired', () => {
-    it('should throw TokenExpired error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenExpired)
+        expect(mockTransaction.transaction).not.toHaveBeenCalled()
+        expect(mockTokenRepo.update).not.toHaveBeenCalled()
+        expect(mockAuthRepo.update).not.toHaveBeenCalled()
+        expect(mockUserRepo.update).not.toHaveBeenCalled()
       })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenExpired)
-      }
-
-      expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(mockTokenRepo.update).not.toHaveBeenCalled()
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token is already used', () => {
-    it('should throw TokenAlreadyUsed error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenAlreadyUsed)
-      })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenAlreadyUsed)
-      }
-
-      expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(mockTokenRepo.update).not.toHaveBeenCalled()
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token type is wrong', () => {
-    it('should throw TokenTypeMismatch error for password reset token', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenTypeMismatch)
-      })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenTypeMismatch)
-      }
-
-      expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(mockTokenRepo.update).not.toHaveBeenCalled()
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
     })
   })
 
@@ -303,7 +227,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -327,7 +251,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -351,7 +275,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -367,74 +291,30 @@ describe('Accept Invite', () => {
     })
   })
 
-  describe('when password hashing fails', () => {
-    it('should throw the error within transaction', async () => {
-      mockHashPassword.mockImplementation(async () => {
-        throw new Error('Password hashing failed')
-      })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Password hashing failed')
-      }
-
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
-
   describe('edge cases', () => {
-    it('should handle empty password', async () => {
-      try {
-        await acceptInvite(
-          { token: mockTokenString, password: '' },
+    it('should reject empty password', async () => {
+      expect(
+        acceptInvite(
+          { token: mockTokenRecord.token, password: '' },
           mockDeviceInfo
         )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeDefined()
-      }
+      ).rejects.toThrow('password must not be empty')
     })
 
     it('should handle very long passwords', async () => {
       const longPassword = `A1@${'a'.repeat(1000)}`
 
       const result = await acceptInvite(
-        { token: mockTokenString, password: longPassword },
+        { token: mockTokenRecord.token, password: longPassword },
         mockDeviceInfo
       )
 
-      expect(result).toEqual({
-        data: {
-          user: mockActivatedUser,
-          team: undefined,
-          permissions: undefined,
-          accessToken: mockAccessToken
-        },
-        refreshToken: mockRefreshToken
-      })
+      expect(result.data.user).toEqual(mockActivatedUser)
 
-      expect(mockHashPassword).toHaveBeenCalledWith(longPassword)
-      expect(mockHashPassword).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('permissions in response', () => {
-    it('should omit permissions from data when user has no permissions', async () => {
-      const result = await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
+      const [, { passwordHash }] = mockAuthRepo.update.mock.calls[0]
+      expect(comparePasswordHashes(longPassword, passwordHash)).resolves.toBe(
+        true
       )
-
-      expect(result.data.permissions).toBeUndefined()
     })
   })
 })

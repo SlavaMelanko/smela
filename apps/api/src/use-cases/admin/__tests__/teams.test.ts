@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { Team, TeamSearchResult } from '@/data'
+import type { Team, teamRepo, TeamSearchResult } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 
@@ -14,7 +14,7 @@ describe('getTeams', () => {
   const DEFAULT_PAGINATION = { page: 1, limit: 25 }
 
   let mockSearchResult: TeamSearchResult
-  let mockTeamRepoSearch: any
+  let mockTeamRepo: any
 
   beforeEach(async () => {
     mockSearchResult = {
@@ -32,10 +32,12 @@ describe('getTeams', () => {
       pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }
     }
 
-    mockTeamRepoSearch = mock(async () => mockSearchResult)
+    mockTeamRepo = {
+      search: mock(async () => mockSearchResult)
+    } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: { search: mockTeamRepoSearch }
+      teamRepo: mockTeamRepo
     }))
   })
 
@@ -46,7 +48,7 @@ describe('getTeams', () => {
   it('should call teamRepo.search with correct params', async () => {
     await getTeams({ search: 'acme' }, DEFAULT_PAGINATION)
 
-    expect(mockTeamRepoSearch).toHaveBeenCalledWith(
+    expect(mockTeamRepo.search).toHaveBeenCalledWith(
       { search: 'acme' },
       DEFAULT_PAGINATION
     )
@@ -63,7 +65,7 @@ describe('createTeam', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeam: Team
-  let mockTeamRepoCreate: any
+  let mockTeamRepo: any
 
   beforeEach(async () => {
     mockTeam = {
@@ -75,12 +77,12 @@ describe('createTeam', () => {
       updatedAt: new Date('2024-01-01')
     }
 
-    mockTeamRepoCreate = mock(async () => mockTeam)
+    mockTeamRepo = {
+      create: mock(async () => mockTeam)
+    } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: {
-        create: mockTeamRepoCreate
-      }
+      teamRepo: mockTeamRepo
     }))
   })
 
@@ -93,7 +95,7 @@ describe('createTeam', () => {
 
     const result = await createTeam(params)
 
-    expect(mockTeamRepoCreate).toHaveBeenCalledWith(params)
+    expect(mockTeamRepo.create).toHaveBeenCalledWith(params)
     expect(result).toEqual({ team: mockTeam })
   })
 })

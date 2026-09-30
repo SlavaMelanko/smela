@@ -2,11 +2,16 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
+import type { TeamWithMemberCount } from '@/data'
+
 import {
+  buildTeam,
+  createTeamAccessRepoMock,
   createTestApp,
   get,
   ModuleMocker,
   patch,
+  TEST_TEAM_ID,
   testUuids,
   withClaims
 } from '@/__tests__'
@@ -18,13 +23,11 @@ import { teamsRoute } from '../../../../..'
 describe('user /teams/:teamId/members/:memberId/permissions', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Local team id because testUuids.TEAM_1 fails z.uuid() (invalid variant nibble)
-  const TEAM_ID = '00000000-0000-4000-a0c0-000000000001'
-  const PERMISSIONS_URL = `/api/v1/user/verified/teams/${TEAM_ID}/members/${testUuids.USER_2}/permissions`
+  const PERMISSIONS_URL = `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}/permissions`
 
   let app: Hono
 
-  let mockTeam: { id: string; name: string }
+  let mockTeam: TeamWithMemberCount
   let mockTeamRepo: any
 
   let mockPermissions: any
@@ -41,15 +44,8 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
     ])
 
   beforeEach(async () => {
-    mockTeam = { id: TEAM_ID, name: 'Engineering' }
-    mockTeamRepo = {
-      find: mock(async () => mockTeam),
-      findMember: mock(async (_teamId: string, memberId: string) => ({
-        id: memberId,
-        firstName: 'Alice',
-        email: 'alice@example.com'
-      }))
-    }
+    mockTeam = buildTeam()
+    mockTeamRepo = createTeamAccessRepoMock(mockTeam)
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo
@@ -94,7 +90,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
     it('should reject invalid member id', async () => {
       const res = await get(
         app,
-        `/api/v1/user/verified/teams/${TEAM_ID}/members/not-a-uuid/permissions`
+        `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/not-a-uuid/permissions`
       )
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
