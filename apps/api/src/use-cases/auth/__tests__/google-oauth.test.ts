@@ -263,10 +263,10 @@ describe('google-oauth', () => {
       expect(mockUserRepo.update).not.toHaveBeenCalled()
     })
 
-    it('sets default permissions once', async () => {
+    it('keeps existing permissions', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
-      expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
+      expect(mockRbacRepo.setUserPermissions).not.toHaveBeenCalled()
     })
   })
 

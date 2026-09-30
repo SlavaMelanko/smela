@@ -38,21 +38,22 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
     // User may already exist via email (signed up with password before)
     let user = await userRepo.findByEmail(email, tx)
 
+    // Linking keeps existing permissions, only new users get defaults
     if (!user) {
       user = await userRepo.create(
         { firstName, lastName, email, status: UserStatus.Verified },
+        tx
+      )
+
+      await rbacRepo.setUserPermissions(
+        user.id,
+        getSelfServeUserDefaultPermissions(),
         tx
       )
     }
 
     await authRepo.create(
       { userId: user.id, provider: AuthProvider.Google, identifier: googleId },
-      tx
-    )
-
-    await rbacRepo.setUserPermissions(
-      user.id,
-      getSelfServeUserDefaultPermissions(),
       tx
     )
 
