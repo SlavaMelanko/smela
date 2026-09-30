@@ -29,9 +29,15 @@ export const NetworkErrorType = {
 
 // Order matters: first match wins
 const ERROR_TYPE_PATTERNS = [
-  [NetworkErrorType.CONNECTION_REFUSED, ['econnrefused', 'connection refused']],
-  [NetworkErrorType.TIMEOUT, ['etimedout', 'timeout']],
-  [NetworkErrorType.NAME_NOT_RESOLVED, ['enotfound', 'not resolved']]
+  {
+    type: NetworkErrorType.CONNECTION_REFUSED,
+    patterns: ['econnrefused', 'connection refused']
+  },
+  { type: NetworkErrorType.TIMEOUT, patterns: ['etimedout', 'timeout'] },
+  {
+    type: NetworkErrorType.NAME_NOT_RESOLVED,
+    patterns: ['enotfound', 'not resolved']
+  }
 ]
 
 const isOffline = () => typeof navigator !== 'undefined' && !navigator.onLine
@@ -69,12 +75,12 @@ export const getNetworkErrorType = error => {
   }
 
   const text = toSearchText(error)
-  const match = ERROR_TYPE_PATTERNS.find(([, patterns]) =>
+  const match = ERROR_TYPE_PATTERNS.find(({ patterns }) =>
     patterns.some(pattern => text.includes(pattern))
   )
 
   if (match) {
-    return match[0]
+    return match.type
   }
 
   return isNetworkError(error)
