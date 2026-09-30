@@ -11,28 +11,30 @@ import type {
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
+import {
+  buildInvalidTokenCases,
+  buildTokenRecord,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import { verifyJwt } from '@/security/jwt'
 import { comparePasswordHashes } from '@/security/password'
-import {
-  hashToken,
-  TOKEN_LENGTH,
-  TokenStatus,
-  TokenType
-} from '@/security/token'
+import { hashToken, TokenStatus, TokenType } from '@/security/token'
 import { Role, UserStatus } from '@/types'
-import { hour, nowPlus } from '@/utils/chrono'
 
 import { acceptInvite } from '../accept-invite'
 
 describe('Accept Invite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
+  const INVITE_TOKEN = {
+    userId: testUuids.ADMIN_1,
+    type: TokenType.UserInvite
+  }
+
   let mockPassword: string
   let mockDeviceInfo: DeviceInfo
 
-  let mockTokenString: string
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
   let mockAuthRepo: any
@@ -49,18 +51,7 @@ describe('Accept Invite', () => {
     mockPassword = 'NewSecure@123'
     mockDeviceInfo = { ipAddress: '127.0.0.1', userAgent: 'test-agent' }
 
-    mockTokenString = `mock-invite-token-${'1'.repeat(TOKEN_LENGTH - 18)}`
-    mockTokenRecord = {
-      id: 1,
-      userId: testUuids.ADMIN_1,
-      type: TokenType.UserInvite,
-      token: mockTokenString,
-      status: TokenStatus.Pending,
-      expiresAt: nowPlus(hour()),
-      createdAt: new Date(),
-      usedAt: null,
-      metadata: null
-    }
+    mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
 
     mockUser = {
       id: testUuids.ADMIN_1,
@@ -121,11 +112,13 @@ describe('Accept Invite', () => {
   describe('when token is valid and active', () => {
     it('should mark token as used, update password, activate user, and return user with tokens', async () => {
       const result = await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
+        { token: mockTokenRecord.token, password: mockPassword },
         mockDeviceInfo
       )
 
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
+        mockTokenRecord.token
+      )
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
       expect(mockTokenRepo.update).toHaveBeenCalledWith(
@@ -160,7 +153,7 @@ describe('Accept Invite', () => {
 
     it('should store a hash that matches the new password', async () => {
       await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
+        { token: mockTokenRecord.token, password: mockPassword },
         mockDeviceInfo
       )
 
@@ -174,7 +167,7 @@ describe('Accept Invite', () => {
 
     it('should sign an access token with activated user claims', async () => {
       const result = await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
+        { token: mockTokenRecord.token, password: mockPassword },
         mockDeviceInfo
       )
 
@@ -188,7 +181,7 @@ describe('Accept Invite', () => {
 
     it('should store only the hash of the returned refresh token', async () => {
       const result = await acceptInvite(
-        { token: mockTokenString, password: mockPassword },
+        { token: mockTokenRecord.token, password: mockPassword },
         mockDeviceInfo
       )
 
@@ -204,54 +197,19 @@ describe('Accept Invite', () => {
   })
 
   describe('when token validation fails', () => {
-    const invalidTokenCases: {
-      name: string
-      tokenRecord: () => TokenRecord | undefined
-      code: ErrorCode
-    }[] = [
-      {
-        name: 'not found',
-        tokenRecord: () => undefined,
-        code: ErrorCode.TokenNotFound
-      },
-      {
-        name: 'expired',
-        tokenRecord: () => ({
-          ...mockTokenRecord,
-          expiresAt: new Date(Date.now() - 1000)
-        }),
-        code: ErrorCode.TokenExpired
-      },
-      {
-        name: 'already used',
-        tokenRecord: () => ({ ...mockTokenRecord, status: TokenStatus.Used }),
-        code: ErrorCode.TokenAlreadyUsed
-      },
-      {
-        name: 'a password reset token',
-        tokenRecord: () => ({
-          ...mockTokenRecord,
-          type: TokenType.PasswordReset
-        }),
-        code: ErrorCode.TokenTypeMismatch
-      }
-    ]
-
-    invalidTokenCases.forEach(({ name, tokenRecord, code }) => {
+    buildInvalidTokenCases(
+      buildTokenRecord(INVITE_TOKEN),
+      TokenType.PasswordReset
+    ).forEach(({ name, record, code }) => {
       it(`should throw ${code} without updating anything when token is ${name}`, async () => {
-        const record = tokenRecord()
         mockTokenRepo.findByToken.mockImplementation(async () => record)
 
-        try {
-          await acceptInvite(
-            { token: mockTokenString, password: mockPassword },
-            mockDeviceInfo
-          )
-          expect(true).toBe(false)
-        } catch (error) {
-          expect(error).toBeInstanceOf(AppError)
-          expect((error as AppError).code).toBe(code)
-        }
+        const error = await acceptInvite(
+          { token: mockTokenRecord.token, password: mockPassword },
+          mockDeviceInfo
+        ).catch((error: unknown) => error)
+
+        expect(error).toMatchObject({ name: 'AppError', code })
 
         expect(mockTransaction.transaction).not.toHaveBeenCalled()
         expect(mockTokenRepo.update).not.toHaveBeenCalled()
@@ -269,7 +227,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -293,7 +251,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -317,7 +275,7 @@ describe('Accept Invite', () => {
 
       try {
         await acceptInvite(
-          { token: mockTokenString, password: mockPassword },
+          { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
         )
         expect(true).toBe(false)
@@ -336,7 +294,10 @@ describe('Accept Invite', () => {
   describe('edge cases', () => {
     it('should reject empty password', async () => {
       expect(
-        acceptInvite({ token: mockTokenString, password: '' }, mockDeviceInfo)
+        acceptInvite(
+          { token: mockTokenRecord.token, password: '' },
+          mockDeviceInfo
+        )
       ).rejects.toThrow('password must not be empty')
     })
 
@@ -344,7 +305,7 @@ describe('Accept Invite', () => {
       const longPassword = `A1@${'a'.repeat(1000)}`
 
       const result = await acceptInvite(
-        { token: mockTokenString, password: longPassword },
+        { token: mockTokenRecord.token, password: longPassword },
         mockDeviceInfo
       )
 

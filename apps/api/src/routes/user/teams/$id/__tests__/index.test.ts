@@ -2,27 +2,28 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TeamMemberDetails, teamRepo, TeamWithMemberCount } from '@/data'
+import type { TeamWithMemberCount } from '@/data'
 
 import {
+  buildTeam,
+  createTeamAccessRepoMock,
   createTestApp,
   get,
   ModuleMocker,
   patch,
+  TEST_TEAM_ID,
   testUuids,
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Permission, Role, UserStatus } from '@/types'
+import { Permission, Role } from '@/types'
 
 import { teamsRoute } from '../..'
 
 describe('user /teams/:teamId', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Local team id because testUuids.TEAM_1 fails z.uuid() (invalid variant nibble)
-  const TEAM_ID = '00000000-0000-4000-a0c0-000000000001'
-  const TEAM_URL = `/api/v1/user/verified/teams/${TEAM_ID}`
+  const TEAM_URL = `/api/v1/user/verified/teams/${TEST_TEAM_ID}`
 
   let app: Hono
 
@@ -30,20 +31,6 @@ describe('user /teams/:teamId', () => {
   let mockTeamRepo: any
 
   let mockUpdateTeam: any
-
-  const buildMember = (id: string): TeamMemberDetails => ({
-    id,
-    firstName: 'Alice',
-    lastName: null,
-    email: 'alice@example.com',
-    status: UserStatus.Active,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    lastActive: null,
-    position: null,
-    inviter: null,
-    joinedAt: null
-  })
 
   const buildApp = (permissions: string[]) =>
     createTestApp('/api/v1/user/verified', teamsRoute, [
@@ -55,21 +42,8 @@ describe('user /teams/:teamId', () => {
     ])
 
   beforeEach(async () => {
-    mockTeam = {
-      id: TEAM_ID,
-      name: 'Engineering',
-      website: 'https://example.com',
-      description: 'Engineering team',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      memberCount: 1
-    }
-    mockTeamRepo = {
-      find: mock(async () => mockTeam),
-      findMember: mock(async (_teamId: string, memberId: string) =>
-        buildMember(memberId)
-      )
-    } satisfies Partial<typeof teamRepo>
+    mockTeam = buildTeam({ description: 'Engineering team' })
+    mockTeamRepo = createTeamAccessRepoMock(mockTeam)
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo
@@ -93,11 +67,11 @@ describe('user /teams/:teamId', () => {
       const res = await get(app, TEAM_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepo.find).toHaveBeenCalledWith(TEAM_ID)
+      expect(mockTeamRepo.find).toHaveBeenCalledWith(TEST_TEAM_ID)
 
       const data = await res.json()
       expect(data.team).toMatchObject({
-        id: TEAM_ID,
+        id: TEST_TEAM_ID,
         name: 'Engineering'
       })
     })
@@ -142,10 +116,10 @@ describe('user /teams/:teamId', () => {
       const res = await patch(app, TEAM_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockUpdateTeam).toHaveBeenCalledWith(TEAM_ID, body)
+      expect(mockUpdateTeam).toHaveBeenCalledWith(TEST_TEAM_ID, body)
 
       const data = await res.json()
-      expect(data.team).toMatchObject({ id: TEAM_ID })
+      expect(data.team).toMatchObject({ id: TEST_TEAM_ID })
     })
 
     it('should reject unknown body fields', async () => {

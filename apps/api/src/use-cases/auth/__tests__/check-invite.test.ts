@@ -9,19 +9,27 @@ import type {
   UserTeamInfo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import {
+  buildInvalidTokenCases,
+  buildTokenRecord,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
-import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
+import { TokenType } from '@/security/token'
 import { Role } from '@/types'
-import { hour, nowPlus } from '@/utils/chrono'
 
 import { checkInvite } from '../check-invite'
 
 describe('Check Invite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  let mockTokenString: string
+  const INVITE_TOKEN = {
+    userId: testUuids.ADMIN_1,
+    type: TokenType.UserInvite
+  }
+
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
   let mockTeamRepo: any
@@ -31,18 +39,7 @@ describe('Check Invite', () => {
   let mockAdminRole: UserRoleRecord
 
   beforeEach(async () => {
-    mockTokenString = `mock-invite-token-${'1'.repeat(TOKEN_LENGTH - 18)}`
-    mockTokenRecord = {
-      id: 1,
-      userId: testUuids.ADMIN_1,
-      type: TokenType.UserInvite,
-      token: mockTokenString,
-      status: TokenStatus.Pending,
-      expiresAt: nowPlus(hour()),
-      createdAt: new Date(),
-      usedAt: null,
-      metadata: null
-    }
+    mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
 
     mockTeam = {
       id: testUuids.TEAM_1,
@@ -80,9 +77,11 @@ describe('Check Invite', () => {
 
   describe('when token is valid for member invite', () => {
     it('should return member type and team name for member invite token', async () => {
-      const result = await checkInvite(mockTokenString)
+      const result = await checkInvite(mockTokenRecord.token)
 
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
+        mockTokenRecord.token
+      )
       expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
@@ -102,7 +101,7 @@ describe('Check Invite', () => {
     })
 
     it('should return admin type and company name for admin invite token', async () => {
-      const result = await checkInvite(mockTokenString)
+      const result = await checkInvite(mockTokenRecord.token)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
         mockTokenRecord.userId
@@ -115,59 +114,18 @@ describe('Check Invite', () => {
   })
 
   describe('when token validation fails', () => {
-    const invalidTokenCases: {
-      name: string
-      tokenRecord: () => TokenRecord | undefined
-      code: ErrorCode
-    }[] = [
-      {
-        name: 'not found',
-        tokenRecord: () => undefined,
-        code: ErrorCode.TokenNotFound
-      },
-      {
-        name: 'expired',
-        tokenRecord: () => ({
-          ...mockTokenRecord,
-          expiresAt: new Date(Date.now() - 1000)
-        }),
-        code: ErrorCode.TokenExpired
-      },
-      {
-        name: 'already used',
-        tokenRecord: () => ({ ...mockTokenRecord, status: TokenStatus.Used }),
-        code: ErrorCode.TokenAlreadyUsed
-      },
-      {
-        name: 'cancelled',
-        tokenRecord: () => ({
-          ...mockTokenRecord,
-          status: TokenStatus.Cancelled
-        }),
-        code: ErrorCode.TokenCancelled
-      },
-      {
-        name: 'of a different type',
-        tokenRecord: () => ({
-          ...mockTokenRecord,
-          type: TokenType.PasswordReset
-        }),
-        code: ErrorCode.TokenTypeMismatch
-      }
-    ]
-
-    invalidTokenCases.forEach(({ name, tokenRecord, code }) => {
+    buildInvalidTokenCases(
+      buildTokenRecord(INVITE_TOKEN),
+      TokenType.PasswordReset
+    ).forEach(({ name, record, code }) => {
       it(`should throw ${code} when token is ${name}`, async () => {
-        const record = tokenRecord()
         mockTokenRepo.findByToken.mockImplementation(async () => record)
 
-        try {
-          await checkInvite(mockTokenString)
-          expect(true).toBe(false)
-        } catch (error) {
-          expect(error).toBeInstanceOf(AppError)
-          expect((error as AppError).code).toBe(code)
-        }
+        const error = await checkInvite(mockTokenRecord.token).catch(
+          (error: unknown) => error
+        )
+
+        expect(error).toMatchObject({ name: 'AppError', code })
 
         expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
       })
@@ -180,7 +138,7 @@ describe('Check Invite', () => {
       mockRbacRepo.findRole.mockResolvedValue(undefined)
 
       try {
-        await checkInvite(mockTokenString)
+        await checkInvite(mockTokenRecord.token)
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(AppError)
@@ -204,7 +162,7 @@ describe('Check Invite', () => {
       })
 
       try {
-        await checkInvite(mockTokenString)
+        await checkInvite(mockTokenRecord.token)
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(AppError)
@@ -221,7 +179,7 @@ describe('Check Invite', () => {
       )
 
       try {
-        await checkInvite(mockTokenString)
+        await checkInvite(mockTokenRecord.token)
         expect(true).toBe(false)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)

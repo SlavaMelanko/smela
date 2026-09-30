@@ -33,6 +33,11 @@ Before writing custom test helpers, check existing utilities:
 - **`post(app, url, body, headers)`** - POST request helper
 - **`get(app, url, headers)`** - GET request helper
 - **`patch(app, url, body, headers)`** - PATCH request helper
+- **Fixtures** (`fixtures/`) - typed builders for shared test data:
+  `buildTeam`, `buildTeamMember`, `createTeamAccessRepoMock` (team-access guard),
+  `buildTokenRecord`, `buildInvalidTokenCases` (records the real
+  `TokenValidator` rejects). Add a builder here instead of copying a fixture
+  into a second file
 - **`doRequest(app, url, method, body, headers)`** - Generic request helper
 
 Example:

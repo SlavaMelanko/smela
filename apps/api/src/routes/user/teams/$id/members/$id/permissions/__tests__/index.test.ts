@@ -2,27 +2,28 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TeamMemberDetails, teamRepo, TeamWithMemberCount } from '@/data'
+import type { TeamWithMemberCount } from '@/data'
 
 import {
+  buildTeam,
+  createTeamAccessRepoMock,
   createTestApp,
   get,
   ModuleMocker,
   patch,
+  TEST_TEAM_ID,
   testUuids,
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Permission, Role, UserStatus } from '@/types'
+import { Permission, Role } from '@/types'
 
 import { teamsRoute } from '../../../../..'
 
 describe('user /teams/:teamId/members/:memberId/permissions', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Local team id because testUuids.TEAM_1 fails z.uuid() (invalid variant nibble)
-  const TEAM_ID = '00000000-0000-4000-a0c0-000000000001'
-  const PERMISSIONS_URL = `/api/v1/user/verified/teams/${TEAM_ID}/members/${testUuids.USER_2}/permissions`
+  const PERMISSIONS_URL = `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}/permissions`
 
   let app: Hono
 
@@ -32,20 +33,6 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
   let mockPermissions: any
   let mockGetTeamMemberPermissions: any
   let mockUpdateTeamMemberPermissions: any
-
-  const buildMember = (id: string): TeamMemberDetails => ({
-    id,
-    firstName: 'Alice',
-    lastName: null,
-    email: 'alice@example.com',
-    status: UserStatus.Active,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    lastActive: null,
-    position: null,
-    inviter: null,
-    joinedAt: null
-  })
 
   const buildApp = (permissions: string[]) =>
     createTestApp('/api/v1/user/verified', teamsRoute, [
@@ -57,21 +44,8 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
     ])
 
   beforeEach(async () => {
-    mockTeam = {
-      id: TEAM_ID,
-      name: 'Engineering',
-      website: 'https://example.com',
-      description: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      memberCount: 1
-    }
-    mockTeamRepo = {
-      find: mock(async () => mockTeam),
-      findMember: mock(async (_teamId: string, memberId: string) =>
-        buildMember(memberId)
-      )
-    } satisfies Partial<typeof teamRepo>
+    mockTeam = buildTeam()
+    mockTeamRepo = createTeamAccessRepoMock(mockTeam)
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo
@@ -116,7 +90,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
     it('should reject invalid member id', async () => {
       const res = await get(
         app,
-        `/api/v1/user/verified/teams/${TEAM_ID}/members/not-a-uuid/permissions`
+        `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/not-a-uuid/permissions`
       )
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
