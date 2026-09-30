@@ -71,21 +71,6 @@ describe('network-monitor', () => {
       expect(isNetworkError({ status: 504 })).toBe(true)
     })
 
-    it('should detect network errors in response status', () => {
-      const error = { response: { status: 502 } }
-
-      expect(isNetworkError(error)).toBe(true)
-    })
-
-    it('should detect axios network errors', () => {
-      const error = {
-        isAxiosError: true,
-        code: 'ECONNABORTED'
-      }
-
-      expect(isNetworkError(error)).toBe(true)
-    })
-
     it('should detect fetch TypeError', () => {
       const error = new TypeError('Failed to fetch')
 

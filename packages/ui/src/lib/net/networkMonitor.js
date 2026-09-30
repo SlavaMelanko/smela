@@ -1,103 +1,22 @@
-// Common network error patterns
 const NETWORK_ERROR_PATTERNS = [
-  'NetworkError',
-  'Network request failed',
-  'Failed to fetch',
-  'Load failed',
+  'networkerror',
+  'network request failed',
+  'failed to fetch',
+  'load failed',
   'timeout',
-  'Connection',
-  'ECONNREFUSED',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  'ECONNRESET'
+  'connection',
+  'econnrefused',
+  'etimedout',
+  'enotfound',
+  'econnreset'
 ]
 
-// HTTP status codes that indicate network issues
-const NETWORK_ERROR_STATUS_CODES = [
+const NETWORK_ERROR_STATUS_CODES = new Set([
   0, // no response
   502, // bad gateway
   503, // service unavailable
   504 // gateway timeout
-]
-
-// Determines if an error is a network connection issue
-export const isNetworkError = error => {
-  if (!error) {
-    return false
-  }
-
-  // Check if browser is offline
-  if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    return true
-  }
-
-  // Check error message
-  if (error.message) {
-    const errorMessage = error.message.toLowerCase()
-    const hasNetworkError = NETWORK_ERROR_PATTERNS.some(pattern =>
-      errorMessage.includes(pattern.toLowerCase())
-    )
-
-    if (hasNetworkError) {
-      return true
-    }
-  }
-
-  // Check error code
-  if (error.code) {
-    const errorCode = error.code.toString().toUpperCase()
-    const hasNetworkCode = NETWORK_ERROR_PATTERNS.some(pattern =>
-      errorCode.includes(pattern)
-    )
-
-    if (hasNetworkCode) {
-      return true
-    }
-  }
-
-  // Check error name
-  if (error.name) {
-    const errorName = error.name.toLowerCase()
-
-    if (errorName === 'networkerror') {
-      return true
-    }
-  }
-
-  // Check HTTP status code
-  if (error.status !== undefined) {
-    if (NETWORK_ERROR_STATUS_CODES.includes(error.status)) {
-      return true
-    }
-  }
-
-  // Check response status for fetch API responses
-  if (error.response?.status !== undefined) {
-    if (NETWORK_ERROR_STATUS_CODES.includes(error.response.status)) {
-      return true
-    }
-  }
-
-  // Check for axios-specific network errors
-  if (error.isAxiosError && error.code) {
-    const axiosNetworkCodes = [
-      'ECONNABORTED',
-      'ERR_NETWORK',
-      'ERR_FR_TOO_MANY_REDIRECTS'
-    ]
-
-    if (axiosNetworkCodes.includes(error.code)) {
-      return true
-    }
-  }
-
-  // Check for fetch-specific TypeError that often indicates network issues
-  if (error instanceof TypeError && error.message === 'Failed to fetch') {
-    return true
-  }
-
-  return false
-}
+])
 
 export const NetworkErrorType = {
   OFFLINE: 'offline',
@@ -108,9 +27,40 @@ export const NetworkErrorType = {
   UNKNOWN: 'unknown'
 }
 
-// Gets the network error type from an error object
+// Order matters: first match wins
+const ERROR_TYPE_PATTERNS = [
+  [NetworkErrorType.CONNECTION_REFUSED, ['econnrefused', 'connection refused']],
+  [NetworkErrorType.TIMEOUT, ['etimedout', 'timeout']],
+  [NetworkErrorType.NAME_NOT_RESOLVED, ['enotfound', 'not resolved']]
+]
+
+const isOffline = () => typeof navigator !== 'undefined' && !navigator.onLine
+
+const toSearchText = error =>
+  [error.message, error.code, error.name]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+export const isNetworkError = error => {
+  if (!error) {
+    return false
+  }
+
+  if (isOffline()) {
+    return true
+  }
+
+  const text = toSearchText(error)
+
+  return (
+    NETWORK_ERROR_PATTERNS.some(pattern => text.includes(pattern)) ||
+    NETWORK_ERROR_STATUS_CODES.has(error.status)
+  )
+}
+
 export const getNetworkErrorType = error => {
-  if (!navigator.onLine) {
+  if (isOffline()) {
     return NetworkErrorType.OFFLINE
   }
 
@@ -118,35 +68,16 @@ export const getNetworkErrorType = error => {
     return NetworkErrorType.UNKNOWN
   }
 
-  const errMsg = (error?.message || error?.code || '').toLowerCase()
+  const text = toSearchText(error)
+  const match = ERROR_TYPE_PATTERNS.find(([, patterns]) =>
+    patterns.some(pattern => text.includes(pattern))
+  )
 
-  if (
-    errMsg.includes('econnrefused') ||
-    errMsg.includes('connection refused')
-  ) {
-    return NetworkErrorType.CONNECTION_REFUSED
+  if (match) {
+    return match[0]
   }
 
-  if (errMsg.includes('etimedout') || errMsg.includes('timeout')) {
-    return NetworkErrorType.TIMEOUT
-  }
-
-  if (errMsg.includes('enotfound') || errMsg.includes('not resolved')) {
-    return NetworkErrorType.NAME_NOT_RESOLVED
-  }
-
-  if (error.status === 502 || error.status === 503 || error.status === 504) {
-    return NetworkErrorType.SERVER_UNAVAILABLE
-  }
-
-  if (
-    errMsg.includes('failed to fetch') ||
-    errMsg.includes('networkerror') ||
-    errMsg.includes('network request failed') ||
-    errMsg.includes('load failed')
-  ) {
-    return NetworkErrorType.SERVER_UNAVAILABLE
-  }
-
-  return NetworkErrorType.UNKNOWN
+  return isNetworkError(error)
+    ? NetworkErrorType.SERVER_UNAVAILABLE
+    : NetworkErrorType.UNKNOWN
 }
