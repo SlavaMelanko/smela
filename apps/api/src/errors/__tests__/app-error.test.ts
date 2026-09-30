@@ -17,45 +17,24 @@ describe('AppError', () => {
     }
   })
 
-  test('should handle undefined custom message', () => {
-    const error = new AppError(ErrorCode.InvalidCredentials, undefined)
+  const blankMessages = [
+    { name: 'undefined', message: undefined },
+    { name: 'null', message: null },
+    { name: 'empty string', message: '' },
+    { name: 'whitespace-only', message: '   ' }
+  ]
 
-    expect(error.code).toBe(ErrorCode.InvalidCredentials)
-    expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(
-      ErrorRegistry[ErrorCode.InvalidCredentials].error
-    )
-  })
+  blankMessages.forEach(({ name, message }) => {
+    test(`should fall back to ErrorRegistry for ${name} custom message`, () => {
+      // @ts-expect-error - null is invalid input
+      const error = new AppError(ErrorCode.InvalidCredentials, message)
 
-  test('should handle null custom message', () => {
-    // @ts-expect-error - testing invalid input
-    const error = new AppError(ErrorCode.InvalidCredentials, null)
-
-    expect(error.code).toBe(ErrorCode.InvalidCredentials)
-    expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(
-      ErrorRegistry[ErrorCode.InvalidCredentials].error
-    )
-  })
-
-  test('should handle empty string custom message', () => {
-    const error = new AppError(ErrorCode.InvalidCredentials, '')
-
-    expect(error.code).toBe(ErrorCode.InvalidCredentials)
-    expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(
-      ErrorRegistry[ErrorCode.InvalidCredentials].error
-    )
-  })
-
-  test('should handle whitespace-only custom message', () => {
-    const error = new AppError(ErrorCode.InvalidCredentials, '   ')
-
-    expect(error.code).toBe(ErrorCode.InvalidCredentials)
-    expect(error.name).toBe(APP_ERROR_NAME)
-    expect(error.message).toBe(
-      ErrorRegistry[ErrorCode.InvalidCredentials].error
-    )
+      expect(error.code).toBe(ErrorCode.InvalidCredentials)
+      expect(error.name).toBe(APP_ERROR_NAME)
+      expect(error.message).toBe(
+        ErrorRegistry[ErrorCode.InvalidCredentials].error
+      )
+    })
   })
 
   test('should create AppError with custom message that overrides ErrorRegistry', () => {

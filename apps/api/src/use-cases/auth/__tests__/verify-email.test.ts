@@ -10,7 +10,12 @@ import type {
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import {
+  buildUser,
+  createTransactionMock,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import {
@@ -19,7 +24,7 @@ import {
   TokenStatus,
   TokenType
 } from '@/security/token'
-import { Action, Permission, Resource, Role, UserStatus } from '@/types'
+import { Action, Permission, Resource, UserStatus } from '@/types'
 import { hour, hours, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { verifyEmail } from '../verify-email'
@@ -35,7 +40,7 @@ describe('Verify Email', () => {
   let mockUserRepo: any
   let mockRefreshTokenRepo: any
   let mockRbacRepo: any
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   beforeEach(async () => {
     mockDeviceInfo = {
@@ -58,16 +63,7 @@ describe('Verify Email', () => {
       findByToken: mock(async () => mockTokenRecord),
       update: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: UserStatus.Verified,
-      role: Role.User,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+    mockUser = buildUser()
     mockUserRepo = {
       update: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
@@ -80,9 +76,7 @@ describe('Verify Email', () => {
         { action: Action.Manage, resource: Resource.Dashboard }
       ])
     } satisfies Partial<typeof rbacRepo>
-    mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,

@@ -2,13 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { tokenRepo, User, userRepo } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import { buildUser, createTransactionMock, ModuleMocker } from '@/__tests__'
 import { TokenType } from '@/security/token'
 import {
   buildResetPasswordUrl,
   PasswordResetEmailMessageBuilder
 } from '@/services/email'
-import { Role, UserStatus } from '@/types'
+import { UserStatus } from '@/types'
 
 import { requestPasswordReset } from '../request-password-reset'
 
@@ -19,30 +19,19 @@ describe('Request Password Reset', () => {
 
   let mockUserRepo: any
   let mockTokenRepo: any
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockEmailService: any
 
   beforeEach(async () => {
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: UserStatus.Verified,
-      role: Role.User,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+    mockUser = buildUser()
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
     mockTokenRepo = {
       issue: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
-    mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
@@ -140,13 +129,11 @@ describe('Request Password Reset', () => {
         throw new Error('Database connection failed')
       })
 
-      try {
-        await requestPasswordReset({ email: mockUser.email })
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+      const error = await requestPasswordReset({ email: mockUser.email }).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({ message: 'Database connection failed' })
 
       expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
       expect(mockEmailService.send).not.toHaveBeenCalled()

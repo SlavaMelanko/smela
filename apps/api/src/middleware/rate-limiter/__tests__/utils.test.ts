@@ -8,16 +8,11 @@ describe('Rate Limiter Utils', () => {
 
   beforeEach(() => {
     app = new Hono()
+    app.get('/test', c => c.json({ ip: getClientIp(c) }))
   })
 
   describe('getClientIp', () => {
     it('should extract IP from X-Forwarded-For header', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', {
         method: 'GET',
         headers: { 'X-Forwarded-For': '192.168.1.1, 10.0.0.1' }
@@ -28,12 +23,6 @@ describe('Rate Limiter Utils', () => {
     })
 
     it('should extract IP from X-Real-IP header when X-Forwarded-For is not present', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', {
         method: 'GET',
         headers: { 'X-Real-IP': '203.0.113.1' }
@@ -44,12 +33,6 @@ describe('Rate Limiter Utils', () => {
     })
 
     it('should extract IP from CF-Connecting-IP header when others are not present', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', {
         method: 'GET',
         headers: { 'CF-Connecting-IP': '198.51.100.1' }
@@ -60,12 +43,6 @@ describe('Rate Limiter Utils', () => {
     })
 
     it('should return "unknown-ip" when no IP headers are present', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', { method: 'GET' })
 
       const { ip } = await res.json()
@@ -73,12 +50,6 @@ describe('Rate Limiter Utils', () => {
     })
 
     it('should prioritize X-Forwarded-For over other headers', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', {
         method: 'GET',
         headers: {
@@ -93,12 +64,6 @@ describe('Rate Limiter Utils', () => {
     })
 
     it('should trim whitespace from X-Forwarded-For IP', async () => {
-      app.get('/test', c => {
-        const ip = getClientIp(c)
-
-        return c.json({ ip })
-      })
-
       const res = await app.request('/test', {
         method: 'GET',
         headers: { 'X-Forwarded-For': ' 192.168.1.1 , 10.0.0.1' }

@@ -2,7 +2,13 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
+import {
+  buildMalformedRequests,
+  createTestApp,
+  ModuleMocker,
+  post,
+  testUuids
+} from '@/__tests__'
 import {
   mockCaptchaSuccess,
   VALID_CAPTCHA_TOKEN
@@ -192,24 +198,13 @@ describe('auth /login', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{ headers?: Record<string, string>; body?: any }> =
-        [
-          {
-            headers: {},
-            body: {
-              email: 'test@example.com',
-              password: 'ValidPass123!',
-              captcha: { token: VALID_CAPTCHA_TOKEN }
-            }
-          },
-          {
-            headers: { 'Content-Type': 'application/json' },
-            body: '{ invalid json'
-          },
-          { headers: { 'Content-Type': 'application/json' }, body: undefined }
-        ]
+      const validPayload = {
+        email: 'test@example.com',
+        password: 'ValidPass123!',
+        captcha: { token: VALID_CAPTCHA_TOKEN }
+      }
 
-      for (const { headers, body } of scenarios) {
+      for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(app, LOGIN_URL, body, headers)
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)

@@ -9,8 +9,8 @@ import type {
   userRepo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
+import { createTransactionMock, ModuleMocker, testUuids } from '@/__tests__'
+import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { comparePasswordHashes } from '@/security/password'
 import { hashToken, TokenType } from '@/security/token'
@@ -43,7 +43,7 @@ describe('Signup with Email', () => {
   let mockTokenRepo: any
   let mockRefreshTokenRepo: any
   let mockRbacRepo: any
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockEmailService: any
 
@@ -89,9 +89,7 @@ describe('Signup with Email', () => {
         { action: Action.Manage, resource: Resource.Dashboard }
       ])
     } satisfies Partial<typeof rbacRepo>
-    mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
@@ -267,13 +265,15 @@ describe('Signup with Email', () => {
 
       mockUserRepo.findByEmail.mockImplementation(async () => existingUser)
 
-      try {
-        await signUpWithEmail(mockSignupParams, mockDeviceInfo)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.EmailAlreadyInUse)
-      }
+      const error = await signUpWithEmail(
+        mockSignupParams,
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({
+        name: 'AppError',
+        code: ErrorCode.EmailAlreadyInUse
+      })
 
       expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(
         mockSignupParams.email
@@ -293,13 +293,12 @@ describe('Signup with Email', () => {
         throw new Error('Database connection failed')
       })
 
-      try {
-        await signUpWithEmail(mockSignupParams, mockDeviceInfo)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+      const error = await signUpWithEmail(
+        mockSignupParams,
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({ message: 'Database connection failed' })
 
       expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(
         mockSignupParams.email
@@ -319,13 +318,12 @@ describe('Signup with Email', () => {
         throw new Error('Auth table unavailable')
       })
 
-      try {
-        await signUpWithEmail(mockSignupParams, mockDeviceInfo)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Auth table unavailable')
-      }
+      const error = await signUpWithEmail(
+        mockSignupParams,
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({ message: 'Auth table unavailable' })
 
       expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(
         mockSignupParams.email
@@ -345,13 +343,12 @@ describe('Signup with Email', () => {
         throw new Error('Token replacement failed')
       })
 
-      try {
-        await signUpWithEmail(mockSignupParams, mockDeviceInfo)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Token replacement failed')
-      }
+      const error = await signUpWithEmail(
+        mockSignupParams,
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({ message: 'Token replacement failed' })
 
       expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(
         mockSignupParams.email

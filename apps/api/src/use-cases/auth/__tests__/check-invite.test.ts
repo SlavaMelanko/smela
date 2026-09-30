@@ -16,7 +16,7 @@ import {
   testUuids
 } from '@/__tests__'
 import env from '@/env'
-import { AppError, ErrorCode } from '@/errors'
+import { ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
 import { Role } from '@/types'
 
@@ -137,14 +137,15 @@ describe('Check Invite', () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
       mockRbacRepo.findRole.mockResolvedValue(undefined)
 
-      try {
-        await checkInvite(mockTokenRecord.token)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenDeprecated)
-        expect((error as AppError).message).toBe('Invalid invite')
-      }
+      const error = await checkInvite(mockTokenRecord.token).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({
+        name: 'AppError',
+        code: ErrorCode.TokenDeprecated,
+        message: 'Invalid invite'
+      })
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
         mockTokenRecord.userId
@@ -161,14 +162,15 @@ describe('Check Invite', () => {
         role: Role.User
       })
 
-      try {
-        await checkInvite(mockTokenRecord.token)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenDeprecated)
-        expect((error as AppError).message).toBe('Invalid invite')
-      }
+      const error = await checkInvite(mockTokenRecord.token).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({
+        name: 'AppError',
+        code: ErrorCode.TokenDeprecated,
+        message: 'Invalid invite'
+      })
     })
   })
 
@@ -178,13 +180,11 @@ describe('Check Invite', () => {
         new Error('Database connection failed')
       )
 
-      try {
-        await checkInvite(mockTokenRecord.token)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+      const error = await checkInvite(mockTokenRecord.token).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({ message: 'Database connection failed' })
     })
   })
 })

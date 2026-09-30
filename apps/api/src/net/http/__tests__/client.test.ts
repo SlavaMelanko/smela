@@ -260,64 +260,51 @@ describe('HTTP Client', () => {
   })
 
   describe('URL construction', () => {
-    test('should handle base URL with trailing slash', async () => {
-      const client = new HttpClient('https://example.com/')
-      await client.get('/api/users')
+    const cases = [
+      {
+        name: 'base URL with trailing slash',
+        baseUrl: 'https://example.com/',
+        path: '/api/users',
+        expected: 'https://example.com/api/users'
+      },
+      {
+        name: 'base URL without trailing slash',
+        baseUrl: 'https://example.com',
+        path: '/api/users',
+        expected: 'https://example.com/api/users'
+      },
+      {
+        name: 'path without leading slash',
+        baseUrl: 'https://example.com',
+        path: 'api/users',
+        expected: 'https://example.com/api/users'
+      },
+      {
+        name: 'empty path',
+        baseUrl: 'https://example.com',
+        path: '',
+        expected: 'https://example.com/'
+      },
+      {
+        name: 'root path',
+        baseUrl: 'https://example.com',
+        path: '/',
+        expected: 'https://example.com/'
+      },
+      {
+        name: 'port in base URL',
+        baseUrl: 'http://localhost:3000',
+        path: '/api/users',
+        expected: 'http://localhost:3000/api/users'
+      }
+    ]
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/api/users',
-        expect.any(Object)
-      )
-    })
+    cases.forEach(({ name, baseUrl, path, expected }) => {
+      test(`should handle ${name}`, async () => {
+        await new HttpClient(baseUrl).get(path)
 
-    test('should handle base URL without trailing slash', async () => {
-      const client = new HttpClient('https://example.com')
-      await client.get('/api/users')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/api/users',
-        expect.any(Object)
-      )
-    })
-
-    test('should handle path without leading slash', async () => {
-      const client = new HttpClient('https://example.com')
-      await client.get('api/users')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/api/users',
-        expect.any(Object)
-      )
-    })
-
-    test('should handle empty path', async () => {
-      const client = new HttpClient('https://example.com')
-      await client.get('')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/',
-        expect.any(Object)
-      )
-    })
-
-    test('should handle root path', async () => {
-      const client = new HttpClient('https://example.com')
-      await client.get('/')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/',
-        expect.any(Object)
-      )
-    })
-
-    test('should work with ports in base URL', async () => {
-      const client = new HttpClient('http://localhost:3000')
-      await client.get('/api/users')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/api/users',
-        expect.any(Object)
-      )
+        expect(mockFetch).toHaveBeenCalledWith(expected, expect.any(Object))
+      })
     })
   })
 

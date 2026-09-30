@@ -2,7 +2,12 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import { createTestApp, ModuleMocker, post } from '@/__tests__'
+import {
+  buildMalformedRequests,
+  createTestApp,
+  ModuleMocker,
+  post
+} from '@/__tests__'
 import {
   mockCaptchaSuccess,
   VALID_CAPTCHA_TOKEN
@@ -118,32 +123,12 @@ describe('auth /resend-verification-email', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{
-        name: string
-        headers?: Record<string, string>
-        body?: any
-      }> = [
-        {
-          name: 'missing Content-Type',
-          headers: {},
-          body: {
-            email: 'test@example.com',
-            captcha: { token: VALID_CAPTCHA_TOKEN }
-          }
-        },
-        {
-          name: 'malformed JSON',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{ invalid json'
-        },
-        {
-          name: 'missing request body',
-          headers: { 'Content-Type': 'application/json' },
-          body: ''
-        }
-      ]
+      const validPayload = {
+        email: 'test@example.com',
+        captcha: { token: VALID_CAPTCHA_TOKEN }
+      }
 
-      for (const { headers, body } of scenarios) {
+      for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(
           app,
           RESEND_VERIFICATION_EMAIL_URL,

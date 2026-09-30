@@ -16,7 +16,7 @@ import type {
   userRepo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { hashToken } from '@/security/token'
@@ -50,16 +50,7 @@ describe('Refresh Auth Tokens', () => {
       userAgent: 'Mozilla/5.0 (Test)'
     }
 
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'test@example.com',
-      status: UserStatus.Verified,
-      role: Role.User,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+    mockUser = buildUser({ email: 'test@example.com' })
     mockUserRepo = {
       findById: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
@@ -477,55 +468,34 @@ describe('Refresh Auth Tokens', () => {
   })
 
   describe('repository error scenarios', () => {
-    it('should handle token lookup database failure', async () => {
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => {
-        throw new Error('Database connection failed')
+    const refresh = async () =>
+      refreshAuthTokens(
+        { refreshToken: mockRefreshToken },
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+    const failures = [
+      'token lookup',
+      'user lookup',
+      'token creation',
+      'token revocation'
+    ]
+
+    failures.forEach((name, index) => {
+      it(`should rethrow when ${name} fails`, async () => {
+        // Same order as failures
+        const repoMocks = [
+          mockRefreshTokenRepo.findByHash,
+          mockUserRepo.findById,
+          mockRefreshTokenRepo.create,
+          mockRefreshTokenRepo.revokeByHash
+        ]
+        repoMocks[index].mockImplementation(async () => {
+          throw new Error(`${name} failed`)
+        })
+
+        expect(await refresh()).toMatchObject({ message: `${name} failed` })
       })
-
-      try {
-        await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
-    })
-
-    it('should handle user lookup database failure', async () => {
-      mockUserRepo.findById.mockImplementation(async () => {
-        throw new Error('User table query failed')
-      })
-
-      try {
-        await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('User table query failed')
-      }
-    })
-
-    it('should handle token creation failure during rotation', async () => {
-      mockRefreshTokenRepo.create.mockImplementation(async () => {
-        throw new Error('Token creation failed')
-      })
-
-      try {
-        await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Token creation failed')
-      }
     })
 
     it('should not revoke old token if new token creation fails (transaction rollback)', async () => {
@@ -533,33 +503,17 @@ describe('Refresh Auth Tokens', () => {
         throw new Error('Token creation failed')
       })
 
-      try {
-        await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch {
-        // Transaction should rollback, so revokeByHash should not be called
-        expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
-      }
+      expect(await refresh()).toBeInstanceOf(Error)
+      expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
     })
 
-    it('should rollback transaction if revocation fails', async () => {
+    it('should run failed revocation inside the transaction', async () => {
       mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
         throw new Error('Revocation failed')
       })
 
-      try {
-        await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch {
-        // Verify transaction was attempted
-        expect(mockDb.transaction).toHaveBeenCalledTimes(1)
-      }
+      expect(await refresh()).toBeInstanceOf(Error)
+      expect(mockDb.transaction).toHaveBeenCalledTimes(1)
     })
   })
 

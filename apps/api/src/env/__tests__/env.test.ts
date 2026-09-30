@@ -44,6 +44,20 @@ describe('Environment Configuration', () => {
     consoleErrorSpy.mockRestore()
   })
 
+  // Undefined value removes the field
+  const expectInvalidField = (field: string, value: string | undefined) => {
+    const invalidEnv = { ...createBaseEnv() }
+    if (value === undefined) {
+      delete invalidEnv[field]
+    } else {
+      invalidEnv[field] = value
+    }
+
+    validateEnvVars(invalidEnv)
+    expect(processExitMock).toHaveBeenCalledWith(1)
+    processExitMock.mockClear()
+  }
+
   test('should validate with default values across all environments', () => {
     const devEnv = validateEnvVars(createBaseEnv('development'))
     const testEnv = validateEnvVars(createBaseEnv('test'))
@@ -215,18 +229,7 @@ describe('Environment Configuration', () => {
       }
     ]
 
-    testCases.forEach(({ field, value }) => {
-      const invalidEnv = { ...createBaseEnv() }
-      if (value === undefined) {
-        delete invalidEnv[field as keyof typeof invalidEnv]
-      } else {
-        invalidEnv[field as keyof typeof invalidEnv] = value
-      }
-
-      validateEnvVars(invalidEnv)
-      expect(processExitMock).toHaveBeenCalledWith(1)
-      processExitMock.mockClear()
-    })
+    testCases.forEach(({ field, value }) => expectInvalidField(field, value))
   })
 
   test('should validate password complexity requirements', () => {
@@ -238,12 +241,9 @@ describe('Environment Configuration', () => {
       { value: 'NoSymbols123', desc: 'no symbols' }
     ]
 
-    invalidPasswords.forEach(({ value }) => {
-      const invalidEnv = { ...createBaseEnv(), POSTGRES_PASSWORD: value }
-      validateEnvVars(invalidEnv)
-      expect(processExitMock).toHaveBeenCalledWith(1)
-      processExitMock.mockClear()
-    })
+    invalidPasswords.forEach(({ value }) =>
+      expectInvalidField('POSTGRES_PASSWORD', value)
+    )
   })
 
   test('should validate other required fields', () => {
@@ -259,18 +259,7 @@ describe('Environment Configuration', () => {
       }
     ]
 
-    testCases.forEach(({ field, value }) => {
-      const invalidEnv = { ...createBaseEnv() }
-      if (value === undefined) {
-        delete invalidEnv[field as keyof typeof invalidEnv]
-      } else {
-        invalidEnv[field as keyof typeof invalidEnv] = value
-      }
-
-      validateEnvVars(invalidEnv)
-      expect(processExitMock).toHaveBeenCalledWith(1)
-      processExitMock.mockClear()
-    })
+    testCases.forEach(({ field, value }) => expectInvalidField(field, value))
   })
 
   test('should validate JWT_SECRET_PREVIOUS as optional field', () => {
