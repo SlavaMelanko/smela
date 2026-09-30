@@ -52,7 +52,7 @@ describe('auth /verify-email', () => {
   })
 
   describe('POST /verify-email', () => {
-    it('should return user and token on successful email verification', async () => {
+    it('returns user and token on successful email verification', async () => {
       const validToken = 'a'.repeat(64)
 
       const res = await post(app, VERIFY_EMAIL_URL, { token: validToken })
@@ -81,7 +81,7 @@ describe('auth /verify-email', () => {
       )
     })
 
-    it('should require token parameter', async () => {
+    it('rejects missing token', async () => {
       const res = await post(app, VERIFY_EMAIL_URL, {})
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
@@ -89,7 +89,7 @@ describe('auth /verify-email', () => {
       expect(json).toHaveProperty('error')
     })
 
-    it('should validate token requirements', async () => {
+    it('rejects invalid tokens', async () => {
       const invalidTokens = [
         '', // empty token
         'a'.repeat(32), // token too short
@@ -107,7 +107,7 @@ describe('auth /verify-email', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       const validPayload = { token: 'a'.repeat(64) }
 
       for (const { headers, body } of buildMalformedRequests(validPayload)) {
@@ -117,7 +117,7 @@ describe('auth /verify-email', () => {
       }
     })
 
-    it('should handle verification errors', async () => {
+    it('returns error status when verification fails', async () => {
       mockVerifyEmail.mockImplementationOnce(() => {
         throw new Error('Token verification failed')
       })

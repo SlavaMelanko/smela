@@ -12,9 +12,9 @@ import {
 } from '../options'
 import { TokenType } from '../types'
 
-describe('Token Facade', () => {
+describe('facade', () => {
   describe('generateToken', () => {
-    it('should generate EmailVerification token with default options', () => {
+    it('generates an EmailVerification token with default options', () => {
       const beforeGeneration = new Date()
       const result = generateToken(TokenType.EmailVerification)
       const afterGeneration = new Date()
@@ -40,7 +40,7 @@ describe('Token Facade', () => {
       )
     })
 
-    it('should generate PasswordReset token with default options', () => {
+    it('generates a PasswordReset token with default options', () => {
       const beforeGeneration = new Date()
       const result = generateToken(TokenType.PasswordReset)
       const afterGeneration = new Date()
@@ -66,14 +66,14 @@ describe('Token Facade', () => {
       )
     })
 
-    it('should generate unique tokens on consecutive calls', () => {
+    it('generates unique tokens on consecutive calls', () => {
       const result1 = generateToken(TokenType.EmailVerification)
       const result2 = generateToken(TokenType.EmailVerification)
 
       expect(result1.token).not.toBe(result2.token)
     })
 
-    it('should accept custom options for length and expiry', () => {
+    it('accepts custom length and expiry options', () => {
       const CUSTOM_LENGTH = 32
       const CUSTOM_EXPIRY = 7200
 
@@ -102,7 +102,7 @@ describe('Token Facade', () => {
       )
     })
 
-    it('should handle zero expiry seconds', () => {
+    it('expires immediately with zero expiry seconds', () => {
       const beforeGeneration = new Date()
       const result = generateToken(TokenType.EmailVerification, {
         expirySeconds: 0
@@ -119,7 +119,7 @@ describe('Token Facade', () => {
   })
 
   describe('generateHashedToken', () => {
-    it('should generate RefreshToken hashed token with default options', async () => {
+    it('generates a RefreshToken hashed token with default options', async () => {
       const beforeGeneration = new Date()
       const result = await generateHashedToken(TokenType.RefreshToken)
       const afterGeneration = new Date()
@@ -150,7 +150,7 @@ describe('Token Facade', () => {
       )
     })
 
-    it('should throw error when token is empty string', async () => {
+    it('throws when the token is an empty string', async () => {
       const moduleMocker = new ModuleMocker(import.meta.url)
 
       await moduleMocker.mock('../token-generator-crypto', () => ({

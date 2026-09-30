@@ -2,7 +2,7 @@ import { describe, expect, it, mock } from 'bun:test'
 
 import type { ErrorTracker, SeverityLevel } from '../error-tracker'
 
-describe('ErrorTracker interface', () => {
+describe('ErrorTracker', () => {
   const createMockErrorTracker = (): ErrorTracker => ({
     init: mock(() => {}),
     captureError: mock(() => {}),
@@ -12,7 +12,7 @@ describe('ErrorTracker interface', () => {
   })
 
   describe('init', () => {
-    it('should be callable without arguments', () => {
+    it('is callable without arguments', () => {
       const tracker = createMockErrorTracker()
 
       expect(() => tracker.init()).not.toThrow()
@@ -21,7 +21,7 @@ describe('ErrorTracker interface', () => {
   })
 
   describe('captureError', () => {
-    it('should accept Error object', () => {
+    it('accepts an Error object', () => {
       const tracker = createMockErrorTracker()
       const error = new Error('Test error')
 
@@ -30,7 +30,7 @@ describe('ErrorTracker interface', () => {
       expect(tracker.captureError).toHaveBeenCalledWith(error)
     })
 
-    it('should accept custom error types', () => {
+    it('accepts custom error types', () => {
       const tracker = createMockErrorTracker()
 
       class CustomError extends Error {
@@ -46,7 +46,7 @@ describe('ErrorTracker interface', () => {
   })
 
   describe('captureMessage', () => {
-    it('should accept message string', () => {
+    it('accepts a message string', () => {
       const tracker = createMockErrorTracker()
       const message = 'Something happened'
 
@@ -55,7 +55,7 @@ describe('ErrorTracker interface', () => {
       expect(tracker.captureMessage).toHaveBeenCalledWith(message)
     })
 
-    it('should accept message with severity level', () => {
+    it('accepts a message with a severity level', () => {
       const tracker = createMockErrorTracker()
       const message = 'Warning message'
       const level: SeverityLevel = 'warning'
@@ -65,7 +65,7 @@ describe('ErrorTracker interface', () => {
       expect(tracker.captureMessage).toHaveBeenCalledWith(message, level)
     })
 
-    it('should accept all severity levels', () => {
+    it('accepts all severity levels', () => {
       const tracker = createMockErrorTracker()
       const levels: SeverityLevel[] = [
         'fatal',
@@ -85,7 +85,7 @@ describe('ErrorTracker interface', () => {
   })
 
   describe('setUser', () => {
-    it('should accept user object with id', () => {
+    it('accepts a user object with an id', () => {
       const tracker = createMockErrorTracker()
       const user = { id: 'user-123' }
 
@@ -96,7 +96,7 @@ describe('ErrorTracker interface', () => {
   })
 
   describe('clearUser', () => {
-    it('should be callable without arguments', () => {
+    it('is callable without arguments', () => {
       const tracker = createMockErrorTracker()
 
       tracker.clearUser()

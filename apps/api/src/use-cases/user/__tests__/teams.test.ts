@@ -44,7 +44,7 @@ describe('updateTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('should update team when it exists', async () => {
+  it('updates team when it exists', async () => {
     const params = { name: 'Updated Team' }
 
     const result = await updateTeam(TEAM_1, params)

@@ -46,7 +46,7 @@ describe('auth /reset-password', () => {
   }
 
   describe('POST /reset-password', () => {
-    it('should reset password and return user with tokens', async () => {
+    it('resets password and return user with tokens', async () => {
       const res = await post(app, RESET_PASSWORD_URL, validPayload)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -68,7 +68,7 @@ describe('auth /reset-password', () => {
       expect(cookies).toContain('refresh-token')
     })
 
-    it('should handle reset password errors', async () => {
+    it('returns error status when use case throws', async () => {
       mockResetPassword.mockImplementationOnce(() => {
         throw new Error('Password reset failed')
       })
@@ -79,7 +79,7 @@ describe('auth /reset-password', () => {
       expect(mockResetPassword).toHaveBeenCalledTimes(1)
     })
 
-    it('should validate token requirements', async () => {
+    it('rejects invalid tokens', async () => {
       const invalidPayloads = [
         { ...validPayload, token: 'short-token' },
         { ...validPayload, token: 'a'.repeat(100) },
@@ -94,7 +94,7 @@ describe('auth /reset-password', () => {
       }
     })
 
-    it('should validate password requirements', async () => {
+    it('rejects invalid passwords', async () => {
       const invalidPayloads = [
         ...WEAK_PASSWORDS.map(password => ({ ...validPayload, password })),
         { token: validPayload.token }
@@ -108,7 +108,7 @@ describe('auth /reset-password', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(app, RESET_PASSWORD_URL, body, headers)
 

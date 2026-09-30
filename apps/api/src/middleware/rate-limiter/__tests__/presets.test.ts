@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 
 import { authRateLimiter, generalRateLimiter } from '..'
 
-describe('Rate Limiter Presets', () => {
+describe('presets', () => {
   let app: Hono
 
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('Rate Limiter Presets', () => {
   })
 
   describe('authRateLimiter', () => {
-    it('should apply env-appropriate limit and support skip header', async () => {
+    it('applies env-appropriate limit and supports skip header', async () => {
       app.use(authRateLimiter)
       app.post('/login', c => c.json({ success: true }))
 
@@ -30,7 +30,7 @@ describe('Rate Limiter Presets', () => {
   })
 
   describe('generalRateLimiter', () => {
-    it('should apply env-appropriate limit and support skip header', async () => {
+    it('applies env-appropriate limit and supports skip header', async () => {
       app.use(generalRateLimiter)
       app.get('/data', c => c.json({ data: 'test' }))
 

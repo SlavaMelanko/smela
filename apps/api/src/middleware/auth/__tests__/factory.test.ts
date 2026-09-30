@@ -13,7 +13,7 @@ import { Role, UserStatus } from '@/types'
 
 import { createAuthMiddleware } from '../factory'
 
-describe('Auth Middleware Factory', () => {
+describe('createAuthMiddleware', () => {
   const mockUser = {
     id: testUuids.USER_1,
     email: 'test@example.com',
@@ -45,8 +45,8 @@ describe('Auth Middleware Factory', () => {
   const signValidToken = async () =>
     signJwt(mockUser, { secret: env.JWT_SECRET })
 
-  describe('Unauthorized requests', () => {
-    it('should reject request without token', async () => {
+  describe('unauthorized requests', () => {
+    it('rejects request without token', async () => {
       const res = await requestWith(buildApp())
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -82,7 +82,7 @@ describe('Auth Middleware Factory', () => {
     ]
 
     cases.forEach(({ name, authorization }) => {
-      it(`should reject request when ${name}`, async () => {
+      it(`rejects request when ${name}`, async () => {
         const res = await requestWith(buildApp(), await authorization())
 
         expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
@@ -92,7 +92,7 @@ describe('Auth Middleware Factory', () => {
     })
   })
 
-  describe('Validator failures', () => {
+  describe('validator failures', () => {
     const cases = [
       {
         name: 'status',
@@ -107,7 +107,7 @@ describe('Auth Middleware Factory', () => {
     ]
 
     cases.forEach(({ name, options, error }) => {
-      it(`should re-throw AppError from ${name} validator`, async () => {
+      it(`re-throws AppError from ${name} validator`, async () => {
         const res = await requestWith(
           buildApp(options),
           `Bearer ${await signValidToken()}`
@@ -121,16 +121,14 @@ describe('Auth Middleware Factory', () => {
     })
   })
 
-  describe('Successful authentication', () => {
-    it('should set user claims in context for downstream handlers', async () => {
-      const res = await requestWith(
-        buildApp(),
-        `Bearer ${await signValidToken()}`
-      )
+  it('sets user claims in context on successful authentication', async () => {
+    const res = await requestWith(
+      buildApp(),
+      `Bearer ${await signValidToken()}`
+    )
 
-      expect(res.status).toBe(HttpStatus.OK)
-      const json = await res.json()
-      expect(json.user).toMatchObject(mockUser)
-    })
+    expect(res.status).toBe(HttpStatus.OK)
+    const json = await res.json()
+    expect(json.user).toMatchObject(mockUser)
   })
 })

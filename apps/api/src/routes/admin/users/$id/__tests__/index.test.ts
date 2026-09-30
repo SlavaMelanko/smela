@@ -57,7 +57,7 @@ describe('admin /users/:id', () => {
   })
 
   describe('GET /users/:id', () => {
-    it('should return user with OK status', async () => {
+    it('returns user with OK status', async () => {
       const res = await get(app, USER_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -70,14 +70,14 @@ describe('admin /users/:id', () => {
       })
     })
 
-    it('should reject invalid user id', async () => {
+    it('rejects invalid user id', async () => {
       const res = await get(app, '/api/v1/admin/users/not-a-uuid')
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetUser).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, USER_URL)
@@ -86,7 +86,7 @@ describe('admin /users/:id', () => {
       expect(mockGetUser).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetUser.mockImplementation(async () => {
         throw new Error('User not found')
       })
@@ -100,7 +100,7 @@ describe('admin /users/:id', () => {
   describe('PATCH /users/:id', () => {
     const body = { firstName: 'Jane', status: UserStatus.Active }
 
-    it('should update user and return OK status', async () => {
+    it('updates user and return OK status', async () => {
       const res = await patch(app, USER_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -110,21 +110,21 @@ describe('admin /users/:id', () => {
       expect(data.user).toMatchObject({ id: testUuids.USER_1 })
     })
 
-    it('should reject invalid user id', async () => {
+    it('rejects invalid user id', async () => {
       const res = await patch(app, '/api/v1/admin/users/not-a-uuid', body)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateUser).not.toHaveBeenCalled()
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, USER_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateUser).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewUsers])
 
       const res = await patch(viewOnlyApp, USER_URL, body)
@@ -133,7 +133,7 @@ describe('admin /users/:id', () => {
       expect(mockUpdateUser).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateUser.mockImplementation(async () => {
         throw new Error('User not found')
       })

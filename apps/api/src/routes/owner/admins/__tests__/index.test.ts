@@ -73,7 +73,7 @@ describe('owner /admins', () => {
   })
 
   describe('GET /admins', () => {
-    it('should return paginated admins list with default parameters', async () => {
+    it('returns paginated admins list with default parameters', async () => {
       const res = await get(app, ADMINS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -96,7 +96,7 @@ describe('owner /admins', () => {
       })
     })
 
-    it('should pass search and filters to use case', async () => {
+    it('passes search and filters to use case', async () => {
       const res = await get(
         app,
         `${ADMINS_URL}?search=admin&statuses=${UserStatus.Active}&page=2&limit=10`
@@ -112,21 +112,21 @@ describe('owner /admins', () => {
       )
     })
 
-    it('should reject invalid page parameter', async () => {
+    it('rejects invalid page parameter', async () => {
       const res = await get(app, `${ADMINS_URL}?page=0`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetAdmins).not.toHaveBeenCalled()
     })
 
-    it('should reject invalid statuses value', async () => {
+    it('rejects invalid statuses value', async () => {
       const res = await get(app, `${ADMINS_URL}?statuses=invalid`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetAdmins).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, ADMINS_URL)
@@ -135,7 +135,7 @@ describe('owner /admins', () => {
       expect(mockGetAdmins).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetAdmins.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })
@@ -154,7 +154,7 @@ describe('owner /admins', () => {
       permissions: { [Resource.Users]: { view: true, manage: true } }
     }
 
-    it('should invite admin and return CREATED status', async () => {
+    it('invites admin and return CREATED status', async () => {
       const res = await post(app, ADMINS_URL, body)
 
       expect(res.status).toBe(HttpStatus.CREATED)
@@ -173,14 +173,14 @@ describe('owner /admins', () => {
       })
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await post(app, ADMINS_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockInviteAdmin).not.toHaveBeenCalled()
     })
 
-    it('should reject missing email', async () => {
+    it('rejects missing email', async () => {
       const { email: _email, ...withoutEmail } = body
 
       const res = await post(app, ADMINS_URL, withoutEmail)
@@ -189,7 +189,7 @@ describe('owner /admins', () => {
       expect(mockInviteAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewAdmins])
 
       const res = await post(viewOnlyApp, ADMINS_URL, body)
@@ -198,7 +198,7 @@ describe('owner /admins', () => {
       expect(mockInviteAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockInviteAdmin.mockImplementation(async () => {
         throw new Error('Email already in use')
       })
@@ -210,7 +210,7 @@ describe('owner /admins', () => {
   })
 
   describe('GET /admins/default-permissions', () => {
-    it('should return default admin permissions with OK status', async () => {
+    it('returns default admin permissions with OK status', async () => {
       const res = await get(app, `${ADMINS_URL}/default-permissions`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -226,7 +226,7 @@ describe('owner /admins', () => {
       })
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(

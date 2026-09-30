@@ -10,7 +10,7 @@ import {
 
 import { validateEnvVars } from '../env'
 
-describe('Environment Configuration', () => {
+describe('validateEnvVars', () => {
   // eslint-disable-next-line ts/unbound-method
   const originalExit = process.exit
   let consoleErrorSpy: ReturnType<typeof spyOn>
@@ -58,7 +58,7 @@ describe('Environment Configuration', () => {
     processExitMock.mockClear()
   }
 
-  test('should validate with default values across all environments', () => {
+  test('applies default values across all environments', () => {
     const devEnv = validateEnvVars(createBaseEnv('development'))
     const testEnv = validateEnvVars(createBaseEnv('test'))
 
@@ -89,7 +89,7 @@ describe('Environment Configuration', () => {
     )
   })
 
-  test('should override defaults with custom values', () => {
+  test('overrides defaults with custom values', () => {
     const customEnv = {
       ...createBaseEnv('development'),
       LOG_LEVEL: 'debug',
@@ -110,7 +110,7 @@ describe('Environment Configuration', () => {
     expect(env.COMPANY_NAME).toBe('CustomCompany')
   })
 
-  test('should handle ALLOWED_ORIGINS for optional environments (dev/test)', () => {
+  test('leaves ALLOWED_ORIGINS optional in dev and test', () => {
     const devEnv = validateEnvVars(createBaseEnv('development'))
     const testEnv = validateEnvVars(createBaseEnv('test'))
 
@@ -127,7 +127,7 @@ describe('Environment Configuration', () => {
     expect(defaultEnv.ALLOWED_ORIGINS).toBeUndefined()
   })
 
-  test('should handle ALLOWED_ORIGINS for required environments (staging/production)', () => {
+  test('requires ALLOWED_ORIGINS in staging and production', () => {
     // Valid cases
     const stagingEnv = {
       ...createBaseEnv('staging'),
@@ -162,7 +162,7 @@ describe('Environment Configuration', () => {
     expect(processExitMock).toHaveBeenCalledWith(1)
   })
 
-  test('should require EMAIL_RESEND_API_KEY for staging/production environments', () => {
+  test('requires EMAIL_RESEND_API_KEY in staging and production', () => {
     // Should work without EMAIL_RESEND_API_KEY in development
     const devEnv = validateEnvVars(createBaseEnv('development'))
     expect(devEnv.EMAIL_RESEND_API_KEY).toBeUndefined()
@@ -211,7 +211,7 @@ describe('Environment Configuration', () => {
     expect(processExitMock).not.toHaveBeenCalled()
   })
 
-  test('should validate database field requirements', () => {
+  test('rejects invalid database fields', () => {
     const testCases = [
       { field: 'POSTGRES_USER', value: undefined, desc: 'missing user' },
       { field: 'POSTGRES_USER', value: 'usr', desc: 'user too short' },
@@ -232,7 +232,7 @@ describe('Environment Configuration', () => {
     testCases.forEach(({ field, value }) => expectInvalidField(field, value))
   })
 
-  test('should validate password complexity requirements', () => {
+  test('rejects database passwords that fail complexity rules', () => {
     const invalidPasswords = [
       { value: 'Short1!', desc: 'too short' },
       { value: 'UPPERCASE123!', desc: 'no lowercase' },
@@ -246,7 +246,7 @@ describe('Environment Configuration', () => {
     )
   })
 
-  test('should validate other required fields', () => {
+  test('rejects invalid required fields', () => {
     const testCases = [
       { field: 'JWT_SECRET', value: undefined, desc: 'missing JWT secret' },
       { field: 'JWT_SECRET', value: 'short', desc: 'JWT secret too short' },
@@ -262,7 +262,7 @@ describe('Environment Configuration', () => {
     testCases.forEach(({ field, value }) => expectInvalidField(field, value))
   })
 
-  test('should validate JWT_SECRET_PREVIOUS as optional field', () => {
+  test('accepts JWT_SECRET_PREVIOUS as optional and rejects a short one', () => {
     // Should work without JWT_SECRET_PREVIOUS (optional)
     const envWithoutPrevious = validateEnvVars(createBaseEnv())
     expect(envWithoutPrevious.JWT_SECRET_PREVIOUS).toBeUndefined()

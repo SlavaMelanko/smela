@@ -79,7 +79,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
   })
 
   describe('GET /teams/:teamId/members/:memberId', () => {
-    it('should return target member resolved by team-access middleware', async () => {
+    it('returns target member resolved by team-access middleware', async () => {
       const res = await get(app, MEMBER_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -92,14 +92,14 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(data.member).toMatchObject({ id: testUuids.USER_2 })
     })
 
-    it('should reject invalid member id', async () => {
+    it('rejects invalid member id', async () => {
       const res = await get(app, `${MEMBERS_URL}/not-a-uuid`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockTeamRepo.findMember).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, MEMBER_URL)
@@ -107,7 +107,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
     })
 
-    it('should return 404 when target member is not in team', async () => {
+    it('returns 404 when target member is not in team', async () => {
       mockTeamRepo.findMember.mockImplementation(
         async (_teamId: string, memberId: string) =>
           memberId === testUuids.USER_2 ? undefined : buildTeamMember(memberId)
@@ -122,7 +122,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
   describe('PATCH /teams/:teamId/members/:memberId', () => {
     const body = { membership: { position: 'Lead' } }
 
-    it('should update member and return OK status', async () => {
+    it('updates member and return OK status', async () => {
       const res = await patch(app, MEMBER_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -136,14 +136,14 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(data.member).toMatchObject({ id: testUuids.USER_2 })
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, MEMBER_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateTeamMember).not.toHaveBeenCalled()
     })
 
-    it('should return 403 for non-self update without manage permission', async () => {
+    it('returns 403 for non-self update without manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await patch(viewOnlyApp, MEMBER_URL, body)
@@ -152,7 +152,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(mockUpdateTeamMember).not.toHaveBeenCalled()
     })
 
-    it('should allow self-update of member fields without manage permission', async () => {
+    it('allows self-update of member fields without manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
       const selfBody = { member: { firstName: 'Jane', lastName: 'Smith' } }
 
@@ -166,7 +166,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       )
     })
 
-    it('should forbid self-update of membership fields without manage permission', async () => {
+    it('forbids self-update of membership fields without manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
       const selfBody = {
         member: { firstName: 'Jane' },
@@ -179,7 +179,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(mockUpdateTeamMember).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateTeamMember.mockImplementation(async () => {
         throw new Error('Member not found')
       })
@@ -191,7 +191,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
   })
 
   describe('DELETE /teams/:teamId/members/:memberId', () => {
-    it('should remove member and return OK status', async () => {
+    it('removes member and return OK status', async () => {
       const res = await doRequest(app, MEMBER_URL, 'DELETE')
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -204,7 +204,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(data).toEqual({ success: true })
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await doRequest(viewOnlyApp, MEMBER_URL, 'DELETE')
@@ -215,7 +215,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
   })
 
   describe('POST /teams/:teamId/members/:memberId/resend-invite', () => {
-    it('should resend invite with team, target member, and inviter id', async () => {
+    it('resends invite with team, target member, and inviter id', async () => {
       const res = await post(app, `${MEMBER_URL}/resend-invite`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -226,7 +226,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       )
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await post(viewOnlyApp, `${MEMBER_URL}/resend-invite`)
@@ -237,7 +237,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
   })
 
   describe('POST /teams/:teamId/members/:memberId/cancel-invite', () => {
-    it('should cancel invite for target member', async () => {
+    it('cancels invite for target member', async () => {
       const res = await post(app, `${MEMBER_URL}/cancel-invite`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -246,7 +246,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
       )
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockCancelMemberInvite.mockImplementation(async () => {
         throw new Error('Invite not found')
       })

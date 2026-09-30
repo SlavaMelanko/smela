@@ -34,7 +34,7 @@ const makeApp = (schema = captchaSchema) => {
   return { app, post }
 }
 
-describe('Captcha Middleware', () => {
+describe('verifyCaptcha', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockCaptchaValidate: any
@@ -54,7 +54,7 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should allow request to proceed and call validate with token', async () => {
+    it('lets request proceed and calls validate with token', async () => {
       const { post } = makeApp()
 
       const response = await post({ captcha: { token: 'valid-token-123' } })
@@ -85,7 +85,7 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should reject request with correct status and error code', async () => {
+    it('rejects request with correct status and error code', async () => {
       const { post } = makeApp()
 
       const response = await post({ captcha: { token: 'invalid-token' } })
@@ -98,7 +98,7 @@ describe('Captcha Middleware', () => {
       expect(json).toHaveProperty('error')
     })
 
-    it('should not call next handler when validation fails', async () => {
+    it('does not call next handler', async () => {
       const mockHandler = mock(() => {})
       const app = new Hono()
       app.onError(onError)
@@ -143,7 +143,7 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should convert unexpected errors to CaptchaValidationFailed', async () => {
+    it('converts unexpected errors to CaptchaValidationFailed', async () => {
       const { post } = makeApp()
 
       const response = await post({ captcha: { token: 'any-token' } })
@@ -155,7 +155,7 @@ describe('Captcha Middleware', () => {
     })
   })
 
-  describe('edge cases', () => {
+  describe('when captcha service accepts any token', () => {
     beforeEach(async () => {
       mockCaptchaValidate = mock(async () => {})
 
@@ -170,7 +170,7 @@ describe('Captcha Middleware', () => {
       await moduleMocker.clear()
     })
 
-    it('should pass any token value through to the service', async () => {
+    it('passes any token value through to the service', async () => {
       for (const token of Object.values(invalidCaptchaTokens)) {
         const { post } = makeApp()
 

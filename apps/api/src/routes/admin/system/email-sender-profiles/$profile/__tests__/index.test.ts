@@ -70,7 +70,7 @@ describe('admin /system/email-sender-profiles/:profile', () => {
   })
 
   describe('GET /system/email-sender-profiles/:profile', () => {
-    it('should return sender profile with OK status', async () => {
+    it('returns sender profile with OK status', async () => {
       const res = await get(app, PROFILE_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -85,14 +85,14 @@ describe('admin /system/email-sender-profiles/:profile', () => {
       })
     })
 
-    it('should reject invalid profile param', async () => {
+    it('rejects invalid profile param', async () => {
       const res = await get(app, INVALID_PROFILE_URL)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetEmailSenderProfile).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, PROFILE_URL)
@@ -101,7 +101,7 @@ describe('admin /system/email-sender-profiles/:profile', () => {
       expect(mockGetEmailSenderProfile).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetEmailSenderProfile.mockImplementation(async () => {
         throw new Error('Email sender profile not found')
       })
@@ -115,7 +115,7 @@ describe('admin /system/email-sender-profiles/:profile', () => {
   describe('PATCH /system/email-sender-profiles/:profile', () => {
     const body = { name: 'SMELA Updated' }
 
-    it('should update sender profile and return OK status', async () => {
+    it('updates sender profile and return OK status', async () => {
       const res = await patch(app, PROFILE_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -130,21 +130,21 @@ describe('admin /system/email-sender-profiles/:profile', () => {
       })
     })
 
-    it('should reject invalid profile param', async () => {
+    it('rejects invalid profile param', async () => {
       const res = await patch(app, INVALID_PROFILE_URL, body)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, PROFILE_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewSystem])
 
       const res = await patch(viewOnlyApp, PROFILE_URL, body)
@@ -153,7 +153,7 @@ describe('admin /system/email-sender-profiles/:profile', () => {
       expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateEmailSenderProfile.mockImplementation(async () => {
         throw new Error('Email sender profile not found')
       })

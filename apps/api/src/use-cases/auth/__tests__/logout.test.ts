@@ -7,7 +7,7 @@ import { hashToken } from '@/security/token'
 
 import { logout } from '../logout'
 
-describe('Logout Use Case', () => {
+describe('logout', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockRefreshTokenRepo: any
@@ -26,70 +26,64 @@ describe('Logout Use Case', () => {
     await moduleMocker.clear()
   })
 
-  describe('successful logout', () => {
-    it('should revoke the hash of the refresh token', async () => {
-      const refreshToken = 'valid_refresh_token'
+  it('revokes the hash of the refresh token', async () => {
+    const refreshToken = 'valid_refresh_token'
 
-      const result = await logout(refreshToken)
+    const result = await logout(refreshToken)
+
+    expect(result).toBeUndefined()
+    expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(1)
+    expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+      await hashToken(refreshToken)
+    )
+  })
+
+  it('revokes tokens with special characters', async () => {
+    const specialTokens = [
+      '!@#$%^&*()_+-=[]{}|;:,.<>?',
+      'token with spaces',
+      '😀🔑💻🚀',
+      'токен_кириллица'
+    ]
+
+    for (const token of specialTokens) {
+      await logout(token)
+
+      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+        await hashToken(token)
+      )
+    }
+
+    expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
+      specialTokens.length
+    )
+  })
+
+  it('skips revocation when refresh token is missing', async () => {
+    const missingTokens = [undefined, null, '']
+
+    for (const token of missingTokens) {
+      const result = await logout(token as any)
 
       expect(result).toBeUndefined()
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(1)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
-        await hashToken(refreshToken)
-      )
-    })
+    }
 
-    it('should revoke tokens with special characters', async () => {
-      const specialTokens = [
-        '!@#$%^&*()_+-=[]{}|;:,.<>?',
-        'token with spaces',
-        '😀🔑💻🚀',
-        'токен_кириллица'
-      ]
-
-      for (const token of specialTokens) {
-        await logout(token)
-
-        expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
-          await hashToken(token)
-        )
-      }
-
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(
-        specialTokens.length
-      )
-    })
+    expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
   })
 
-  describe('early return scenarios', () => {
-    it('should skip revocation when refresh token is missing', async () => {
-      const missingTokens = [undefined, null, '']
+  it('skips revocation for whitespace-only tokens', async () => {
+    await logout('   ')
 
-      for (const token of missingTokens) {
-        const result = await logout(token as any)
-
-        expect(result).toBeUndefined()
-      }
-
-      expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
-    })
-
-    it('should skip revocation for whitespace-only tokens', async () => {
-      await logout('   ')
-
-      expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
-    })
+    expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
   })
 
-  describe('error handling', () => {
-    it('should propagate error when repository revocation fails', async () => {
-      mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
-        throw new Error('Database revocation failed')
-      })
-
-      expect(logout('valid_refresh_token')).rejects.toThrow(
-        'Database revocation failed'
-      )
+  it('propagates error when repository revocation fails', async () => {
+    mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
+      throw new Error('Database revocation failed')
     })
+
+    expect(logout('valid_refresh_token')).rejects.toThrow(
+      'Database revocation failed'
+    )
   })
 })

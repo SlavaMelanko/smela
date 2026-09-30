@@ -52,7 +52,7 @@ describe('getAdmins', () => {
     await moduleMocker.clear()
   })
 
-  it('should always search with Admin role only', async () => {
+  it('always searches with Admin role only', async () => {
     await getAdmins({ roles: [Role.User] }, DEFAULT_PAGINATION)
 
     expect(mockUserRepo.search).toHaveBeenCalledWith(
@@ -61,7 +61,7 @@ describe('getAdmins', () => {
     )
   })
 
-  it('should return admins and pagination data', async () => {
+  it('returns admins and pagination data', async () => {
     const result = await getAdmins({ roles: [] }, DEFAULT_PAGINATION)
 
     expect(result).toEqual({
@@ -72,7 +72,7 @@ describe('getAdmins', () => {
     })
   })
 
-  it('should preserve statuses in search params', async () => {
+  it('preserves statuses in search params', async () => {
     await getAdmins(
       { roles: [], statuses: [UserStatus.Active] },
       DEFAULT_PAGINATION
@@ -84,7 +84,7 @@ describe('getAdmins', () => {
     )
   })
 
-  it('should include invite info when available', async () => {
+  it('includes invite info when available', async () => {
     const inviteInfo = {
       id: testUuids.OWNER_1,
       firstName: 'Owner',
@@ -137,7 +137,7 @@ describe('getAdmin', () => {
     await moduleMocker.clear()
   })
 
-  it('should return admin when found', async () => {
+  it('returns admin when found', async () => {
     const result = await getAdmin(testUuids.ADMIN_1)
 
     expect(mockUserRepo.findByIdExtended).toHaveBeenCalledWith(
@@ -146,7 +146,7 @@ describe('getAdmin', () => {
     expect(result).toEqual({ admin: { ...mockAdmin, inviter: undefined } })
   })
 
-  it('should include invite info when available', async () => {
+  it('includes invite info when available', async () => {
     const inviteInfo = {
       id: testUuids.OWNER_1,
       firstName: 'Owner',
@@ -162,7 +162,7 @@ describe('getAdmin', () => {
     expect(result.admin.inviter).toEqual(inviteInfo)
   })
 
-  it('should throw NotFound error when admin does not exist', async () => {
+  it('throws NotFound when admin is missing', async () => {
     mockUserRepo.findByIdExtended.mockImplementation(async () => undefined)
 
     expect(getAdmin(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
@@ -172,7 +172,7 @@ describe('getAdmin', () => {
     })
   })
 
-  it('should throw NotFound error when user is not an Admin role', async () => {
+  it('throws NotFound when user is not Admin role', async () => {
     mockUserRepo.findByIdExtended.mockImplementation(async () => ({
       ...mockAdmin,
       role: Role.User
@@ -185,7 +185,7 @@ describe('getAdmin', () => {
     })
   })
 
-  it('should throw NotFound error when user is Owner role', async () => {
+  it('throws NotFound when user is Owner role', async () => {
     mockUserRepo.findByIdExtended.mockImplementation(async () => ({
       ...mockAdmin,
       role: Role.Owner

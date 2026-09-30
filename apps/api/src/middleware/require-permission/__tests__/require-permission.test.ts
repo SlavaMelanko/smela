@@ -57,89 +57,77 @@ const makeSelfOrPermissionApp = (userId: string, permissions?: string[]) => {
   return app
 }
 
-describe('requirePermission Middleware', () => {
-  describe('Permission granted', () => {
-    it('should allow request when permission is in claims', async () => {
-      const res = await makeApp([Permission.ViewAdmins]).request('/')
+describe('requirePermission', () => {
+  it('allows request when permission is in claims', async () => {
+    const res = await makeApp([Permission.ViewAdmins]).request('/')
 
-      expect(res.status).toBe(HttpStatus.OK)
-      const json = await res.json()
-      expect(json.message).toBe('success')
-    })
+    expect(res.status).toBe(HttpStatus.OK)
+    const json = await res.json()
+    expect(json.message).toBe('success')
   })
 
-  describe('Permission denied', () => {
-    it('should throw Forbidden when permission is missing from claims', async () => {
-      const res = await makeApp([Permission.ViewDashboard]).request('/')
+  it('throws Forbidden when permission is missing from claims', async () => {
+    const res = await makeApp([Permission.ViewDashboard]).request('/')
 
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-    })
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    const json = await res.json()
+    expect(json.code).toBe(ErrorCode.Forbidden)
+  })
 
-    it('should throw Forbidden when permissions is undefined', async () => {
-      const res = await makeApp().request('/')
+  it('throws Forbidden when permissions is undefined', async () => {
+    const res = await makeApp().request('/')
 
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-    })
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    const json = await res.json()
+    expect(json.code).toBe(ErrorCode.Forbidden)
   })
 })
 
-describe('requireSelfOrPermission Middleware', () => {
+describe('requireSelfOrPermission', () => {
   const path = `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
 
-  describe('Self access', () => {
-    it('should allow when user id matches memberId', async () => {
-      const res = await makeSelfOrPermissionApp(testUuids.USER_1).request(
-        path,
-        { method: 'PATCH' }
-      )
-
-      expect(res.status).toBe(HttpStatus.OK)
-      expect((await res.json()).message).toBe('success')
+  it('allows when user id matches memberId', async () => {
+    const res = await makeSelfOrPermissionApp(testUuids.USER_1).request(path, {
+      method: 'PATCH'
     })
 
-    it('should allow when user id matches memberId even without permissions', async () => {
-      const res = await makeSelfOrPermissionApp(testUuids.USER_1, []).request(
-        path,
-        { method: 'PATCH' }
-      )
-
-      expect(res.status).toBe(HttpStatus.OK)
-    })
+    expect(res.status).toBe(HttpStatus.OK)
+    expect((await res.json()).message).toBe('success')
   })
 
-  describe('Permission access', () => {
-    it('should allow when user has required permission and id differs', async () => {
-      const res = await makeSelfOrPermissionApp(testUuids.USER_2, [
-        Permission.ManageTeams
-      ]).request(path, { method: 'PATCH' })
+  it('allows self access even without permissions', async () => {
+    const res = await makeSelfOrPermissionApp(testUuids.USER_1, []).request(
+      path,
+      { method: 'PATCH' }
+    )
 
-      expect(res.status).toBe(HttpStatus.OK)
-    })
+    expect(res.status).toBe(HttpStatus.OK)
   })
 
-  describe('Access denied', () => {
-    it('should throw Forbidden when user is not self and lacks permission', async () => {
-      const res = await makeSelfOrPermissionApp(testUuids.USER_2, []).request(
-        path,
-        { method: 'PATCH' }
-      )
+  it('allows when user has required permission and id differs', async () => {
+    const res = await makeSelfOrPermissionApp(testUuids.USER_2, [
+      Permission.ManageTeams
+    ]).request(path, { method: 'PATCH' })
 
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect((await res.json()).code).toBe(ErrorCode.Forbidden)
+    expect(res.status).toBe(HttpStatus.OK)
+  })
+
+  it('throws Forbidden when user is not self and lacks permission', async () => {
+    const res = await makeSelfOrPermissionApp(testUuids.USER_2, []).request(
+      path,
+      { method: 'PATCH' }
+    )
+
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    expect((await res.json()).code).toBe(ErrorCode.Forbidden)
+  })
+
+  it('throws Forbidden when user is not self and permissions is undefined', async () => {
+    const res = await makeSelfOrPermissionApp(testUuids.USER_2).request(path, {
+      method: 'PATCH'
     })
 
-    it('should throw Forbidden when user is not self and permissions is undefined', async () => {
-      const res = await makeSelfOrPermissionApp(testUuids.USER_2).request(
-        path,
-        { method: 'PATCH' }
-      )
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect((await res.json()).code).toBe(ErrorCode.Forbidden)
-    })
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    expect((await res.json()).code).toBe(ErrorCode.Forbidden)
   })
 })

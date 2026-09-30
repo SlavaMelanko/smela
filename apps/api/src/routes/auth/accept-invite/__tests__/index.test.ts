@@ -50,7 +50,7 @@ describe('auth /accept-invite', () => {
   }
 
   describe('POST /accept-invite', () => {
-    it('should accept invite and return user with tokens', async () => {
+    it('accepts invite and return user with tokens', async () => {
       const res = await post(app, ACCEPT_INVITE_URL, validPayload)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -73,7 +73,7 @@ describe('auth /accept-invite', () => {
       expect(cookies).toContain('refresh-token')
     })
 
-    it('should handle accept invite errors', async () => {
+    it('returns error status when use case throws', async () => {
       mockAcceptInvite.mockImplementationOnce(() => {
         throw new Error('Accept invite failed')
       })
@@ -84,7 +84,7 @@ describe('auth /accept-invite', () => {
       expect(mockAcceptInvite).toHaveBeenCalledTimes(1)
     })
 
-    it('should validate token requirements', async () => {
+    it('rejects invalid tokens', async () => {
       const invalidPayloads = [
         { ...validPayload, token: 'short-token' },
         { ...validPayload, token: 'a'.repeat(100) },
@@ -99,7 +99,7 @@ describe('auth /accept-invite', () => {
       }
     })
 
-    it('should validate password requirements', async () => {
+    it('rejects invalid passwords', async () => {
       const invalidPayloads = [
         ...WEAK_PASSWORDS.map(password => ({ ...validPayload, password })),
         { token: validPayload.token }
@@ -113,7 +113,7 @@ describe('auth /accept-invite', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(app, ACCEPT_INVITE_URL, body, headers)
 

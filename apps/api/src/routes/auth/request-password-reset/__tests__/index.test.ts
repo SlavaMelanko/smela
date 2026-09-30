@@ -41,7 +41,7 @@ describe('auth /request-password-reset', () => {
   })
 
   describe('POST /request-password-reset', () => {
-    it('should return success response on valid request', async () => {
+    it('returns success response on valid request', async () => {
       const res = await post(app, REQUEST_PASSWORD_RESET_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN }
@@ -59,7 +59,7 @@ describe('auth /request-password-reset', () => {
       )
     })
 
-    it('should pass preferences to use-case when provided', async () => {
+    it('passes preferences to use-case when provided', async () => {
       const res = await post(app, REQUEST_PASSWORD_RESET_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN },
@@ -74,7 +74,7 @@ describe('auth /request-password-reset', () => {
       )
     })
 
-    it('should validate required fields', async () => {
+    it('rejects missing or invalid fields', async () => {
       const invalidRequests = [
         // Invalid email formats
         { email: '', captcha: { token: VALID_CAPTCHA_TOKEN } }, // empty email
@@ -99,7 +99,7 @@ describe('auth /request-password-reset', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       const validPayload = {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN }

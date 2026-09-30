@@ -133,7 +133,7 @@ describe('inviteMember', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw EmailAlreadyInUse when user email already exists', async () => {
+  it('throws EmailAlreadyInUse when email already exists', async () => {
     mockUserRepoFindByEmail.mockImplementation(async () => ({
       id: 'existing-user',
       email: 'john@example.com'
@@ -147,7 +147,7 @@ describe('inviteMember', () => {
     })
   })
 
-  it('should create user with pending status', async () => {
+  it('creates user with pending status', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockUserRepoCreate).toHaveBeenCalledWith(
@@ -161,7 +161,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should add user to team with invitedBy', async () => {
+  it('adds user to team with invitedBy', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoCreateMember).toHaveBeenCalledWith(
@@ -175,7 +175,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should store a random password hash and issue an invite token', async () => {
+  it('stores a random password hash and issues an invite token', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockAuthRepoCreate).toHaveBeenCalledWith(
@@ -197,7 +197,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should send invite email', async () => {
+  it('sends invite email', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockEmailService.send).toHaveBeenCalledWith(
@@ -205,7 +205,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('should return member data with team details', async () => {
+  it('returns member data with team details', async () => {
     const result = await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(result.member).toEqual({
@@ -298,7 +298,7 @@ describe('resendMemberInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw BadRequest when member already accepted invitation', async () => {
+  it('throws BadRequest when member already accepted invitation', async () => {
     mockTargetMember.status = UserStatus.Active
 
     expect(
@@ -312,7 +312,7 @@ describe('resendMemberInvite', () => {
     })
   })
 
-  it('should throw NotFound when inviter does not exist', async () => {
+  it('throws NotFound when inviter is missing', async () => {
     mockUserRepoFindById.mockImplementation(async () => undefined)
 
     expect(
@@ -326,7 +326,7 @@ describe('resendMemberInvite', () => {
     })
   })
 
-  it('should issue new token', async () => {
+  it('issues new token', async () => {
     await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockTokenRepoIssue).toHaveBeenCalledWith(
@@ -341,7 +341,7 @@ describe('resendMemberInvite', () => {
     )
   })
 
-  it('should send invite email with current inviter name', async () => {
+  it('sends invite email with current inviter name', async () => {
     await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockEmailService.send).toHaveBeenCalledWith(
@@ -349,7 +349,7 @@ describe('resendMemberInvite', () => {
     )
   })
 
-  it('should return success true', async () => {
+  it('returns success true', async () => {
     const result = await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(result).toEqual({ success: true })
@@ -405,7 +405,7 @@ describe('cancelMemberInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw BadRequest when member has already accepted invitation', async () => {
+  it('throws BadRequest when member already accepted invitation', async () => {
     mockTargetMember.status = UserStatus.Active
 
     expect(cancelMemberInvite(mockTargetMember)).rejects.toThrow(AppError)
@@ -415,7 +415,7 @@ describe('cancelMemberInvite', () => {
     })
   })
 
-  it('should deprecate token and archive user in a transaction', async () => {
+  it('deprecates token and archives user in a transaction', async () => {
     const result = await cancelMemberInvite(mockTargetMember)
 
     expect(mockTokenDeprecate).toHaveBeenCalledWith(

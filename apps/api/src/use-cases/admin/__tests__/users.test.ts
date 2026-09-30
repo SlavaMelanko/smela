@@ -47,7 +47,7 @@ describe('searchUsers', () => {
     await moduleMocker.clear()
   })
 
-  it('should filter out admin roles from search params', async () => {
+  it('filters out admin roles from search params', async () => {
     await searchUsers(
       { roles: [Role.Admin, Role.User, Role.Owner] },
       DEFAULT_PAGINATION
@@ -59,7 +59,7 @@ describe('searchUsers', () => {
     )
   })
 
-  it('should default to user roles when all roles are filtered out', async () => {
+  it('defaults to user roles when all roles are filtered out', async () => {
     await searchUsers({ roles: [Role.Admin, Role.Owner] }, DEFAULT_PAGINATION)
 
     expect(mockUserRepo.search).toHaveBeenCalledWith(
@@ -68,7 +68,7 @@ describe('searchUsers', () => {
     )
   })
 
-  it('should return users and pagination data', async () => {
+  it('returns users and pagination data', async () => {
     const result = await searchUsers({ roles: [Role.User] }, DEFAULT_PAGINATION)
 
     expect(result).toEqual({
@@ -77,7 +77,7 @@ describe('searchUsers', () => {
     })
   })
 
-  it('should preserve statuses in search params', async () => {
+  it('preserves statuses in search params', async () => {
     await searchUsers(
       { roles: [Role.User], statuses: [UserStatus.Active, UserStatus.Active] },
       DEFAULT_PAGINATION
@@ -112,14 +112,14 @@ describe('getUser', () => {
     await moduleMocker.clear()
   })
 
-  it('should return user when found', async () => {
+  it('returns user when found', async () => {
     const result = await getUser(testUuids.USER_1)
 
     expect(mockUserRepo.findByIdExtended).toHaveBeenCalledWith(testUuids.USER_1)
     expect(result).toEqual({ user: mockUser })
   })
 
-  it('should throw NotFound error when user does not exist', async () => {
+  it('throws NotFound when user is missing', async () => {
     mockUserRepo.findByIdExtended.mockImplementation(async () => undefined)
 
     expect(getUser(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)

@@ -9,7 +9,7 @@ import {
   buildVerificationUrl
 } from '../email-urls'
 
-describe('email URLs', () => {
+describe('email-urls', () => {
   const token = 'test-token'
 
   it('builds the verification URL on the user frontend', () => {

@@ -68,7 +68,7 @@ describe('admin /system/social-links/:id', () => {
   })
 
   describe('GET /system/social-links/:id', () => {
-    it('should return social link with OK status', async () => {
+    it('returns social link with OK status', async () => {
       const res = await get(app, SOCIAL_LINK_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -81,14 +81,14 @@ describe('admin /system/social-links/:id', () => {
       })
     })
 
-    it('should reject invalid id param', async () => {
+    it('rejects invalid id param', async () => {
       const res = await get(app, '/api/v1/admin/system/social-links/not-a-uuid')
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, SOCIAL_LINK_URL)
@@ -97,7 +97,7 @@ describe('admin /system/social-links/:id', () => {
       expect(mockGetSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetSocialLink.mockImplementation(async () => {
         throw new Error('Social link not found')
       })
@@ -111,7 +111,7 @@ describe('admin /system/social-links/:id', () => {
   describe('PATCH /system/social-links/:id', () => {
     const body = { name: 'Facebook' }
 
-    it('should update social link and return OK status', async () => {
+    it('updates social link and return OK status', async () => {
       const res = await patch(app, SOCIAL_LINK_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -126,14 +126,14 @@ describe('admin /system/social-links/:id', () => {
       })
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, SOCIAL_LINK_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewSystem])
 
       const res = await patch(viewOnlyApp, SOCIAL_LINK_URL, body)
@@ -142,7 +142,7 @@ describe('admin /system/social-links/:id', () => {
       expect(mockUpdateSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateSocialLink.mockImplementation(async () => {
         throw new Error('Social link not found')
       })
@@ -154,7 +154,7 @@ describe('admin /system/social-links/:id', () => {
   })
 
   describe('DELETE /system/social-links/:id', () => {
-    it('should delete social link and return OK status', async () => {
+    it('deletes social link and return OK status', async () => {
       const res = await del(app, SOCIAL_LINK_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -164,14 +164,14 @@ describe('admin /system/social-links/:id', () => {
       expect(data).toEqual({ success: true })
     })
 
-    it('should reject invalid id param', async () => {
+    it('rejects invalid id param', async () => {
       const res = await del(app, '/api/v1/admin/system/social-links/not-a-uuid')
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockDeleteSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewSystem])
 
       const res = await del(viewOnlyApp, SOCIAL_LINK_URL)
@@ -180,7 +180,7 @@ describe('admin /system/social-links/:id', () => {
       expect(mockDeleteSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockDeleteSocialLink.mockImplementation(async () => {
         throw new Error('Social link not found')
       })

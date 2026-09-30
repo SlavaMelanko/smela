@@ -32,7 +32,7 @@ import { hour, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { resetPassword } from '../reset-password'
 
-describe('Reset Password', () => {
+describe('resetPassword', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockPassword: string
@@ -130,209 +130,191 @@ describe('Reset Password', () => {
     expect(mockAuthRepo.update).not.toHaveBeenCalled()
   }
 
-  describe('when token is valid and active', () => {
-    it('should validate token, mark token as used, update password, and return user with tokens', async () => {
-      const result = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
+  it('validates token, marks it as used, updates password, and returns user with tokens', async () => {
+    const result = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
 
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
 
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-      expect(mockTokenRepo.update).toHaveBeenCalledWith(
-        mockTokenRecord.id,
-        {
-          status: TokenStatus.Used,
-          usedAt: expect.any(Date)
-        },
-        {}
-      )
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.update).toHaveBeenCalledWith(
+      mockTokenRecord.id,
+      {
+        status: TokenStatus.Used,
+        usedAt: expect.any(Date)
+      },
+      {}
+    )
+    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
 
-      expect(mockAuthRepo.update).toHaveBeenCalledWith(
-        mockTokenRecord.userId,
-        {
-          passwordHash: expect.any(String)
-        },
-        {}
-      )
-      expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockAuthRepo.update).toHaveBeenCalledWith(
+      mockTokenRecord.userId,
+      {
+        passwordHash: expect.any(String)
+      },
+      {}
+    )
+    expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
 
-      expect(mockUserRepo.findById).toHaveBeenCalledWith(mockTokenRecord.userId)
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)
+    expect(mockUserRepo.findById).toHaveBeenCalledWith(mockTokenRecord.userId)
+    expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)
 
-      expect(result).toEqual({
-        data: {
-          user: mockUser,
-          team: undefined,
-          permissions: undefined,
-          accessToken: expect.any(String)
-        },
-        refreshToken: expect.any(String)
-      })
-    })
-
-    it('should store a hash of the new password', async () => {
-      await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-
-      const passwordHash = getStoredPasswordHash()
-      expect(passwordHash).not.toBe(mockPassword)
-      expect(comparePasswordHashes(mockPassword, passwordHash)).resolves.toBe(
-        true
-      )
-    })
-
-    it('should sign an access token with user claims', async () => {
-      const result = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-
-      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
-        id: mockUser.id,
-        email: mockUser.email,
-        role: mockUser.role,
-        status: mockUser.status
-      })
-    })
-
-    it('should store only the hash of the returned refresh token', async () => {
-      const result = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
-        {
-          userId: mockUser.id,
-          tokenHash: await hashToken(result.refreshToken),
-          ipAddress: mockDeviceInfo.ipAddress,
-          userAgent: mockDeviceInfo.userAgent,
-          expiresAt: expect.any(Date)
-        },
-        undefined
-      )
-    })
-
-    it('should include team info when user belongs to a team', async () => {
-      mockTeam = {
-        id: 'team-456',
-        name: 'Tech Inc',
-        position: 'Developer'
-      }
-      mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
-
-      const result = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-
-      expect(result.data.team).toEqual(mockTeam)
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+    expect(result).toEqual({
+      data: {
+        user: mockUser,
+        team: undefined,
+        permissions: undefined,
+        accessToken: expect.any(String)
+      },
+      refreshToken: expect.any(String)
     })
   })
 
-  describe('when token does not exist', () => {
-    it('should throw TokenNotFound without updating anything', async () => {
-      mockTokenRepo.findByToken.mockImplementation(async () => undefined)
+  it('stores a hash of the new password', async () => {
+    await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
 
-      await expectRejectsWithoutUpdates(ErrorCode.TokenNotFound)
+    const passwordHash = getStoredPasswordHash()
+    expect(passwordHash).not.toBe(mockPassword)
+    expect(comparePasswordHashes(mockPassword, passwordHash)).resolves.toBe(
+      true
+    )
+  })
+
+  it('signs an access token with user claims', async () => {
+    const result = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
+
+    expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+      id: mockUser.id,
+      email: mockUser.email,
+      role: mockUser.role,
+      status: mockUser.status
     })
   })
 
-  describe('when token is expired', () => {
-    it('should throw TokenExpired error', async () => {
-      mockTokenRecord.expiresAt = nowMinus(hour())
+  it('stores only the hash of the returned refresh token', async () => {
+    const result = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
 
-      await expectRejectsWithoutUpdates(ErrorCode.TokenExpired)
-    })
+    expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+      {
+        userId: mockUser.id,
+        tokenHash: await hashToken(result.refreshToken),
+        ipAddress: mockDeviceInfo.ipAddress,
+        userAgent: mockDeviceInfo.userAgent,
+        expiresAt: expect.any(Date)
+      },
+      undefined
+    )
   })
 
-  describe('when token is already used', () => {
-    it('should throw TokenAlreadyUsed error', async () => {
-      mockTokenRecord.status = TokenStatus.Used
-      mockTokenRecord.usedAt = nowMinus(hour())
+  it('includes team info when user belongs to a team', async () => {
+    mockTeam = {
+      id: 'team-456',
+      name: 'Tech Inc',
+      position: 'Developer'
+    }
+    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
 
-      await expectRejectsWithoutUpdates(ErrorCode.TokenAlreadyUsed)
-    })
+    const result = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
+
+    expect(result.data.team).toEqual(mockTeam)
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
   })
 
-  describe('when token type is wrong', () => {
-    it('should throw TokenTypeMismatch error', async () => {
-      mockTokenRecord.type = TokenType.EmailVerification
+  it('throws TokenNotFound without updating anything when token does not exist', async () => {
+    mockTokenRepo.findByToken.mockImplementation(async () => undefined)
 
-      await expectRejectsWithoutUpdates(ErrorCode.TokenTypeMismatch)
-    })
+    await expectRejectsWithoutUpdates(ErrorCode.TokenNotFound)
   })
 
-  describe('when token marking as used fails', () => {
-    it('should throw the error and not update password', async () => {
-      mockTokenRepo.update.mockImplementation(async () => {
-        throw new Error('Database connection failed')
-      })
+  it('throws TokenExpired when token is expired', async () => {
+    mockTokenRecord.expiresAt = nowMinus(hour())
 
-      const error = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      ).catch((error: unknown) => error)
-
-      expect(error).toMatchObject({ message: 'Database connection failed' })
-
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-    })
+    await expectRejectsWithoutUpdates(ErrorCode.TokenExpired)
   })
 
-  describe('when password update fails', () => {
-    it('should throw the error within transaction', async () => {
-      mockAuthRepo.update.mockImplementation(async () => {
-        throw new Error('Password update failed')
-      })
+  it('throws TokenAlreadyUsed when token is already used', async () => {
+    mockTokenRecord.status = TokenStatus.Used
+    mockTokenRecord.usedAt = nowMinus(hour())
 
-      const error = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      ).catch((error: unknown) => error)
-
-      expect(error).toMatchObject({ message: 'Password update failed' })
-
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
-    })
+    await expectRejectsWithoutUpdates(ErrorCode.TokenAlreadyUsed)
   })
 
-  describe('edge cases', () => {
-    it('should handle very long passwords', async () => {
-      const longPassword = `A1@${'a'.repeat(1000)}`
+  it('throws TokenTypeMismatch when token type is wrong', async () => {
+    mockTokenRecord.type = TokenType.EmailVerification
 
-      const result = await resetPassword(
-        { token: mockTokenString, password: longPassword },
-        mockDeviceInfo
-      )
-
-      expect(result.data.user).toEqual(mockUser)
-      expect(
-        comparePasswordHashes(longPassword, getStoredPasswordHash())
-      ).resolves.toBe(true)
-    })
+    await expectRejectsWithoutUpdates(ErrorCode.TokenTypeMismatch)
   })
 
-  describe('permissions in response', () => {
-    it('should omit permissions from data when user has no permissions', async () => {
-      const result = await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-
-      expect(result.data.permissions).toBeUndefined()
+  it('throws without updating password when marking token as used fails', async () => {
+    mockTokenRepo.update.mockImplementation(async () => {
+      throw new Error('Database connection failed')
     })
+
+    const error = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ message: 'Database connection failed' })
+
+    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockAuthRepo.update).not.toHaveBeenCalled()
+  })
+
+  it('throws within transaction when password update fails', async () => {
+    mockAuthRepo.update.mockImplementation(async () => {
+      throw new Error('Password update failed')
+    })
+
+    const error = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ message: 'Password update failed' })
+
+    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
+  })
+
+  it('accepts very long passwords', async () => {
+    const longPassword = `A1@${'a'.repeat(1000)}`
+
+    const result = await resetPassword(
+      { token: mockTokenString, password: longPassword },
+      mockDeviceInfo
+    )
+
+    expect(result.data.user).toEqual(mockUser)
+    expect(
+      comparePasswordHashes(longPassword, getStoredPasswordHash())
+    ).resolves.toBe(true)
+  })
+
+  it('omits permissions from data when user has no permissions', async () => {
+    const result = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    )
+
+    expect(result.data.permissions).toBeUndefined()
   })
 })

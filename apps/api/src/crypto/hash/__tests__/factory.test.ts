@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import { createHasher } from '../factory'
 
 describe('createHasher', () => {
-  it('should create a hasher with working hash and compare methods', async () => {
+  it('creates a hasher with working hash and compare methods', async () => {
     const hasher = createHasher()
 
     expect(hasher).toBeDefined()
@@ -19,7 +19,7 @@ describe('createHasher', () => {
     expect(isMatch).toBe(true)
   })
 
-  it('should throw error for unknown algorithm', () => {
+  it('throws for unknown algorithm', () => {
     expect(() => {
       // @ts-expect-error - testing invalid algorithm
       createHasher('invalid')

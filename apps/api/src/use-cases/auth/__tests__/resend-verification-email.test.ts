@@ -12,7 +12,7 @@ import { UserStatus } from '@/types'
 
 import { resendVerificationEmail } from '../resend-verification-email'
 
-describe('Resend Verification Email', () => {
+describe('resendVerificationEmail', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockUser: User
@@ -52,160 +52,146 @@ describe('Resend Verification Email', () => {
     await moduleMocker.clear()
   })
 
-  describe('when user exists and is not verified', () => {
-    it('should replace token with new verification token', async () => {
-      const result = await resendVerificationEmail({ email: mockUser.email })
+  it('replaces token with new verification token', async () => {
+    const result = await resendVerificationEmail({ email: mockUser.email })
 
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-      expect(mockTokenRepo.issue).toHaveBeenCalledWith(
-        mockUser.id,
-        {
-          userId: mockUser.id,
-          type: TokenType.EmailVerification,
-          token: expect.any(String),
-          expiresAt: expect.any(Date)
-        },
-        {}
-      )
-      expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.issue).toHaveBeenCalledWith(
+      mockUser.id,
+      {
+        userId: mockUser.id,
+        type: TokenType.EmailVerification,
+        token: expect.any(String),
+        expiresAt: expect.any(Date)
+      },
+      {}
+    )
+    expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 
-      expect(result).toEqual({ success: true })
-    })
+    expect(result).toEqual({ success: true })
+  })
 
-    it('should send an email verification email with the new token', async () => {
-      await resendVerificationEmail({ email: mockUser.email })
+  it('sends an email verification email with the new token', async () => {
+    await resendVerificationEmail({ email: mockUser.email })
 
-      expect(mockEmailService.send).toHaveBeenCalledWith(
-        expect.any(VerificationEmailMessageBuilder)
-      )
-      expect(mockEmailService.send).toHaveBeenCalledTimes(1)
-      expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
-        data: {
-          verificationUrl: buildVerificationUrl(
-            mockTokenRepo.issue.mock.calls[0][1].token
-          )
-        }
-      })
+    expect(mockEmailService.send).toHaveBeenCalledWith(
+      expect.any(VerificationEmailMessageBuilder)
+    )
+    expect(mockEmailService.send).toHaveBeenCalledTimes(1)
+    expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
+      data: {
+        verificationUrl: buildVerificationUrl(
+          mockTokenRepo.issue.mock.calls[0][1].token
+        )
+      }
     })
   })
 
-  describe('when user does not exist', () => {
-    it('should return success response to prevent email enumeration', async () => {
-      mockUserRepo.findByEmail.mockImplementation(async () => null)
+  it('returns success when user does not exist', async () => {
+    mockUserRepo.findByEmail.mockImplementation(async () => null)
+
+    const result = await resendVerificationEmail({
+      email: 'nonexistent@example.com'
+    })
+
+    expect(result).toEqual({ success: true })
+    expect(mockTokenRepo.issue).not.toHaveBeenCalled()
+    expect(mockEmailService.send).not.toHaveBeenCalled()
+  })
+
+  it('returns success when user is already verified', async () => {
+    const verifiedUser = {
+      ...mockUser,
+      status: UserStatus.Verified
+    }
+
+    mockUserRepo.findByEmail.mockImplementation(async () => verifiedUser)
+
+    const result = await resendVerificationEmail({
+      email: verifiedUser.email
+    })
+
+    expect(result).toEqual({ success: true })
+    expect(mockTokenRepo.issue).not.toHaveBeenCalled()
+    expect(mockEmailService.send).not.toHaveBeenCalled()
+  })
+
+  it('returns success when user is suspended', async () => {
+    const suspendedUser = {
+      ...mockUser,
+      status: UserStatus.Suspended
+    }
+
+    mockUserRepo.findByEmail.mockImplementation(async () => suspendedUser)
+
+    const result = await resendVerificationEmail({
+      email: suspendedUser.email
+    })
+
+    expect(result).toEqual({ success: true })
+    expect(mockTokenRepo.issue).not.toHaveBeenCalled()
+    expect(mockEmailService.send).not.toHaveBeenCalled()
+  })
+
+  it('throws without sending email when token replacement fails', async () => {
+    mockTokenRepo.issue.mockImplementation(async () => {
+      throw new Error('Database error')
+    })
+
+    const error = await resendVerificationEmail({
+      email: mockUser.email
+    }).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ message: 'Database error' })
+
+    expect(mockTokenRepo.issue).toHaveBeenCalled()
+    expect(mockEmailService.send).not.toHaveBeenCalled()
+  })
+
+  it('looks up email in its original case', async () => {
+    const upperCaseEmail = 'JOHN@EXAMPLE.COM'
+    const result = await resendVerificationEmail({ email: upperCaseEmail })
+
+    expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(upperCaseEmail)
+    expect(result.success).toBe(true)
+  })
+
+  it('returns success without sending email for ineligible statuses', async () => {
+    const ineligibleStatuses = [
+      UserStatus.Trial,
+      UserStatus.Active,
+      UserStatus.Archived,
+      UserStatus.Pending
+    ]
+
+    for (const status of ineligibleStatuses) {
+      const userWithStatus = { ...mockUser, status }
+
+      mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
 
       const result = await resendVerificationEmail({
-        email: 'nonexistent@example.com'
+        email: userWithStatus.email
       })
 
       expect(result).toEqual({ success: true })
       expect(mockTokenRepo.issue).not.toHaveBeenCalled()
       expect(mockEmailService.send).not.toHaveBeenCalled()
-    })
+    }
   })
 
-  describe('when user is already verified', () => {
-    it('should return success response to prevent email enumeration', async () => {
-      const verifiedUser = {
-        ...mockUser,
-        status: UserStatus.Verified
-      }
-
-      mockUserRepo.findByEmail.mockImplementation(async () => verifiedUser)
-
-      const result = await resendVerificationEmail({
-        email: verifiedUser.email
-      })
-
-      expect(result).toEqual({ success: true })
-      expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailService.send).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when user is suspended', () => {
-    it('should return success response to prevent email enumeration', async () => {
-      const suspendedUser = {
-        ...mockUser,
-        status: UserStatus.Suspended
-      }
-
-      mockUserRepo.findByEmail.mockImplementation(async () => suspendedUser)
-
-      const result = await resendVerificationEmail({
-        email: suspendedUser.email
-      })
-
-      expect(result).toEqual({ success: true })
-      expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-      expect(mockEmailService.send).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token replacement fails', () => {
-    it('should throw the error and not send email', async () => {
-      mockTokenRepo.issue.mockImplementation(async () => {
-        throw new Error('Database error')
-      })
-
-      const error = await resendVerificationEmail({
-        email: mockUser.email
-      }).catch((error: unknown) => error)
-
-      expect(error).toMatchObject({ message: 'Database error' })
-
-      expect(mockTokenRepo.issue).toHaveBeenCalled()
-      expect(mockEmailService.send).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('edge cases', () => {
-    it('should handle email with different cases', async () => {
-      const upperCaseEmail = 'JOHN@EXAMPLE.COM'
-      const result = await resendVerificationEmail({ email: upperCaseEmail })
-
-      expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(upperCaseEmail)
-      expect(result.success).toBe(true)
+  it('throws without sending email when transaction fails', async () => {
+    mockTokenRepo.issue.mockImplementation(async () => {
+      throw new Error('Database connection failed')
     })
 
-    it('should reject users with ineligible statuses to prevent enumeration', async () => {
-      const ineligibleStatuses = [
-        UserStatus.Trial,
-        UserStatus.Active,
-        UserStatus.Archived,
-        UserStatus.Pending
-      ]
+    const error = await resendVerificationEmail({
+      email: mockUser.email
+    }).catch((error: unknown) => error)
 
-      for (const status of ineligibleStatuses) {
-        const userWithStatus = { ...mockUser, status }
+    expect(error).toMatchObject({ message: 'Database connection failed' })
 
-        mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
-
-        const result = await resendVerificationEmail({
-          email: userWithStatus.email
-        })
-
-        expect(result).toEqual({ success: true })
-        expect(mockTokenRepo.issue).not.toHaveBeenCalled()
-        expect(mockEmailService.send).not.toHaveBeenCalled()
-      }
-    })
-  })
-
-  describe('when replace fails due to transaction error', () => {
-    it('should throw the error and not send email', async () => {
-      mockTokenRepo.issue.mockImplementation(async () => {
-        throw new Error('Database connection failed')
-      })
-
-      const error = await resendVerificationEmail({
-        email: mockUser.email
-      }).catch((error: unknown) => error)
-
-      expect(error).toMatchObject({ message: 'Database connection failed' })
-
-      expect(mockTokenRepo.issue).toHaveBeenCalled()
-      expect(mockEmailService.send).not.toHaveBeenCalled()
-    })
+    expect(mockTokenRepo.issue).toHaveBeenCalled()
+    expect(mockEmailService.send).not.toHaveBeenCalled()
   })
 })

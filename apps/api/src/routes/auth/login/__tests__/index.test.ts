@@ -81,7 +81,7 @@ describe('auth /login', () => {
   })
 
   describe('POST /login', () => {
-    it('should set cookie and return user/token on successful login', async () => {
+    it('sets cookie and return user/token on successful login', async () => {
       const res = await post(app, LOGIN_URL, {
         email: 'test@example.com',
         password: 'ValidPass123!',
@@ -122,7 +122,7 @@ describe('auth /login', () => {
       )
     })
 
-    it('should handle login errors without setting cookie', async () => {
+    it('returns error status without setting cookie when login fails', async () => {
       mockLogInWithEmail.mockImplementationOnce(() => {
         throw new Error('Login failed')
       })
@@ -137,7 +137,7 @@ describe('auth /login', () => {
       expect(mockSetCookie).not.toHaveBeenCalled()
     })
 
-    it('should validate required fields', async () => {
+    it('rejects missing or invalid fields', async () => {
       const invalidRequests = [
         {
           name: 'empty email',
@@ -197,7 +197,7 @@ describe('auth /login', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       const validPayload = {
         email: 'test@example.com',
         password: 'ValidPass123!',

@@ -67,7 +67,7 @@ describe('admin /teams', () => {
   })
 
   describe('GET /teams', () => {
-    it('should return teams with pagination and OK status', async () => {
+    it('returns teams with pagination and OK status', async () => {
       const res = await get(app, TEAMS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -90,7 +90,7 @@ describe('admin /teams', () => {
       })
     })
 
-    it('should pass search parameter to use case', async () => {
+    it('passes search parameter to use case', async () => {
       const res = await get(app, `${TEAMS_URL}?search=acme`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -100,7 +100,7 @@ describe('admin /teams', () => {
       )
     })
 
-    it('should reject invalid page parameter', async () => {
+    it('rejects invalid page parameter', async () => {
       const res = await get(app, `${TEAMS_URL}?page=0`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
@@ -110,7 +110,7 @@ describe('admin /teams', () => {
       expect(data.error).toContain('page')
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, TEAMS_URL)
@@ -119,7 +119,7 @@ describe('admin /teams', () => {
       expect(mockGetTeams).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetTeams.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })
@@ -137,7 +137,7 @@ describe('admin /teams', () => {
       description: 'A new team'
     }
 
-    it('should create team and return CREATED status', async () => {
+    it('creates team and return CREATED status', async () => {
       const res = await post(app, TEAMS_URL, body)
 
       expect(res.status).toBe(HttpStatus.CREATED)
@@ -147,21 +147,21 @@ describe('admin /teams', () => {
       expect(data.team).toMatchObject({ id: testUuids.TEAM_1 })
     })
 
-    it('should reject invalid website', async () => {
+    it('rejects invalid website', async () => {
       const res = await post(app, TEAMS_URL, { ...body, website: 'not-a-url' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCreateTeam).not.toHaveBeenCalled()
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await post(app, TEAMS_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCreateTeam).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await post(viewOnlyApp, TEAMS_URL, body)
@@ -170,7 +170,7 @@ describe('admin /teams', () => {
       expect(mockCreateTeam).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockCreateTeam.mockImplementation(async () => {
         throw new Error('Team with this name already exists')
       })

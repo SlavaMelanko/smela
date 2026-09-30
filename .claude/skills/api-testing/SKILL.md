@@ -52,6 +52,21 @@ const response = await post(app, '/api/v1/auth/signup', {
 })
 ```
 
+## Naming
+
+- **Top-level `describe`**: the unit under test, spelled as in code —
+  `'BcryptHasher'`, `'createHasher'`, `'logger'`. When a file covers several
+  exports of one module, use the module file name (`'url'`, `'email-urls'`) and
+  nest one `describe` per export. Route tests use the mount context (see
+  [Route Tests](#route-tests-indextestts-convention))
+- **Nested `describe`**: only to split exports, methods, or routes (`'hash'`,
+  `'GET /users/:id'`), or to share setup (`beforeEach`, a local app). Otherwise
+  stay flat and put the condition in the `it` name. Name a setup group as a
+  lowercase scenario (`'when token is expired'`) — no Title Case, no vague
+  buckets like `'edge cases'`
+- **`it`**: lowercase behavior in present tense, reading as a sentence —
+  `it('rejects expired tokens')`, not `it('should reject expired tokens')`
+
 ## Test Types
 
 - **Unit tests**: Run real code; mock only I/O you own (repositories, email,

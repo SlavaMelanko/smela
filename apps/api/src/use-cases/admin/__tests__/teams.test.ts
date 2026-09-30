@@ -45,7 +45,7 @@ describe('getTeams', () => {
     await moduleMocker.clear()
   })
 
-  it('should call teamRepo.search with correct params', async () => {
+  it('calls teamRepo.search with correct params', async () => {
     await getTeams({ search: 'acme' }, DEFAULT_PAGINATION)
 
     expect(mockTeamRepo.search).toHaveBeenCalledWith(
@@ -54,7 +54,7 @@ describe('getTeams', () => {
     )
   })
 
-  it('should return teams and pagination', async () => {
+  it('returns teams and pagination', async () => {
     const result = await getTeams({}, DEFAULT_PAGINATION)
 
     expect(result).toEqual(mockSearchResult)
@@ -90,7 +90,7 @@ describe('createTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('should create team', async () => {
+  it('creates team', async () => {
     const params = { name: 'New Team', website: 'https://newteam.com' }
 
     const result = await createTeam(params)

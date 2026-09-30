@@ -44,7 +44,7 @@ describe('auth /resend-verification-email', () => {
   })
 
   describe('POST /resend-verification-email', () => {
-    it('should return success when verification email is resent', async () => {
+    it('returns success when verification email is resent', async () => {
       const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN }
@@ -62,7 +62,7 @@ describe('auth /resend-verification-email', () => {
       )
     })
 
-    it('should pass preferences to use-case when provided', async () => {
+    it('passes preferences to use-case when provided', async () => {
       const res = await post(app, RESEND_VERIFICATION_EMAIL_URL, {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN },
@@ -77,7 +77,7 @@ describe('auth /resend-verification-email', () => {
       )
     })
 
-    it('should handle errors from resend verification email logic', async () => {
+    it('returns error status when use case throws', async () => {
       mockResendVerificationEmail.mockImplementationOnce(() => {
         throw new Error('Email service unavailable')
       })
@@ -91,7 +91,7 @@ describe('auth /resend-verification-email', () => {
       expect(mockResendVerificationEmail).toHaveBeenCalledTimes(1)
     })
 
-    it('should validate request format and required fields', async () => {
+    it('rejects invalid or missing fields', async () => {
       const invalidRequests = [
         {
           name: 'empty email',
@@ -122,7 +122,7 @@ describe('auth /resend-verification-email', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       const validPayload = {
         email: 'test@example.com',
         captcha: { token: VALID_CAPTCHA_TOKEN }

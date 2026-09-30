@@ -75,7 +75,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
   })
 
   describe('GET /teams/:teamId/members/:memberId/permissions', () => {
-    it('should return member permissions with OK status', async () => {
+    it('returns member permissions with OK status', async () => {
       const res = await get(app, PERMISSIONS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -87,7 +87,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(data.permissions).toEqual(mockPermissions)
     })
 
-    it('should reject invalid member id', async () => {
+    it('rejects invalid member id', async () => {
       const res = await get(
         app,
         `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/not-a-uuid/permissions`
@@ -97,7 +97,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(mockGetTeamMemberPermissions).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, PERMISSIONS_URL)
@@ -106,7 +106,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(mockGetTeamMemberPermissions).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetTeamMemberPermissions.mockImplementation(async () => {
         throw new Error('Member not found')
       })
@@ -120,7 +120,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
   describe('PATCH /teams/:teamId/members/:memberId/permissions', () => {
     const body = { permissions: { teams: { view: true } } }
 
-    it('should update member permissions and return OK status', async () => {
+    it('updates member permissions and return OK status', async () => {
       const res = await patch(app, PERMISSIONS_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -133,14 +133,14 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(data.permissions).toEqual(mockPermissions)
     })
 
-    it('should reject empty permissions object', async () => {
+    it('rejects empty permissions object', async () => {
       const res = await patch(app, PERMISSIONS_URL, { permissions: {} })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateTeamMemberPermissions).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await patch(viewOnlyApp, PERMISSIONS_URL, body)
@@ -149,7 +149,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(mockUpdateTeamMemberPermissions).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateTeamMemberPermissions.mockImplementation(async () => {
         throw new Error('Member not found')
       })

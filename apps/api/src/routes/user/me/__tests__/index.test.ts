@@ -70,7 +70,7 @@ describe('user /me', () => {
   })
 
   describe('GET /me', () => {
-    it('should return user data without tokenVersion', async () => {
+    it('returns user data without tokenVersion', async () => {
       const res = await app.request(ME_URL, { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -92,7 +92,7 @@ describe('user /me', () => {
       expect(data.user).not.toHaveProperty('tokenVersion')
     })
 
-    it('should handle user not found as data inconsistency', async () => {
+    it('returns 500 when user is not found', async () => {
       mockGetUser.mockImplementation(async () => {
         throw new AppError(ErrorCode.InternalError, 'Internal server error.')
       })
@@ -105,7 +105,7 @@ describe('user /me', () => {
   })
 
   describe('PATCH /me', () => {
-    it('should update user profile successfully', async () => {
+    it('updates user profile successfully', async () => {
       const res = await patch(app, ME_URL, {
         firstName: 'Jane',
         lastName: 'Smith'
@@ -123,14 +123,14 @@ describe('user /me', () => {
       expect(data.user).not.toHaveProperty('tokenVersion')
     })
 
-    it('should reject empty strings', async () => {
+    it('rejects empty strings', async () => {
       const res = await patch(app, ME_URL, { firstName: '', lastName: '' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateUser).not.toHaveBeenCalled()
     })
 
-    it('should trim strings and reject whitespace-only values', async () => {
+    it('trims strings and reject whitespace-only values', async () => {
       const res = await patch(app, ME_URL, {
         firstName: '   ',
         lastName: 'Smith'
@@ -140,7 +140,7 @@ describe('user /me', () => {
       expect(mockUpdateUser).not.toHaveBeenCalled()
     })
 
-    it('should trim valid strings at validation layer', async () => {
+    it('trims valid strings at validation layer', async () => {
       const res = await patch(app, ME_URL, {
         firstName: '  Jane  ',
         lastName: '  Smith  '
@@ -153,7 +153,7 @@ describe('user /me', () => {
       })
     })
 
-    it('should normalize null lastName to empty string', async () => {
+    it('normalizes null lastName to empty string', async () => {
       const res = await patch(app, ME_URL, {
         firstName: 'Jane',
         lastName: null
@@ -166,7 +166,7 @@ describe('user /me', () => {
       })
     })
 
-    it('should handle update failure', async () => {
+    it('returns error status when update fails', async () => {
       mockUpdateUser.mockImplementation(async () => {
         throw new AppError(ErrorCode.InternalError, 'Failed to update user.')
       })
@@ -184,7 +184,7 @@ describe('user /me', () => {
   describe('PATCH /me/password', () => {
     const body = { currentPassword: 'OldPass1!', newPassword: 'NewPass1!' }
 
-    it('should change password with refresh token from cookie', async () => {
+    it('changes password with refresh token from cookie', async () => {
       const res = await patch(app, PASSWORD_URL, body, {
         'Content-Type': 'application/json',
         Cookie: `${env.COOKIE_REFRESH_TOKEN_NAME}=raw-refresh-token`
@@ -202,7 +202,7 @@ describe('user /me', () => {
       expect(data).toEqual({ success: true })
     })
 
-    it('should pass undefined refresh token when cookie is missing', async () => {
+    it('passes undefined refresh token when cookie is missing', async () => {
       const res = await patch(app, PASSWORD_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -214,7 +214,7 @@ describe('user /me', () => {
       )
     })
 
-    it('should reject weak new password', async () => {
+    it('rejects weak new password', async () => {
       const res = await patch(app, PASSWORD_URL, {
         currentPassword: 'OldPass1!',
         newPassword: 'weak'
@@ -224,14 +224,14 @@ describe('user /me', () => {
       expect(mockChangePassword).not.toHaveBeenCalled()
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, PASSWORD_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockChangePassword).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockChangePassword.mockImplementation(async () => {
         throw new Error('Password change failed')
       })
