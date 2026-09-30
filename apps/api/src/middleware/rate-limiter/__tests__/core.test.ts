@@ -1,3 +1,5 @@
+import type { MiddlewareHandler } from 'hono'
+
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 
@@ -23,9 +25,24 @@ describe('Rate Limiter Core', () => {
     await moduleMocker.clear()
   })
 
+  const mount = (rateLimiter: MiddlewareHandler) => {
+    app.use(rateLimiter)
+    app.get('/test', c => c.text('OK'))
+  }
+
+  const sendRequests = async (count: number, headers?: HeadersInit) => {
+    const statuses: number[] = []
+    for (let i = 0; i < count; i++) {
+      const res = await app.request('/test', { method: 'GET', headers })
+      statuses.push(res.status)
+    }
+
+    return statuses
+  }
+
   describe('Basic Rate Limiting', () => {
     it('should allow requests under the limit', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 3,
@@ -33,19 +50,15 @@ describe('Rate Limiter Core', () => {
         })
       )
 
-      app.get('/test', c => c.text('OK'))
-
-      const res1 = await app.request('/test', { method: 'GET' })
-      const res2 = await app.request('/test', { method: 'GET' })
-      const res3 = await app.request('/test', { method: 'GET' })
-
-      expect(res1.status).toBe(HttpStatus.OK)
-      expect(res2.status).toBe(HttpStatus.OK)
-      expect(res3.status).toBe(HttpStatus.OK)
+      expect(await sendRequests(3)).toEqual([
+        HttpStatus.OK,
+        HttpStatus.OK,
+        HttpStatus.OK
+      ])
     })
 
     it('should block requests over the limit', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 2,
@@ -53,27 +66,21 @@ describe('Rate Limiter Core', () => {
         })
       )
 
-      app.get('/test', c => c.text('OK'))
-
-      const res1 = await app.request('/test', { method: 'GET' })
-      const res2 = await app.request('/test', { method: 'GET' })
-      const res3 = await app.request('/test', { method: 'GET' })
-
-      expect(res1.status).toBe(HttpStatus.OK)
-      expect(res2.status).toBe(HttpStatus.OK)
-      expect(res3.status).toBe(HttpStatus.TOO_MANY_REQUESTS)
+      expect(await sendRequests(3)).toEqual([
+        HttpStatus.OK,
+        HttpStatus.OK,
+        HttpStatus.TOO_MANY_REQUESTS
+      ])
     })
 
     it('should include rate limit headers', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 5,
           keyGenerator: () => 'test-key'
         })
       )
-
-      app.get('/test', c => c.text('OK'))
 
       const res = await app.request('/test', { method: 'GET' })
 
@@ -87,7 +94,7 @@ describe('Rate Limiter Core', () => {
     it('should allow different keys to have separate limits', async () => {
       let keyCounter = 0
 
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 1,
@@ -95,36 +102,28 @@ describe('Rate Limiter Core', () => {
         })
       )
 
-      app.get('/test', c => c.text('OK'))
-
-      const res1 = await app.request('/test', { method: 'GET' })
-      const res2 = await app.request('/test', { method: 'GET' })
-      const res3 = await app.request('/test', { method: 'GET' })
-
-      expect(res1.status).toBe(HttpStatus.OK)
-      expect(res2.status).toBe(HttpStatus.OK)
-      expect(res3.status).toBe(HttpStatus.OK)
+      expect(await sendRequests(3)).toEqual([
+        HttpStatus.OK,
+        HttpStatus.OK,
+        HttpStatus.OK
+      ])
     })
 
     it('should use IP address as default key', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 2
         })
       )
 
-      app.get('/test', c => c.text('OK'))
-
       const headers = { 'X-Forwarded-For': '192.168.1.1' }
 
-      const res1 = await app.request('/test', { method: 'GET', headers })
-      const res2 = await app.request('/test', { method: 'GET', headers })
-      const res3 = await app.request('/test', { method: 'GET', headers })
-
-      expect(res1.status).toBe(HttpStatus.OK)
-      expect(res2.status).toBe(HttpStatus.OK)
-      expect(res3.status).toBe(HttpStatus.TOO_MANY_REQUESTS)
+      expect(await sendRequests(3, headers)).toEqual([
+        HttpStatus.OK,
+        HttpStatus.OK,
+        HttpStatus.TOO_MANY_REQUESTS
+      ])
     })
   })
 
@@ -132,7 +131,7 @@ describe('Rate Limiter Core', () => {
     it('should allow custom error message', async () => {
       const customMessage = 'Rate limit exceeded! Please try again later.'
 
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 1,
@@ -140,8 +139,6 @@ describe('Rate Limiter Core', () => {
           keyGenerator: () => 'test-key'
         })
       )
-
-      app.get('/test', c => c.text('OK'))
 
       await app.request('/test', { method: 'GET' })
       const res = await app.request('/test', { method: 'GET' })
@@ -151,7 +148,7 @@ describe('Rate Limiter Core', () => {
     })
 
     it('should allow custom status code', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 1,
@@ -159,8 +156,6 @@ describe('Rate Limiter Core', () => {
           keyGenerator: () => 'test-key'
         })
       )
-
-      app.get('/test', c => c.text('OK'))
 
       await app.request('/test', { method: 'GET' })
       const res = await app.request('/test', { method: 'GET' })
@@ -171,7 +166,7 @@ describe('Rate Limiter Core', () => {
 
   describe('Skip Function', () => {
     it('should skip rate limiting when skip function returns true', async () => {
-      app.use(
+      mount(
         createRateLimiter({
           windowMs: 60 * 1_000,
           limit: 1,
@@ -179,8 +174,6 @@ describe('Rate Limiter Core', () => {
           skip: c => c.req.header('X-Skip-Rate-Limit') === 'true'
         })
       )
-
-      app.get('/test', c => c.text('OK'))
 
       await app.request('/test', { method: 'GET' })
 
@@ -197,9 +190,7 @@ describe('Rate Limiter Core', () => {
 
   describe('Default Configuration', () => {
     it('should work with no configuration and use env-appropriate default limit', async () => {
-      app.use(createRateLimiter({ keyGenerator: () => 'test-key' }))
-
-      app.get('/test', c => c.text('OK'))
+      mount(createRateLimiter({ keyGenerator: () => 'test-key' }))
 
       const res = await app.request('/test', { method: 'GET' })
 

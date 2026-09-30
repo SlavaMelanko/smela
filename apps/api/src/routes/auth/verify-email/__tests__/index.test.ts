@@ -2,7 +2,13 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import { createTestApp, ModuleMocker, post, testUuids } from '@/__tests__'
+import {
+  buildMalformedRequests,
+  createTestApp,
+  ModuleMocker,
+  post,
+  testUuids
+} from '@/__tests__'
 import { HttpStatus } from '@/net/http'
 import { Role, UserStatus } from '@/types'
 
@@ -102,31 +108,9 @@ describe('auth /verify-email', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const validToken = 'a'.repeat(64)
+      const validPayload = { token: 'a'.repeat(64) }
 
-      const scenarios: Array<{
-        name: string
-        headers?: Record<string, string>
-        body?: any
-      }> = [
-        {
-          name: 'missing Content-Type',
-          headers: {},
-          body: { token: validToken }
-        },
-        {
-          name: 'malformed JSON',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{ invalid json'
-        },
-        {
-          name: 'missing request body',
-          headers: { 'Content-Type': 'application/json' },
-          body: ''
-        }
-      ]
-
-      for (const { headers, body } of scenarios) {
+      for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(app, VERIFY_EMAIL_URL, body, headers)
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)

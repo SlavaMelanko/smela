@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { SearchResult, User, userRepo } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
 import ErrorCode from '@/errors/codes'
 import { Role, UserStatus } from '@/types'
@@ -97,16 +97,7 @@ describe('getUser', () => {
   let mockUserRepo: any
 
   beforeEach(async () => {
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      role: Role.User,
-      status: UserStatus.Active,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+    mockUser = buildUser({ status: UserStatus.Active })
 
     mockUserRepo = {
       findByIdExtended: mock(async (): Promise<User | undefined> => mockUser)

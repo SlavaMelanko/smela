@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
@@ -14,8 +14,6 @@ import { Role, UserStatus } from '@/types'
 import { createAuthMiddleware } from '../factory'
 
 describe('Auth Middleware Factory', () => {
-  let app: Hono<AppContext>
-
   const mockUser = {
     id: testUuids.USER_1,
     email: 'test@example.com',
@@ -23,22 +21,33 @@ describe('Auth Middleware Factory', () => {
     status: UserStatus.Verified
   }
 
-  beforeEach(() => {
-    app = new Hono<AppContext>()
+  const buildApp = ({ statusValid = true, roleValid = true } = {}) => {
+    const app = new Hono<AppContext>()
     app.onError(onError)
-  })
-
-  describe('Token Extraction Failures', () => {
-    it('should throw Unauthorized when no token is provided', async () => {
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
+    app.use(
+      '/',
+      createAuthMiddleware(
+        () => statusValid,
+        () => roleValid
       )
+    )
+    app.get('/', c => c.json({ user: c.get('user') }))
 
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
+    return app
+  }
 
-      const res = await app.request('/')
+  const requestWith = async (app: Hono<AppContext>, authorization?: string) =>
+    app.request(
+      '/',
+      authorization ? { headers: { Authorization: authorization } } : {}
+    )
+
+  const signValidToken = async () =>
+    signJwt(mockUser, { secret: env.JWT_SECRET })
+
+  describe('Unauthorized requests', () => {
+    it('should reject request without token', async () => {
+      const res = await requestWith(buildApp())
 
       expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
       const json = await res.json()
@@ -46,228 +55,82 @@ describe('Auth Middleware Factory', () => {
       expect(json.error).toBe('No authentication token provided')
     })
 
-    it('should throw Unauthorized when Authorization header is malformed', async () => {
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
+    const cases = [
+      {
+        name: 'Authorization header is malformed',
+        authorization: async () => 'not-bearer-format'
+      },
+      {
+        name: 'Bearer prefix has no space',
+        authorization: async () => 'BearerTokenWithoutSpace'
+      },
+      {
+        name: 'JWT signature is invalid',
+        authorization: async () =>
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature'
+      },
+      {
+        name: 'JWT is expired',
+        authorization: async () =>
+          `Bearer ${await signJwt(mockUser, { secret: env.JWT_SECRET, expiresIn: -1 })}`
+      },
+      {
+        name: 'JWT is signed with wrong secret',
+        authorization: async () =>
+          `Bearer ${await signJwt(mockUser, { secret: 'wrong-secret-key' })}`
+      }
+    ]
 
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
+    cases.forEach(({ name, authorization }) => {
+      it(`should reject request when ${name}`, async () => {
+        const res = await requestWith(buildApp(), await authorization())
 
-      const res = await app.request('/', {
-        headers: {
-          Authorization: 'not-bearer-format'
-        }
+        expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
+        const json = await res.json()
+        expect(json.code).toBe(ErrorCode.Unauthorized)
       })
-
-      expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Unauthorized)
-    })
-
-    it('should throw Unauthorized when Authorization header has wrong format', async () => {
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: 'BearerTokenWithoutSpace'
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Unauthorized)
     })
   })
 
-  describe('Error Handling Edge Cases', () => {
-    it('should re-throw AppError instances from validators', async () => {
-      const validToken = await signJwt(mockUser, { secret: env.JWT_SECRET })
+  describe('Validator failures', () => {
+    const cases = [
+      {
+        name: 'status',
+        options: { statusValid: false },
+        error: 'UserStatus validation failure'
+      },
+      {
+        name: 'role',
+        options: { roleValid: false },
+        error: 'Role validation failure'
+      }
+    ]
 
-      const middleware = createAuthMiddleware(
-        () => false, // status validator fails
-        () => true
-      )
+    cases.forEach(({ name, options, error }) => {
+      it(`should re-throw AppError from ${name} validator`, async () => {
+        const res = await requestWith(
+          buildApp(options),
+          `Bearer ${await signValidToken()}`
+        )
 
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${validToken}`
-        }
+        expect(res.status).toBe(HttpStatus.FORBIDDEN)
+        const json = await res.json()
+        expect(json.code).toBe(ErrorCode.Forbidden)
+        expect(json.error).toBe(error)
       })
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('UserStatus validation failure')
-    })
-
-    it('should re-throw AppError from role validator', async () => {
-      const validToken = await signJwt(mockUser, { secret: env.JWT_SECRET })
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => false // role validator fails
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${validToken}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Forbidden)
-      expect(json.error).toBe('Role validation failure')
     })
   })
 
-  describe('Integration with JWT Verification Errors', () => {
-    it('should handle invalid JWT signature', async () => {
-      const invalidToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature'
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${invalidToken}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Unauthorized)
-    })
-
-    it('should handle expired JWT tokens', async () => {
-      const expiredToken = await signJwt(mockUser, {
-        secret: env.JWT_SECRET,
-        expiresIn: -1
-      })
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${expiredToken}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Unauthorized)
-    })
-
-    it('should handle JWT with wrong secret', async () => {
-      const tokenWithWrongSecret = await signJwt(mockUser, {
-        secret: 'wrong-secret-key'
-      })
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success' }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${tokenWithWrongSecret}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
-      const json = await res.json()
-      expect(json.code).toBe(ErrorCode.Unauthorized)
-    })
-  })
-
-  describe('Successful Authentication Flow', () => {
-    it('should successfully authenticate with valid Bearer token', async () => {
-      const validToken = await signJwt(mockUser, { secret: env.JWT_SECRET })
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
-      )
-
-      app.use('/', middleware)
-      app.get('/', c => c.json({ message: 'success', user: c.get('user') }))
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${validToken}`
-        }
-      })
-
-      expect(res.status).toBe(HttpStatus.OK)
-      const json = await res.json()
-      expect(json.message).toBe('success')
-      expect(json.user.id).toBe(mockUser.id)
-      expect(json.user.email).toBe(mockUser.email)
-    })
-
+  describe('Successful authentication', () => {
     it('should set user claims in context for downstream handlers', async () => {
-      const validToken = await signJwt(mockUser, { secret: env.JWT_SECRET })
-
-      const middleware = createAuthMiddleware(
-        () => true,
-        () => true
+      const res = await requestWith(
+        buildApp(),
+        `Bearer ${await signValidToken()}`
       )
-
-      app.use('/', middleware)
-      app.get('/', c => {
-        const user = c.get('user')
-
-        return c.json({
-          authenticated: true,
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-          status: user.status
-        })
-      })
-
-      const res = await app.request('/', {
-        headers: {
-          Authorization: `Bearer ${validToken}`
-        }
-      })
 
       expect(res.status).toBe(HttpStatus.OK)
       const json = await res.json()
-      expect(json.authenticated).toBe(true)
-      expect(json.userId).toBe(mockUser.id)
-      expect(json.email).toBe(mockUser.email)
-      expect(json.role).toBe(mockUser.role)
-      expect(json.status).toBe(mockUser.status)
+      expect(json.user).toMatchObject(mockUser)
     })
   })
 })

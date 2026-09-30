@@ -14,6 +14,8 @@ import type { DeviceInfo } from '@/net/http/device'
 import {
   buildInvalidTokenCases,
   buildTokenRecord,
+  buildUser,
+  createTransactionMock,
   ModuleMocker,
   testUuids
 } from '@/__tests__'
@@ -41,7 +43,7 @@ describe('Accept Invite', () => {
   let mockUserRepo: any
   let mockRefreshTokenRepo: any
   let mockTeamRepo: any
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockUser: User
   let mockActivatedUser: User
@@ -53,16 +55,14 @@ describe('Accept Invite', () => {
 
     mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
 
-    mockUser = {
+    mockUser = buildUser({
       id: testUuids.ADMIN_1,
       email: 'admin@example.com',
       firstName: 'Admin',
       lastName: 'User',
       role: Role.Admin,
-      status: UserStatus.Pending,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      status: UserStatus.Pending
+    })
 
     mockActivatedUser = {
       ...mockUser,
@@ -85,9 +85,7 @@ describe('Accept Invite', () => {
     mockTeamRepo = {
       findUserTeam: mock(async () => undefined)
     } satisfies Partial<typeof teamRepo>
-    mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,
@@ -219,75 +217,36 @@ describe('Accept Invite', () => {
     })
   })
 
-  describe('when token marking as used fails', () => {
-    it('should throw the error and not update password or user status', async () => {
-      mockTokenRepo.update.mockImplementation(async () => {
-        throw new Error('Database connection failed')
-      })
+  describe('when a transaction write fails', () => {
+    const writes = [
+      'token marking as used',
+      'password update',
+      'user status update'
+    ]
 
-      try {
-        await acceptInvite(
+    writes.forEach((name, failedIndex) => {
+      it(`should throw and skip later writes when ${name} fails`, async () => {
+        // Same order as writes
+        const writeMocks = [
+          mockTokenRepo.update,
+          mockAuthRepo.update,
+          mockUserRepo.update
+        ]
+        writeMocks[failedIndex].mockImplementation(async () => {
+          throw new Error(`${name} failed`)
+        })
+
+        const error = await acceptInvite(
           { token: mockTokenRecord.token, password: mockPassword },
           mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+        ).catch((error: unknown) => error)
 
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).not.toHaveBeenCalled()
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when password update fails', () => {
-    it('should throw the error within transaction', async () => {
-      mockAuthRepo.update.mockImplementation(async () => {
-        throw new Error('Password update failed')
+        expect(error).toMatchObject({ message: `${name} failed` })
+        expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+        writeMocks.forEach((writeMock, index) => {
+          expect(writeMock).toHaveBeenCalledTimes(index <= failedIndex ? 1 : 0)
+        })
       })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenRecord.token, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Password update failed')
-      }
-
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockUserRepo.update).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when user status update fails', () => {
-    it('should throw the error within transaction', async () => {
-      mockUserRepo.update.mockImplementation(async () => {
-        throw new Error('User status update failed')
-      })
-
-      try {
-        await acceptInvite(
-          { token: mockTokenRecord.token, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('User status update failed')
-      }
-
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-      expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
-      expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
     })
   })
 

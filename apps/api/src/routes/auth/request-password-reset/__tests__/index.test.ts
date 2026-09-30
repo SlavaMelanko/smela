@@ -2,7 +2,12 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import { createTestApp, ModuleMocker, post } from '@/__tests__'
+import {
+  buildMalformedRequests,
+  createTestApp,
+  ModuleMocker,
+  post
+} from '@/__tests__'
 import {
   mockCaptchaSuccess,
   VALID_CAPTCHA_TOKEN
@@ -95,38 +100,23 @@ describe('auth /request-password-reset', () => {
     })
 
     it('should handle malformed requests', async () => {
-      const scenarios: Array<{
-        name: string
-        headers?: Record<string, string>
-        body?: any
-      }> = [
-        {
-          name: 'missing Content-Type header',
-          headers: {},
-          body: {
-            email: 'test@example.com',
-            captcha: { token: VALID_CAPTCHA_TOKEN }
-          }
-        },
-        {
-          name: 'undefined body',
-          headers: { 'Content-Type': 'application/json' },
-          body: undefined
-        },
+      const validPayload = {
+        email: 'test@example.com',
+        captcha: { token: VALID_CAPTCHA_TOKEN }
+      }
+
+      const scenarios = [
+        ...buildMalformedRequests(validPayload),
         {
           name: 'empty body',
           headers: { 'Content-Type': 'application/json' },
           body: {}
-        },
-        {
-          name: 'malformed JSON body',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{ invalid json'
         }
       ]
 
       for (const { headers, body } of scenarios) {
         const res = await post(app, REQUEST_PASSWORD_RESET_URL, body, headers)
+
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       }
     })

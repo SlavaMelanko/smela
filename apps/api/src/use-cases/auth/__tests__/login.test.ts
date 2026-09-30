@@ -18,8 +18,8 @@ import type {
   UserTeamInfo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
+import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
+import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
@@ -62,16 +62,7 @@ describe('Login with Email', () => {
       userAgent: 'Mozilla/5.0 (Test)'
     }
 
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'test@example.com',
-      status: UserStatus.Verified,
-      role: Role.User,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+    mockUser = buildUser({ email: 'test@example.com' })
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
@@ -275,13 +266,11 @@ describe('Login with Email', () => {
         throw new Error('Database connection failed')
       })
 
-      try {
-        await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({ message: 'Database connection failed' })
     })
 
     it('should handle auth repository database failure', async () => {
@@ -289,13 +278,11 @@ describe('Login with Email', () => {
         throw new Error('Auth table query failed')
       })
 
-      try {
-        await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Auth table query failed')
-      }
+      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({ message: 'Auth table query failed' })
     })
 
     it('should throw SocialAuthOnly when auth record has undefined password hash', async () => {
@@ -304,13 +291,14 @@ describe('Login with Email', () => {
         passwordHash: undefined
       }))
 
-      try {
-        await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.SocialAuthOnly)
-      }
+      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+        (error: unknown) => error
+      )
+
+      expect(error).toMatchObject({
+        name: 'AppError',
+        code: ErrorCode.SocialAuthOnly
+      })
     })
   })
 

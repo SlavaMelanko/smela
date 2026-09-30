@@ -12,8 +12,13 @@ import type {
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
+import {
+  buildUser,
+  createTransactionMock,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
+import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { comparePasswordHashes } from '@/security/password'
 import {
@@ -22,7 +27,7 @@ import {
   TokenStatus,
   TokenType
 } from '@/security/token'
-import { Role, UserStatus } from '@/types'
+import { UserStatus } from '@/types'
 import { hour, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { resetPassword } from '../reset-password'
@@ -41,7 +46,7 @@ describe('Reset Password', () => {
   let mockRefreshTokenRepo: any
   let mockTeamRepo: any
   let mockTeam: UserTeamInfo | undefined
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockUser: User
   let mockResolvePermissions: any
@@ -63,16 +68,12 @@ describe('Reset Password', () => {
       metadata: null
     }
 
-    mockUser = {
-      id: testUuids.USER_1,
+    mockUser = buildUser({
       email: 'test@example.com',
       firstName: 'Test',
       lastName: 'User',
-      role: Role.User,
-      status: UserStatus.Active,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      status: UserStatus.Active
+    })
 
     mockTokenRepo = {
       findByToken: mock(async () => mockTokenRecord),
@@ -91,9 +92,7 @@ describe('Reset Password', () => {
     mockTeamRepo = {
       findUserTeam: mock(async () => mockTeam)
     } satisfies Partial<typeof teamRepo>
-    mockTransaction = {
-      transaction: mock(async (callback: any) => callback({}) as Promise<void>)
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,
@@ -119,16 +118,12 @@ describe('Reset Password', () => {
     mockAuthRepo.update.mock.calls[0][1].passwordHash as string
 
   const expectRejectsWithoutUpdates = async (code: ErrorCode) => {
-    try {
-      await resetPassword(
-        { token: mockTokenString, password: mockPassword },
-        mockDeviceInfo
-      )
-      expect(true).toBe(false) // should not reach here
-    } catch (error) {
-      expect(error).toBeInstanceOf(AppError)
-      expect((error as AppError).code).toBe(code)
-    }
+    const error = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ name: 'AppError', code })
 
     expect(mockTransaction.transaction).not.toHaveBeenCalled()
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
@@ -282,16 +277,12 @@ describe('Reset Password', () => {
         throw new Error('Database connection failed')
       })
 
-      try {
-        await resetPassword(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Database connection failed')
-      }
+      const error = await resetPassword(
+        { token: mockTokenString, password: mockPassword },
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({ message: 'Database connection failed' })
 
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
       expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
@@ -305,16 +296,12 @@ describe('Reset Password', () => {
         throw new Error('Password update failed')
       })
 
-      try {
-        await resetPassword(
-          { token: mockTokenString, password: mockPassword },
-          mockDeviceInfo
-        )
-        expect(true).toBe(false) // should not reach here
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Password update failed')
-      }
+      const error = await resetPassword(
+        { token: mockTokenString, password: mockPassword },
+        mockDeviceInfo
+      ).catch((error: unknown) => error)
+
+      expect(error).toMatchObject({ message: 'Password update failed' })
 
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
       expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)

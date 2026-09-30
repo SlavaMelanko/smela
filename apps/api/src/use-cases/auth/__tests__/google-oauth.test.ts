@@ -10,13 +10,17 @@ import type {
   userRepo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import {
+  buildUser,
+  createTransactionMock,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import { verifyJwt } from '@/security/jwt'
 import { hashToken } from '@/security/token'
 import {
   AuthProvider,
   getSelfServeUserDefaultPermissions,
-  Role,
   UserStatus
 } from '@/types'
 
@@ -44,21 +48,12 @@ describe('Google OAuth', () => {
   let mockRbacRepo: any
   let mockRefreshTokenRepo: any
   let mockTeamRepo: any
-  let mockTransaction: any
+  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockResolvePermissions: any
 
   beforeEach(async () => {
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: UserStatus.Verified,
-      role: Role.User,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+    mockUser = buildUser()
 
     mockAuthRecord = {
       userId: testUuids.USER_1,
@@ -93,11 +88,7 @@ describe('Google OAuth', () => {
       findUserTeam: mock(async () => undefined)
     } satisfies Partial<typeof teamRepo>
 
-    mockTransaction = {
-      transaction: mock(
-        async (callback: any) => callback({}) as Promise<unknown>
-      )
-    }
+    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       authRepo: mockAuthRepo,

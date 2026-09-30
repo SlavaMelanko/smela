@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { User } from '@/data'
 
 import {
+  buildUser,
   createTestApp,
   get,
   ModuleMocker,
@@ -38,16 +39,7 @@ describe('admin /users/:id', () => {
     ])
 
   beforeEach(async () => {
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      role: Role.User,
-      status: UserStatus.Active,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+    mockUser = buildUser({ status: UserStatus.Active })
 
     mockGetUser = mock(async () => ({ user: mockUser }))
     mockUpdateUser = mock(async () => ({ user: mockUser }))

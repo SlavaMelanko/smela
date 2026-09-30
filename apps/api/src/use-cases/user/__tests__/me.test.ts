@@ -20,11 +20,11 @@ import type {
   UserTeamInfo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
+import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { comparePasswordHashes, hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import { AuthProvider, UserStatus } from '@/types'
 
 import { changePassword, getUser, updateUser } from '../me'
 
@@ -38,16 +38,10 @@ describe('User Me Use Cases', () => {
   let mockResolvePermissions: any
 
   beforeEach(async () => {
-    mockUser = {
-      id: testUuids.USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
+    mockUser = buildUser({
       email: 'test@example.com',
-      role: Role.User,
-      status: UserStatus.Active,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
+      status: UserStatus.Active
+    })
     mockUserRepo = {
       findById: mock(async () => mockUser),
       update: mock(async (_id: string, updates: UpdateUserInput) => ({
