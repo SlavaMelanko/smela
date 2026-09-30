@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import NodeHasher from '../hasher-node'
 
 describe('NodeHasher', () => {
-  it('should hash with SHA-256 hex format', async () => {
+  it('hashes with SHA-256 in hex format', async () => {
     const hasher = new NodeHasher('sha256')
     const plainText = 'password123'
     const hashedText = await hasher.hash(plainText)
@@ -14,7 +14,7 @@ describe('NodeHasher', () => {
     expect(hashedText).toMatch(/^[a-f0-9]{64}$/)
   })
 
-  it('should hash with SHA-512 base64 format', async () => {
+  it('hashes with SHA-512 in base64 format', async () => {
     const hasher = new NodeHasher('sha512', 'base64')
     const plainText = 'password123'
     const hashedText = await hasher.hash(plainText)
@@ -25,7 +25,7 @@ describe('NodeHasher', () => {
     expect(hashedText).toMatch(/^[a-z0-9+/]+=*$/i)
   })
 
-  it('should return true for matching text', async () => {
+  it('returns true for matching text', async () => {
     const hasher = new NodeHasher('sha256')
     const plainText = 'testPassword123'
     const hashedText = await hasher.hash(plainText)
@@ -35,7 +35,7 @@ describe('NodeHasher', () => {
     expect(isMatch).toBe(true)
   })
 
-  it('should return false for non-matching text', async () => {
+  it('returns false for non-matching text', async () => {
     const hasher = new NodeHasher('sha256')
     const plainText = 'testPassword123'
     const wrongText = 'wrongPassword456'
@@ -46,7 +46,7 @@ describe('NodeHasher', () => {
     expect(isMatch).toBe(false)
   })
 
-  it('should compare correctly with base64 encoding', async () => {
+  it('compares correctly with base64 encoding', async () => {
     const hasher = new NodeHasher('sha256', 'base64')
     const plainText = 'testPassword123'
     const hashedText = await hasher.hash(plainText)

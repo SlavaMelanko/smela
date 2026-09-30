@@ -64,7 +64,7 @@ describe('admin /system/email-sender-profiles', () => {
   })
 
   describe('GET /system/email-sender-profiles', () => {
-    it('should return sender profiles with OK status', async () => {
+    it('returns sender profiles with OK status', async () => {
       const res = await get(app, PROFILES_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -79,7 +79,7 @@ describe('admin /system/email-sender-profiles', () => {
       })
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, PROFILES_URL)
@@ -88,7 +88,7 @@ describe('admin /system/email-sender-profiles', () => {
       expect(mockGetEmailSenderProfiles).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetEmailSenderProfiles.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })

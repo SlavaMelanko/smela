@@ -22,8 +22,8 @@ const makeApp = () => {
   return app
 }
 
-describe('Request Validator Middleware', () => {
-  it('should pass valid payload to the next handler', async () => {
+describe('validateBody', () => {
+  it('passes valid payload to the next handler', async () => {
     const response = await post(makeApp(), '/test', {
       email: 'user@example.com',
       password: 'SecurePass123!'
@@ -33,7 +33,7 @@ describe('Request Validator Middleware', () => {
     expect(await response.json()).toEqual({ success: true })
   })
 
-  it('should return validation error with issue details when payload is invalid', async () => {
+  it('returns validation error with issue details when payload is invalid', async () => {
     const response = await post(makeApp(), '/test', {
       email: 'user@example.com'
     })

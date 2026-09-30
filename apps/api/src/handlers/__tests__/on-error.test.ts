@@ -8,8 +8,8 @@ import { HttpStatus } from '@/net/http'
 
 import onError from '../on-error'
 
-describe('onError handler', () => {
-  it('should return 500 with error details for generic errors', async () => {
+describe('onError', () => {
+  it('returns 500 with error details for generic errors', async () => {
     const app = new Hono<AppContext>()
 
     app.onError(onError)
@@ -29,7 +29,7 @@ describe('onError handler', () => {
     })
   })
 
-  it('should handle custom error codes from thrown errors', async () => {
+  it('maps custom error codes from thrown errors to status', async () => {
     const app = new Hono<AppContext>()
 
     app.onError(onError)
@@ -52,7 +52,7 @@ describe('onError handler', () => {
     })
   })
 
-  it('should not include stack trace in test environment', async () => {
+  it('omits stack trace in test environment', async () => {
     const app = new Hono<AppContext>()
 
     app.onError(onError)

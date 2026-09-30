@@ -84,7 +84,7 @@ describe('inviteAdmin', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw EmailAlreadyInUse when email exists', async () => {
+  it('throws EmailAlreadyInUse when email exists', async () => {
     mockFindByEmail.mockImplementation(async () => mockAdmin)
 
     expect(inviteAdmin(inviteAdminParams, testUuids.OWNER_1)).rejects.toThrow(
@@ -97,7 +97,7 @@ describe('inviteAdmin', () => {
     })
   })
 
-  it('should create admin with pending status and return admin data', async () => {
+  it('creates admin with pending status and returns admin data', async () => {
     const result = await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
 
     expect(mockUserCreate).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe('inviteAdmin', () => {
     expect(result).toEqual({ admin: mockAdmin })
   })
 
-  it('should store a random password hash and issue an invite token', async () => {
+  it('stores a random password hash and issues an invite token', async () => {
     await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
 
     expect(mockAuthCreate).toHaveBeenCalledWith(
@@ -142,7 +142,7 @@ describe('inviteAdmin', () => {
     )
   })
 
-  it('should send the invite email', async () => {
+  it('sends the invite email', async () => {
     await inviteAdmin(inviteAdminParams, testUuids.OWNER_1)
 
     expect(mockSendUserInviteEmail).toHaveBeenCalledWith(
@@ -215,7 +215,7 @@ describe('resendAdminInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw NotFound when admin does not exist', async () => {
+  it('throws NotFound when admin is missing', async () => {
     mockFindById.mockImplementation(async (id: string) => {
       if (id === testUuids.OWNER_1) {
         return mockInviter
@@ -235,7 +235,7 @@ describe('resendAdminInvite', () => {
     })
   })
 
-  it('should throw NotFound when user is not Admin role', async () => {
+  it('throws NotFound when user is not Admin role', async () => {
     mockFindById.mockImplementation(async (id: string) => {
       if (id === testUuids.ADMIN_1) {
         return { ...mockAdmin, role: Role.User }
@@ -258,7 +258,7 @@ describe('resendAdminInvite', () => {
     })
   })
 
-  it('should throw BadRequest when admin has already accepted invitation', async () => {
+  it('throws BadRequest when admin already accepted invitation', async () => {
     mockFindById.mockImplementation(async (id: string) => {
       if (id === testUuids.ADMIN_1) {
         return { ...mockAdmin, status: UserStatus.Active }
@@ -281,7 +281,7 @@ describe('resendAdminInvite', () => {
     })
   })
 
-  it('should throw NotFound when inviter does not exist', async () => {
+  it('throws NotFound when inviter is missing', async () => {
     mockFindById.mockImplementation(async (id: string) => {
       if (id === testUuids.ADMIN_1) {
         return mockAdmin
@@ -301,7 +301,7 @@ describe('resendAdminInvite', () => {
     })
   })
 
-  it('should issue new token and send invite email with current inviter name', async () => {
+  it('issues new token and sends invite email with current inviter name', async () => {
     const result = await resendAdminInvite(testUuids.ADMIN_1, testUuids.OWNER_1)
 
     expect(mockTokenIssue).toHaveBeenCalledWith(
@@ -368,7 +368,7 @@ describe('cancelAdminInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('should throw NotFound when admin does not exist', async () => {
+  it('throws NotFound when admin is missing', async () => {
     mockFindById.mockImplementation(async () => undefined)
 
     expect(cancelAdminInvite(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
@@ -378,7 +378,7 @@ describe('cancelAdminInvite', () => {
     })
   })
 
-  it('should throw NotFound when user is not Admin role', async () => {
+  it('throws NotFound when user is not Admin role', async () => {
     mockFindById.mockImplementation(async () => ({
       ...mockAdmin,
       role: Role.User
@@ -391,7 +391,7 @@ describe('cancelAdminInvite', () => {
     })
   })
 
-  it('should throw BadRequest when admin has already accepted invitation', async () => {
+  it('throws BadRequest when admin already accepted invitation', async () => {
     mockFindById.mockImplementation(async () => ({
       ...mockAdmin,
       status: UserStatus.Active
@@ -404,7 +404,7 @@ describe('cancelAdminInvite', () => {
     })
   })
 
-  it('should deprecate token and archive user in a transaction', async () => {
+  it('deprecates token and archives user in a transaction', async () => {
     const result = await cancelAdminInvite(testUuids.ADMIN_1)
 
     expect(mockTokenDeprecate).toHaveBeenCalledWith(

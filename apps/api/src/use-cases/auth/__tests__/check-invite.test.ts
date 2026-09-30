@@ -22,7 +22,7 @@ import { Role } from '@/types'
 
 import { checkInvite } from '../check-invite'
 
-describe('Check Invite', () => {
+describe('checkInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const INVITE_TOKEN = {
@@ -75,24 +75,22 @@ describe('Check Invite', () => {
     await moduleMocker.clear()
   })
 
-  describe('when token is valid for member invite', () => {
-    it('should return member type and team name for member invite token', async () => {
-      const result = await checkInvite(mockTokenRecord.token)
+  it('returns member type and team name for member invite token', async () => {
+    const result = await checkInvite(mockTokenRecord.token)
 
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
-        mockTokenRecord.token
-      )
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
+      mockTokenRecord.token
+    )
+    expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
-        mockTokenRecord.userId
-      )
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledTimes(1)
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+      mockTokenRecord.userId
+    )
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledTimes(1)
 
-      expect(mockRbacRepo.findRole).not.toHaveBeenCalled()
+    expect(mockRbacRepo.findRole).not.toHaveBeenCalled()
 
-      expect(result).toEqual({ type: 'member', teamName: 'Acme Corp' })
-    })
+    expect(result).toEqual({ type: 'member', teamName: 'Acme Corp' })
   })
 
   describe('when token is valid for admin invite', () => {
@@ -100,7 +98,7 @@ describe('Check Invite', () => {
       mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
     })
 
-    it('should return admin type and company name for admin invite token', async () => {
+    it('returns admin type and company name', async () => {
       const result = await checkInvite(mockTokenRecord.token)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
@@ -113,78 +111,70 @@ describe('Check Invite', () => {
     })
   })
 
-  describe('when token validation fails', () => {
-    buildInvalidTokenCases(
-      buildTokenRecord(INVITE_TOKEN),
-      TokenType.PasswordReset
-    ).forEach(({ name, record, code }) => {
-      it(`should throw ${code} when token is ${name}`, async () => {
-        mockTokenRepo.findByToken.mockImplementation(async () => record)
-
-        const error = await checkInvite(mockTokenRecord.token).catch(
-          (error: unknown) => error
-        )
-
-        expect(error).toMatchObject({ name: 'AppError', code })
-
-        expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
-      })
-    })
-  })
-
-  describe('when user has no team membership and no admin role', () => {
-    it('should throw TokenDeprecated', async () => {
-      mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
-      mockRbacRepo.findRole.mockResolvedValue(undefined)
+  buildInvalidTokenCases(
+    buildTokenRecord(INVITE_TOKEN),
+    TokenType.PasswordReset
+  ).forEach(({ name, record, code }) => {
+    it(`throws ${code} when token is ${name}`, async () => {
+      mockTokenRepo.findByToken.mockImplementation(async () => record)
 
       const error = await checkInvite(mockTokenRecord.token).catch(
         (error: unknown) => error
       )
 
-      expect(error).toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.TokenDeprecated,
-        message: 'Invalid invite'
-      })
+      expect(error).toMatchObject({ name: 'AppError', code })
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
-        mockTokenRecord.userId
-      )
-      expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
+      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
     })
   })
 
-  describe('when user has non-admin role', () => {
-    it('should throw TokenDeprecated', async () => {
-      mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
-      mockRbacRepo.findRole.mockResolvedValue({
-        ...mockAdminRole,
-        role: Role.User
-      })
+  it('throws TokenDeprecated when user has no team membership and no admin role', async () => {
+    mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
+    mockRbacRepo.findRole.mockResolvedValue(undefined)
 
-      const error = await checkInvite(mockTokenRecord.token).catch(
-        (error: unknown) => error
-      )
+    const error = await checkInvite(mockTokenRecord.token).catch(
+      (error: unknown) => error
+    )
 
-      expect(error).toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.TokenDeprecated,
-        message: 'Invalid invite'
-      })
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.TokenDeprecated,
+      message: 'Invalid invite'
+    })
+
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+      mockTokenRecord.userId
+    )
+    expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
+  })
+
+  it('throws TokenDeprecated when user has non-admin role', async () => {
+    mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
+    mockRbacRepo.findRole.mockResolvedValue({
+      ...mockAdminRole,
+      role: Role.User
+    })
+
+    const error = await checkInvite(mockTokenRecord.token).catch(
+      (error: unknown) => error
+    )
+
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.TokenDeprecated,
+      message: 'Invalid invite'
     })
   })
 
-  describe('when database query fails', () => {
-    it('should propagate the error', async () => {
-      mockTeamRepo.findUserTeam.mockRejectedValue(
-        new Error('Database connection failed')
-      )
+  it('propagates database query errors', async () => {
+    mockTeamRepo.findUserTeam.mockRejectedValue(
+      new Error('Database connection failed')
+    )
 
-      const error = await checkInvite(mockTokenRecord.token).catch(
-        (error: unknown) => error
-      )
+    const error = await checkInvite(mockTokenRecord.token).catch(
+      (error: unknown) => error
+    )
 
-      expect(error).toMatchObject({ message: 'Database connection failed' })
-    })
+    expect(error).toMatchObject({ message: 'Database connection failed' })
   })
 })

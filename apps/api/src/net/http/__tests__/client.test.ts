@@ -11,7 +11,7 @@ const mockFetch = mock(async () => ({
 // Store original fetch to restore later
 const originalFetch = globalThis.fetch
 
-describe('HTTP Client', () => {
+describe('HttpClient', () => {
   beforeEach(() => {
     // Replace global fetch with mock
     globalThis.fetch = mockFetch as any
@@ -24,24 +24,24 @@ describe('HTTP Client', () => {
   })
 
   describe('constructor', () => {
-    test('should remove trailing slash from base URL', () => {
+    test('removes the trailing slash from the base URL', () => {
       const client = new HttpClient('https://example.com/')
       // We can't directly access baseUrl, but we can test the behavior
       expect(client).toBeInstanceOf(HttpClient)
     })
 
-    test('should store default options with headers', () => {
+    test('stores default options with headers', () => {
       const headers = { 'Content-Type': 'application/json' }
       const client = new HttpClient('https://example.com', { headers })
       expect(client).toBeInstanceOf(HttpClient)
     })
 
-    test('should store default options with timeout', () => {
+    test('stores default options with timeout', () => {
       const client = new HttpClient('https://example.com', { timeout: 5000 })
       expect(client).toBeInstanceOf(HttpClient)
     })
 
-    test('should store default options with headers and timeout', () => {
+    test('stores default options with headers and timeout', () => {
       const headers = { 'Content-Type': 'application/json' }
       const client = new HttpClient('https://example.com', {
         headers,
@@ -50,19 +50,19 @@ describe('HTTP Client', () => {
       expect(client).toBeInstanceOf(HttpClient)
     })
 
-    test('should work with empty default options', () => {
+    test('accepts empty default options', () => {
       const client = new HttpClient('https://example.com')
       expect(client).toBeInstanceOf(HttpClient)
     })
 
-    test('should use default timeout when not specified', () => {
+    test('uses the default timeout when not specified', () => {
       const client = new HttpClient('https://example.com', { headers: {} })
       expect(client).toBeInstanceOf(HttpClient)
     })
   })
 
-  describe('get method', () => {
-    test('should make GET request with correct URL', async () => {
+  describe('get', () => {
+    test('makes a GET request with the correct URL', async () => {
       const client = new HttpClient('https://example.com')
       await client.get('/users')
 
@@ -76,7 +76,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should handle path without leading slash', async () => {
+    test('handles a path without a leading slash', async () => {
       const client = new HttpClient('https://example.com')
       await client.get('users')
 
@@ -86,7 +86,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should merge custom headers with default headers', async () => {
+    test('merges custom headers with default headers', async () => {
       const client = new HttpClient('https://example.com', {
         headers: { Authorization: 'Bearer token' }
       })
@@ -104,7 +104,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should return parsed JSON response', async () => {
+    test('returns the parsed JSON response', async () => {
       const mockData = { id: 1, name: 'John' }
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -118,8 +118,8 @@ describe('HTTP Client', () => {
     })
   })
 
-  describe('post method', () => {
-    test('should make POST request with body', async () => {
+  describe('post', () => {
+    test('makes a POST request with a body', async () => {
       const client = new HttpClient('https://example.com')
       const body = new URLSearchParams({ name: 'John' })
 
@@ -135,7 +135,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should make POST request without body', async () => {
+    test('makes a POST request without a body', async () => {
       const client = new HttpClient('https://example.com')
       await client.post('/users')
 
@@ -148,7 +148,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should handle string body', async () => {
+    test('sends a string body', async () => {
       const client = new HttpClient('https://example.com')
       const body = '{"name":"John"}'
 
@@ -163,7 +163,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should handle FormData body', async () => {
+    test('sends a FormData body', async () => {
       const client = new HttpClient('https://example.com')
       const body = new FormData()
       body.append('name', 'John')
@@ -179,7 +179,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should merge custom headers', async () => {
+    test('merges custom headers', async () => {
       const client = new HttpClient('https://example.com', {
         headers: { Authorization: 'Bearer token' }
       })
@@ -200,8 +200,8 @@ describe('HTTP Client', () => {
     })
   })
 
-  describe('put method', () => {
-    test('should make PUT request', async () => {
+  describe('put', () => {
+    test('makes a PUT request', async () => {
       const client = new HttpClient('https://example.com')
       const body = '{"name":"Updated John"}'
 
@@ -217,7 +217,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should work without body', async () => {
+    test('makes a PUT request without a body', async () => {
       const client = new HttpClient('https://example.com')
       await client.put('/users/1')
 
@@ -231,8 +231,8 @@ describe('HTTP Client', () => {
     })
   })
 
-  describe('delete method', () => {
-    test('should make DELETE request', async () => {
+  describe('delete', () => {
+    test('makes a DELETE request', async () => {
       const client = new HttpClient('https://example.com')
       await client.delete('/users/1')
 
@@ -245,7 +245,7 @@ describe('HTTP Client', () => {
       )
     })
 
-    test('should handle custom headers', async () => {
+    test('sends custom headers', async () => {
       const client = new HttpClient('https://example.com')
       await client.delete('/users/1', { Authorization: 'Bearer token' })
 
@@ -259,146 +259,140 @@ describe('HTTP Client', () => {
     })
   })
 
-  describe('URL construction', () => {
-    const cases = [
-      {
-        name: 'base URL with trailing slash',
-        baseUrl: 'https://example.com/',
-        path: '/api/users',
-        expected: 'https://example.com/api/users'
-      },
-      {
-        name: 'base URL without trailing slash',
-        baseUrl: 'https://example.com',
-        path: '/api/users',
-        expected: 'https://example.com/api/users'
-      },
-      {
-        name: 'path without leading slash',
-        baseUrl: 'https://example.com',
-        path: 'api/users',
-        expected: 'https://example.com/api/users'
-      },
-      {
-        name: 'empty path',
-        baseUrl: 'https://example.com',
-        path: '',
-        expected: 'https://example.com/'
-      },
-      {
-        name: 'root path',
-        baseUrl: 'https://example.com',
-        path: '/',
-        expected: 'https://example.com/'
-      },
-      {
-        name: 'port in base URL',
-        baseUrl: 'http://localhost:3000',
-        path: '/api/users',
-        expected: 'http://localhost:3000/api/users'
-      }
-    ]
+  const cases = [
+    {
+      name: 'base URL with trailing slash',
+      baseUrl: 'https://example.com/',
+      path: '/api/users',
+      expected: 'https://example.com/api/users'
+    },
+    {
+      name: 'base URL without trailing slash',
+      baseUrl: 'https://example.com',
+      path: '/api/users',
+      expected: 'https://example.com/api/users'
+    },
+    {
+      name: 'path without leading slash',
+      baseUrl: 'https://example.com',
+      path: 'api/users',
+      expected: 'https://example.com/api/users'
+    },
+    {
+      name: 'empty path',
+      baseUrl: 'https://example.com',
+      path: '',
+      expected: 'https://example.com/'
+    },
+    {
+      name: 'root path',
+      baseUrl: 'https://example.com',
+      path: '/',
+      expected: 'https://example.com/'
+    },
+    {
+      name: 'port in base URL',
+      baseUrl: 'http://localhost:3000',
+      path: '/api/users',
+      expected: 'http://localhost:3000/api/users'
+    }
+  ]
 
-    cases.forEach(({ name, baseUrl, path, expected }) => {
-      test(`should handle ${name}`, async () => {
-        await new HttpClient(baseUrl).get(path)
+  cases.forEach(({ name, baseUrl, path, expected }) => {
+    test(`builds the request URL for ${name}`, async () => {
+      await new HttpClient(baseUrl).get(path)
 
-        expect(mockFetch).toHaveBeenCalledWith(expected, expect.any(Object))
-      })
+      expect(mockFetch).toHaveBeenCalledWith(expected, expect.any(Object))
     })
   })
 
-  describe('header merging', () => {
-    test('should use only default headers when no custom headers provided', async () => {
-      const client = new HttpClient('https://example.com', {
+  test('sends only default headers when no custom headers are given', async () => {
+    const client = new HttpClient('https://example.com', {
+      headers: { 'User-Agent': 'TestClient' }
+    })
+    await client.get('/users')
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://example.com/users',
+      expect.objectContaining({
         headers: { 'User-Agent': 'TestClient' }
       })
-      await client.get('/users')
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/users',
-        expect.objectContaining({
-          headers: { 'User-Agent': 'TestClient' }
-        })
-      )
-    })
-
-    test('should override default headers with custom headers', async () => {
-      const client = new HttpClient('https://example.com', {
-        headers: { 'Content-Type': 'application/xml' }
-      })
-      await client.post('/users', 'data', {
-        'Content-Type': 'application/json'
-      })
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/users',
-        expect.objectContaining({
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
-    })
-
-    test('should merge multiple headers correctly', async () => {
-      const client = new HttpClient('https://example.com', {
-        headers: {
-          Authorization: 'Bearer token',
-          'User-Agent': 'TestClient'
-        }
-      })
-      await client.get('/users', { 'Content-Type': 'application/json' })
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://example.com/users',
-        expect.objectContaining({
-          headers: {
-            Authorization: 'Bearer token',
-            'User-Agent': 'TestClient',
-            'Content-Type': 'application/json'
-          }
-        })
-      )
-    })
+    )
   })
 
-  describe('timeout functionality', () => {
-    test('should use default timeout when not specified', async () => {
-      const client = new HttpClient('https://example.com')
-      await client.get('/users')
-
-      // We can't directly test the timeout value, but we can verify the request was made
-      expect(mockFetch).toHaveBeenCalledTimes(1)
+  test('overrides default headers with custom headers', async () => {
+    const client = new HttpClient('https://example.com', {
+      headers: { 'Content-Type': 'application/xml' }
+    })
+    await client.post('/users', 'data', {
+      'Content-Type': 'application/json'
     })
 
-    test('should use custom default timeout', async () => {
-      const client = new HttpClient('https://example.com', { timeout: 5000 })
-      await client.get('/users')
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://example.com/users',
+      expect.objectContaining({
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+  })
 
-      expect(mockFetch).toHaveBeenCalledTimes(1)
+  test('merges multiple default and custom headers', async () => {
+    const client = new HttpClient('https://example.com', {
+      headers: {
+        Authorization: 'Bearer token',
+        'User-Agent': 'TestClient'
+      }
     })
+    await client.get('/users', { 'Content-Type': 'application/json' })
 
-    test('should handle timeout errors', async () => {
-      // Mock a slow response that exceeds timeout
-      mockFetch.mockImplementationOnce(
-        async () => new Promise(resolve => setTimeout(resolve, 20)) // 20ms delay
-      )
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://example.com/users',
+      expect.objectContaining({
+        headers: {
+          Authorization: 'Bearer token',
+          'User-Agent': 'TestClient',
+          'Content-Type': 'application/json'
+        }
+      })
+    )
+  })
 
-      const client = new HttpClient('https://example.com', { timeout: 10 }) // 10ms timeout
+  test('sends the request with the default timeout', async () => {
+    const client = new HttpClient('https://example.com')
+    await client.get('/users')
 
-      expect(client.get('/users')).rejects.toThrow('Timeout.')
-    })
+    // We can't directly test the timeout value, but we can verify the request was made
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+  })
 
-    test('should complete before timeout', async () => {
-      const mockData = { id: 1, name: 'John' }
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockData
-      } as any)
+  test('sends the request with a custom default timeout', async () => {
+    const client = new HttpClient('https://example.com', { timeout: 5000 })
+    await client.get('/users')
 
-      const client = new HttpClient('https://example.com', { timeout: 1000 })
-      const result = await client.get('/users')
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+  })
 
-      expect(result).toEqual(mockData)
-    })
+  test('rejects when the request exceeds the timeout', async () => {
+    // Mock a slow response that exceeds timeout
+    mockFetch.mockImplementationOnce(
+      async () => new Promise(resolve => setTimeout(resolve, 20)) // 20ms delay
+    )
+
+    const client = new HttpClient('https://example.com', { timeout: 10 }) // 10ms timeout
+
+    expect(client.get('/users')).rejects.toThrow('Timeout.')
+  })
+
+  test('resolves when the request completes before the timeout', async () => {
+    const mockData = { id: 1, name: 'John' }
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData
+    } as any)
+
+    const client = new HttpClient('https://example.com', { timeout: 1000 })
+    const result = await client.get('/users')
+
+    expect(result).toEqual(mockData)
   })
 })

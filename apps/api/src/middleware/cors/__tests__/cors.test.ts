@@ -3,13 +3,13 @@ import { Hono } from 'hono'
 
 import { dev, test } from '../env'
 
-describe('CORS Middleware', () => {
-  describe('Development Environment', () => {
+describe('cors', () => {
+  describe('dev', () => {
     const app = new Hono()
     app.use('*', dev())
     app.get('/test', c => c.json({ success: true }))
 
-    it('should allow localhost origins', async () => {
+    it('allows localhost origins', async () => {
       const allowedOrigins = [
         'http://localhost:3000',
         'http://127.0.0.1:5173',
@@ -28,7 +28,7 @@ describe('CORS Middleware', () => {
       }
     })
 
-    it('should reject non-localhost origins', async () => {
+    it('rejects non-localhost origins', async () => {
       const response = await app.request('/test', {
         headers: { Origin: 'https://example.com' }
       })
@@ -36,13 +36,13 @@ describe('CORS Middleware', () => {
       expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull()
     })
 
-    it('should handle requests without origin header', async () => {
+    it('allows any origin when Origin header is missing', async () => {
       const response = await app.request('/test')
 
       expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
     })
 
-    it('should handle preflight requests', async () => {
+    it('answers preflight requests', async () => {
       const response = await app.request('/test', {
         method: 'OPTIONS',
         headers: {
@@ -62,12 +62,12 @@ describe('CORS Middleware', () => {
     })
   })
 
-  describe('Test Environment', () => {
+  describe('test', () => {
     const app = new Hono()
     app.use('*', test())
     app.get('/test', c => c.json({ success: true }))
 
-    it('should allow all origins without credentials', async () => {
+    it('allows all origins without credentials', async () => {
       const response = await app.request('/test', {
         headers: { Origin: 'https://any-domain.com' }
       })

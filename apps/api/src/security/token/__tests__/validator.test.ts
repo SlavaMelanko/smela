@@ -22,59 +22,57 @@ describe('TokenValidator', () => {
     ...overrides
   })
 
-  describe('validate', () => {
-    it('should pass validation for valid token', () => {
-      const token = createValidToken()
+  it('passes a valid token', () => {
+    const token = createValidToken()
 
-      const result = TokenValidator.validate(token, TokenType.EmailVerification)
+    const result = TokenValidator.validate(token, TokenType.EmailVerification)
 
-      expect(result).toBe(token)
-    })
+    expect(result).toBe(token)
+  })
 
-    it('should throw TokenNotFound when token is undefined', () => {
-      expect(() => {
-        TokenValidator.validate(undefined, TokenType.EmailVerification)
-      }).toThrow(new AppError(ErrorCode.TokenNotFound))
-    })
+  it('throws TokenNotFound when the token is undefined', () => {
+    expect(() => {
+      TokenValidator.validate(undefined, TokenType.EmailVerification)
+    }).toThrow(new AppError(ErrorCode.TokenNotFound))
+  })
 
-    it('should throw TokenAlreadyUsed when status is Used', () => {
-      const token = createValidToken({ status: TokenStatus.Used })
+  it('throws TokenAlreadyUsed when the status is Used', () => {
+    const token = createValidToken({ status: TokenStatus.Used })
 
-      expect(() => {
-        TokenValidator.validate(token, TokenType.EmailVerification)
-      }).toThrow(new AppError(ErrorCode.TokenAlreadyUsed))
-    })
+    expect(() => {
+      TokenValidator.validate(token, TokenType.EmailVerification)
+    }).toThrow(new AppError(ErrorCode.TokenAlreadyUsed))
+  })
 
-    it('should throw TokenAlreadyUsed when usedAt is set', () => {
-      const token = createValidToken({ usedAt: new Date() })
+  it('throws TokenAlreadyUsed when usedAt is set', () => {
+    const token = createValidToken({ usedAt: new Date() })
 
-      expect(() => {
-        TokenValidator.validate(token, TokenType.EmailVerification)
-      }).toThrow(new AppError(ErrorCode.TokenAlreadyUsed))
-    })
+    expect(() => {
+      TokenValidator.validate(token, TokenType.EmailVerification)
+    }).toThrow(new AppError(ErrorCode.TokenAlreadyUsed))
+  })
 
-    it('should throw TokenDeprecated when status is Deprecated', () => {
-      const token = createValidToken({ status: TokenStatus.Deprecated })
+  it('throws TokenDeprecated when the status is Deprecated', () => {
+    const token = createValidToken({ status: TokenStatus.Deprecated })
 
-      expect(() => {
-        TokenValidator.validate(token, TokenType.EmailVerification)
-      }).toThrow(new AppError(ErrorCode.TokenDeprecated))
-    })
+    expect(() => {
+      TokenValidator.validate(token, TokenType.EmailVerification)
+    }).toThrow(new AppError(ErrorCode.TokenDeprecated))
+  })
 
-    it('should throw TokenExpired when token is expired', () => {
-      const token = createValidToken({ expiresAt: new Date(Date.now() - 1000) })
+  it('throws TokenExpired when the token is expired', () => {
+    const token = createValidToken({ expiresAt: new Date(Date.now() - 1000) })
 
-      expect(() => {
-        TokenValidator.validate(token, TokenType.EmailVerification)
-      }).toThrow(new AppError(ErrorCode.TokenExpired))
-    })
+    expect(() => {
+      TokenValidator.validate(token, TokenType.EmailVerification)
+    }).toThrow(new AppError(ErrorCode.TokenExpired))
+  })
 
-    it('should throw TokenTypeMismatch when type does not match', () => {
-      const token = createValidToken({ type: TokenType.PasswordReset })
+  it('throws TokenTypeMismatch when the type does not match', () => {
+    const token = createValidToken({ type: TokenType.PasswordReset })
 
-      expect(() => {
-        TokenValidator.validate(token, TokenType.EmailVerification)
-      }).toThrow(AppError)
-    })
+    expect(() => {
+      TokenValidator.validate(token, TokenType.EmailVerification)
+    }).toThrow(AppError)
   })
 })

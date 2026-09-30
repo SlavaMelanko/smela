@@ -22,7 +22,7 @@ const userInfoResponse = {
 const errorResponse = () =>
   new Response(null, { status: HttpStatus.INTERNAL_SERVER_ERROR })
 
-describe('Google OAuth', () => {
+describe('oauth', () => {
   let fetchSpy: ReturnType<typeof spyOn<typeof globalThis, 'fetch'>>
 
   // Queues one response per fetch call: token exchange first, then user info
@@ -39,7 +39,7 @@ describe('Google OAuth', () => {
   })
 
   describe('buildAuthUrl', () => {
-    it('should include client, redirect URI and state', () => {
+    it('includes the client, redirect URI and state', () => {
       const url = new URL(buildAuthUrl('state-nonce'))
 
       expect(url.searchParams.get('client_id')).toBe(env.GOOGLE_CLIENT_ID)
@@ -49,7 +49,7 @@ describe('Google OAuth', () => {
   })
 
   describe('exchangeCodeForProfile', () => {
-    it('should exchange code for tokens and map user info to profile', async () => {
+    it('exchanges the code for tokens and maps user info to a profile', async () => {
       mockResponses(
         Response.json(tokenResponse),
         Response.json(userInfoResponse)
@@ -100,7 +100,7 @@ describe('Google OAuth', () => {
     ]
 
     failures.forEach(({ name, responses, error: message }) => {
-      it(`should throw when ${name}`, async () => {
+      it(`throws when ${name}`, async () => {
         mockResponses(...responses())
 
         const error = await exchangeCodeForProfile('auth-code').catch(
@@ -114,7 +114,7 @@ describe('Google OAuth', () => {
       })
     })
 
-    it('should reject unverified Google email', async () => {
+    it('rejects an unverified Google email', async () => {
       mockResponses(
         Response.json(tokenResponse),
         Response.json({ ...userInfoResponse, email_verified: false })

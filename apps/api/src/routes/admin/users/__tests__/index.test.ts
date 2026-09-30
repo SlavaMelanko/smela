@@ -73,7 +73,7 @@ describe('admin /users', () => {
   })
 
   describe('GET /users', () => {
-    it('should return paginated users list with default parameters', async () => {
+    it('returns paginated users list with default parameters', async () => {
       const res = await app.request(USERS_URL, { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -111,7 +111,7 @@ describe('admin /users', () => {
       })
     })
 
-    it('should reject invalid page parameter', async () => {
+    it('rejects invalid page parameter', async () => {
       const res = await app.request(`${USERS_URL}?page=0`, { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
@@ -121,7 +121,7 @@ describe('admin /users', () => {
       expect(data.error).toContain('page')
     })
 
-    it('should reject limit exceeding maximum', async () => {
+    it('rejects limit exceeding maximum', async () => {
       const res = await app.request(`${USERS_URL}?limit=101`, { method: 'GET' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
@@ -131,7 +131,7 @@ describe('admin /users', () => {
       expect(data.error).toContain('limit')
     })
 
-    it('should reject invalid statuses value', async () => {
+    it('rejects invalid statuses value', async () => {
       const res = await app.request(`${USERS_URL}?statuses=invalid`, {
         method: 'GET'
       })
@@ -139,7 +139,7 @@ describe('admin /users', () => {
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
-    it('should reject invalid roles value', async () => {
+    it('rejects invalid roles value', async () => {
       const res = await app.request(`${USERS_URL}?roles=invalid`, {
         method: 'GET'
       })
@@ -147,7 +147,7 @@ describe('admin /users', () => {
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = createTestApp('/api/v1/admin', adminUsersRoute, [
         withClaims({ role: Role.Admin, permissions: [] })
       ])
@@ -158,7 +158,7 @@ describe('admin /users', () => {
       expect(mockSearchUsers).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockSearchUsers.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })
@@ -168,7 +168,7 @@ describe('admin /users', () => {
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
     })
 
-    it('should pass search parameter to use case', async () => {
+    it('passes search parameter to use case', async () => {
       const res = await app.request(`${USERS_URL}?search=john`, {
         method: 'GET'
       })
@@ -180,7 +180,7 @@ describe('admin /users', () => {
       )
     })
 
-    it('should pass search combined with filters', async () => {
+    it('passes search combined with filters', async () => {
       const res = await app.request(
         `${USERS_URL}?search=test&roles=${Role.User}&statuses=${UserStatus.Active}`,
         { method: 'GET' }
@@ -197,7 +197,7 @@ describe('admin /users', () => {
       )
     })
 
-    it('should pass search combined with pagination', async () => {
+    it('passes search combined with pagination', async () => {
       const res = await app.request(
         `${USERS_URL}?search=jane&page=2&limit=10`,
         { method: 'GET' }
@@ -210,7 +210,7 @@ describe('admin /users', () => {
       )
     })
 
-    it('should trim whitespace from search parameter', async () => {
+    it('trims whitespace from search parameter', async () => {
       const res = await app.request(`${USERS_URL}?search=  john  `, {
         method: 'GET'
       })

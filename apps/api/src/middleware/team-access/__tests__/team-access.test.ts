@@ -49,7 +49,7 @@ const makeApp = (role: Role, userId: string) => {
   return app
 }
 
-describe('Team Access Middleware', () => {
+describe('requireTeamAccess', () => {
   beforeEach(() => {
     mockTeamRepoFind.mockClear()
     mockTeamRepoFindMember.mockClear()
@@ -62,157 +62,147 @@ describe('Team Access Middleware', () => {
     }))
   })
 
-  describe('Team Existence Validation', () => {
-    it('should block all users when team does not exist', async () => {
-      mockTeamRepoFind.mockImplementation(async () => undefined)
+  it('blocks all users when team does not exist', async () => {
+    mockTeamRepoFind.mockImplementation(async () => undefined)
 
-      const adminRes = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-        `/teams/${testUuids.NON_EXISTENT}`
-      )
-      const userRes = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.NON_EXISTENT}`
-      )
+    const adminRes = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
+      `/teams/${testUuids.NON_EXISTENT}`
+    )
+    const userRes = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.NON_EXISTENT}`
+    )
 
-      expect(adminRes.status).toBe(HttpStatus.NOT_FOUND)
-      expect(userRes.status).toBe(HttpStatus.NOT_FOUND)
-      expect((await adminRes.json()).code).toBe(ErrorCode.NotFound)
-      expect((await userRes.json()).code).toBe(ErrorCode.NotFound)
-    })
+    expect(adminRes.status).toBe(HttpStatus.NOT_FOUND)
+    expect(userRes.status).toBe(HttpStatus.NOT_FOUND)
+    expect((await adminRes.json()).code).toBe(ErrorCode.NotFound)
+    expect((await userRes.json()).code).toBe(ErrorCode.NotFound)
   })
 
-  describe('Regular User Access - Team Routes', () => {
-    it('should allow access when user is team member', async () => {
-      mockTeamRepoFindMember.mockImplementation(async () => ({
-        userId: testUuids.USER_1,
-        teamId: testUuids.TEAM_1
-      }))
+  it('allows user who is team member on team routes', async () => {
+    mockTeamRepoFindMember.mockImplementation(async () => ({
+      userId: testUuids.USER_1,
+      teamId: testUuids.TEAM_1
+    }))
 
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}`
-      )
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
 
-      expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-        testUuids.TEAM_1,
-        testUuids.USER_1
-      )
-      expect((await res.json()).message).toBe('team success')
-    })
-
-    it('should block access when user is not team member', async () => {
-      mockTeamRepoFindMember.mockImplementation(async () => undefined)
-
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}`
-      )
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect((await res.json()).code).toBe(ErrorCode.Forbidden)
-    })
+    expect(res.status).toBe(HttpStatus.OK)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      testUuids.USER_1
+    )
+    expect((await res.json()).message).toBe('team success')
   })
 
-  describe('Regular User Access - Member Routes', () => {
-    it('should allow access when both user and target are team members', async () => {
-      mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
-        userId,
-        teamId,
-        joinedAt: new Date()
-      }))
+  it('blocks user who is not team member on team routes', async () => {
+    mockTeamRepoFindMember.mockImplementation(async () => undefined)
 
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
-      )
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
 
-      expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledTimes(2) // Parallel calls
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-        testUuids.TEAM_1,
-        testUuids.USER_1
-      )
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-        testUuids.TEAM_1,
-        testUuids.USER_2
-      )
-    })
-
-    it('should block access when user is not team member', async () => {
-      mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
-        return userId === testUuids.USER_1 ? undefined : { userId, teamId }
-      })
-
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
-      )
-
-      expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect((await res.json()).code).toBe(ErrorCode.Forbidden)
-    })
-
-    it('should block access when target member is not in team', async () => {
-      mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
-        return userId === testUuids.USER_2 ? undefined : { userId, teamId }
-      })
-
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
-      )
-
-      expect(res.status).toBe(HttpStatus.NOT_FOUND)
-      expect((await res.json()).code).toBe(ErrorCode.NotFound)
-    })
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    expect((await res.json()).code).toBe(ErrorCode.Forbidden)
   })
 
-  describe('Admin Access', () => {
-    it('should allow admin access to team routes', async () => {
-      const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-        `/teams/${testUuids.TEAM_1}`
-      )
+  it('allows user on member routes when both user and target are team members', async () => {
+    mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
+      userId,
+      teamId,
+      joinedAt: new Date()
+    }))
 
-      expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
-      expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
-    })
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+    )
 
-    it('should allow admin access to member routes when member exists', async () => {
-      mockTeamRepoFindMember.mockImplementation(async () => ({
-        userId: testUuids.USER_1,
-        teamId: testUuids.TEAM_1
-      }))
-
-      const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
-      )
-
-      expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
-      expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-        testUuids.TEAM_1,
-        testUuids.USER_1
-      )
-    })
-
-    it('should block admin when target member not in team', async () => {
-      mockTeamRepoFindMember.mockImplementation(async () => undefined)
-
-      const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
-      )
-
-      expect(res.status).toBe(HttpStatus.NOT_FOUND)
-      expect((await res.json()).code).toBe(ErrorCode.NotFound)
-    })
+    expect(res.status).toBe(HttpStatus.OK)
+    expect(mockTeamRepoFindMember).toHaveBeenCalledTimes(2) // Parallel calls
+    expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      testUuids.USER_1
+    )
+    expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      testUuids.USER_2
+    )
   })
 
-  describe('Owner Access', () => {
-    it('should allow owner access identical to admin', async () => {
-      const res = await makeApp(Role.Owner, testUuids.OWNER_1).request(
-        `/teams/${testUuids.TEAM_1}`
-      )
-
-      expect(res.status).toBe(HttpStatus.OK)
-      expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
-      expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
+  it('blocks user who is not team member on member routes', async () => {
+    mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
+      return userId === testUuids.USER_1 ? undefined : { userId, teamId }
     })
+
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+    )
+
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    expect((await res.json()).code).toBe(ErrorCode.Forbidden)
+  })
+
+  it('blocks user on member routes when target member is not in team', async () => {
+    mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
+      return userId === testUuids.USER_2 ? undefined : { userId, teamId }
+    })
+
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+    )
+
+    expect(res.status).toBe(HttpStatus.NOT_FOUND)
+    expect((await res.json()).code).toBe(ErrorCode.NotFound)
+  })
+
+  it('allows admin on team routes', async () => {
+    const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
+
+    expect(res.status).toBe(HttpStatus.OK)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
+  })
+
+  it('allows admin on member routes when member exists', async () => {
+    mockTeamRepoFindMember.mockImplementation(async () => ({
+      userId: testUuids.USER_1,
+      teamId: testUuids.TEAM_1
+    }))
+
+    const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
+      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+    )
+
+    expect(res.status).toBe(HttpStatus.OK)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
+      testUuids.TEAM_1,
+      testUuids.USER_1
+    )
+  })
+
+  it('blocks admin when target member is not in team', async () => {
+    mockTeamRepoFindMember.mockImplementation(async () => undefined)
+
+    const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
+      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+    )
+
+    expect(res.status).toBe(HttpStatus.NOT_FOUND)
+    expect((await res.json()).code).toBe(ErrorCode.NotFound)
+  })
+
+  it('allows owner access identical to admin', async () => {
+    const res = await makeApp(Role.Owner, testUuids.OWNER_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
+
+    expect(res.status).toBe(HttpStatus.OK)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
   })
 })

@@ -73,7 +73,7 @@ describe('owner /admins/:adminId', () => {
   })
 
   describe('GET /admins/:adminId', () => {
-    it('should return admin with OK status', async () => {
+    it('returns admin with OK status', async () => {
       const res = await get(app, ADMIN_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -86,14 +86,14 @@ describe('owner /admins/:adminId', () => {
       })
     })
 
-    it('should reject invalid admin id', async () => {
+    it('rejects invalid admin id', async () => {
       const res = await get(app, INVALID_ID_URL)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockGetAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, ADMIN_URL)
@@ -102,7 +102,7 @@ describe('owner /admins/:adminId', () => {
       expect(mockGetAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetAdmin.mockImplementation(async () => {
         throw new Error('Admin not found')
       })
@@ -116,7 +116,7 @@ describe('owner /admins/:adminId', () => {
   describe('PATCH /admins/:adminId', () => {
     const body = { firstName: 'Updated', lastName: 'Name' }
 
-    it('should update admin and return OK status', async () => {
+    it('updates admin and return OK status', async () => {
       const res = await patch(app, ADMIN_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -126,21 +126,21 @@ describe('owner /admins/:adminId', () => {
       expect(data.admin).toMatchObject({ id: testUuids.ADMIN_1 })
     })
 
-    it('should reject invalid admin id', async () => {
+    it('rejects invalid admin id', async () => {
       const res = await patch(app, INVALID_ID_URL, body)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateAdmin).not.toHaveBeenCalled()
     })
 
-    it('should reject unknown body fields', async () => {
+    it('rejects unknown body fields', async () => {
       const res = await patch(app, ADMIN_URL, { ...body, hacker: true })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewAdmins])
 
       const res = await patch(viewOnlyApp, ADMIN_URL, body)
@@ -149,7 +149,7 @@ describe('owner /admins/:adminId', () => {
       expect(mockUpdateAdmin).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockUpdateAdmin.mockImplementation(async () => {
         throw new Error('Admin not found')
       })
@@ -163,7 +163,7 @@ describe('owner /admins/:adminId', () => {
   describe('POST /admins/:adminId/resend-invite', () => {
     const RESEND_URL = `${ADMIN_URL}/resend-invite`
 
-    it('should resend invite and return OK status', async () => {
+    it('resends invite and return OK status', async () => {
       const res = await post(app, RESEND_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -176,14 +176,14 @@ describe('owner /admins/:adminId', () => {
       expect(data).toEqual({ success: true })
     })
 
-    it('should reject invalid admin id', async () => {
+    it('rejects invalid admin id', async () => {
       const res = await post(app, `${INVALID_ID_URL}/resend-invite`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockResendAdminInvite).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewAdmins])
 
       const res = await post(viewOnlyApp, RESEND_URL)
@@ -192,7 +192,7 @@ describe('owner /admins/:adminId', () => {
       expect(mockResendAdminInvite).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockResendAdminInvite.mockImplementation(async () => {
         throw new Error('Invite already accepted')
       })
@@ -206,7 +206,7 @@ describe('owner /admins/:adminId', () => {
   describe('POST /admins/:adminId/cancel-invite', () => {
     const CANCEL_URL = `${ADMIN_URL}/cancel-invite`
 
-    it('should cancel invite and return OK status', async () => {
+    it('cancels invite and return OK status', async () => {
       const res = await post(app, CANCEL_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -216,14 +216,14 @@ describe('owner /admins/:adminId', () => {
       expect(data).toEqual({ success: true })
     })
 
-    it('should reject invalid admin id', async () => {
+    it('rejects invalid admin id', async () => {
       const res = await post(app, `${INVALID_ID_URL}/cancel-invite`)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCancelAdminInvite).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewAdmins])
 
       const res = await post(viewOnlyApp, CANCEL_URL)
@@ -232,7 +232,7 @@ describe('owner /admins/:adminId', () => {
       expect(mockCancelAdminInvite).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockCancelAdminInvite.mockImplementation(async () => {
         throw new Error('Invite not found')
       })

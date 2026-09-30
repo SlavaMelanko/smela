@@ -70,7 +70,7 @@ describe('user /teams/:teamId/members', () => {
   })
 
   describe('GET /teams/:teamId/members', () => {
-    it('should return team members with OK status', async () => {
+    it('returns team members with OK status', async () => {
       const res = await get(app, MEMBERS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -80,7 +80,7 @@ describe('user /teams/:teamId/members', () => {
       expect(data.members).toEqual(mockMembers)
     })
 
-    it('should reject invalid team id', async () => {
+    it('rejects invalid team id', async () => {
       const res = await get(
         app,
         '/api/v1/user/verified/teams/not-a-uuid/members'
@@ -90,7 +90,7 @@ describe('user /teams/:teamId/members', () => {
       expect(mockGetTeamMembers).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(noPermissionApp, MEMBERS_URL)
@@ -99,7 +99,7 @@ describe('user /teams/:teamId/members', () => {
       expect(mockGetTeamMembers).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetTeamMembers.mockImplementation(async () => {
         throw new Error('Team not found')
       })
@@ -117,7 +117,7 @@ describe('user /teams/:teamId/members', () => {
       permissions: { teams: { view: true } }
     }
 
-    it('should invite member and return CREATED status', async () => {
+    it('invites member and return CREATED status', async () => {
       const res = await post(app, MEMBERS_URL, body)
 
       expect(res.status).toBe(HttpStatus.CREATED)
@@ -134,14 +134,14 @@ describe('user /teams/:teamId/members', () => {
       expect(data.member).toMatchObject({ id: testUuids.USER_2 })
     })
 
-    it('should reject invalid email', async () => {
+    it('rejects invalid email', async () => {
       const res = await post(app, MEMBERS_URL, { ...body, email: 'invalid' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockInviteMember).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const viewOnlyApp = buildApp([Permission.ViewTeams])
 
       const res = await post(viewOnlyApp, MEMBERS_URL, body)
@@ -150,7 +150,7 @@ describe('user /teams/:teamId/members', () => {
       expect(mockInviteMember).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockInviteMember.mockImplementation(async () => {
         throw new Error('Email already a member')
       })
@@ -162,7 +162,7 @@ describe('user /teams/:teamId/members', () => {
   })
 
   describe('GET /teams/:teamId/members/default-permissions', () => {
-    it('should return default member permissions with OK status', async () => {
+    it('returns default member permissions with OK status', async () => {
       const res = await get(app, `${MEMBERS_URL}/default-permissions`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -171,7 +171,7 @@ describe('user /teams/:teamId/members', () => {
       expect(data.permissions).toEqual(getMemberDefaultPermissions())
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([])
 
       const res = await get(

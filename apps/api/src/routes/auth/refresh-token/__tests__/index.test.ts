@@ -53,7 +53,7 @@ describe('auth /refresh-token', () => {
   })
 
   describe('POST /refresh-token', () => {
-    it('should refresh tokens and return user data with new access token', async () => {
+    it('refreshes tokens and return user data with new access token', async () => {
       const res = await post(app, REFRESH_TOKEN_URL, undefined, cookieHeader)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -69,7 +69,7 @@ describe('auth /refresh-token', () => {
       })
     })
 
-    it('should set new refresh token cookie', async () => {
+    it('sets new refresh token cookie', async () => {
       const res = await post(app, REFRESH_TOKEN_URL, undefined, cookieHeader)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -80,7 +80,7 @@ describe('auth /refresh-token', () => {
       )
     })
 
-    it('should pass device info from request headers to use case', async () => {
+    it('passes device info from request headers to use case', async () => {
       const res = await post(app, REFRESH_TOKEN_URL, undefined, {
         ...cookieHeader,
         'x-forwarded-for': '192.168.1.1',
@@ -94,7 +94,7 @@ describe('auth /refresh-token', () => {
       )
     })
 
-    it('should pass undefined token when refresh cookie is missing', async () => {
+    it('passes undefined token when refresh cookie is missing', async () => {
       const res = await post(app, REFRESH_TOKEN_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -104,7 +104,7 @@ describe('auth /refresh-token', () => {
       )
     })
 
-    it('should return error status without setting cookie when use case throws', async () => {
+    it('returns error status without setting cookie when use case throws', async () => {
       mockRefreshAuthTokens.mockImplementation(async () => {
         throw new Error('Invalid refresh token')
       })

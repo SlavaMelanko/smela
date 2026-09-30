@@ -26,7 +26,7 @@ import {
 
 import { completeGoogleOAuth, logInOrSignUpWithGoogle } from '../google-oauth'
 
-describe('Google OAuth', () => {
+describe('google-oauth', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const mockDeviceInfo = {
@@ -110,43 +110,41 @@ describe('Google OAuth', () => {
     await moduleMocker.clear()
   })
 
-  describe('returning user (Google auth record exists)', () => {
-    it('should return existing user without creating new records', async () => {
-      const result = await logInOrSignUpWithGoogle(
-        mockGoogleProfile,
-        mockDeviceInfo
-      )
+  it('logs in returning Google user without creating new records', async () => {
+    const result = await logInOrSignUpWithGoogle(
+      mockGoogleProfile,
+      mockDeviceInfo
+    )
 
-      expect(mockAuthRepo.findByProvider).toHaveBeenCalledWith(
-        AuthProvider.Google,
-        mockGoogleProfile.googleId
-      )
-      expect(mockUserRepo.findById).toHaveBeenCalledWith(mockAuthRecord.userId)
-      expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(result.data.user).toEqual(mockUser)
-    })
-
-    it('should include team when user belongs to one', async () => {
-      const mockTeam = { id: 'team-1', name: 'Acme', position: 'Engineer' }
-      mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
-
-      const result = await logInOrSignUpWithGoogle(
-        mockGoogleProfile,
-        mockDeviceInfo
-      )
-
-      expect(result.data.team).toEqual(mockTeam)
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
-    })
+    expect(mockAuthRepo.findByProvider).toHaveBeenCalledWith(
+      AuthProvider.Google,
+      mockGoogleProfile.googleId
+    )
+    expect(mockUserRepo.findById).toHaveBeenCalledWith(mockAuthRecord.userId)
+    expect(mockTransaction.transaction).not.toHaveBeenCalled()
+    expect(result.data.user).toEqual(mockUser)
   })
 
-  describe('new Google user (no prior account)', () => {
+  it('includes team when returning user belongs to one', async () => {
+    const mockTeam = { id: 'team-1', name: 'Acme', position: 'Engineer' }
+    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+
+    const result = await logInOrSignUpWithGoogle(
+      mockGoogleProfile,
+      mockDeviceInfo
+    )
+
+    expect(result.data.team).toEqual(mockTeam)
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+  })
+
+  describe('when Google user has no account', () => {
     beforeEach(() => {
       mockAuthRepo.findByProvider.mockImplementation(async () => null)
       mockUserRepo.findByEmail.mockImplementation(async () => null)
     })
 
-    it('should create user and Google auth record in a transaction', async () => {
+    it('creates user and Google auth record in a transaction', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
@@ -169,7 +167,7 @@ describe('Google OAuth', () => {
       )
     })
 
-    it('should grant default permissions to new user', async () => {
+    it('grants default permissions to new user', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
@@ -180,7 +178,7 @@ describe('Google OAuth', () => {
       )
     })
 
-    it('should return user data with a signed access token', async () => {
+    it('returns user data with a signed access token', async () => {
       const result = await logInOrSignUpWithGoogle(
         mockGoogleProfile,
         mockDeviceInfo
@@ -195,7 +193,7 @@ describe('Google OAuth', () => {
       })
     })
 
-    it('should store only the hash of the returned refresh token', async () => {
+    it('stores only the hash of the returned refresh token', async () => {
       const result = await logInOrSignUpWithGoogle(
         mockGoogleProfile,
         mockDeviceInfo
@@ -212,7 +210,7 @@ describe('Google OAuth', () => {
     })
   })
 
-  describe('email signup → Google OAuth (account linking)', () => {
+  describe('when email user links Google account', () => {
     let existingEmailUser: User
 
     beforeEach(() => {
@@ -229,7 +227,7 @@ describe('Google OAuth', () => {
       }))
     })
 
-    it('should link Google auth to existing email account', async () => {
+    it('links Google auth to existing email account', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
@@ -244,7 +242,7 @@ describe('Google OAuth', () => {
       )
     })
 
-    it('should verify New user status after Google verification', async () => {
+    it('verifies New user status after Google verification', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockUserRepo.update).toHaveBeenCalledWith(
@@ -254,7 +252,7 @@ describe('Google OAuth', () => {
       )
     })
 
-    it('should not update status for already-verified user', async () => {
+    it('does not update status for already-verified user', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => ({
         ...existingEmailUser,
         status: UserStatus.Verified
@@ -265,43 +263,41 @@ describe('Google OAuth', () => {
       expect(mockUserRepo.update).not.toHaveBeenCalled()
     })
 
-    it('should not grant permissions again (existing account already has them)', async () => {
+    it('sets default permissions once', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('edge cases', () => {
-    it('should handle missing Google auth record but user not found in DB', async () => {
-      mockAuthRepo.findByProvider.mockImplementation(async () => ({
-        ...mockAuthRecord,
-        userId: testUuids.USER_2
-      }))
-      mockUserRepo.findById.mockImplementation(async () => null)
-      mockUserRepo.findByEmail.mockImplementation(async () => null)
-      mockUserRepo.create.mockImplementation(async () => mockUser)
+  it('signs up in a transaction when Google auth record points to missing user', async () => {
+    mockAuthRepo.findByProvider.mockImplementation(async () => ({
+      ...mockAuthRecord,
+      userId: testUuids.USER_2
+    }))
+    mockUserRepo.findById.mockImplementation(async () => null)
+    mockUserRepo.findByEmail.mockImplementation(async () => null)
+    mockUserRepo.create.mockImplementation(async () => mockUser)
 
-      await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
+    await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
-      expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-    })
+    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
+  })
 
-    it('should handle profile without lastName', async () => {
-      const profileWithoutLastName = {
-        ...mockGoogleProfile,
-        lastName: undefined
-      }
-      mockAuthRepo.findByProvider.mockImplementation(async () => null)
-      mockUserRepo.findByEmail.mockImplementation(async () => null)
+  it('creates user from profile without lastName', async () => {
+    const profileWithoutLastName = {
+      ...mockGoogleProfile,
+      lastName: undefined
+    }
+    mockAuthRepo.findByProvider.mockImplementation(async () => null)
+    mockUserRepo.findByEmail.mockImplementation(async () => null)
 
-      await logInOrSignUpWithGoogle(profileWithoutLastName, mockDeviceInfo)
+    await logInOrSignUpWithGoogle(profileWithoutLastName, mockDeviceInfo)
 
-      expect(mockUserRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ lastName: undefined }),
-        expect.anything()
-      )
-    })
+    expect(mockUserRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ lastName: undefined }),
+      expect.anything()
+    )
   })
 
   describe('completeGoogleOAuth', () => {
@@ -320,7 +316,7 @@ describe('Google OAuth', () => {
       }))
     })
 
-    it('should exchange code and log the user in', async () => {
+    it('exchanges code and logs the user in', async () => {
       const result = await completeGoogleOAuth('auth-code', mockDeviceInfo)
 
       expect(mockExchangeCodeForProfile).toHaveBeenCalledWith('auth-code')
@@ -334,7 +330,7 @@ describe('Google OAuth', () => {
       })
     })
 
-    it('should propagate profile exchange failure', async () => {
+    it('propagates profile exchange failure', async () => {
       mockExchangeCodeForProfile.mockImplementation(async () => {
         throw new Error('Google token exchange failed')
       })

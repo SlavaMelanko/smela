@@ -28,7 +28,7 @@ import { AuthProvider, UserStatus } from '@/types'
 
 import { changePassword, getUser, updateUser } from '../me'
 
-describe('User Me Use Cases', () => {
+describe('me', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockUser: User
@@ -71,7 +71,7 @@ describe('User Me Use Cases', () => {
   })
 
   describe('getUser', () => {
-    it('should return user, team undefined, and permissions when user has no team', async () => {
+    it('returns user, undefined team, and permissions when user has no team', async () => {
       const result = await getUser(testUuids.USER_1)
 
       expect(result).toEqual({
@@ -83,7 +83,7 @@ describe('User Me Use Cases', () => {
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
-    it('should return user, team info, and permissions when user belongs to a team', async () => {
+    it('returns user, team info, and permissions when user belongs to a team', async () => {
       mockTeam = {
         id: 'team-789',
         name: 'My Team',
@@ -101,7 +101,7 @@ describe('User Me Use Cases', () => {
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
-    it('should throw InternalError when user not found', async () => {
+    it('throws InternalError when user is missing', async () => {
       mockUserRepo.findById.mockImplementation(async () => null)
 
       expect(getUser(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
@@ -154,7 +154,7 @@ describe('User Me Use Cases', () => {
       }))
     })
 
-    it('should update passwordHash and return success when current password is valid', async () => {
+    it('updates passwordHash and returns success when current password is valid', async () => {
       const result = await changePassword(
         testUuids.USER_1,
         CURRENT_PASSWORD,
@@ -175,7 +175,7 @@ describe('User Me Use Cases', () => {
       )
     })
 
-    it('should revoke other sessions excluding current refresh token', async () => {
+    it('revokes other sessions except current refresh token', async () => {
       await changePassword(
         testUuids.USER_1,
         CURRENT_PASSWORD,
@@ -190,7 +190,7 @@ describe('User Me Use Cases', () => {
       )
     })
 
-    it('should revoke all sessions when no refresh token provided', async () => {
+    it('revokes all sessions when no refresh token is provided', async () => {
       await changePassword(testUuids.USER_1, CURRENT_PASSWORD, NEW_PASSWORD)
 
       expect(mockRefreshTokenRepo.revokeByUserId).toHaveBeenCalledWith(
@@ -200,7 +200,7 @@ describe('User Me Use Cases', () => {
       )
     })
 
-    it('should throw InvalidCredentials when auth record is not found', async () => {
+    it('throws InvalidCredentials when auth record is missing', async () => {
       mockAuthRepo.findById.mockImplementation(async () => null)
 
       expect(
@@ -210,7 +210,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should throw InvalidCredentials when auth has no passwordHash', async () => {
+    it('throws InvalidCredentials when auth has no passwordHash', async () => {
       mockAuthRepo.findById.mockImplementation(async () => ({
         passwordHash: null
       }))
@@ -222,7 +222,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should throw InvalidPassword when current password does not match', async () => {
+    it('throws InvalidPassword when current password does not match', async () => {
       expect(
         changePassword(testUuids.USER_1, 'WrongPass1!', NEW_PASSWORD)
       ).rejects.toMatchObject({
@@ -232,7 +232,7 @@ describe('User Me Use Cases', () => {
   })
 
   describe('updateUser', () => {
-    it('should update user with firstName and lastName', async () => {
+    it('updates user with firstName and lastName', async () => {
       const result = await updateUser(testUuids.USER_1, {
         firstName: 'Jane',
         lastName: 'Smith'
@@ -248,7 +248,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should update user with only firstName', async () => {
+    it('updates user with only firstName', async () => {
       const result = await updateUser(testUuids.USER_1, { firstName: 'Jane' })
 
       expect(result.user.firstName).toBe('Jane')
@@ -259,7 +259,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should update user with only lastName', async () => {
+    it('updates user with only lastName', async () => {
       const result = await updateUser(testUuids.USER_1, { lastName: 'Smith' })
 
       expect(result.user.lastName).toBe('Smith')
@@ -270,7 +270,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should return current user, team, and permissions when no valid updates provided', async () => {
+    it('returns current user, team, and permissions when no valid updates are provided', async () => {
       const result = await updateUser(testUuids.USER_1, {})
 
       expect(result).toEqual({
@@ -282,7 +282,7 @@ describe('User Me Use Cases', () => {
       expect(mockUserRepo.findById).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
-    it('should allow clearing lastName with empty string', async () => {
+    it('allows clearing lastName with empty string', async () => {
       // lastName: '' is valid (clears the field)
       const result = await updateUser(testUuids.USER_1, {
         firstName: 'Jane',
@@ -299,7 +299,7 @@ describe('User Me Use Cases', () => {
       })
     })
 
-    it('should filter undefined values only', async () => {
+    it('filters out only undefined values', async () => {
       // undefined = don't touch, empty string = include
       const result = await updateUser(testUuids.USER_1, {
         firstName: undefined,

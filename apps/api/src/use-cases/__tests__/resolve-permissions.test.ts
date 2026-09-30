@@ -26,7 +26,7 @@ describe('resolvePermissionList', () => {
     await moduleMocker.clear()
   })
 
-  it('should return undefined when user has no permissions', async () => {
+  it('returns undefined when user has no permissions', async () => {
     const result = await resolvePermissionList(testUuids.USER_1)
 
     expect(result).toBeUndefined()
@@ -35,7 +35,7 @@ describe('resolvePermissionList', () => {
     )
   })
 
-  it('should map action:resource rows to typed Permission values', async () => {
+  it('maps action:resource rows to typed Permission values', async () => {
     mockRbacRepo.findUserPermissions.mockImplementation(async () => [
       { action: Action.View, resource: Resource.Users },
       { action: Action.Manage, resource: Resource.Teams }
@@ -46,7 +46,7 @@ describe('resolvePermissionList', () => {
     expect(result).toEqual([Permission.ViewUsers, Permission.ManageTeams])
   })
 
-  it('should pass userId to the repository', async () => {
+  it('passes userId to the repository', async () => {
     await resolvePermissionList(testUuids.ADMIN_1)
 
     expect(mockRbacRepo.findUserPermissions).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe('resolvePermissionList', () => {
     expect(mockRbacRepo.findUserPermissions).toHaveBeenCalledTimes(1)
   })
 
-  it('should return all permissions when multiple rows are returned', async () => {
+  it('returns all permissions when repository returns multiple rows', async () => {
     mockRbacRepo.findUserPermissions.mockImplementation(async () => [
       { action: Action.View, resource: Resource.Users },
       { action: Action.View, resource: Resource.Admins },

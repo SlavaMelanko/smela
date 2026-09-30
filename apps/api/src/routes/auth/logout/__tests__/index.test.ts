@@ -36,7 +36,7 @@ describe('auth /logout', () => {
   })
 
   describe('POST /logout', () => {
-    it('should revoke refresh token and return no content', async () => {
+    it('revokes refresh token and return no content', async () => {
       const res = await post(app, LOGOUT_URL, undefined, cookieHeader)
 
       expect(res.status).toBe(HttpStatus.NO_CONTENT)
@@ -44,7 +44,7 @@ describe('auth /logout', () => {
       expect(await res.text()).toBe('')
     })
 
-    it('should delete refresh cookie in response', async () => {
+    it('deletes refresh cookie in response', async () => {
       const res = await post(app, LOGOUT_URL, undefined, cookieHeader)
 
       expect(res.status).toBe(HttpStatus.NO_CONTENT)
@@ -54,14 +54,14 @@ describe('auth /logout', () => {
       expect(setCookie).toContain('Max-Age=0')
     })
 
-    it('should logout when no refresh token exists', async () => {
+    it('logs out when no refresh token exists', async () => {
       const res = await post(app, LOGOUT_URL)
 
       expect(res.status).toBe(HttpStatus.NO_CONTENT)
       expect(mockLogout).toHaveBeenCalledWith(undefined)
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockLogout.mockImplementation(async () => {
         throw new Error('Token revocation failed')
       })

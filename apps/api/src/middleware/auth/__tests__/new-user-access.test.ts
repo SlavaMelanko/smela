@@ -14,9 +14,9 @@ const makeAppWithStrictAuth = () =>
   makeAuthApp(requireVerifiedUserAuth, '/strict')
 const makeAppWithRelaxedAuth = () => makeAuthApp(requireUserAuth, '/relaxed')
 
-describe('Auth Middleware - New User Access', () => {
-  describe('Strict Auth - UserStatus Validation', () => {
-    it('should reject New status', async () => {
+describe('new user access', () => {
+  describe('requireVerifiedUserAuth', () => {
+    it('rejects New status', async () => {
       const token = await signJwt(
         {
           id: testUuids.USER_1,
@@ -36,7 +36,7 @@ describe('Auth Middleware - New User Access', () => {
       expect(json.error).toBe('UserStatus validation failure')
     })
 
-    it('should accept active statuses', async () => {
+    it('accepts active statuses', async () => {
       const activeStatuses = [
         UserStatus.Verified,
         UserStatus.Trial,
@@ -64,8 +64,8 @@ describe('Auth Middleware - New User Access', () => {
     })
   })
 
-  describe('Relaxed Auth - UserStatus Validation', () => {
-    it('should accept new and active statuses', async () => {
+  describe('requireUserAuth', () => {
+    it('accepts new and active statuses', async () => {
       const allowedStatuses = [
         UserStatus.New,
         UserStatus.Verified,
@@ -93,7 +93,7 @@ describe('Auth Middleware - New User Access', () => {
       }
     })
 
-    it('should reject Suspended status', async () => {
+    it('rejects Suspended status', async () => {
       const token = await signJwt(
         {
           id: testUuids.USER_3,

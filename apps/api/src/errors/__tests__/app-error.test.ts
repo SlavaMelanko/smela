@@ -5,7 +5,7 @@ import ErrorCode from '../codes'
 import ErrorRegistry from '../registry'
 
 describe('AppError', () => {
-  test('should create AppError with correct code, name, and message from ErrorRegistry', () => {
+  test('takes code, name, and message from ErrorRegistry', () => {
     const errorCodes = Object.values(ErrorCode)
 
     for (const code of errorCodes) {
@@ -25,7 +25,7 @@ describe('AppError', () => {
   ]
 
   blankMessages.forEach(({ name, message }) => {
-    test(`should fall back to ErrorRegistry for ${name} custom message`, () => {
+    test(`falls back to ErrorRegistry for ${name} custom message`, () => {
       // @ts-expect-error - null is invalid input
       const error = new AppError(ErrorCode.InvalidCredentials, message)
 
@@ -37,7 +37,7 @@ describe('AppError', () => {
     })
   })
 
-  test('should create AppError with custom message that overrides ErrorRegistry', () => {
+  test('overrides ErrorRegistry message with custom message', () => {
     const customMessage = 'Custom error message for testing'
     const error = new AppError(ErrorCode.InvalidCredentials, customMessage)
 

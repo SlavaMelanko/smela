@@ -52,7 +52,7 @@ describe('getEmailSenderProfiles', () => {
     await moduleMocker.clear()
   })
 
-  it('should return all sender profiles', async () => {
+  it('returns all sender profiles', async () => {
     const result = await getEmailSenderProfiles()
 
     expect(mockSystemRepo.listEmailSenderProfiles).toHaveBeenCalled()
@@ -84,7 +84,7 @@ describe('getEmailSenderProfile', () => {
     await moduleMocker.clear()
   })
 
-  it('should return the requested sender profile', async () => {
+  it('returns the requested sender profile', async () => {
     const result = await getEmailSenderProfile(EmailSenderType.System)
 
     expect(mockSystemRepo.findEmailSenderProfile).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe('getEmailSenderProfile', () => {
     expect(result).toEqual({ senderProfile })
   })
 
-  it('should throw when the sender profile does not exist', async () => {
+  it('throws NotFound when sender profile is missing', async () => {
     mockSenderProfile = undefined
 
     expect(
@@ -135,7 +135,7 @@ describe('updateEmailSenderProfile', () => {
     await moduleMocker.clear()
   })
 
-  it('should update the sender profile', async () => {
+  it('updates the sender profile', async () => {
     const updates = { name: 'SMELA Updated' }
 
     const result = await updateEmailSenderProfile(
@@ -150,13 +150,13 @@ describe('updateEmailSenderProfile', () => {
     expect(result).toEqual({ senderProfile: mockUpdatedSenderProfile })
   })
 
-  it('should invalidate the cached sender profiles after updating', async () => {
+  it('invalidates cached sender profiles after updating', async () => {
     await updateEmailSenderProfile(EmailSenderType.System, { name: 'SMELA' })
 
     expect(mockEmailService.invalidateSenderProfiles).toHaveBeenCalled()
   })
 
-  it('should not update when the sender profile does not exist', async () => {
+  it('throws NotFound and skips update when sender profile is missing', async () => {
     mockSenderProfile = undefined
 
     const error: any = await updateEmailSenderProfile(EmailSenderType.Support, {
@@ -205,7 +205,7 @@ describe('createSocialLink', () => {
     await moduleMocker.clear()
   })
 
-  it('should create the social link when the name is free', async () => {
+  it('creates the social link when name is free', async () => {
     const result = await createSocialLink(input)
 
     expect(mockSystemRepo.findSocialLinkByName).toHaveBeenCalledWith(input.name)
@@ -215,7 +215,7 @@ describe('createSocialLink', () => {
 
   // The name column is unique, so the guard keeps the insert from surfacing a
   // raw database error
-  it('should throw and skip the insert when the name is taken', async () => {
+  it('throws Conflict and skips insert when name is taken', async () => {
     mockDuplicate = socialLink
 
     const error: any = await createSocialLink(input).catch((e: unknown) => e)

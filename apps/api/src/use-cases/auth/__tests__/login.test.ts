@@ -29,7 +29,7 @@ import type { LoginInput } from '../login'
 
 import { logInWithEmail } from '../login'
 
-describe('Login with Email', () => {
+describe('logInWithEmail', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const PASSWORD = 'ValidPass123!'
@@ -103,141 +103,133 @@ describe('Login with Email', () => {
     await moduleMocker.clear()
   })
 
-  describe('successful login', () => {
-    it('should return user, team, permissions, and token for valid credentials', async () => {
-      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+  it('returns user, team, permissions, and token for valid credentials', async () => {
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
 
-      expect(result.data.team).toBeUndefined()
-      expect(result.data.permissions).toBeUndefined()
-      expect(result.data.user).not.toHaveProperty('tokenVersion')
-      expect(result.data.user.email).toBe(mockLoginParams.email)
-    })
+    expect(result.data.team).toBeUndefined()
+    expect(result.data.permissions).toBeUndefined()
+    expect(result.data.user).not.toHaveProperty('tokenVersion')
+    expect(result.data.user.email).toBe(mockLoginParams.email)
+  })
 
-    it('should sign an access token with user claims', async () => {
-      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+  it('signs an access token with user claims', async () => {
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
 
-      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
-        id: mockUser.id,
-        email: mockUser.email,
-        role: mockUser.role,
-        status: mockUser.status
-      })
-    })
-
-    it('should store only the hash of the returned refresh token', async () => {
-      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
-
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId: mockUser.id,
-          tokenHash: await hashToken(result.refreshToken),
-          ipAddress: mockDeviceInfo.ipAddress,
-          userAgent: mockDeviceInfo.userAgent
-        }),
-        undefined
-      )
-    })
-
-    it('should return team info when user belongs to a team', async () => {
-      mockTeam = {
-        id: 'team-123',
-        name: 'Acme Corp',
-        position: 'Software Engineer'
-      }
-      mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
-
-      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
-
-      expect(result.data.team).toEqual(mockTeam)
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
-    })
-
-    it('should handle different user roles correctly', async () => {
-      const adminUser = { ...mockUser, role: Role.Admin }
-
-      mockUserRepo.findByEmail.mockImplementation(async () => adminUser)
-
-      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
-      expect(result.data.user.role).toBe(Role.Admin)
+    expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+      id: mockUser.id,
+      email: mockUser.email,
+      role: mockUser.role,
+      status: mockUser.status
     })
   })
 
-  describe('user not found scenarios', () => {
-    it('should throw InvalidCredentials when user does not exist', async () => {
-      mockUserRepo.findByEmail.mockImplementation(async () => null)
+  it('stores only the hash of the returned refresh token', async () => {
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
 
-      expect(
-        logInWithEmail(mockLoginParams, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidCredentials
-      })
+    expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: mockUser.id,
+        tokenHash: await hashToken(result.refreshToken),
+        ipAddress: mockDeviceInfo.ipAddress,
+        userAgent: mockDeviceInfo.userAgent
+      }),
+      undefined
+    )
+  })
+
+  it('returns team info when user belongs to a team', async () => {
+    mockTeam = {
+      id: 'team-123',
+      name: 'Acme Corp',
+      position: 'Software Engineer'
+    }
+    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+
+    expect(result.data.team).toEqual(mockTeam)
+    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+  })
+
+  it('returns admin role for admin user', async () => {
+    const adminUser = { ...mockUser, role: Role.Admin }
+
+    mockUserRepo.findByEmail.mockImplementation(async () => adminUser)
+
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+    expect(result.data.user.role).toBe(Role.Admin)
+  })
+
+  it('throws InvalidCredentials when user does not exist', async () => {
+    mockUserRepo.findByEmail.mockImplementation(async () => null)
+
+    expect(
+      logInWithEmail(mockLoginParams, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidCredentials
     })
+  })
 
-    it('should handle case-sensitive email lookup', async () => {
-      const upperCaseEmail = mockLoginParams.email.toUpperCase()
+  it('logs in with uppercase email', async () => {
+    const upperCaseEmail = mockLoginParams.email.toUpperCase()
 
-      // Should still work with different case
-      const result = await logInWithEmail(
-        { ...mockLoginParams, email: upperCaseEmail },
+    // Should still work with different case
+    const result = await logInWithEmail(
+      { ...mockLoginParams, email: upperCaseEmail },
+      mockDeviceInfo
+    )
+    expect(result).toHaveProperty('data')
+    expect(result).toHaveProperty('refreshToken')
+  })
+
+  it('throws InvalidCredentials when auth record is not found', async () => {
+    mockAuthRepo.findById.mockImplementation(async () => null)
+
+    expect(
+      logInWithEmail(mockLoginParams, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidCredentials
+    })
+  })
+
+  it('throws SocialAuthOnly when auth record has no password hash', async () => {
+    mockAuthRepo.findById.mockImplementation(async () => ({
+      ...mockAuthRecord,
+      passwordHash: null
+    }))
+
+    expect(
+      logInWithEmail(mockLoginParams, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.SocialAuthOnly
+    })
+  })
+
+  it('throws InvalidCredentials for incorrect password', async () => {
+    expect(
+      logInWithEmail(
+        { ...mockLoginParams, password: 'WrongPass123!' },
         mockDeviceInfo
       )
-      expect(result).toHaveProperty('data')
-      expect(result).toHaveProperty('refreshToken')
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidCredentials
     })
   })
 
-  describe('auth record scenarios', () => {
-    it('should throw InvalidCredentials when auth record not found', async () => {
-      mockAuthRepo.findById.mockImplementation(async () => null)
-
-      expect(
-        logInWithEmail(mockLoginParams, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidCredentials
-      })
-    })
-
-    it('should throw SocialAuthOnly when auth record has no password hash', async () => {
-      mockAuthRepo.findById.mockImplementation(async () => ({
-        ...mockAuthRecord,
-        passwordHash: null
-      }))
-
-      expect(
-        logInWithEmail(mockLoginParams, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.SocialAuthOnly
-      })
+  it('throws InvalidCredentials for empty password', async () => {
+    expect(
+      logInWithEmail({ ...mockLoginParams, password: '' }, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidCredentials
     })
   })
 
-  describe('password validation scenarios', () => {
-    it('should throw InvalidCredentials for incorrect password', async () => {
-      expect(
-        logInWithEmail(
-          { ...mockLoginParams, password: 'WrongPass123!' },
-          mockDeviceInfo
-        )
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidCredentials
-      })
-    })
-
-    it('should throw InvalidCredentials for empty password', async () => {
-      expect(
-        logInWithEmail({ ...mockLoginParams, password: '' }, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidCredentials
-      })
-    })
-  })
-
-  describe('edge cases and boundary conditions', () => {
+  describe('when password is unusual', () => {
     const passwords = [
       { name: 'very long passwords', password: 'a'.repeat(72) },
       {
@@ -248,7 +240,7 @@ describe('Login with Email', () => {
     ]
 
     passwords.forEach(({ name, password }) => {
-      it(`should handle ${name}`, async () => {
+      it(`logs in with ${name}`, async () => {
         mockAuthRecord.passwordHash = await hashPassword(password)
 
         const result = await logInWithEmail(
@@ -260,87 +252,79 @@ describe('Login with Email', () => {
     })
   })
 
-  describe('repository error scenarios', () => {
-    it('should handle user repository database failure', async () => {
-      mockUserRepo.findByEmail.mockImplementation(async () => {
-        throw new Error('Database connection failed')
-      })
-
-      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
-        (error: unknown) => error
-      )
-
-      expect(error).toMatchObject({ message: 'Database connection failed' })
+  it('propagates user repository failure', async () => {
+    mockUserRepo.findByEmail.mockImplementation(async () => {
+      throw new Error('Database connection failed')
     })
 
-    it('should handle auth repository database failure', async () => {
-      mockAuthRepo.findById.mockImplementation(async () => {
-        throw new Error('Auth table query failed')
-      })
+    const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+      (error: unknown) => error
+    )
 
-      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
-        (error: unknown) => error
-      )
+    expect(error).toMatchObject({ message: 'Database connection failed' })
+  })
 
-      expect(error).toMatchObject({ message: 'Auth table query failed' })
+  it('propagates auth repository failure', async () => {
+    mockAuthRepo.findById.mockImplementation(async () => {
+      throw new Error('Auth table query failed')
     })
 
-    it('should throw SocialAuthOnly when auth record has undefined password hash', async () => {
-      mockAuthRepo.findById.mockImplementation(async () => ({
-        ...mockAuthRecord,
-        passwordHash: undefined
-      }))
+    const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+      (error: unknown) => error
+    )
 
-      const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
-        (error: unknown) => error
-      )
+    expect(error).toMatchObject({ message: 'Auth table query failed' })
+  })
 
-      expect(error).toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.SocialAuthOnly
-      })
+  it('throws SocialAuthOnly when auth record has undefined password hash', async () => {
+    mockAuthRepo.findById.mockImplementation(async () => ({
+      ...mockAuthRecord,
+      passwordHash: undefined
+    }))
+
+    const error = await logInWithEmail(mockLoginParams, mockDeviceInfo).catch(
+      (error: unknown) => error
+    )
+
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.SocialAuthOnly
     })
   })
 
-  describe('data consistency and normalization', () => {
-    it('should ensure user normalization removes sensitive fields', async () => {
+  it('removes sensitive fields from returned user', async () => {
+    const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+
+    expect(result.data.user).not.toHaveProperty('tokenVersion')
+    expect(result.data.user).toHaveProperty('id')
+    expect(result.data.user).toHaveProperty('email')
+    expect(result.data.user).toHaveProperty('firstName')
+    expect(result.data.user).toHaveProperty('lastName')
+    expect(result.data.user).toHaveProperty('role')
+    expect(result.data.user).toHaveProperty('status')
+  })
+
+  it('returns user with each role', async () => {
+    const roles = [Role.User, Role.Admin, Role.Owner]
+
+    for (const role of roles) {
+      const userWithRole = { ...mockUser, role }
+      mockUserRepo.findByEmail.mockImplementation(async () => userWithRole)
+
       const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+      expect(result.data.user.role).toBe(role)
+    }
+  })
 
-      expect(result.data.user).not.toHaveProperty('tokenVersion')
-      expect(result.data.user).toHaveProperty('id')
-      expect(result.data.user).toHaveProperty('email')
-      expect(result.data.user).toHaveProperty('firstName')
-      expect(result.data.user).toHaveProperty('lastName')
-      expect(result.data.user).toHaveProperty('role')
-      expect(result.data.user).toHaveProperty('status')
-    })
+  it('returns user with each status', async () => {
+    const statuses = [UserStatus.New, UserStatus.Verified, UserStatus.Suspended]
 
-    it('should handle user with all possible roles', async () => {
-      const roles = [Role.User, Role.Admin, Role.Owner]
+    for (const status of statuses) {
+      const userWithStatus = { ...mockUser, status }
+      mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
 
-      for (const role of roles) {
-        const userWithRole = { ...mockUser, role }
-        mockUserRepo.findByEmail.mockImplementation(async () => userWithRole)
-
-        const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        expect(result.data.user.role).toBe(role)
-      }
-    })
-
-    it('should handle user with all possible statuses', async () => {
-      const statuses = [
-        UserStatus.New,
-        UserStatus.Verified,
-        UserStatus.Suspended
-      ]
-
-      for (const status of statuses) {
-        const userWithStatus = { ...mockUser, status }
-        mockUserRepo.findByEmail.mockImplementation(async () => userWithStatus)
-
-        const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
-        expect(result.data.user.status).toBe(status)
-      }
-    })
+      const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
+      expect(result.data.user.status).toBe(status)
+    }
   })
 })

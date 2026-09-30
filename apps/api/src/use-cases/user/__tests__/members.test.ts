@@ -40,7 +40,7 @@ describe('removeTeamMember', () => {
     await moduleMocker.clear()
   })
 
-  it('should delete membership row in transaction', async () => {
+  it('deletes membership row in transaction', async () => {
     await removeTeamMember(TEAM_1, USER_1)
 
     expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(
@@ -50,7 +50,7 @@ describe('removeTeamMember', () => {
     )
   })
 
-  it('should archive user in transaction', async () => {
+  it('archives user in transaction', async () => {
     await removeTeamMember(TEAM_1, USER_1)
 
     expect(mockUserRepoUpdate).toHaveBeenCalledWith(
@@ -60,13 +60,13 @@ describe('removeTeamMember', () => {
     )
   })
 
-  it('should run delete and archive atomically in one transaction', async () => {
+  it('runs delete and archive atomically in one transaction', async () => {
     await removeTeamMember(TEAM_1, USER_1)
 
     expect(mockTransaction).toHaveBeenCalledTimes(1)
   })
 
-  it('should return success true', async () => {
+  it('returns success true', async () => {
     const result = await removeTeamMember(TEAM_1, USER_1)
 
     expect(result).toEqual({ success: true })

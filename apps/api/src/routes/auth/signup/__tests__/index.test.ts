@@ -91,7 +91,7 @@ describe('auth /signup', () => {
   })
 
   describe('POST /signup', () => {
-    it('should set cookie with JWT token on successful signup', async () => {
+    it('sets cookie with JWT token on successful signup', async () => {
       const res = await post(app, SIGNUP_URL, validPayload)
 
       expect(res.status).toBe(HttpStatus.CREATED)
@@ -125,7 +125,7 @@ describe('auth /signup', () => {
       )
     })
 
-    it('should pass preferences to use-case when provided', async () => {
+    it('passes preferences to use-case when provided', async () => {
       const preferences = { locale: 'uk', theme: 'dark' }
 
       const res = await post(app, SIGNUP_URL, { ...validPayload, preferences })
@@ -139,7 +139,7 @@ describe('auth /signup', () => {
       )
     })
 
-    it('should validate required field formats', async () => {
+    it('rejects invalid field formats', async () => {
       const invalidData = [
         { ...validPayload, firstName: '' },
         { ...validPayload, email: 'invalid' },
@@ -155,7 +155,7 @@ describe('auth /signup', () => {
       }
     })
 
-    it('should require all required fields', async () => {
+    it('rejects missing required fields', async () => {
       const { firstName, lastName, email, password, captcha } = validPayload
       const incompleteRequests = [
         { lastName, email, password, captcha },
@@ -174,7 +174,7 @@ describe('auth /signup', () => {
       }
     })
 
-    it('should handle malformed requests', async () => {
+    it('rejects malformed requests', async () => {
       for (const { headers, body } of buildMalformedRequests(validPayload)) {
         const res = await post(app, SIGNUP_URL, body, headers)
 
@@ -182,7 +182,7 @@ describe('auth /signup', () => {
       }
     })
 
-    it('should handle signup errors and not set cookie', async () => {
+    it('returns error status without setting cookie when signup fails', async () => {
       mockSignUpWithEmail.mockImplementationOnce(() => {
         throw new Error('Signup failed')
       })

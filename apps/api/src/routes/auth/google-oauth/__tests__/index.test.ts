@@ -38,7 +38,7 @@ describe('auth /google', () => {
   })
 
   describe('GET /google', () => {
-    it('should redirect to Google and set state cookie', async () => {
+    it('redirects to Google and set state cookie', async () => {
       const res = await get(app, '/api/v1/auth/google')
 
       expect(res.status).toBe(HttpStatus.MOVED_TEMPORARILY)
@@ -61,7 +61,7 @@ describe('auth /google', () => {
       Cookie: `${env.GOOGLE_OAUTH_STATE_COOKIE}=state-123`
     }
 
-    it('should redirect with cancelled code when params are missing', async () => {
+    it('redirects with cancelled code when params are missing', async () => {
       const res = await get(app, CALLBACK_URL)
 
       expect(res.status).toBe(HttpStatus.MOVED_TEMPORARILY)
@@ -71,7 +71,7 @@ describe('auth /google', () => {
       expect(mockCompleteGoogleOAuth).not.toHaveBeenCalled()
     })
 
-    it('should redirect with invalid state code when state does not match cookie', async () => {
+    it('redirects with invalid state code when state does not match cookie', async () => {
       const res = await get(
         app,
         `${CALLBACK_URL}?code=auth-code&state=other`,
@@ -85,7 +85,7 @@ describe('auth /google', () => {
       expect(mockCompleteGoogleOAuth).not.toHaveBeenCalled()
     })
 
-    it('should set refresh cookie and redirect to frontend callback', async () => {
+    it('sets refresh cookie and redirect to frontend callback', async () => {
       const res = await get(
         app,
         `${CALLBACK_URL}?code=auth-code&state=state-123`,
@@ -105,7 +105,7 @@ describe('auth /google', () => {
       )
     })
 
-    it('should append new flag for first-time users', async () => {
+    it('appends new flag for first-time users', async () => {
       mockCompleteGoogleOAuth.mockImplementation(async () => ({
         isNew: true,
         refreshToken: 'refresh_token_123'
@@ -122,7 +122,7 @@ describe('auth /google', () => {
       )
     })
 
-    it('should redirect with error code when use case throws AppError', async () => {
+    it('redirects with error code when use case throws AppError', async () => {
       mockCompleteGoogleOAuth.mockImplementation(async () => {
         throw new AppError(
           ErrorCode.GoogleEmailNotVerified,

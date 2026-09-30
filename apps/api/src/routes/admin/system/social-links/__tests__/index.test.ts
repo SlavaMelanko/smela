@@ -76,7 +76,7 @@ describe('admin /system/social-links', () => {
   })
 
   describe('GET /system/social-links', () => {
-    it('should return social links with OK status', async () => {
+    it('returns social links with OK status', async () => {
       const res = await get(app, SOCIAL_LINKS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -90,7 +90,7 @@ describe('admin /system/social-links', () => {
       })
     })
 
-    it('should return 403 when claims lack view permission', async () => {
+    it('returns 403 when claims lack view permission', async () => {
       const noPermissionApp = buildApp([Permission.ManageSystem])
 
       const res = await get(noPermissionApp, SOCIAL_LINKS_URL)
@@ -99,7 +99,7 @@ describe('admin /system/social-links', () => {
       expect(mockGetSocialLinks).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockGetSocialLinks.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })
@@ -111,7 +111,7 @@ describe('admin /system/social-links', () => {
   })
 
   describe('POST /system/social-links', () => {
-    it('should create a social link with CREATED status', async () => {
+    it('creates a social link with CREATED status', async () => {
       const res = await post(app, SOCIAL_LINKS_URL, validBody)
 
       expect(res.status).toBe(HttpStatus.CREATED)
@@ -124,7 +124,7 @@ describe('admin /system/social-links', () => {
       })
     })
 
-    it('should reject a body with an invalid url', async () => {
+    it('rejects a body with an invalid url', async () => {
       const res = await post(app, SOCIAL_LINKS_URL, {
         ...validBody,
         url: 'not-a-url'
@@ -134,7 +134,7 @@ describe('admin /system/social-links', () => {
       expect(mockCreateSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should reject a body missing the svg', async () => {
+    it('rejects a body missing the svg', async () => {
       const { name, url } = validBody
 
       const res = await post(app, SOCIAL_LINKS_URL, { name, url })
@@ -143,7 +143,7 @@ describe('admin /system/social-links', () => {
       expect(mockCreateSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return 403 when claims lack manage permission', async () => {
+    it('returns 403 when claims lack manage permission', async () => {
       const noPermissionApp = buildApp([Permission.ViewSystem])
 
       const res = await post(noPermissionApp, SOCIAL_LINKS_URL, validBody)
@@ -152,7 +152,7 @@ describe('admin /system/social-links', () => {
       expect(mockCreateSocialLink).not.toHaveBeenCalled()
     })
 
-    it('should return error status when use case throws', async () => {
+    it('returns error status when use case throws', async () => {
       mockCreateSocialLink.mockImplementation(async () => {
         throw new Error('Database unavailable')
       })

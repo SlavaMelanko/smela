@@ -24,7 +24,7 @@ import { Role, UserStatus } from '@/types'
 
 import { refreshAuthTokens } from '../refresh-token'
 
-describe('Refresh Auth Tokens', () => {
+describe('refreshAuthTokens', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const mockRefreshToken = 'valid_refresh_token_123'
@@ -109,365 +109,334 @@ describe('Refresh Auth Tokens', () => {
     await moduleMocker.clear()
   })
 
-  describe('successful token refresh', () => {
-    it('should return new access token, refresh token, and permissions for valid refresh token', async () => {
+  it('returns new access token, refresh token, and permissions for valid refresh token', async () => {
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+
+    expect(result.data.accessToken).toEqual(expect.any(String))
+    expect(result.data.permissions).toBeUndefined()
+    expect(result.refreshToken).toEqual(expect.any(String))
+    expect(result.data.user).toEqual(mockUser)
+  })
+
+  it('revokes old refresh token after successful refresh', async () => {
+    await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
+
+    expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(1)
+    expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
+      storedTokenHash,
+      expect.any(Symbol)
+    )
+  })
+
+  it('stores only the hash of the new refresh token with device info', async () => {
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+
+    expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)
+    expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+      {
+        userId: mockUser.id,
+        tokenHash: await hashToken(result.refreshToken),
+        ipAddress: mockDeviceInfo.ipAddress,
+        userAgent: mockDeviceInfo.userAgent,
+        expiresAt: expect.any(Date)
+      },
+      expect.any(Symbol)
+    )
+  })
+
+  it('uses transaction for token rotation', async () => {
+    await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
+
+    expect(mockDb.transaction).toHaveBeenCalledTimes(1)
+    expect(mockDb.transaction).toHaveBeenCalledWith(expect.any(Function))
+  })
+
+  it('creates new tokens before revoking old token', async () => {
+    const callOrder: string[] = []
+
+    mockRefreshTokenRepo.create.mockImplementation(async () => {
+      callOrder.push('create')
+
+      return 1
+    })
+
+    mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
+      callOrder.push('revoke')
+
+      return true
+    })
+
+    await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
+
+    expect(callOrder).toEqual(['create', 'revoke'])
+  })
+
+  it('throws MissingRefreshToken when token is empty string', async () => {
+    expect(
+      refreshAuthTokens({ refreshToken: '' }, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.MissingRefreshToken
+    })
+  })
+
+  it('throws MissingRefreshToken when token is null', async () => {
+    expect(
+      refreshAuthTokens({ refreshToken: null as any }, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.MissingRefreshToken
+    })
+  })
+
+  it('throws MissingRefreshToken when token is undefined', async () => {
+    expect(
+      refreshAuthTokens({ refreshToken: undefined as any }, mockDeviceInfo)
+    ).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.MissingRefreshToken
+    })
+  })
+
+  it('throws InvalidRefreshToken when token is not found in database', async () => {
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => null)
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidRefreshToken
+    })
+  })
+
+  it('hashes refresh token before lookup', async () => {
+    await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
+
+    expect(mockRefreshTokenRepo.findByHash).toHaveBeenCalledWith(
+      storedTokenHash
+    )
+  })
+
+  it('throws InvalidRefreshToken when token hash does not match', async () => {
+    const input = { refreshToken: 'unknown_refresh_token' }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidRefreshToken
+    })
+  })
+
+  it('throws RefreshTokenRevoked when token has revokedAt timestamp', async () => {
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      revokedAt: new Date('2024-01-15')
+    }))
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.RefreshTokenRevoked
+    })
+  })
+
+  it('checks revoked status before expiration', async () => {
+    const pastDate = new Date('2023-01-01')
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      revokedAt: new Date('2024-01-15'),
+      expiresAt: pastDate
+    }))
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.RefreshTokenRevoked
+    })
+  })
+
+  it('throws RefreshTokenExpired when token has expired', async () => {
+    const pastDate = new Date('2023-01-01')
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      expiresAt: pastDate
+    }))
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.RefreshTokenExpired
+    })
+  })
+
+  it('considers token expired at exact expiration time', async () => {
+    const now = new Date()
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      expiresAt: new Date(now.getTime() - 1)
+    }))
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.RefreshTokenExpired
+    })
+  })
+
+  it('throws InvalidRefreshToken when user does not exist', async () => {
+    mockUserRepo.findById.mockImplementation(async () => null)
+
+    const input = { refreshToken: mockRefreshToken }
+    expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.InvalidRefreshToken
+    })
+  })
+
+  it('refreshes tokens for suspended user', async () => {
+    const suspendedUser = { ...mockUser, status: UserStatus.Suspended }
+    mockUserRepo.findById.mockImplementation(async () => suspendedUser)
+
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+    expect(result.data.user.status).toBe(UserStatus.Suspended)
+  })
+
+  it('refreshes tokens for new user', async () => {
+    const newUser = { ...mockUser, status: UserStatus.New }
+    mockUserRepo.findById.mockImplementation(async () => newUser)
+
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+    expect(result.data.user.status).toBe(UserStatus.New)
+  })
+
+  it('logs warning when IP address changes', async () => {
+    const changedDeviceInfo = { ...mockDeviceInfo, ipAddress: '10.0.0.1' }
+
+    await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      changedDeviceInfo
+    )
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1)
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      {
+        userId: mockUser.id,
+        oldIp: '192.168.1.1',
+        newIp: '10.0.0.1',
+        oldUserAgent: 'Mozilla/5.0 (Test)',
+        newUserAgent: 'Mozilla/5.0 (Test)'
+      },
+      'Device change detected during token refresh'
+    )
+  })
+
+  it('logs warning when User-Agent changes', async () => {
+    const changedDeviceInfo = { ...mockDeviceInfo, userAgent: 'Chrome/91.0' }
+
+    await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      changedDeviceInfo
+    )
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs warning when both IP and User-Agent change', async () => {
+    const changedDeviceInfo = {
+      ipAddress: '10.0.0.1',
+      userAgent: 'Chrome/91.0'
+    }
+
+    await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      changedDeviceInfo
+    )
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not log warning when device info matches', async () => {
+    await refreshAuthTokens({ refreshToken: mockRefreshToken }, mockDeviceInfo)
+
+    expect(mockLogger.warn).not.toHaveBeenCalled()
+  })
+
+  it('does not block request when device changes', async () => {
+    const changedDeviceInfo = {
+      ipAddress: '10.0.0.1',
+      userAgent: 'Chrome/91.0'
+    }
+
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      changedDeviceInfo
+    )
+
+    expect(result.data.user).toEqual(mockUser)
+    expect(result.refreshToken).toEqual(expect.any(String))
+  })
+
+  it('logs warning when stored device info is null', async () => {
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      ipAddress: null,
+      userAgent: null
+    }))
+
+    const changedDeviceInfo = {
+      ipAddress: '10.0.0.1',
+      userAgent: 'Chrome/91.0'
+    }
+
+    await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      changedDeviceInfo
+    )
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('signs an access token with user claims', async () => {
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+
+    expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+      id: mockUser.id,
+      email: mockUser.email,
+      role: mockUser.role,
+      status: mockUser.status
+    })
+  })
+
+  it('signs JWT with each user role', async () => {
+    const roles = [Role.User, Role.Admin, Role.Owner]
+
+    for (const role of roles) {
+      const userWithRole = { ...mockUser, role }
+      mockUserRepo.findById.mockImplementation(async () => userWithRole)
+
       const result = await refreshAuthTokens(
         { refreshToken: mockRefreshToken },
         mockDeviceInfo
       )
 
-      expect(result.data.accessToken).toEqual(expect.any(String))
-      expect(result.data.permissions).toBeUndefined()
-      expect(result.refreshToken).toEqual(expect.any(String))
-      expect(result.data.user).toEqual(mockUser)
-    })
-
-    it('should revoke old refresh token after successful refresh', async () => {
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledTimes(1)
-      expect(mockRefreshTokenRepo.revokeByHash).toHaveBeenCalledWith(
-        storedTokenHash,
-        expect.any(Symbol)
-      )
-    })
-
-    it('should store only the hash of the new refresh token with device info', async () => {
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)
-      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
-        {
-          userId: mockUser.id,
-          tokenHash: await hashToken(result.refreshToken),
-          ipAddress: mockDeviceInfo.ipAddress,
-          userAgent: mockDeviceInfo.userAgent,
-          expiresAt: expect.any(Date)
-        },
-        expect.any(Symbol)
-      )
-    })
-
-    it('should use transaction for token rotation', async () => {
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(mockDb.transaction).toHaveBeenCalledTimes(1)
-      expect(mockDb.transaction).toHaveBeenCalledWith(expect.any(Function))
-    })
-
-    it('should create new tokens before revoking old token (correct order)', async () => {
-      const callOrder: string[] = []
-
-      mockRefreshTokenRepo.create.mockImplementation(async () => {
-        callOrder.push('create')
-
-        return 1
-      })
-
-      mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
-        callOrder.push('revoke')
-
-        return true
-      })
-
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(callOrder).toEqual(['create', 'revoke'])
-    })
+      const claims = await verifyJwt(result.data.accessToken)
+      expect(claims.role).toBe(role)
+    }
   })
 
-  describe('missing refresh token scenarios', () => {
-    it('should throw MissingRefreshToken when token is empty string', async () => {
-      expect(
-        refreshAuthTokens({ refreshToken: '' }, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.MissingRefreshToken
-      })
-    })
-
-    it('should throw MissingRefreshToken when token is null', async () => {
-      expect(
-        refreshAuthTokens({ refreshToken: null as any }, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.MissingRefreshToken
-      })
-    })
-
-    it('should throw MissingRefreshToken when token is undefined', async () => {
-      expect(
-        refreshAuthTokens({ refreshToken: undefined as any }, mockDeviceInfo)
-      ).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.MissingRefreshToken
-      })
-    })
-  })
-
-  describe('invalid refresh token scenarios', () => {
-    it('should throw InvalidRefreshToken when token not found in database', async () => {
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => null)
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidRefreshToken
-      })
-    })
-
-    it('should hash refresh token before lookup', async () => {
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(mockRefreshTokenRepo.findByHash).toHaveBeenCalledWith(
-        storedTokenHash
-      )
-    })
-
-    it('should throw InvalidRefreshToken when token hash does not match', async () => {
-      const input = { refreshToken: 'unknown_refresh_token' }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidRefreshToken
-      })
-    })
-  })
-
-  describe('revoked refresh token scenarios', () => {
-    it('should throw RefreshTokenRevoked when token has revokedAt timestamp', async () => {
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
-        ...mockStoredToken,
-        revokedAt: new Date('2024-01-15')
-      }))
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.RefreshTokenRevoked
-      })
-    })
-
-    it('should check revoked status before expiration check', async () => {
-      const pastDate = new Date('2023-01-01')
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
-        ...mockStoredToken,
-        revokedAt: new Date('2024-01-15'),
-        expiresAt: pastDate
-      }))
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.RefreshTokenRevoked
-      })
-    })
-  })
-
-  describe('expired refresh token scenarios', () => {
-    it('should throw RefreshTokenExpired when token has expired', async () => {
-      const pastDate = new Date('2023-01-01')
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
-        ...mockStoredToken,
-        expiresAt: pastDate
-      }))
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.RefreshTokenExpired
-      })
-    })
-
-    it('should consider token expired at exact expiration time', async () => {
-      const now = new Date()
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
-        ...mockStoredToken,
-        expiresAt: new Date(now.getTime() - 1)
-      }))
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.RefreshTokenExpired
-      })
-    })
-  })
-
-  describe('user validation scenarios', () => {
-    it('should throw InvalidRefreshToken when user does not exist', async () => {
-      mockUserRepo.findById.mockImplementation(async () => null)
-
-      const input = { refreshToken: mockRefreshToken }
-      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
-        name: 'AppError',
-        code: ErrorCode.InvalidRefreshToken
-      })
-    })
-
-    it('should handle suspended user status', async () => {
-      const suspendedUser = { ...mockUser, status: UserStatus.Suspended }
-      mockUserRepo.findById.mockImplementation(async () => suspendedUser)
-
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-      expect(result.data.user.status).toBe(UserStatus.Suspended)
-    })
-
-    it('should handle new user status', async () => {
-      const newUser = { ...mockUser, status: UserStatus.New }
-      mockUserRepo.findById.mockImplementation(async () => newUser)
-
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-      expect(result.data.user.status).toBe(UserStatus.New)
-    })
-  })
-
-  describe('device change detection', () => {
-    it('should log warning when IP address changes', async () => {
-      const changedDeviceInfo = { ...mockDeviceInfo, ipAddress: '10.0.0.1' }
-
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        changedDeviceInfo
-      )
-
-      expect(mockLogger.warn).toHaveBeenCalledTimes(1)
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        {
-          userId: mockUser.id,
-          oldIp: '192.168.1.1',
-          newIp: '10.0.0.1',
-          oldUserAgent: 'Mozilla/5.0 (Test)',
-          newUserAgent: 'Mozilla/5.0 (Test)'
-        },
-        'Device change detected during token refresh'
-      )
-    })
-
-    it('should log warning when User-Agent changes', async () => {
-      const changedDeviceInfo = { ...mockDeviceInfo, userAgent: 'Chrome/91.0' }
-
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        changedDeviceInfo
-      )
-
-      expect(mockLogger.warn).toHaveBeenCalledTimes(1)
-    })
-
-    it('should log warning when both IP and User-Agent change', async () => {
-      const changedDeviceInfo = {
-        ipAddress: '10.0.0.1',
-        userAgent: 'Chrome/91.0'
-      }
-
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        changedDeviceInfo
-      )
-
-      expect(mockLogger.warn).toHaveBeenCalledTimes(1)
-    })
-
-    it('should not log warning when device info matches', async () => {
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(mockLogger.warn).not.toHaveBeenCalled()
-    })
-
-    it('should not block request when device changes', async () => {
-      const changedDeviceInfo = {
-        ipAddress: '10.0.0.1',
-        userAgent: 'Chrome/91.0'
-      }
-
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        changedDeviceInfo
-      )
-
-      expect(result.data.user).toEqual(mockUser)
-      expect(result.refreshToken).toEqual(expect.any(String))
-    })
-
-    it('should handle null device info gracefully', async () => {
-      mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
-        ...mockStoredToken,
-        ipAddress: null,
-        userAgent: null
-      }))
-
-      const changedDeviceInfo = {
-        ipAddress: '10.0.0.1',
-        userAgent: 'Chrome/91.0'
-      }
-
-      await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        changedDeviceInfo
-      )
-
-      expect(mockLogger.warn).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('JWT generation scenarios', () => {
-    it('should sign an access token with user claims', async () => {
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
-
-      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
-        id: mockUser.id,
-        email: mockUser.email,
-        role: mockUser.role,
-        status: mockUser.status
-      })
-    })
-
-    it('should handle different user roles in JWT', async () => {
-      const roles = [Role.User, Role.Admin, Role.Owner]
-
-      for (const role of roles) {
-        const userWithRole = { ...mockUser, role }
-        mockUserRepo.findById.mockImplementation(async () => userWithRole)
-
-        const result = await refreshAuthTokens(
-          { refreshToken: mockRefreshToken },
-          mockDeviceInfo
-        )
-
-        const claims = await verifyJwt(result.data.accessToken)
-        expect(claims.role).toBe(role)
-      }
-    })
-  })
-
-  describe('repository error scenarios', () => {
+  describe('when a repository call fails', () => {
     const refresh = async () =>
       refreshAuthTokens(
         { refreshToken: mockRefreshToken },
@@ -482,7 +451,7 @@ describe('Refresh Auth Tokens', () => {
     ]
 
     failures.forEach((name, index) => {
-      it(`should rethrow when ${name} fails`, async () => {
+      it(`rethrows when ${name} fails`, async () => {
         // Same order as failures
         const repoMocks = [
           mockRefreshTokenRepo.findByHash,
@@ -498,7 +467,7 @@ describe('Refresh Auth Tokens', () => {
       })
     })
 
-    it('should not revoke old token if new token creation fails (transaction rollback)', async () => {
+    it('does not revoke old token when new token creation fails', async () => {
       mockRefreshTokenRepo.create.mockImplementation(async () => {
         throw new Error('Token creation failed')
       })
@@ -507,7 +476,7 @@ describe('Refresh Auth Tokens', () => {
       expect(mockRefreshTokenRepo.revokeByHash).not.toHaveBeenCalled()
     })
 
-    it('should run failed revocation inside the transaction', async () => {
+    it('runs failed revocation inside the transaction', async () => {
       mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => {
         throw new Error('Revocation failed')
       })
@@ -517,67 +486,63 @@ describe('Refresh Auth Tokens', () => {
     })
   })
 
-  describe('edge cases', () => {
-    it('should handle null IP address in device info', async () => {
-      const deviceInfoWithNullIp = {
-        ipAddress: null,
-        userAgent: 'Mozilla/5.0 (Test)'
-      }
+  it('refreshes tokens with null IP address', async () => {
+    const deviceInfoWithNullIp = {
+      ipAddress: null,
+      userAgent: 'Mozilla/5.0 (Test)'
+    }
 
-      const input = { refreshToken: mockRefreshToken }
-      const result = await refreshAuthTokens(input, deviceInfoWithNullIp)
+    const input = { refreshToken: mockRefreshToken }
+    const result = await refreshAuthTokens(input, deviceInfoWithNullIp)
 
-      expect(result).toHaveProperty('data')
-      expect(result).toHaveProperty('refreshToken')
-    })
-
-    it('should handle null User-Agent in device info', async () => {
-      const deviceInfoWithNullUserAgent = {
-        ipAddress: '192.168.1.1',
-        userAgent: null
-      }
-
-      const input = { refreshToken: mockRefreshToken }
-      const result = await refreshAuthTokens(input, deviceInfoWithNullUserAgent)
-
-      expect(result).toHaveProperty('data')
-      expect(result).toHaveProperty('refreshToken')
-    })
-
-    it('should handle both null IP and User-Agent', async () => {
-      const deviceInfoWithNulls = { ipAddress: null, userAgent: null }
-
-      const input = { refreshToken: mockRefreshToken }
-      const result = await refreshAuthTokens(input, deviceInfoWithNulls)
-
-      expect(result).toHaveProperty('data')
-      expect(result).toHaveProperty('refreshToken')
-    })
+    expect(result).toHaveProperty('data')
+    expect(result).toHaveProperty('refreshToken')
   })
 
-  describe('data consistency', () => {
-    it('should not expose sensitive user fields', async () => {
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
+  it('refreshes tokens with null User-Agent', async () => {
+    const deviceInfoWithNullUserAgent = {
+      ipAddress: '192.168.1.1',
+      userAgent: null
+    }
 
-      expect(result.data.user).toHaveProperty('id')
-      expect(result.data.user).toHaveProperty('email')
-      expect(result.data.user).toHaveProperty('firstName')
-      expect(result.data.user).toHaveProperty('lastName')
-      expect(result.data.user).toHaveProperty('role')
-      expect(result.data.user).toHaveProperty('status')
-      expect(result.data.user).not.toHaveProperty('tokenVersion')
-    })
+    const input = { refreshToken: mockRefreshToken }
+    const result = await refreshAuthTokens(input, deviceInfoWithNullUserAgent)
 
-    it('should return different refresh token than input', async () => {
-      const result = await refreshAuthTokens(
-        { refreshToken: mockRefreshToken },
-        mockDeviceInfo
-      )
+    expect(result).toHaveProperty('data')
+    expect(result).toHaveProperty('refreshToken')
+  })
 
-      expect(result.refreshToken).not.toBe(mockRefreshToken)
-    })
+  it('refreshes tokens with null IP and User-Agent', async () => {
+    const deviceInfoWithNulls = { ipAddress: null, userAgent: null }
+
+    const input = { refreshToken: mockRefreshToken }
+    const result = await refreshAuthTokens(input, deviceInfoWithNulls)
+
+    expect(result).toHaveProperty('data')
+    expect(result).toHaveProperty('refreshToken')
+  })
+
+  it('does not expose sensitive user fields', async () => {
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+
+    expect(result.data.user).toHaveProperty('id')
+    expect(result.data.user).toHaveProperty('email')
+    expect(result.data.user).toHaveProperty('firstName')
+    expect(result.data.user).toHaveProperty('lastName')
+    expect(result.data.user).toHaveProperty('role')
+    expect(result.data.user).toHaveProperty('status')
+    expect(result.data.user).not.toHaveProperty('tokenVersion')
+  })
+
+  it('returns different refresh token than input', async () => {
+    const result = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    )
+
+    expect(result.refreshToken).not.toBe(mockRefreshToken)
   })
 })

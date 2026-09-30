@@ -36,7 +36,7 @@ describe('auth /check-invite', () => {
   })
 
   describe('GET /check-invite', () => {
-    it('should check invite and return result', async () => {
+    it('checks invite and return result', async () => {
       const res = await get(app, `${CHECK_INVITE_URL}?token=${validToken}`)
 
       expect(res.status).toBe(HttpStatus.OK)
@@ -48,7 +48,7 @@ describe('auth /check-invite', () => {
       expect(mockCheckInvite).toHaveBeenCalledTimes(1)
     })
 
-    it('should handle check invite errors', async () => {
+    it('returns error status when use case throws', async () => {
       mockCheckInvite.mockImplementationOnce(() => {
         throw new Error('Check invite failed')
       })
@@ -59,7 +59,7 @@ describe('auth /check-invite', () => {
       expect(mockCheckInvite).toHaveBeenCalledTimes(1)
     })
 
-    it('should validate token requirements', async () => {
+    it('rejects invalid tokens', async () => {
       const invalidTokens = [
         { name: 'short token', token: 'short-token' },
         { name: 'long token', token: 'a'.repeat(100) }
@@ -76,7 +76,7 @@ describe('auth /check-invite', () => {
       }
     })
 
-    it('should return error when token is missing', async () => {
+    it('rejects missing token', async () => {
       const res = await get(app, CHECK_INVITE_URL)
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)

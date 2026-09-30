@@ -8,8 +8,8 @@ import { HttpStatus } from '@/net/http'
 
 import notFound from '../not-found'
 
-describe('notFound handler', () => {
-  it('should return 404 with error details for unknown routes', async () => {
+describe('notFound', () => {
+  it('returns 404 with error details for unknown routes', async () => {
     const app = new Hono<AppContext>()
 
     app.notFound(notFound)
