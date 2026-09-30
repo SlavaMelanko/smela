@@ -6,7 +6,7 @@ import {
   buildResetPasswordUrl,
   emailService,
   PasswordResetEmailMessageBuilder
-} from '@/services'
+} from '@/services/email'
 import { isActive } from '@/types'
 
 const createPasswordResetToken = async (userId: string) => {

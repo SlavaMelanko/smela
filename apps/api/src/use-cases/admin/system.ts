@@ -2,7 +2,7 @@ import type { EmailSenderType } from '@/services/email'
 
 import { systemRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { emailService } from '@/services'
+import { emailService } from '@/services/email'
 
 export const getEmailSenderProfiles = async () => {
   const senderProfiles = await systemRepo.listEmailSenderProfiles()

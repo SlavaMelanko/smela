@@ -9,7 +9,7 @@ import {
   buildVerificationUrl,
   emailService,
   VerificationEmailMessageBuilder
-} from '@/services'
+} from '@/services/email'
 import {
   AuthProvider,
   getSelfServeUserDefaultPermissions,

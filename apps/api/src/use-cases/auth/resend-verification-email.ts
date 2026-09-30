@@ -6,7 +6,7 @@ import {
   buildVerificationUrl,
   emailService,
   VerificationEmailMessageBuilder
-} from '@/services'
+} from '@/services/email'
 import { UserStatus } from '@/types'
 
 const createEmailVerificationToken = async (userId: string) => {

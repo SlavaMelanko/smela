@@ -121,7 +121,6 @@ describe('inviteMember', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      buildInviteUrl: () => 'https://app.example.com/accept-invite?token=test',
       emailService: mockEmailService
     }))
   })
@@ -270,7 +269,6 @@ describe('resendMemberInvite', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      buildInviteUrl: () => 'https://app.example.com/accept-invite?token=test',
       emailService: mockEmailService
     }))
   })

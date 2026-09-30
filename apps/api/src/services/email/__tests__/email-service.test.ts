@@ -105,4 +105,30 @@ describe('EmailService', () => {
 
     expect(service.send(buildBuilder(build))).resolves.toBeUndefined()
   })
+
+  it('invalidates the sender profile cache', () => {
+    const service = new EmailService(
+      buildProvider(),
+      senderProfileResolver,
+      socialLinksResolver,
+      company
+    )
+
+    service.invalidateSenderProfiles()
+
+    expect(senderProfileResolver.invalidate).toHaveBeenCalled()
+  })
+
+  it('invalidates the social links cache', () => {
+    const service = new EmailService(
+      buildProvider(),
+      senderProfileResolver,
+      socialLinksResolver,
+      company
+    )
+
+    service.invalidateSocialLinks()
+
+    expect(socialLinksResolver.invalidate).toHaveBeenCalled()
+  })
 })

@@ -1,4 +1,4 @@
-export { EmailService, emailService } from './email-service'
+export { emailService } from './email-service'
 
 export {
   buildInviteUrl,
