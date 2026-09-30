@@ -134,9 +134,7 @@ describe('Signup with Email', () => {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
-    await moduleMocker.mock('@/services', () => ({
-      buildVerificationUrl: (token: string) =>
-        `https://app.example.com/verify-email?token=${token}`,
+    await moduleMocker.mock('@/services/email', () => ({
       emailService: mockEmailService
     }))
 

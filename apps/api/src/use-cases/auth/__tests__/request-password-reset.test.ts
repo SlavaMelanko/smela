@@ -67,9 +67,7 @@ describe('Request Password Reset', () => {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
-    await moduleMocker.mock('@/services', () => ({
-      buildResetPasswordUrl: (_role: Role, token: string) =>
-        `https://app.example.com/reset-password?token=${token}`,
+    await moduleMocker.mock('@/services/email', () => ({
       emailService: mockEmailService
     }))
   })

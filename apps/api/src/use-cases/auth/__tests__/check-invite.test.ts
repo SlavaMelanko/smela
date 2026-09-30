@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { TokenRecord, UserRoleRecord, UserTeamInfo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
+import env from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
 import { Role } from '@/types'
@@ -12,7 +13,6 @@ import { checkInvite } from '../check-invite'
 
 describe('Check Invite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
-  const MOCK_COMPANY_NAME = 'Test Company'
 
   let mockTokenString: string
   let mockTokenRecord: TokenRecord
@@ -68,10 +68,6 @@ describe('Check Invite', () => {
       rbacRepo: mockRbacRepo
     }))
 
-    await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: MOCK_COMPANY_NAME }
-    }))
-
     mockTokenValidator = {
       validate: mock(() => mockTokenRecord)
     }
@@ -124,7 +120,7 @@ describe('Check Invite', () => {
       expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
       expect(mockRbacRepo.findRole).toHaveBeenCalledTimes(1)
 
-      expect(result).toEqual({ type: 'admin', teamName: MOCK_COMPANY_NAME })
+      expect(result).toEqual({ type: 'admin', teamName: env.COMPANY_NAME })
     })
   })
 

@@ -5,23 +5,15 @@ import { EtherealEmailProvider, ResendEmailProvider } from '@smela/emails'
 import env from '@/env'
 import { logger } from '@/logging'
 
-const getProviderType = (type?: EmailProviderType): EmailProviderType => {
-  if (type) {
-    return type
-  }
-
-  // Use resend if API key is provided, otherwise ethereal
-  return env.EMAIL_RESEND_API_KEY ? 'resend' : 'ethereal'
-}
+const determineProvider = (): EmailProviderType =>
+  env.EMAIL_RESEND_API_KEY ? 'resend' : 'ethereal'
 
 export const createEmailProvider = (
-  type?: EmailProviderType
+  type: EmailProviderType = determineProvider()
 ): EmailProvider => {
-  const providerType = getProviderType(type)
+  logger.info(`📧 Email provider: ${type}`)
 
-  logger.info(`📧 Email provider: ${providerType}`)
-
-  switch (providerType) {
+  switch (type) {
     case 'ethereal': {
       return new EtherealEmailProvider(
         env.EMAIL_ETHEREAL_HOST,
@@ -32,9 +24,6 @@ export const createEmailProvider = (
     }
     case 'resend': {
       return new ResendEmailProvider(env.EMAIL_RESEND_API_KEY)
-    }
-    default: {
-      throw new Error(`Unknown email provider type: ${providerType as string}`)
     }
   }
 }

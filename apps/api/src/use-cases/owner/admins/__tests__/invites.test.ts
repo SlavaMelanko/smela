@@ -94,13 +94,7 @@ describe('inviteAdmin', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      buildInviteUrl: () =>
-        'https://admin.example.com/accept-invite?token=test',
       emailService: { send: mockSendUserInviteEmail }
-    }))
-
-    await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: 'Test Company' }
     }))
   })
 
@@ -218,13 +212,7 @@ describe('resendAdminInvite', () => {
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      buildInviteUrl: () =>
-        'https://admin.example.com/accept-invite?token=test',
       emailService: { send: mockSendUserInviteEmail }
-    }))
-
-    await moduleMocker.mock('@/env', () => ({
-      default: { COMPANY_NAME: 'Test Company' }
     }))
   })
 
