@@ -1,13 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TokenRecord, UserRecord } from '@/data'
+import type {
+  rbacRepo,
+  refreshTokenRepo,
+  TokenRecord,
+  tokenRepo,
+  User,
+  userRepo
+} from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { TOKEN_LENGTH, TokenStatus, TokenType } from '@/security/token'
-import { UserStatus } from '@/types'
-import { days, hour, hours, nowMinus, nowPlus } from '@/utils/chrono'
+import { verifyJwt } from '@/security/jwt'
+import {
+  hashToken,
+  TOKEN_LENGTH,
+  TokenStatus,
+  TokenType
+} from '@/security/token'
+import { Action, Permission, Resource, Role, UserStatus } from '@/types'
+import { hour, hours, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { verifyEmail } from '../verify-email'
 
@@ -18,20 +31,11 @@ describe('Verify Email', () => {
   let mockTokenString: string
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
-  let mockUser: UserRecord
+  let mockUser: User
   let mockUserRepo: any
   let mockRefreshTokenRepo: any
+  let mockRbacRepo: any
   let mockTransaction: any
-
-  let mockTokenValidator: any
-
-  let mockJwtToken: string
-  let mockCreateJwt: any
-
-  let mockRefreshToken: string
-  let mockRefreshTokenHash: string
-  let mockRefreshExpiresAt: Date
-  let mockGenerateHashedToken: any
 
   beforeEach(async () => {
     mockDeviceInfo = {
@@ -53,22 +57,29 @@ describe('Verify Email', () => {
     mockTokenRepo = {
       findByToken: mock(async () => mockTokenRecord),
       update: mock(async () => {})
-    }
+    } satisfies Partial<typeof tokenRepo>
     mockUser = {
       id: testUuids.USER_1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Verified,
+      role: Role.User,
       createdAt: new Date(),
       updatedAt: new Date()
     }
     mockUserRepo = {
       update: mock(async () => mockUser)
-    }
+    } satisfies Partial<typeof userRepo>
     mockRefreshTokenRepo = {
       create: mock(async () => 1)
-    }
+    } satisfies Partial<typeof refreshTokenRepo>
+    mockRbacRepo = {
+      findUserPermissions: mock(async () => [
+        { action: Action.View, resource: Resource.Dashboard },
+        { action: Action.Manage, resource: Resource.Dashboard }
+      ])
+    } satisfies Partial<typeof rbacRepo>
     mockTransaction = {
       transaction: mock(async (callback: any) => callback({}) as Promise<void>)
     }
@@ -77,40 +88,8 @@ describe('Verify Email', () => {
       tokenRepo: mockTokenRepo,
       userRepo: mockUserRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
-      authRepo: {},
-      rbacRepo: {
-        findUserPermissions: mock(async () => [
-          { action: 'view', resource: 'dashboard' },
-          { action: 'manage', resource: 'dashboard' }
-        ])
-      },
+      rbacRepo: mockRbacRepo,
       db: mockTransaction
-    }))
-
-    mockTokenValidator = {
-      validate: mock(() => mockTokenRecord)
-    }
-
-    mockRefreshToken = 'refresh-token-123'
-    mockRefreshTokenHash = 'hashed-refresh-token-123'
-    mockRefreshExpiresAt = nowPlus(days(7))
-    mockGenerateHashedToken = mock(async () => ({
-      token: { raw: mockRefreshToken, hashed: mockRefreshTokenHash },
-      expiresAt: mockRefreshExpiresAt
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      TokenValidator: mockTokenValidator,
-      generateHashedToken: mockGenerateHashedToken,
-      TokenStatus,
-      TokenType
-    }))
-
-    mockJwtToken = 'mock-verify-jwt-token'
-    mockCreateJwt = mock(async () => mockJwtToken)
-
-    await moduleMocker.mock('@/security/jwt', () => ({
-      signJwt: mockCreateJwt
     }))
   })
 
@@ -155,8 +134,43 @@ describe('Verify Email', () => {
       expect(result.data).toHaveProperty('accessToken')
       expect(result.data.user).not.toHaveProperty('tokenVersion')
       expect(result.data.user.email).toBe(mockUser.email)
-      expect(result.data.accessToken).toBe(mockJwtToken)
-      expect(result.refreshToken).toBe(mockRefreshToken)
+    })
+
+    it('should sign an access token with user claims and permissions', async () => {
+      const result = await verifyEmail(
+        { token: mockTokenString },
+        mockDeviceInfo
+      )
+
+      expect(result.data.permissions).toEqual([
+        Permission.ViewDashboard,
+        Permission.ManageDashboard
+      ])
+      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+        id: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+        status: mockUser.status,
+        permissions: result.data.permissions
+      })
+    })
+
+    it('should store only the hash of the returned refresh token', async () => {
+      const result = await verifyEmail(
+        { token: mockTokenString },
+        mockDeviceInfo
+      )
+
+      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+        {
+          userId: mockUser.id,
+          tokenHash: await hashToken(result.refreshToken),
+          ipAddress: mockDeviceInfo.ipAddress,
+          userAgent: mockDeviceInfo.userAgent,
+          expiresAt: expect.any(Date)
+        },
+        undefined
+      )
     })
 
     it('should set correct timestamp when marking token as used', async () => {
@@ -175,9 +189,6 @@ describe('Verify Email', () => {
   describe('when token does not exist', () => {
     it('should throw TokenNotFound error', async () => {
       mockTokenRepo.findByToken.mockImplementation(async () => null)
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenNotFound)
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -202,9 +213,6 @@ describe('Verify Email', () => {
       }
 
       mockTokenRepo.findByToken.mockImplementation(async () => usedTokenRecord)
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenAlreadyUsed)
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -230,9 +238,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => deprecatedTokenRecord
       )
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenDeprecated)
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -258,9 +263,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => expiredTokenRecord
       )
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenExpired)
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -286,12 +288,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => wrongTypeTokenRecord
       )
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(
-          ErrorCode.TokenTypeMismatch,
-          `expected ${TokenType.EmailVerification}, got ${TokenType.PasswordReset}`
-        )
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -386,7 +382,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => boundaryTokenRecord
       )
-      mockTokenValidator.validate.mockImplementation(() => boundaryTokenRecord)
 
       const result = await verifyEmail(
         { token: mockTokenString },
@@ -410,9 +405,6 @@ describe('Verify Email', () => {
 
       mockTokenRepo.findByToken.mockImplementation(
         async () => differentUserTokenRecord
-      )
-      mockTokenValidator.validate.mockImplementation(
-        () => differentUserTokenRecord
       )
 
       const result = await verifyEmail(
@@ -448,7 +440,6 @@ describe('Verify Email', () => {
         mockTokenRepo.findByToken.mockImplementation(
           async () => testTokenRecord
         )
-        mockTokenValidator.validate.mockImplementation(() => testTokenRecord)
 
         const result = await verifyEmail({ token: testToken }, mockDeviceInfo)
 
@@ -470,7 +461,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => tokenWithNullUsedAt
       )
-      mockTokenValidator.validate.mockImplementation(() => tokenWithNullUsedAt)
 
       const result = await verifyEmail(
         { token: mockTokenString },
@@ -502,9 +492,6 @@ describe('Verify Email', () => {
       mockTokenRepo.findByToken.mockImplementation(
         async () => inconsistentTokenRecord
       )
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenAlreadyUsed)
-      })
 
       expect(
         verifyEmail({ token: mockTokenString }, mockDeviceInfo)

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { SearchResult, User } from '@/data'
+import type { Inviter, rbacRepo, SearchResult, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import AppError from '@/errors/app-error'
@@ -15,8 +15,8 @@ describe('getAdmins', () => {
   const DEFAULT_PAGINATION = { page: 1, limit: 25 }
 
   let mockSearchResult: SearchResult
-  let mockUserRepoSearch: any
-  let mockFindInvites: any
+  let mockUserRepo: any
+  let mockRbacRepo: any
 
   beforeEach(async () => {
     mockSearchResult = {
@@ -35,12 +35,16 @@ describe('getAdmins', () => {
       pagination: { page: 1, limit: 25, total: 1, totalPages: 1 }
     }
 
-    mockUserRepoSearch = mock(async () => mockSearchResult)
-    mockFindInvites = mock(async () => new Map())
+    mockUserRepo = {
+      search: mock(async () => mockSearchResult)
+    } satisfies Partial<typeof userRepo>
+    mockRbacRepo = {
+      findInviters: mock(async () => new Map<string, Inviter>())
+    } satisfies Partial<typeof rbacRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { search: mockUserRepoSearch },
-      rbacRepo: { findInviters: mockFindInvites }
+      userRepo: mockUserRepo,
+      rbacRepo: mockRbacRepo
     }))
   })
 
@@ -51,7 +55,7 @@ describe('getAdmins', () => {
   it('should always search with Admin role only', async () => {
     await getAdmins({ roles: [Role.User] }, DEFAULT_PAGINATION)
 
-    expect(mockUserRepoSearch).toHaveBeenCalledWith(
+    expect(mockUserRepo.search).toHaveBeenCalledWith(
       { roles: [Role.Admin] },
       DEFAULT_PAGINATION
     )
@@ -74,7 +78,7 @@ describe('getAdmins', () => {
       DEFAULT_PAGINATION
     )
 
-    expect(mockUserRepoSearch).toHaveBeenCalledWith(
+    expect(mockUserRepo.search).toHaveBeenCalledWith(
       { roles: [Role.Admin], statuses: [UserStatus.Active] },
       DEFAULT_PAGINATION
     )
@@ -86,13 +90,13 @@ describe('getAdmins', () => {
       firstName: 'Owner',
       lastName: 'User'
     }
-    mockFindInvites.mockImplementation(
+    mockRbacRepo.findInviters.mockImplementation(
       async () => new Map([[testUuids.ADMIN_1, inviteInfo]])
     )
 
     const result = await getAdmins({ roles: [] }, DEFAULT_PAGINATION)
 
-    expect(mockFindInvites).toHaveBeenCalledWith([testUuids.ADMIN_1])
+    expect(mockRbacRepo.findInviters).toHaveBeenCalledWith([testUuids.ADMIN_1])
     expect(result.data.admins[0].inviter).toEqual(inviteInfo)
   })
 })
@@ -101,8 +105,8 @@ describe('getAdmin', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockAdmin: User
-  let mockFindByIdExtended: any
-  let mockFindInvites: any
+  let mockUserRepo: any
+  let mockRbacRepo: any
 
   beforeEach(async () => {
     mockAdmin = {
@@ -116,12 +120,16 @@ describe('getAdmin', () => {
       updatedAt: new Date('2024-01-01')
     }
 
-    mockFindByIdExtended = mock(async () => mockAdmin)
-    mockFindInvites = mock(async () => new Map())
+    mockUserRepo = {
+      findByIdExtended: mock(async (): Promise<User | undefined> => mockAdmin)
+    } satisfies Partial<typeof userRepo>
+    mockRbacRepo = {
+      findInviters: mock(async () => new Map<string, Inviter>())
+    } satisfies Partial<typeof rbacRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: { findByIdExtended: mockFindByIdExtended },
-      rbacRepo: { findInviters: mockFindInvites }
+      userRepo: mockUserRepo,
+      rbacRepo: mockRbacRepo
     }))
   })
 
@@ -132,7 +140,9 @@ describe('getAdmin', () => {
   it('should return admin when found', async () => {
     const result = await getAdmin(testUuids.ADMIN_1)
 
-    expect(mockFindByIdExtended).toHaveBeenCalledWith(testUuids.ADMIN_1)
+    expect(mockUserRepo.findByIdExtended).toHaveBeenCalledWith(
+      testUuids.ADMIN_1
+    )
     expect(result).toEqual({ admin: { ...mockAdmin, inviter: undefined } })
   })
 
@@ -142,18 +152,18 @@ describe('getAdmin', () => {
       firstName: 'Owner',
       lastName: 'User'
     }
-    mockFindInvites.mockImplementation(
+    mockRbacRepo.findInviters.mockImplementation(
       async () => new Map([[testUuids.ADMIN_1, inviteInfo]])
     )
 
     const result = await getAdmin(testUuids.ADMIN_1)
 
-    expect(mockFindInvites).toHaveBeenCalledWith([testUuids.ADMIN_1])
+    expect(mockRbacRepo.findInviters).toHaveBeenCalledWith([testUuids.ADMIN_1])
     expect(result.admin.inviter).toEqual(inviteInfo)
   })
 
   it('should throw NotFound error when admin does not exist', async () => {
-    mockFindByIdExtended.mockImplementation(async () => undefined)
+    mockUserRepo.findByIdExtended.mockImplementation(async () => undefined)
 
     expect(getAdmin(testUuids.NON_EXISTENT)).rejects.toThrow(AppError)
     expect(getAdmin(testUuids.NON_EXISTENT)).rejects.toMatchObject({
@@ -163,7 +173,7 @@ describe('getAdmin', () => {
   })
 
   it('should throw NotFound error when user is not an Admin role', async () => {
-    mockFindByIdExtended.mockImplementation(async () => ({
+    mockUserRepo.findByIdExtended.mockImplementation(async () => ({
       ...mockAdmin,
       role: Role.User
     }))
@@ -176,7 +186,7 @@ describe('getAdmin', () => {
   })
 
   it('should throw NotFound error when user is Owner role', async () => {
-    mockFindByIdExtended.mockImplementation(async () => ({
+    mockUserRepo.findByIdExtended.mockImplementation(async () => ({
       ...mockAdmin,
       role: Role.Owner
     }))

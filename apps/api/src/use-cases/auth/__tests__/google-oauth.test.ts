@@ -1,9 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { AuthRecord, User } from '@/data'
+import type {
+  AuthRecord,
+  authRepo,
+  rbacRepo,
+  refreshTokenRepo,
+  teamRepo,
+  User,
+  userRepo
+} from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import { verifyJwt } from '@/security/jwt'
+import { hashToken } from '@/security/token'
+import {
+  AuthProvider,
+  getSelfServeUserDefaultPermissions,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { completeGoogleOAuth, logInOrSignUpWithGoogle } from '../google-oauth'
 
@@ -31,9 +46,6 @@ describe('Google OAuth', () => {
   let mockTeamRepo: any
   let mockTransaction: any
 
-  let mockJwtToken: string
-  let mockCreateJwt: any
-  let mockGenerateHashedToken: any
   let mockResolvePermissions: any
 
   beforeEach(async () => {
@@ -59,27 +71,27 @@ describe('Google OAuth', () => {
 
     mockUserRepo = {
       findById: mock(async () => mockUser),
-      findByEmail: mock(async () => null),
+      findByEmail: mock(async () => undefined),
       create: mock(async () => mockUser),
       update: mock(async () => mockUser)
-    }
+    } satisfies Partial<typeof userRepo>
 
     mockAuthRepo = {
       findByProvider: mock(async () => mockAuthRecord),
-      create: mock(async () => 1)
-    }
+      create: mock(async () => {})
+    } satisfies Partial<typeof authRepo>
 
     mockRbacRepo = {
       setUserPermissions: mock(async () => {})
-    }
+    } satisfies Partial<typeof rbacRepo>
 
     mockRefreshTokenRepo = {
       create: mock(async () => 1)
-    }
+    } satisfies Partial<typeof refreshTokenRepo>
 
     mockTeamRepo = {
       findUserTeam: mock(async () => undefined)
-    }
+    } satisfies Partial<typeof teamRepo>
 
     mockTransaction = {
       transaction: mock(
@@ -96,37 +108,10 @@ describe('Google OAuth', () => {
       userRepo: mockUserRepo
     }))
 
-    mockJwtToken = 'google-oauth-jwt-token'
-    mockCreateJwt = mock(async () => mockJwtToken)
-
-    await moduleMocker.mock('@/security/jwt', () => ({
-      signJwt: mockCreateJwt
-    }))
-
-    mockGenerateHashedToken = mock(async () => ({
-      token: { raw: 'refresh_token_123', hashed: 'hashed_refresh_token_123' },
-      expiresAt: new Date('2024-02-01'),
-      type: 'refresh_token'
-    }))
-
-    await moduleMocker.mock('@/security/token', () => ({
-      generateHashedToken: mockGenerateHashedToken,
-      TokenType: { RefreshToken: 'refresh_token' }
-    }))
-
     mockResolvePermissions = mock(async () => undefined)
 
     await moduleMocker.mock('../../resolve-permissions', () => ({
       resolvePermissionList: mockResolvePermissions
-    }))
-
-    await moduleMocker.mock('@/types', () => ({
-      AuthProvider,
-      Role,
-      UserStatus,
-      getSelfServeUserDefaultPermissions: mock(() => ({
-        dashboard: { view: true, manage: true }
-      }))
     }))
   })
 
@@ -148,8 +133,6 @@ describe('Google OAuth', () => {
       expect(mockUserRepo.findById).toHaveBeenCalledWith(mockAuthRecord.userId)
       expect(mockTransaction.transaction).not.toHaveBeenCalled()
       expect(result.data.user).toEqual(mockUser)
-      expect(result.data.accessToken).toBe(mockJwtToken)
-      expect(result.refreshToken).toBe('refresh_token_123')
     })
 
     it('should include team when user belongs to one', async () => {
@@ -201,20 +184,40 @@ describe('Google OAuth', () => {
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledWith(
         mockUser.id,
-        expect.any(Object),
+        getSelfServeUserDefaultPermissions(),
         expect.anything()
       )
     })
 
-    it('should return tokens and user data', async () => {
+    it('should return user data with a signed access token', async () => {
       const result = await logInOrSignUpWithGoogle(
         mockGoogleProfile,
         mockDeviceInfo
       )
 
-      expect(result.data.accessToken).toBe(mockJwtToken)
-      expect(result.refreshToken).toBe('refresh_token_123')
       expect(result.data.user).toEqual(mockUser)
+      expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+        id: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+        status: mockUser.status
+      })
+    })
+
+    it('should store only the hash of the returned refresh token', async () => {
+      const result = await logInOrSignUpWithGoogle(
+        mockGoogleProfile,
+        mockDeviceInfo
+      )
+
+      expect(mockRefreshTokenRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: mockUser.id,
+          tokenHash: await hashToken(result.refreshToken),
+          expiresAt: expect.any(Date)
+        }),
+        undefined
+      )
     })
   })
 
@@ -336,7 +339,7 @@ describe('Google OAuth', () => {
       )
       expect(result).toEqual({
         isNew: false,
-        refreshToken: 'refresh_token_123'
+        refreshToken: expect.any(String)
       })
     })
 

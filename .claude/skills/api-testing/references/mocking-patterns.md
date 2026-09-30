@@ -29,24 +29,20 @@ So `ModuleMocker` is still the pattern here — keep using it, and keep the
 
 ## Variable Declaration Order
 
-Group variables by module/domain with blank lines between groups. Order groups
-to match their initialization in `beforeEach`:
+Group variables by module with blank lines between groups. Order groups to match
+their initialization in `beforeEach`:
 
 ```typescript
 const moduleMocker = new ModuleMocker(import.meta.url)
 
-let mockSignupParams: any // Test data group
+const PASSWORD = 'ValidPass123!' // test data group
+let passwordHash: string
 
-let mockNewUser: any // @/data module group
+let mockUser: User // @/data module group
 let mockUserRepo: any
 let mockAuthRepo: any
-let mockTransaction: any
 
-let mockToken: string // @/security/token module group
-let mockExpiresAt: Date
-let mockGenerateToken: any
-
-let mockEmailAgent: any // @/lib/email-agent module group
+let mockEmailService: any // @/services/email module group
 ```
 
 ## Initial Mock Setup in beforeEach
@@ -59,43 +55,46 @@ let mockEmailAgent: any // @/lib/email-agent module group
 Setup sequence:
 
 1. Initialize test data and primitive constants
-2. Initialize base data objects used by mocks
-3. Initialize mock objects depending on the data
+2. Initialize fixtures typed with real record types
+3. Build each mock object with `satisfies Partial<typeof realModule>`
 4. Call `moduleMocker.mock()` immediately after defining related mocks
-5. Repeat for each module: primitives → mock objects → `moduleMocker.mock()`
+5. Repeat for each module: fixtures → typed mock objects → `moduleMocker.mock()`
 
 ```typescript
 describe('Signup', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Static test data - never changes across tests
-  const VALID_EMAIL = 'test@example.com'
-  const VALID_PASSWORD = 'SecurePass123!'
-  const HASHED_PASSWORD = '$2b$10$hash123'
+  const EMAIL = 'test@example.com'
 
-  // Mocks that need re-initialization
-  let mockSignupParams: any
-  let mockNewUser: any
+  let mockUser: User
   let mockUserRepo: any
-  let mockHashPassword: any
+  let mockEmailService: any
 
   beforeEach(async () => {
-    // Test data
-    mockSignupParams = { firstName: 'John', email: VALID_EMAIL, ... }
-
     // @/data module group
-    mockNewUser = { id: 1, email: VALID_EMAIL, ... }
-    mockUserRepo = { findByEmail: mock(() => ...) }
+    mockUser = {
+      id: testUuids.USER_1,
+      email: EMAIL,
+      role: Role.User,
+      status: UserStatus.New
+      // ...remaining User fields
+    }
+    mockUserRepo = {
+      findByEmail: mock(async () => undefined),
+      create: mock(async () => mockUser)
+    } satisfies Partial<typeof userRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      userRepo: mockUserRepo,
+      userRepo: mockUserRepo
     }))
 
-    // @/crypto module group
-    mockHashPassword = mock(async () => HASHED_PASSWORD)
+    // @/services/email module group
+    mockEmailService = {
+      send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
+    } satisfies Partial<typeof emailService>
 
-    await moduleMocker.mock('@/crypto', () => ({
-      hashPassword: mockHashPassword,
+    await moduleMocker.mock('@/services/email', () => ({
+      emailService: mockEmailService
     }))
   })
 })
@@ -109,14 +108,14 @@ describe('Signup', () => {
    it
 4. Call `moduleMocker.mock()` immediately after defining all related mock
    objects
-5. **Don't mock encapsulated dependencies**: Only mock the public API/wrapper,
+5. **Mock only I/O you own**: `@/data`, `@/services/*`, network wrappers. Keep
+   `@/security/*`, `@/crypto`, `@/types`, `@/env`, and pure helpers real (see
+   Mocking Strategy in [SKILL.md](../SKILL.md))
+6. **Don't mock encapsulated dependencies**: Only mock the public API/wrapper,
    not underlying implementation
    - Example: If `@/net/http/cookie` wraps `hono/cookie`, only mock the wrapper
-   - Prevents tight coupling to implementation details
-6. **Mock only I/O**: Keep pure and deterministic modules real (see Mocking
-   Strategy in [SKILL.md](../SKILL.md)). The examples below mock security
-   modules only to show the pattern
-7. **Type mocks**: Use `satisfies Partial<typeof realModule>` instead of `any`
+7. **Type mocks where they are built**: `satisfies Partial<typeof realModule>`
+   on the object literal, not on variables assembled from `any` mocks
 
 ## Updating Mock Behavior
 
@@ -125,10 +124,10 @@ Use `mockImplementation()` to update mock behavior in individual tests:
 ```typescript
 it('should handle user not found', async () => {
   // Override default mock behavior for this test only
-  mockUserRepo.findByEmail.mockImplementation(async () => null)
+  mockUserRepo.findByEmail.mockImplementation(async () => undefined)
 
   // Act & Assert
-  await expect(service.login(email)).rejects.toThrow('User not found')
+  expect(service.login(email)).rejects.toThrow('User not found')
 })
 ```
 
@@ -137,93 +136,68 @@ Other mock utilities: `mockReturnValue`, `mockResolvedValue`,
 
 ## Complete Example
 
-Dependency chain from small to large:
+Real security code with typed I/O mocks (see
+`src/use-cases/auth/__tests__/login.test.ts`):
 
 ```typescript
-// Good: Clear dependency chain
-mockUser = { id: 1, email: 'test@example.com' }
-mockUserRepo = { findByEmail: mock(async () => mockUser) }
-await moduleMocker.mock('@/data', () => ({ userRepo: mockUserRepo }))
+import type { authRepo, AuthRecord, User, userRepo } from '@/data'
 
-mockJwtToken = 'token-123'
-mockJwt = { default: { sign: mock(async () => mockJwtToken) } }
-await moduleMocker.mock('@/lib/jwt', () => mockJwt)
-```
+import { ModuleMocker, testUuids } from '@/__tests__'
+import { ErrorCode } from '@/errors'
+import { verifyJwt } from '@/security/jwt'
+import { hashPassword } from '@/security/password'
 
-```typescript
-describe('AuthService', () => {
+describe('Login with Email', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  // Static constants
-  const TEST_EMAIL = 'user@example.com'
-  const TEST_PASSWORD = 'Password123!'
-  const JWT_TOKEN = 'jwt-token-abc'
+  const PASSWORD = 'ValidPass123!'
+  let passwordHash: string
 
-  // Mock variables
-  let mockUser: any
+  let mockUser: User
   let mockUserRepo: any
+  let mockAuthRecord: AuthRecord
   let mockAuthRepo: any
 
-  let mockVerifyPassword: any
-  let mockSignToken: any
+  beforeAll(async () => {
+    passwordHash = await hashPassword(PASSWORD) // bcrypt is slow, hash once
+  })
 
   beforeEach(async () => {
-    // Data layer mocks
-    mockUser = { id: 1, email: TEST_EMAIL, role: 'user' }
+    mockUser = { id: testUuids.USER_1, role: Role.User /* ... */ }
     mockUserRepo = {
-      findByEmail: mock(async () => mockUser),
-      update: mock(async () => mockUser)
-    }
+      findByEmail: mock(async () => mockUser)
+    } satisfies Partial<typeof userRepo>
+    mockAuthRecord = { userId: mockUser.id, passwordHash /* ... */ }
     mockAuthRepo = {
-      findByUserId: mock(async () => ({ passwordHash: 'hash' }))
-    }
+      findById: mock(async () => mockAuthRecord)
+    } satisfies Partial<typeof authRepo>
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
       authRepo: mockAuthRepo
     }))
-
-    // Security mocks
-    mockVerifyPassword = mock(async () => true)
-    mockSignToken = mock(async () => JWT_TOKEN)
-
-    await moduleMocker.mock('@/security/password', () => ({
-      verifyPassword: mockVerifyPassword
-    }))
-
-    await moduleMocker.mock('@/security/jwt', () => ({
-      signToken: mockSignToken
-    }))
   })
 
   afterEach(async () => {
-    mockUserRepo.findByEmail.mockClear()
-    mockUserRepo.update.mockClear()
-    mockAuthRepo.findByUserId.mockClear()
-    mockVerifyPassword.mockClear()
-    mockSignToken.mockClear()
-
     await moduleMocker.clear()
   })
 
-  it('should login successfully with valid credentials', async () => {
-    const { login } = await import('./auth-service')
+  it('should sign an access token with user claims', async () => {
+    const result = await logInWithEmail(
+      { email: mockUser.email, password: PASSWORD },
+      deviceInfo
+    )
 
-    const result = await login(TEST_EMAIL, TEST_PASSWORD)
-
-    expect(result.token).toBe(JWT_TOKEN)
-    expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(TEST_EMAIL)
-    expect(mockVerifyPassword).toHaveBeenCalled()
+    expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
+      id: mockUser.id,
+      role: mockUser.role
+    })
   })
 
-  it('should reject invalid password', async () => {
-    mockVerifyPassword.mockImplementation(async () => false)
-
-    const { login } = await import('./auth-service')
-
-    await expect(login(TEST_EMAIL, 'wrong')).rejects.toThrow(
-      'Invalid credentials'
-    )
+  it('should reject a wrong password', async () => {
+    expect(
+      logInWithEmail({ email: mockUser.email, password: 'Wrong123!' }, deviceInfo)
+    ).rejects.toMatchObject({ code: ErrorCode.InvalidCredentials })
   })
 })
 ```

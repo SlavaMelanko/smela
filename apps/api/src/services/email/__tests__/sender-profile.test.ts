@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, setSystemTime } from 'bun:test'
 
-import type { EmailSenderProfileRecord } from '@/data'
+import type { EmailSenderProfileRecord, systemRepo } from '@/data'
 
 import { ModuleMocker } from '@/__tests__'
 import { EmailSenderType } from '@/services/email'
@@ -34,7 +34,9 @@ describe('ApiEmailSenderProfileResolver', () => {
     listEmailSenderProfiles: () => Promise<EmailSenderProfileRecord[]>
   ) =>
     moduleMocker.mock('@/data', () => ({
-      systemRepo: { listEmailSenderProfiles }
+      systemRepo: { listEmailSenderProfiles } satisfies Partial<
+        typeof systemRepo
+      >
     }))
 
   const mockCountedRepo = async (rows = records) => {

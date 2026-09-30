@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { EmailSenderProfileRecord, SocialLinkRecord } from '@/data'
+import type {
+  EmailSenderProfileRecord,
+  SocialLinkRecord,
+  systemRepo
+} from '@/data'
+import type { emailService } from '@/services/email'
 
 import { ModuleMocker } from '@/__tests__'
 import { ErrorCode } from '@/errors'
@@ -29,15 +34,17 @@ describe('getEmailSenderProfiles', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockSenderProfiles: EmailSenderProfileRecord[]
-  let mockFindEmailSenderProfiles: any
+  let mockSystemRepo: any
 
   beforeEach(async () => {
     mockSenderProfiles = [buildSenderProfile()]
 
-    mockFindEmailSenderProfiles = mock(async () => mockSenderProfiles)
+    mockSystemRepo = {
+      listEmailSenderProfiles: mock(async () => mockSenderProfiles)
+    } satisfies Partial<typeof systemRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      systemRepo: { listEmailSenderProfiles: mockFindEmailSenderProfiles }
+      systemRepo: mockSystemRepo
     }))
   })
 
@@ -48,7 +55,7 @@ describe('getEmailSenderProfiles', () => {
   it('should return all sender profiles', async () => {
     const result = await getEmailSenderProfiles()
 
-    expect(mockFindEmailSenderProfiles).toHaveBeenCalled()
+    expect(mockSystemRepo.listEmailSenderProfiles).toHaveBeenCalled()
     expect(result).toEqual({ senderProfiles: mockSenderProfiles })
   })
 })
@@ -57,17 +64,19 @@ describe('getEmailSenderProfile', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockSenderProfile: EmailSenderProfileRecord | undefined
-  let mockFindEmailSenderProfile: any
+  let mockSystemRepo: any
 
   const senderProfile = buildSenderProfile()
 
   beforeEach(async () => {
     mockSenderProfile = senderProfile
 
-    mockFindEmailSenderProfile = mock(async () => mockSenderProfile)
+    mockSystemRepo = {
+      findEmailSenderProfile: mock(async () => mockSenderProfile)
+    } satisfies Partial<typeof systemRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      systemRepo: { findEmailSenderProfile: mockFindEmailSenderProfile }
+      systemRepo: mockSystemRepo
     }))
   })
 
@@ -78,7 +87,7 @@ describe('getEmailSenderProfile', () => {
   it('should return the requested sender profile', async () => {
     const result = await getEmailSenderProfile(EmailSenderType.System)
 
-    expect(mockFindEmailSenderProfile).toHaveBeenCalledWith(
+    expect(mockSystemRepo.findEmailSenderProfile).toHaveBeenCalledWith(
       EmailSenderType.System
     )
     expect(result).toEqual({ senderProfile })
@@ -98,27 +107,27 @@ describe('updateEmailSenderProfile', () => {
 
   let mockSenderProfile: EmailSenderProfileRecord | undefined
   let mockUpdatedSenderProfile: EmailSenderProfileRecord
-  let mockFindEmailSenderProfile: any
-  let mockUpdateEmailSenderProfile: any
-  let mockInvalidateSenderProfiles: any
+  let mockSystemRepo: any
+  let mockEmailService: any
 
   beforeEach(async () => {
     mockSenderProfile = buildSenderProfile()
     mockUpdatedSenderProfile = buildSenderProfile({ name: 'SMELA Updated' })
 
-    mockFindEmailSenderProfile = mock(async () => mockSenderProfile)
-    mockUpdateEmailSenderProfile = mock(async () => mockUpdatedSenderProfile)
-    mockInvalidateSenderProfiles = mock(() => {})
+    mockSystemRepo = {
+      findEmailSenderProfile: mock(async () => mockSenderProfile),
+      updateEmailSenderProfile: mock(async () => mockUpdatedSenderProfile)
+    } satisfies Partial<typeof systemRepo>
+    mockEmailService = {
+      invalidateSenderProfiles: mock(() => {})
+    } satisfies Partial<typeof emailService>
 
     await moduleMocker.mock('@/data', () => ({
-      systemRepo: {
-        findEmailSenderProfile: mockFindEmailSenderProfile,
-        updateEmailSenderProfile: mockUpdateEmailSenderProfile
-      }
+      systemRepo: mockSystemRepo
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
-      emailService: { invalidateSenderProfiles: mockInvalidateSenderProfiles }
+      emailService: mockEmailService
     }))
   })
 
@@ -134,7 +143,7 @@ describe('updateEmailSenderProfile', () => {
       updates
     )
 
-    expect(mockUpdateEmailSenderProfile).toHaveBeenCalledWith(
+    expect(mockSystemRepo.updateEmailSenderProfile).toHaveBeenCalledWith(
       EmailSenderType.System,
       updates
     )
@@ -144,7 +153,7 @@ describe('updateEmailSenderProfile', () => {
   it('should invalidate the cached sender profiles after updating', async () => {
     await updateEmailSenderProfile(EmailSenderType.System, { name: 'SMELA' })
 
-    expect(mockInvalidateSenderProfiles).toHaveBeenCalled()
+    expect(mockEmailService.invalidateSenderProfiles).toHaveBeenCalled()
   })
 
   it('should not update when the sender profile does not exist', async () => {
@@ -155,8 +164,8 @@ describe('updateEmailSenderProfile', () => {
     }).catch((e: unknown) => e)
 
     expect(error).toMatchObject({ code: ErrorCode.NotFound })
-    expect(mockUpdateEmailSenderProfile).not.toHaveBeenCalled()
-    expect(mockInvalidateSenderProfiles).not.toHaveBeenCalled()
+    expect(mockSystemRepo.updateEmailSenderProfile).not.toHaveBeenCalled()
+    expect(mockEmailService.invalidateSenderProfiles).not.toHaveBeenCalled()
   })
 })
 
@@ -177,20 +186,18 @@ describe('createSocialLink', () => {
   }
 
   let mockDuplicate: SocialLinkRecord | undefined
-  let mockFindSocialLinkByName: any
-  let mockCreateSocialLink: any
+  let mockSystemRepo: any
 
   beforeEach(async () => {
     mockDuplicate = undefined
 
-    mockFindSocialLinkByName = mock(async () => mockDuplicate)
-    mockCreateSocialLink = mock(async () => socialLink)
+    mockSystemRepo = {
+      findSocialLinkByName: mock(async () => mockDuplicate),
+      createSocialLink: mock(async () => socialLink)
+    } satisfies Partial<typeof systemRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      systemRepo: {
-        findSocialLinkByName: mockFindSocialLinkByName,
-        createSocialLink: mockCreateSocialLink
-      }
+      systemRepo: mockSystemRepo
     }))
   })
 
@@ -201,8 +208,8 @@ describe('createSocialLink', () => {
   it('should create the social link when the name is free', async () => {
     const result = await createSocialLink(input)
 
-    expect(mockFindSocialLinkByName).toHaveBeenCalledWith(input.name)
-    expect(mockCreateSocialLink).toHaveBeenCalledWith(input)
+    expect(mockSystemRepo.findSocialLinkByName).toHaveBeenCalledWith(input.name)
+    expect(mockSystemRepo.createSocialLink).toHaveBeenCalledWith(input)
     expect(result).toEqual({ socialLink })
   })
 
@@ -214,6 +221,6 @@ describe('createSocialLink', () => {
     const error: any = await createSocialLink(input).catch((e: unknown) => e)
 
     expect(error).toMatchObject({ code: ErrorCode.Conflict })
-    expect(mockCreateSocialLink).not.toHaveBeenCalled()
+    expect(mockSystemRepo.createSocialLink).not.toHaveBeenCalled()
   })
 })

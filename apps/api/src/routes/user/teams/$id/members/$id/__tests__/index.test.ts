@@ -2,6 +2,8 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
+import type { TeamMemberDetails, teamRepo, TeamWithMemberCount } from '@/data'
+
 import {
   createTestApp,
   doRequest,
@@ -13,7 +15,7 @@ import {
   withClaims
 } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { Permission, Role } from '@/types'
+import { Permission, Role, UserStatus } from '@/types'
 
 import { teamsRoute } from '../../../..'
 
@@ -28,13 +30,27 @@ describe('user /teams/:teamId/members/:memberId', () => {
 
   let app: Hono
 
-  let mockTeam: { id: string; name: string }
+  let mockTeam: TeamWithMemberCount
   let mockTeamRepo: any
 
   let mockUpdateTeamMember: any
   let mockRemoveTeamMember: any
   let mockResendMemberInvite: any
   let mockCancelMemberInvite: any
+
+  const buildMember = (id: string): TeamMemberDetails => ({
+    id,
+    firstName: 'Alice',
+    lastName: null,
+    email: 'alice@example.com',
+    status: UserStatus.Active,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    lastActive: null,
+    position: null,
+    inviter: null,
+    joinedAt: null
+  })
 
   const buildApp = (permissions: string[]) =>
     createTestApp('/api/v1/user/verified', teamsRoute, [
@@ -46,15 +62,21 @@ describe('user /teams/:teamId/members/:memberId', () => {
     ])
 
   beforeEach(async () => {
-    mockTeam = { id: TEAM_ID, name: 'Engineering' }
+    mockTeam = {
+      id: TEAM_ID,
+      name: 'Engineering',
+      website: 'https://example.com',
+      description: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      memberCount: 1
+    }
     mockTeamRepo = {
       find: mock(async () => mockTeam),
-      findMember: mock(async (_teamId: string, memberId: string) => ({
-        id: memberId,
-        firstName: 'Alice',
-        email: 'alice@example.com'
-      }))
-    }
+      findMember: mock(async (_teamId: string, memberId: string) =>
+        buildMember(memberId)
+      )
+    } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo
@@ -113,7 +135,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
     it('should return 404 when target member is not in team', async () => {
       mockTeamRepo.findMember.mockImplementation(
         async (_teamId: string, memberId: string) =>
-          memberId === testUuids.USER_2 ? null : { id: memberId }
+          memberId === testUuids.USER_2 ? undefined : buildMember(memberId)
       )
 
       const res = await get(app, MEMBER_URL)

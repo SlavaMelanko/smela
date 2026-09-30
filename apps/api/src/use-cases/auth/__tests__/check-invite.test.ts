@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { TokenRecord, UserRoleRecord, UserTeamInfo } from '@/data'
+import type {
+  rbacRepo,
+  teamRepo,
+  TokenRecord,
+  tokenRepo,
+  UserRoleRecord,
+  UserTeamInfo
+} from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import env from '@/env'
@@ -19,8 +26,6 @@ describe('Check Invite', () => {
   let mockTokenRepo: any
   let mockTeamRepo: any
   let mockRbacRepo: any
-
-  let mockTokenValidator: any
 
   let mockTeam: UserTeamInfo
   let mockAdminRole: UserRoleRecord
@@ -54,27 +59,18 @@ describe('Check Invite', () => {
 
     mockTokenRepo = {
       findByToken: mock(async () => mockTokenRecord)
-    }
+    } satisfies Partial<typeof tokenRepo>
     mockTeamRepo = {
       findUserTeam: mock(async () => mockTeam)
-    }
+    } satisfies Partial<typeof teamRepo>
     mockRbacRepo = {
       findRole: mock(async () => mockAdminRole)
-    }
+    } satisfies Partial<typeof rbacRepo>
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,
       teamRepo: mockTeamRepo,
       rbacRepo: mockRbacRepo
-    }))
-
-    mockTokenValidator = {
-      validate: mock(() => mockTokenRecord)
-    }
-
-    await moduleMocker.mock('@/security/token', () => ({
-      TokenValidator: mockTokenValidator,
-      TokenType
     }))
   })
 
@@ -88,12 +84,6 @@ describe('Check Invite', () => {
 
       expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
       expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
-
-      expect(mockTokenValidator.validate).toHaveBeenCalledWith(
-        mockTokenRecord,
-        TokenType.UserInvite
-      )
-      expect(mockTokenValidator.validate).toHaveBeenCalledTimes(1)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
         mockTokenRecord.userId
@@ -124,93 +114,63 @@ describe('Check Invite', () => {
     })
   })
 
-  describe('when token is not found', () => {
-    it('should throw TokenNotFound error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenNotFound)
-      })
-
-      try {
-        await checkInvite('invalid-token')
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenNotFound)
+  describe('when token validation fails', () => {
+    const invalidTokenCases: {
+      name: string
+      tokenRecord: () => TokenRecord | undefined
+      code: ErrorCode
+    }[] = [
+      {
+        name: 'not found',
+        tokenRecord: () => undefined,
+        code: ErrorCode.TokenNotFound
+      },
+      {
+        name: 'expired',
+        tokenRecord: () => ({
+          ...mockTokenRecord,
+          expiresAt: new Date(Date.now() - 1000)
+        }),
+        code: ErrorCode.TokenExpired
+      },
+      {
+        name: 'already used',
+        tokenRecord: () => ({ ...mockTokenRecord, status: TokenStatus.Used }),
+        code: ErrorCode.TokenAlreadyUsed
+      },
+      {
+        name: 'cancelled',
+        tokenRecord: () => ({
+          ...mockTokenRecord,
+          status: TokenStatus.Cancelled
+        }),
+        code: ErrorCode.TokenCancelled
+      },
+      {
+        name: 'of a different type',
+        tokenRecord: () => ({
+          ...mockTokenRecord,
+          type: TokenType.PasswordReset
+        }),
+        code: ErrorCode.TokenTypeMismatch
       }
+    ]
 
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
-    })
-  })
+    invalidTokenCases.forEach(({ name, tokenRecord, code }) => {
+      it(`should throw ${code} when token is ${name}`, async () => {
+        const record = tokenRecord()
+        mockTokenRepo.findByToken.mockImplementation(async () => record)
 
-  describe('when token is expired', () => {
-    it('should throw TokenExpired error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenExpired)
+        try {
+          await checkInvite(mockTokenString)
+          expect(true).toBe(false)
+        } catch (error) {
+          expect(error).toBeInstanceOf(AppError)
+          expect((error as AppError).code).toBe(code)
+        }
+
+        expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
       })
-
-      try {
-        await checkInvite(mockTokenString)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenExpired)
-      }
-
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token is already used', () => {
-    it('should throw TokenAlreadyUsed error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenAlreadyUsed)
-      })
-
-      try {
-        await checkInvite(mockTokenString)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenAlreadyUsed)
-      }
-
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token is cancelled', () => {
-    it('should throw TokenCancelled error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenCancelled)
-      })
-
-      try {
-        await checkInvite(mockTokenString)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenCancelled)
-      }
-
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('when token type is wrong', () => {
-    it('should throw TokenTypeMismatch error', async () => {
-      mockTokenValidator.validate.mockImplementation(() => {
-        throw new AppError(ErrorCode.TokenTypeMismatch)
-      })
-
-      try {
-        await checkInvite(mockTokenString)
-        expect(true).toBe(false)
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError)
-        expect((error as AppError).code).toBe(ErrorCode.TokenTypeMismatch)
-      }
-
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
     })
   })
 
