@@ -5,18 +5,23 @@ on:
     branches: [dev, main]
     paths:
       - 'apps/web/**'
+      - 'apps/admin/**'
       - 'packages/ui/**'
       - 'packages/i18n/**'
       - 'packages/contracts/**'
       - 'bun.lock'
       - '.github/workflows/web-bundle-analysis.yml'
 
+concurrency:
+  group: bundle-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   HUSKY: 0
 
 jobs:
-  analyze-bundle:
-    name: Bundle Analysis (RelativeCI)
+  analyze-bundle-web:
+    name: Web Bundle Analysis (RelativeCI)
     runs-on: ubuntu-latest
     container: oven/bun:1.4.2
     environment: web-test
@@ -40,3 +45,24 @@ jobs:
           key: ${{ secrets.RELATIVE_CI_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
           webpackStatsFile: apps/web/dist/webpack-stats.json
+
+  analyze-bundle-admin:
+    name: Admin Bundle Analysis (Codecov)
+    runs-on: ubuntu-latest
+    container: oven/bun:1.4.2
+    environment: web-test
+    defaults:
+      run:
+        working-directory: apps/admin
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Build and upload bundle stats to Codecov
+        run: bun run bundle:analyze
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

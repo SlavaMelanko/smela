@@ -2,10 +2,10 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { codecovVitePlugin } from '@codecov/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import webpackStatsPlugin from 'rollup-plugin-webpack-stats'
 import { defineConfig } from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -45,17 +45,12 @@ export default defineConfig({
         brotliSize: true,
         template: 'treemap'
       }),
+    // Codecov requires its plugin to be last
     process.env.ANALYZE_BUNDLE &&
-      webpackStatsPlugin({
-        filename: 'dist/webpack-stats.json',
-        stats: {
-          all: false,
-          assets: true,
-          chunks: true,
-          modules: true,
-          reasons: true,
-          chunkModules: true
-        }
+      codecovVitePlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: 'admin',
+        uploadToken: process.env.CODECOV_TOKEN
       })
   ].filter(Boolean),
   resolve: {
