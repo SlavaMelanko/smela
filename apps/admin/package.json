@@ -36,6 +36,7 @@
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
+    "@codecov/vite-plugin": "^2.0.1",
     "@faker-js/faker": "^10.5.0",
     "@smela/e2e": "workspace:*",
     "@smela/eslint": "workspace:*",
@@ -44,7 +45,6 @@
     "@vitejs/plugin-react": "^6.0.5",
     "babel-plugin-react-compiler": "^1.0.0",
     "rollup-plugin-visualizer": "^7.0.1",
-    "rollup-plugin-webpack-stats": "^3.1.3",
     "tailwindcss": "^4.3.3",
     "vite": "^8.2.0"
   }
