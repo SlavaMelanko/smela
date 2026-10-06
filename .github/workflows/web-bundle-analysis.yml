@@ -38,6 +38,9 @@ jobs:
 
       - name: Build and generate bundle stats
         run: bun run bundle:analyze
+        env:
+          # Any DSN works here because the build is only measured, never run
+          VITE_SENTRY_DSN: https://key@sentry.example.com/1
 
       - name: Upload bundle stats to RelativeCI
         uses: relative-ci/agent-action@v3
