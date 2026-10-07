@@ -13,43 +13,24 @@ export interface Options {
   tokenLength?: number
 }
 
-export const defaultOptionsMap = new Map<TokenType, Required<Options>>([
-  [
-    TokenType.EmailVerification,
-    {
-      expirySeconds: EMAIL_VERIFICATION_EXPIRY_SECONDS,
-      tokenLength: TOKEN_LENGTH
-    }
-  ],
-  [
-    TokenType.PasswordReset,
-    {
-      expirySeconds: PASSWORD_RESET_EXPIRY_SECONDS,
-      tokenLength: TOKEN_LENGTH
-    }
-  ],
-  [
-    TokenType.RefreshToken,
-    {
-      expirySeconds: REFRESH_TOKEN_EXPIRY_SECONDS,
-      tokenLength: TOKEN_LENGTH
-    }
-  ],
-  [
-    TokenType.UserInvite,
-    {
-      expirySeconds: USER_INVITATION_EXPIRY_SECONDS,
-      tokenLength: TOKEN_LENGTH
-    }
-  ]
-])
-
-export const getDefaultOptions = (type: TokenType): Required<Options> => {
-  const options = defaultOptionsMap.get(type)
-
-  if (!options) {
-    throw new Error(`Unknown token type: ${type}`)
+const defaultOptionsMap: Record<TokenType, Required<Options>> = {
+  [TokenType.EmailVerification]: {
+    expirySeconds: EMAIL_VERIFICATION_EXPIRY_SECONDS,
+    tokenLength: TOKEN_LENGTH
+  },
+  [TokenType.PasswordReset]: {
+    expirySeconds: PASSWORD_RESET_EXPIRY_SECONDS,
+    tokenLength: TOKEN_LENGTH
+  },
+  [TokenType.RefreshToken]: {
+    expirySeconds: REFRESH_TOKEN_EXPIRY_SECONDS,
+    tokenLength: TOKEN_LENGTH
+  },
+  [TokenType.UserInvite]: {
+    expirySeconds: USER_INVITATION_EXPIRY_SECONDS,
+    tokenLength: TOKEN_LENGTH
   }
-
-  return options
 }
+
+export const getDefaultOptions = (type: TokenType): Required<Options> =>
+  defaultOptionsMap[type]

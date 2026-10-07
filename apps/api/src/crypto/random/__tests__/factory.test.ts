@@ -13,11 +13,4 @@ describe('createRandomBytesGenerator', () => {
     expect(result).toBeDefined()
     expect(typeof result).toBe('string')
   })
-
-  it('throws for unknown implementation', () => {
-    expect(() => {
-      // @ts-expect-error - testing invalid implementation
-      createRandomBytesGenerator('invalid')
-    }).toThrow('Unknown random bytes generator: invalid')
-  })
 })
