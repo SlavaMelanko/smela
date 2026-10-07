@@ -9,7 +9,7 @@ export default typescriptConfig({
       internalPattern: ['^@/']
     }
   ],
-  filenameCaseIgnore: ['CLAUDE.md', 'WARP.md'],
+  filenameCaseIgnore: ['AGENTS.md', 'WARP.md'],
   rules: {
     'ts/strict-boolean-expressions': ['off'],
     'node/no-process-env': ['error'],

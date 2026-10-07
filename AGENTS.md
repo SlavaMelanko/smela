@@ -14,11 +14,11 @@ multi-tenancy, role-based access control, and permission-based access.
 
 ### Apps
 
-- `apps/api` — Bun/Hono backend (see [apps/api/CLAUDE.md](apps/api/CLAUDE.md))
+- `apps/api` — Bun/Hono backend (see [apps/api/AGENTS.md](apps/api/AGENTS.md))
 - `apps/web` — React/Vite frontend (see
-  [apps/web/CLAUDE.md](apps/web/CLAUDE.md))
+  [apps/web/AGENTS.md](apps/web/AGENTS.md))
 - `apps/admin` — Admin interface (see
-  [apps/admin/CLAUDE.md](apps/admin/CLAUDE.md))
+  [apps/admin/AGENTS.md](apps/admin/AGENTS.md))
 
 ### Packages
 

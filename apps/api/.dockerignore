@@ -10,7 +10,7 @@ node_modules
 
 # Documentation
 *.md
-CLAUDE.md
+AGENTS.md
 postman.json
 
 # OS

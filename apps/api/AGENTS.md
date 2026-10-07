@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 ## Project Overview
 
@@ -81,7 +81,7 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
 - **ESLint**: @antfu/eslint-config, strict. Class member order is enforced by
   `ts/member-ordering` in
   [packages/eslint/src/typescript.js](../../packages/eslint/src/typescript.js).
-- **Files**: kebab-case (except README.md, CLAUDE.md).
+- **Files**: kebab-case (except README.md, AGENTS.md).
 - **Imports**: `@/` path alias for src.
 - **Style**: arrow functions, 2-space indent, no semicolons, single quotes,
   curly braces always.
@@ -91,7 +91,7 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
 - **Return types**: lean on inference; annotate when returns are conditional,
   when you want protection against contract drift, or when the inferred type is
   unclear.
-- **Comments**: see [Comment Formatting](../../CLAUDE.md#comment-formatting).
+- **Comments**: see [Comment Formatting](../../AGENTS.md#comment-formatting).
 
 ### Interface Implementation Naming
 
