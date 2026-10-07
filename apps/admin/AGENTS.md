@@ -1,11 +1,11 @@
-# CLAUDE.md
+# AGENTS.md
 
 ## Project Overview
 
-This is the user version of the frontend application built with React 19, Vite,
-React Compiler, TanStack Query, and Tailwind CSS v4 with shadcn/ui. The project
-uses a custom backend API and emphasizes clear architecture, easy maintenance,
-and simple UX.
+This is the admin/owner version of the frontend application built with React 19,
+Vite, React Compiler, TanStack Query, and Tailwind CSS v4 with shadcn/ui. This
+app is dedicated to admin and owner functionality only, separated from the main
+user app for security and bundle optimization.
 
 React Compiler handles memoization — no manual `useMemo`/`useCallback`.
 
@@ -13,18 +13,18 @@ React Compiler handles memoization — no manual `useMemo`/`useCallback`.
 
 All script commands are defined in [package.json](package.json). Key workflows:
 
-- Development: `dev` (port 5173), `build`, `preview`, `bundle:analyze`
+- Development: `dev` (port 5175, avoids conflict with the user app on 5173),
+  `build`, `preview`, `bundle:analyze`
 - Code quality: `lint`, `lint:fix`, `format`, `format:fix`, `check` (runs
   format:fix and lint:fix)
 
 ## Architecture Overview
 
 - Shared components, contexts, layouts, and hooks come from `packages/ui`
-  (`@smela/ui`). `NotificationContext` is available to authenticated users only
-  (in `UserLayout`)
+  (`@smela/ui`)
 - Routes are defined in `/src/routes/router.jsx`. Guards: **PublicRoute**
   redirects authenticated users away from auth pages; **PrivateRoute** requires
-  authentication + valid status (`requireStatuses`)
+  authentication + admin/owner roles
 - Conventions live in skills: `react-artisan` (components, hooks, file
   organization), `tailwind-shadcn` (styling), `i18n` (translations)
 
