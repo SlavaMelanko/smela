@@ -1,116 +1,148 @@
+import HttpStatus from '@/net/http/status'
+
 import ErrorCode from './codes'
 
-interface ErrorDetails {
-  error: string
-}
-
-const ErrorRegistry: Record<ErrorCode, ErrorDetails> = {
+const ErrorRegistry: Record<
+  ErrorCode,
+  { message: string; status: HttpStatus }
+> = {
   // Auth errors
   [ErrorCode.AlreadyVerified]: {
-    error: 'User is already verified.'
+    message: 'User is already verified.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.EmailAlreadyInUse]: {
-    error: 'Email is already in use.'
+    message: 'Email is already in use.',
+    status: HttpStatus.CONFLICT
   },
   [ErrorCode.Forbidden]: {
-    error: 'Forbidden.'
+    message: 'Forbidden.',
+    status: HttpStatus.FORBIDDEN
   },
   [ErrorCode.InvalidCredentials]: {
-    error: 'Invalid email or password.'
+    message: 'Invalid email or password.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.InvalidPassword]: {
-    error: 'Current password is incorrect.'
+    message: 'Current password is incorrect.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.SocialAuthOnly]: {
-    error:
-      'This account uses social login. Please sign in with your social provider.'
+    message:
+      'This account uses social login. Please sign in with your social provider.',
+    status: HttpStatus.CONFLICT
   },
   [ErrorCode.Unauthorized]: {
-    error: 'Unauthorized access.'
+    message: 'Unauthorized access.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.GoogleEmailNotVerified]: {
-    error: 'Google email is not verified.'
+    message: 'Google email is not verified.',
+    status: HttpStatus.FORBIDDEN
   },
   [ErrorCode.GoogleOAuthCancelled]: {
-    error: 'Google sign-in was cancelled.'
+    message: 'Google sign-in was cancelled.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.GoogleOAuthFailed]: {
-    error: 'Google sign-in failed.'
+    message: 'Google sign-in failed.',
+    status: HttpStatus.BAD_GATEWAY
   },
   [ErrorCode.GoogleOAuthInvalidState]: {
-    error: 'Invalid Google sign-in state.'
+    message: 'Invalid Google sign-in state.',
+    status: HttpStatus.BAD_REQUEST
   },
 
   // Token errors
   [ErrorCode.TokenAlreadyUsed]: {
-    error: 'Token has already been used.'
+    message: 'Token has already been used.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.TokenCancelled]: {
-    error: 'Token has been cancelled.'
+    message: 'Token has been cancelled.',
+    status: HttpStatus.GONE
   },
   [ErrorCode.TokenDeprecated]: {
-    error: 'Token has been deprecated.'
+    message: 'Token has been deprecated.',
+    status: HttpStatus.GONE
   },
   [ErrorCode.TokenExpired]: {
-    error: 'Token has expired.'
+    message: 'Token has expired.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.TokenNotFound]: {
-    error: 'Token not found.'
+    message: 'Token not found.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.TokenTypeMismatch]: {
-    error: 'Token type mismatch.'
+    message: 'Token type mismatch.',
+    status: HttpStatus.BAD_REQUEST
   },
 
   // Refresh token errors
   [ErrorCode.InvalidRefreshToken]: {
-    error: 'Invalid refresh token.'
+    message: 'Invalid refresh token.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.RefreshTokenExpired]: {
-    error: 'Refresh token has expired.'
+    message: 'Refresh token has expired.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.RefreshTokenRevoked]: {
-    error: 'Refresh token has been revoked.'
+    message: 'Refresh token has been revoked.',
+    status: HttpStatus.UNAUTHORIZED
   },
   [ErrorCode.MissingRefreshToken]: {
-    error: 'Refresh token is missing.'
+    message: 'Refresh token is missing.',
+    status: HttpStatus.BAD_REQUEST
   },
 
   // Captcha errors
   [ErrorCode.CaptchaInvalidToken]: {
-    error: 'Invalid reCAPTCHA token.'
+    message: 'Invalid reCAPTCHA token.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.CaptchaValidationFailed]: {
-    error: 'reCAPTCHA token validation failed.'
+    message: 'reCAPTCHA token validation failed.',
+    status: HttpStatus.BAD_REQUEST
   },
 
   // Resource errors
   [ErrorCode.Conflict]: {
-    error: 'Resource already exists.'
+    message: 'Resource already exists.',
+    status: HttpStatus.CONFLICT
   },
   [ErrorCode.NotFound]: {
-    error: 'Resource not found.'
+    message: 'Resource not found.',
+    status: HttpStatus.NOT_FOUND
   },
 
   // System errors
   [ErrorCode.InternalError]: {
-    error: 'Internal server error.'
+    message: 'Internal server error.',
+    status: HttpStatus.INTERNAL_SERVER_ERROR
   },
   [ErrorCode.ValidationError]: {
-    error: 'Validation error.'
+    message: 'Validation error.',
+    status: HttpStatus.BAD_REQUEST
   },
 
   // Request errors
   [ErrorCode.RequestTooLarge]: {
-    error: 'Request body too large.'
+    message: 'Request body too large.',
+    status: HttpStatus.REQUEST_TOO_LONG
   },
   [ErrorCode.InvalidContentLength]: {
-    error: 'Invalid Content-Length header.'
+    message: 'Invalid Content-Length header.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.ContentLengthMismatch]: {
-    error: 'Content-Length header does not match actual body size.'
+    message: 'Content-Length header does not match actual body size.',
+    status: HttpStatus.BAD_REQUEST
   },
   [ErrorCode.BadRequest]: {
-    error: 'Bad request.'
+    message: 'Bad request.',
+    status: HttpStatus.BAD_REQUEST
   }
 }
 

@@ -4,32 +4,31 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { HTTPException } from 'hono/http-exception'
 
 import { isDevEnv } from '@/env'
-import { APP_ERROR_NAME, ErrorCode, ErrorRegistry } from '@/errors'
+import { APP_ERROR_NAME, AppError, ErrorCode, ErrorRegistry } from '@/errors'
 import { logger } from '@/logging'
-import { getReasonPhrase, HttpStatus } from '@/net/http'
+import { HttpStatus } from '@/net/http'
 import { getErrorTracker } from '@/services'
 
-import { getHttpStatus } from './http-status-mapper'
+// Only AppError and HTTPException carry client-safe messages. Any other error
+// (e.g. a database or network failure) may expose internals, so it gets the generic one
+const toPublicError = (err: Error): { code: ErrorCode; message: string } => {
+  if (err instanceof AppError) {
+    return { code: err.code, message: err.message }
+  }
 
-const getErrorCode = (err: unknown): ErrorCode => {
   if (err instanceof HTTPException) {
-    if (
+    const code =
       err.status >= HttpStatus.BAD_REQUEST &&
       err.status < HttpStatus.INTERNAL_SERVER_ERROR
-    ) {
-      return ErrorCode.BadRequest
-    }
+        ? ErrorCode.BadRequest
+        : ErrorCode.InternalError
 
-    if (err.status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      return ErrorCode.InternalError
-    }
+    return { code, message: err.message || ErrorRegistry[code].message }
   }
 
-  if (err && typeof err === 'object' && 'code' in err) {
-    return err.code as ErrorCode
-  }
+  const code = ErrorCode.InternalError
 
-  return ErrorCode.InternalError
+  return { code, message: ErrorRegistry[code].message }
 }
 
 const onError: ErrorHandler = (err, c) => {
@@ -37,17 +36,15 @@ const onError: ErrorHandler = (err, c) => {
 
   getErrorTracker().captureError(err)
 
-  const code = getErrorCode(err)
-  const status = getHttpStatus(code)
-  const error =
-    err.message || ErrorRegistry[code].error || getReasonPhrase(status)
+  const { code, message } = toPublicError(err)
+  const { status } = ErrorRegistry[code]
   const stack = isDevEnv() ? err.stack : undefined
 
   return c.json(
     {
       name: APP_ERROR_NAME,
       code,
-      error,
+      error: message,
       stack
     },
     status as ContentfulStatusCode

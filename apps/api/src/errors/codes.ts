@@ -1,4 +1,3 @@
-// Keep in sync: @/errors/registry.ts (messages) and @/handlers/http-status-mapper.ts (HTTP status)
 enum ErrorCode {
   AlreadyVerified = 'auth/already-verified',
   EmailAlreadyInUse = 'auth/email-already-in-use',

@@ -20,7 +20,7 @@ describe('notFound', () => {
     expect(res.status).toBe(HttpStatus.NOT_FOUND)
     expect(body).toEqual({
       code: ErrorCode.NotFound,
-      error: ErrorRegistry[ErrorCode.NotFound].error,
+      error: ErrorRegistry[ErrorCode.NotFound].message,
       name: APP_ERROR_NAME,
       path: '/unknown/path'
     })
