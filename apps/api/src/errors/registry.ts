@@ -7,10 +7,6 @@ const ErrorRegistry: Record<
   { message: string; status: HttpStatus }
 > = {
   // Auth errors
-  [ErrorCode.AlreadyVerified]: {
-    message: 'User is already verified.',
-    status: HttpStatus.BAD_REQUEST
-  },
   [ErrorCode.EmailAlreadyInUse]: {
     message: 'Email is already in use.',
     status: HttpStatus.CONFLICT

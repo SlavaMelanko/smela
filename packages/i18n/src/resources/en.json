@@ -4,7 +4,6 @@
   "appearance": "Appearance",
   "back": "Back",
   "backend": {
-    "auth/already-verified": "Invalid request. Please try logging in.",
     "auth/email-already-in-use": "Email is already taken.",
     "auth/forbidden": "Access denied.",
     "auth/google-email-not-verified": "Your Google email is not verified. Please verify it with Google and try again.",
