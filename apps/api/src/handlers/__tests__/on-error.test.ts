@@ -74,6 +74,25 @@ describe('onError', () => {
     })
   })
 
+  it('maps 5xx HTTPException without message to internal error', async () => {
+    const app = new Hono<AppContext>()
+
+    app.onError(onError)
+
+    app.get('/http-exception', () => {
+      throw new HTTPException(HttpStatus.SERVICE_UNAVAILABLE)
+    })
+
+    const res = await app.request('/http-exception')
+    const body = await res.json()
+
+    expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
+    expect(body).toMatchObject({
+      code: ErrorCode.InternalError,
+      error: ErrorRegistry[ErrorCode.InternalError].message
+    })
+  })
+
   it('omits stack trace in test environment', async () => {
     const app = new Hono<AppContext>()
 
