@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 import {

@@ -8,3 +8,6 @@ export const coreEnvVars = {
     .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'])
     .default('info')
 }
+
+export const isStagingOrProd = (nodeEnv?: string) =>
+  nodeEnv === 'staging' || nodeEnv === 'production'

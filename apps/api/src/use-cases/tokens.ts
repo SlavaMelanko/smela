@@ -3,7 +3,7 @@ import type { DeviceInfo } from '@/net/http/device'
 import type { Permission } from '@/types'
 
 import { refreshTokenRepo, tokenRepo } from '@/data'
-import env from '@/env'
+import { env } from '@/env'
 import { signJwt } from '@/security/jwt'
 import {
   generateHashedToken,

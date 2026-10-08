@@ -2,7 +2,7 @@ import type { EmailProvider, EmailProviderType } from '@smela/emails'
 
 import { EtherealEmailProvider, ResendEmailProvider } from '@smela/emails'
 
-import env from '@/env'
+import { env } from '@/env'
 import { logger } from '@/logging'
 
 const determineProvider = (): EmailProviderType =>

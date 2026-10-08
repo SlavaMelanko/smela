@@ -2,7 +2,7 @@ import type { Context } from 'hono'
 
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 
-import env, { isDevOrTestEnv } from '@/env'
+import { env, isDevOrTestEnv } from '@/env'
 
 export const setGoogleStateCookie = (c: Context, state: string): void => {
   setCookie(c, env.GOOGLE_OAUTH_STATE_COOKIE, state, {

@@ -6,7 +6,7 @@ import type {
   SocialLinksResolver
 } from '@smela/emails'
 
-import env from '@/env'
+import { env } from '@/env'
 import { logger } from '@/logging'
 
 import { createEmailProvider } from './provider-factory'

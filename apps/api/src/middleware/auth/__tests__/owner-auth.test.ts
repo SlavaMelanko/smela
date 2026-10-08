@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 
 import { testUuids } from '@/__tests__'
-import env from '@/env'
+import { env } from '@/env'
 import { ErrorCode } from '@/errors'
 import HttpStatus from '@/net/http/status'
 import { signJwt } from '@/security/jwt'

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 
-import env from '@/env'
+import { env } from '@/env'
 import { ErrorCode } from '@/errors'
 import HttpStatus from '@/net/http/status'
 

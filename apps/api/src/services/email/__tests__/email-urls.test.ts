@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import env from '@/env'
+import { env } from '@/env'
 import { Role } from '@/types'
 
 import {
