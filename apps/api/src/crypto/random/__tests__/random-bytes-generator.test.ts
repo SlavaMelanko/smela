@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import NodeRandomBytesGenerator from '../random-bytes-generator-node'
+import { NodeRandomBytesGenerator } from '../random-bytes-generator-node'
 
 describe('NodeRandomBytesGenerator', () => {
   const generator = new NodeRandomBytesGenerator()

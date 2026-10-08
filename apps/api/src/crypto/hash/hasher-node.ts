@@ -1,13 +1,13 @@
 import { Buffer } from 'node:buffer'
 import { createHash, timingSafeEqual } from 'node:crypto'
 
-import type Hasher from './hasher'
+import type { Hasher } from './hasher'
 
 export type HashAlgorithm = 'sha256' | 'sha512'
 
 export type DigestEncoding = 'hex' | 'base64' | 'base64url'
 
-class NodeHasher implements Hasher {
+export class NodeHasher implements Hasher {
   private readonly algorithm: HashAlgorithm
   private readonly digest: DigestEncoding
 
@@ -36,5 +36,3 @@ class NodeHasher implements Hasher {
     return timingSafeEqual(a, b)
   }
 }
-
-export default NodeHasher

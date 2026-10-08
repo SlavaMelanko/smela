@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import NodeHasher from '../hasher-node'
+import { NodeHasher } from '../hasher-node'
 
 describe('NodeHasher', () => {
   it('hashes with SHA-256 in hex format', async () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import BcryptHasher from '../hasher-bcrypt'
+import { BcryptHasher } from '../hasher-bcrypt'
 
 describe('BcryptHasher', () => {
   const hasher = new BcryptHasher()

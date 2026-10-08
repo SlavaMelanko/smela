@@ -1,6 +1,6 @@
-import type Hasher from './hasher'
+import type { Hasher } from './hasher'
 
-class BcryptHasher implements Hasher {
+export class BcryptHasher implements Hasher {
   private readonly saltRounds: number
 
   constructor(saltRounds: number = 10) {
@@ -18,5 +18,3 @@ class BcryptHasher implements Hasher {
     return Bun.password.verify(plain, hashed)
   }
 }
-
-export default BcryptHasher
