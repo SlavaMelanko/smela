@@ -1,7 +1,7 @@
-import type Hasher from './hasher'
+import type { Hasher } from './hasher'
 
-import BcryptHasher from './hasher-bcrypt'
-import NodeHasher from './hasher-node'
+import { BcryptHasher } from './hasher-bcrypt'
+import { NodeHasher } from './hasher-node'
 
 type Algorithm = 'bcrypt' | 'sha256' | 'sha512'
 

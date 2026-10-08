@@ -4,7 +4,6 @@
   "appearance": "Вигляд",
   "back": "Назад",
   "backend": {
-    "auth/already-verified": "Невірний запит. Спробуйте увійти в обліковий запис.",
     "auth/email-already-in-use": "Електронна адреса вже зайнята.",
     "auth/forbidden": "Доступ заборонено.",
     "auth/google-email-not-verified": "Вашу електронну адресу Google не підтверджено. Підтвердьте її в Google і спробуйте ще раз.",

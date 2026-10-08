@@ -1,6 +1,4 @@
-// Keep in sync: @/errors/registry.ts (messages) and @/handlers/http-status-mapper.ts (HTTP status)
-enum ErrorCode {
-  AlreadyVerified = 'auth/already-verified',
+export enum ErrorCode {
   EmailAlreadyInUse = 'auth/email-already-in-use',
   Forbidden = 'auth/forbidden',
   InvalidCredentials = 'auth/invalid-credentials',
@@ -37,5 +35,3 @@ enum ErrorCode {
   ContentLengthMismatch = 'request/content-length-mismatch',
   BadRequest = 'request/bad'
 }
-
-export default ErrorCode

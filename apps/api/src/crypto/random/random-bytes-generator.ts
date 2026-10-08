@@ -1,7 +1,7 @@
 /**
  * Generates cryptographically secure random bytes as encoded strings
  */
-export default interface RandomBytesGenerator {
+export interface RandomBytesGenerator {
   /**
    * Generates random bytes and returns them in the specified encoding
    * @param numberOfBytes - Number of random bytes to generate

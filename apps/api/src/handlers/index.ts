@@ -1,2 +1,2 @@
-export { default as notFound } from './not-found'
-export { default as onError } from './on-error'
+export * from './not-found'
+export * from './on-error'

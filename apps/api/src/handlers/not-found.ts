@@ -6,12 +6,9 @@ import type { AppContext } from '@/context'
 import { APP_ERROR_NAME, ErrorCode, ErrorRegistry } from '@/errors'
 import { getErrorTracker } from '@/services'
 
-import { getHttpStatus } from './http-status-mapper'
-
-const notFound: NotFoundHandler<AppContext> = c => {
+export const notFound: NotFoundHandler<AppContext> = c => {
   const code = ErrorCode.NotFound
-  const error = ErrorRegistry[code].error
-  const status = getHttpStatus(code)
+  const { message, status } = ErrorRegistry[code]
   const path = c.req.path
 
   getErrorTracker().captureMessage(`Not found: ${path}`, 'warning')
@@ -20,11 +17,9 @@ const notFound: NotFoundHandler<AppContext> = c => {
     {
       name: APP_ERROR_NAME,
       code,
-      error,
+      error: message,
       path
     },
     status as ContentfulStatusCode
   )
 }
-
-export default notFound

@@ -1,11 +1,9 @@
 import crypto from 'node:crypto'
 
-import type RandomBytesGenerator from './random-bytes-generator'
+import type { RandomBytesGenerator } from './random-bytes-generator'
 
-class NodeRandomBytesGenerator implements RandomBytesGenerator {
+export class NodeRandomBytesGenerator implements RandomBytesGenerator {
   generate(numberOfBytes: number, encoding: BufferEncoding = 'hex'): string {
     return crypto.randomBytes(numberOfBytes).toString(encoding)
   }
 }
-
-export default NodeRandomBytesGenerator
