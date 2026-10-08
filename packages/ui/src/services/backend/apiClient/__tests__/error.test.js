@@ -38,7 +38,7 @@ describe('createError', () => {
 
     expect(error).toBeInstanceOf(Error)
     expect(error.name).toBe('AppError')
-    expect(error.code).toBe('system:internal-error')
+    expect(error.code).toBe('system/internal-error')
     expect(error.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
     expect(error.message).toBe('Request failed with status 500')
   })
@@ -54,7 +54,7 @@ describe('createError', () => {
 
     expect(error).toBeInstanceOf(Error)
     expect(error.name).toBe('AppError')
-    expect(error.code).toBe('system:internal-error')
+    expect(error.code).toBe('system/internal-error')
     expect(error.status).toBe(HttpStatus.NOT_FOUND)
     expect(error.message).toBe('Request failed with status 404')
   })
@@ -72,7 +72,7 @@ describe('createError', () => {
 
     expect(error).toBeInstanceOf(Error)
     expect(error.name).toBe('AppError')
-    expect(error.code).toBe('system:internal-error')
+    expect(error.code).toBe('system/internal-error')
     expect(error.status).toBe(HttpStatus.UNAUTHORIZED)
     expect(error.message).toBe('Unauthorized access')
   })
