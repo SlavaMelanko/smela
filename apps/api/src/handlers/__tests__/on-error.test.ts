@@ -7,7 +7,7 @@ import type { AppContext } from '@/context'
 import { APP_ERROR_NAME, AppError, ErrorCode, ErrorRegistry } from '@/errors'
 import { HttpStatus } from '@/net/http'
 
-import onError from '../on-error'
+import { onError } from '../on-error'
 
 describe('onError', () => {
   it('returns AppError code, message, and status', async () => {

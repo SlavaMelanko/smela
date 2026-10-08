@@ -83,6 +83,8 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
   [packages/eslint/src/typescript.js](../../packages/eslint/src/typescript.js).
 - **Files**: kebab-case (except README.md, AGENTS.md).
 - **Imports**: `@/` path alias for src.
+- **Exports**: inline named exports (`export const`, `export class`,
+  `export enum`); no `export default`.
 - **Style**: arrow functions, 2-space indent, no semicolons, single quotes,
   curly braces always.
 - **Naming**: camelCase for objects/arrays, SCREAMING_SNAKE_CASE for primitive

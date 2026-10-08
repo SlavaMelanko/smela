@@ -1,8 +1,8 @@
 import HttpStatus from '@/net/http/status'
 
-import ErrorCode from './codes'
+import { ErrorCode } from './codes'
 
-const ErrorRegistry: Record<
+export const ErrorRegistry: Record<
   ErrorCode,
   { message: string; status: HttpStatus }
 > = {
@@ -141,5 +141,3 @@ const ErrorRegistry: Record<
     status: HttpStatus.BAD_REQUEST
   }
 }
-
-export default ErrorRegistry

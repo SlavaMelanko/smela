@@ -1,10 +1,10 @@
-import type ErrorCode from './codes'
+import type { ErrorCode } from './codes'
 
-import ErrorRegistry from './registry'
+import { ErrorRegistry } from './registry'
 
 export const APP_ERROR_NAME = 'AppError'
 
-class AppError extends Error {
+export class AppError extends Error {
   code: ErrorCode
 
   constructor(code: ErrorCode, message?: string) {
@@ -13,5 +13,3 @@ class AppError extends Error {
     this.name = APP_ERROR_NAME
   }
 }
-
-export default AppError

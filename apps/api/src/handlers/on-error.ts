@@ -31,7 +31,7 @@ const toPublicError = (err: Error): { code: ErrorCode; message: string } => {
   return { code, message: ErrorRegistry[code].message }
 }
 
-const onError: ErrorHandler = (err, c) => {
+export const onError: ErrorHandler = (err, c) => {
   logger.error(err)
 
   getErrorTracker().captureError(err)
@@ -50,5 +50,3 @@ const onError: ErrorHandler = (err, c) => {
     status as ContentfulStatusCode
   )
 }
-
-export default onError

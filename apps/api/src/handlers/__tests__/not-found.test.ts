@@ -6,7 +6,7 @@ import type { AppContext } from '@/context'
 import { APP_ERROR_NAME, ErrorCode, ErrorRegistry } from '@/errors'
 import { HttpStatus } from '@/net/http'
 
-import notFound from '../not-found'
+import { notFound } from '../not-found'
 
 describe('notFound', () => {
   it('returns 404 with error details for unknown routes', async () => {

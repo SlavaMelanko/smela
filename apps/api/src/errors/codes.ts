@@ -1,4 +1,4 @@
-enum ErrorCode {
+export enum ErrorCode {
   EmailAlreadyInUse = 'auth/email-already-in-use',
   Forbidden = 'auth/forbidden',
   InvalidCredentials = 'auth/invalid-credentials',
@@ -35,5 +35,3 @@ enum ErrorCode {
   ContentLengthMismatch = 'request/content-length-mismatch',
   BadRequest = 'request/bad'
 }
-
-export default ErrorCode

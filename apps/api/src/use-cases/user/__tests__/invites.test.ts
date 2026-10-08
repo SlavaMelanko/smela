@@ -13,8 +13,7 @@ import type {
 } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import AppError from '@/errors/app-error'
-import ErrorCode from '@/errors/codes'
+import { AppError, ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'

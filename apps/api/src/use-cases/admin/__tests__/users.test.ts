@@ -3,8 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { SearchResult, User, userRepo } from '@/data'
 
 import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
-import AppError from '@/errors/app-error'
-import ErrorCode from '@/errors/codes'
+import { AppError, ErrorCode } from '@/errors'
 import { Role, UserStatus } from '@/types'
 
 import { getUser, searchUsers } from '../users'

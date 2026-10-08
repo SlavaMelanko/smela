@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 
-import AppError, { APP_ERROR_NAME } from '../app-error'
-import ErrorCode from '../codes'
-import ErrorRegistry from '../registry'
+import { APP_ERROR_NAME, AppError } from '../app-error'
+import { ErrorCode } from '../codes'
+import { ErrorRegistry } from '../registry'
 
 describe('AppError', () => {
   test('takes message from ErrorRegistry by default', () => {

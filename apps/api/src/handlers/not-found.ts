@@ -6,7 +6,7 @@ import type { AppContext } from '@/context'
 import { APP_ERROR_NAME, ErrorCode, ErrorRegistry } from '@/errors'
 import { getErrorTracker } from '@/services'
 
-const notFound: NotFoundHandler<AppContext> = c => {
+export const notFound: NotFoundHandler<AppContext> = c => {
   const code = ErrorCode.NotFound
   const { message, status } = ErrorRegistry[code]
   const path = c.req.path
@@ -23,5 +23,3 @@ const notFound: NotFoundHandler<AppContext> = c => {
     status as ContentfulStatusCode
   )
 }
-
-export default notFound
