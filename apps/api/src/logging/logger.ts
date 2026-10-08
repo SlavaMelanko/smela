@@ -3,7 +3,7 @@ import type { DestinationStream } from 'pino'
 import pino from 'pino'
 import pretty from 'pino-pretty'
 
-import env, { isTestEnv } from '@/env'
+import { env, isTestEnv } from '@/env'
 
 import { getTransports } from './transports'
 

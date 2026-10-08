@@ -9,7 +9,7 @@ describe('createConsoleTransport', () => {
 
   const mockEnv = async (isDevOrTest: boolean) =>
     moduleMocker.mock('@/env', () => ({
-      default: { LOG_LEVEL: 'warn' },
+      env: { LOG_LEVEL: 'warn' },
       isDevOrTestEnv: () => isDevOrTest
     }))
 

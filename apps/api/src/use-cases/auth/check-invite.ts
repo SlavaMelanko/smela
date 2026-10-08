@@ -1,5 +1,5 @@
 import { rbacRepo, teamRepo, tokenRepo } from '@/data'
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { TokenType, TokenValidator } from '@/security/token'
 import { Role } from '@/types'

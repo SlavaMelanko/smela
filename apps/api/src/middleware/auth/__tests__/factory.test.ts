@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { testUuids } from '@/__tests__'
-import env from '@/env'
+import { env } from '@/env'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'

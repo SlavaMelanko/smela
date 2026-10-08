@@ -15,7 +15,7 @@ import {
   ModuleMocker,
   testUuids
 } from '@/__tests__'
-import env from '@/env'
+import { env } from '@/env'
 import { ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
 import { Role } from '@/types'

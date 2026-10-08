@@ -3,7 +3,7 @@ import type { Hono } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, get, ModuleMocker } from '@/__tests__'
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
 

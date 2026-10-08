@@ -1,7 +1,7 @@
 import type { PermissionsInput } from '@/types'
 
 import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { generateToken, TokenType } from '@/security/token'

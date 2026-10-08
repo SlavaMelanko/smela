@@ -17,7 +17,7 @@ describe('createEmailProvider', () => {
 
   const mockEnv = async (resendApiKey?: string) =>
     moduleMocker.mock('@/env', () => ({
-      default: { ...ethereal, EMAIL_RESEND_API_KEY: resendApiKey }
+      env: { ...ethereal, EMAIL_RESEND_API_KEY: resendApiKey }
     }))
 
   afterEach(async () => {

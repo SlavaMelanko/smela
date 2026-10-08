@@ -5,7 +5,7 @@ import { createMiddleware } from 'hono/factory'
 import type { AppContext } from '@/context'
 import type { Role, UserStatus } from '@/types'
 
-import env from '@/env'
+import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { getErrorTracker } from '@/services/error-tracker'

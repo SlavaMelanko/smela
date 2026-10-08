@@ -55,7 +55,6 @@ describe('validateEnvVars', () => {
 
     validateEnvVars(invalidEnv)
     expect(processExitMock).toHaveBeenCalledWith(1)
-    processExitMock.mockClear()
   }
 
   test('applies default values across all environments', () => {
@@ -211,56 +210,44 @@ describe('validateEnvVars', () => {
     expect(processExitMock).not.toHaveBeenCalled()
   })
 
-  test('rejects invalid database fields', () => {
-    const testCases = [
-      { field: 'POSTGRES_USER', value: undefined, desc: 'missing user' },
-      { field: 'POSTGRES_USER', value: 'usr', desc: 'user too short' },
-      {
-        field: 'POSTGRES_PASSWORD',
-        value: undefined,
-        desc: 'missing password'
-      },
-      { field: 'POSTGRES_DB', value: undefined, desc: 'missing database' },
-      { field: 'POSTGRES_HOST', value: 'host', desc: 'host too short' },
-      {
-        field: 'POSTGRES_MAX_CONNECTIONS',
-        value: '15',
-        desc: 'max connections exceeded'
-      }
-    ]
+  test.each([
+    { field: 'POSTGRES_USER', value: undefined, desc: 'missing user' },
+    { field: 'POSTGRES_USER', value: 'usr', desc: 'user too short' },
+    { field: 'POSTGRES_PASSWORD', value: undefined, desc: 'missing password' },
+    { field: 'POSTGRES_DB', value: undefined, desc: 'missing database' },
+    { field: 'POSTGRES_HOST', value: 'host', desc: 'host too short' },
+    {
+      field: 'POSTGRES_MAX_CONNECTIONS',
+      value: '15',
+      desc: 'max connections exceeded'
+    }
+  ])('rejects database field: $desc', ({ field, value }) =>
+    expectInvalidField(field, value)
+  )
 
-    testCases.forEach(({ field, value }) => expectInvalidField(field, value))
-  })
+  test.each([
+    { value: 'Short1!', desc: 'too short' },
+    { value: 'UPPERCASE123!', desc: 'no lowercase' },
+    { value: 'lowercase123!', desc: 'no uppercase' },
+    { value: 'NoNumbers!', desc: 'no numbers' },
+    { value: 'NoSymbols123', desc: 'no symbols' }
+  ])('rejects database password: $desc', ({ value }) =>
+    expectInvalidField('POSTGRES_PASSWORD', value)
+  )
 
-  test('rejects database passwords that fail complexity rules', () => {
-    const invalidPasswords = [
-      { value: 'Short1!', desc: 'too short' },
-      { value: 'UPPERCASE123!', desc: 'no lowercase' },
-      { value: 'lowercase123!', desc: 'no uppercase' },
-      { value: 'NoNumbers!', desc: 'no numbers' },
-      { value: 'NoSymbols123', desc: 'no symbols' }
-    ]
-
-    invalidPasswords.forEach(({ value }) =>
-      expectInvalidField('POSTGRES_PASSWORD', value)
-    )
-  })
-
-  test('rejects invalid required fields', () => {
-    const testCases = [
-      { field: 'JWT_SECRET', value: undefined, desc: 'missing JWT secret' },
-      { field: 'JWT_SECRET', value: 'short', desc: 'JWT secret too short' },
-      { field: 'NODE_ENV', value: 'invalid-env', desc: 'invalid NODE_ENV' },
-      { field: 'LOG_LEVEL', value: 'invalid-level', desc: 'invalid LOG_LEVEL' },
-      {
-        field: 'CAPTCHA_SECRET_KEY',
-        value: 'invalid-format',
-        desc: 'invalid CAPTCHA format'
-      }
-    ]
-
-    testCases.forEach(({ field, value }) => expectInvalidField(field, value))
-  })
+  test.each([
+    { field: 'JWT_SECRET', value: undefined, desc: 'missing JWT secret' },
+    { field: 'JWT_SECRET', value: 'short', desc: 'JWT secret too short' },
+    { field: 'NODE_ENV', value: 'invalid-env', desc: 'invalid NODE_ENV' },
+    { field: 'LOG_LEVEL', value: 'invalid-level', desc: 'invalid LOG_LEVEL' },
+    {
+      field: 'CAPTCHA_SECRET_KEY',
+      value: 'invalid-format',
+      desc: 'invalid CAPTCHA format'
+    }
+  ])('rejects required field: $desc', ({ field, value }) =>
+    expectInvalidField(field, value)
+  )
 
   test('accepts JWT_SECRET_PREVIOUS as optional and rejects a short one', () => {
     // Should work without JWT_SECRET_PREVIOUS (optional)

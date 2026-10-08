@@ -1,4 +1,4 @@
-import env from '@/env'
+import { env } from '@/env'
 import { isAdmin, Role } from '@/types'
 
 const getFeBaseUrl = (role: Role) =>

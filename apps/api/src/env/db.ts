@@ -19,10 +19,13 @@ export const dbEnvVars = {
   POSTGRES_MAX_CONNECTIONS: z.coerce.number().int().min(1).max(10).default(4)
 }
 
-export const createDbUrl = (
-  user: string,
-  password: string,
-  host: string,
-  port: number,
-  db: string
-): string => `postgresql://${user}:${password}@${host}:${port}/${db}`
+type DbEnv = z.infer<z.ZodObject<typeof dbEnvVars>>
+
+export const createDbUrl = ({
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_DB
+}: DbEnv): string =>
+  `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { isStagingOrProd } from './core'
+
 export const networkEnvVars = (nodeEnv?: string) => {
   const jwtSecretSchema = z.string().min(10)
 
@@ -20,21 +22,15 @@ export const networkEnvVars = (nodeEnv?: string) => {
     COOKIE_REFRESH_TOKEN_DOMAIN: z.string().optional(), // domain for cookies in production/staging
 
     // CORS: Required for staging/production, optional for dev/test
-    ALLOWED_ORIGINS: z
-      .string()
-      .optional()
-      .superRefine((val, ctx) => {
-        if (
-          (nodeEnv === 'staging' || nodeEnv === 'production') &&
-          (!val || val.trim() === '')
-        ) {
-          ctx.addIssue({
-            code: 'custom',
-            message:
-              'ALLOWED_ORIGINS is required for staging/production environments'
-          })
-        }
-      }),
+    ALLOWED_ORIGINS: isStagingOrProd(nodeEnv)
+      ? z
+          .string()
+          .trim()
+          .min(
+            1,
+            'ALLOWED_ORIGINS is required for staging/production environments'
+          )
+      : z.string().optional(),
 
     // Base URLs
     BE_BASE_URL: z.url().default('http://localhost:3000'),

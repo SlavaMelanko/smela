@@ -1,6 +1,6 @@
 import type { TransportTargetOptions } from 'pino'
 
-import env, { isDevOrTestEnv } from '@/env'
+import { env, isDevOrTestEnv } from '@/env'
 
 export const createConsoleTransport = (): TransportTargetOptions => {
   return isDevOrTestEnv()
