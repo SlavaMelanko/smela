@@ -327,7 +327,7 @@ describe('ApiClient', () => {
 
       await expect(apiClient.get('/protected')).rejects.toMatchObject({
         message: 'Unauthorized',
-        code: 'system:internal-error',
+        code: 'system/internal-error',
         status: HttpStatus.UNAUTHORIZED
       })
 
