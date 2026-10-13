@@ -476,9 +476,7 @@
     "name": {
       "label2": "Команда"
     },
-    "switcher": {
-      "label": "Змінити команду"
-    },
+    "switch": "Змінити команду",
     "tabs": {
       "general": "Загальне",
       "members": {

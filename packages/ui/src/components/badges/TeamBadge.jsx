@@ -74,7 +74,7 @@ export const TeamBadge = ({
 
       <DropdownMenu>
         <DropdownMenuTrigger
-          aria-label={t('team.switcher.label')}
+          aria-label={t('team.switch')}
           className='flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
         >
           <ChevronDown className='size-4' />

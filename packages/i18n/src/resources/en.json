@@ -470,9 +470,7 @@
     "name": {
       "label2": "Team"
     },
-    "switcher": {
-      "label": "Switch team"
-    },
+    "switch": "Switch team",
     "tabs": {
       "general": "General",
       "members": {
