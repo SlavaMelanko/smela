@@ -6,7 +6,11 @@ import { TeamBadge } from './TeamBadge'
 
 const initialTeams = [
   { id: 'kemmer', name: 'Kemmer and Co', position: 'Developer' },
-  { id: 'engineering', name: 'Engineering', position: 'Team lead' },
+  {
+    id: 'long-name',
+    name: 'International Engineering and Architecture Leadership Team',
+    position: 'Senior Software Engineer and Technical Lead'
+  },
   { id: 'design', name: 'Design', position: 'Designer' }
 ]
 
@@ -67,19 +71,4 @@ export const SingleTeam = {
 
 export const NoTeam = {
   render: () => <TeamSwitcherPreview initialTeams={[]} />
-}
-
-export const LongName = {
-  render: () => (
-    <TeamSwitcherPreview
-      initialTeams={[
-        {
-          id: 'long-name',
-          name: 'International Engineering and Architecture Leadership Team',
-          position: 'Senior Software Engineer and Technical Lead'
-        },
-        ...initialTeams
-      ]}
-    />
-  )
 }
