@@ -68,3 +68,18 @@ export const SingleTeam = {
 export const NoTeam = {
   render: () => <TeamSwitcherPreview initialTeams={[]} />
 }
+
+export const LongName = {
+  render: () => (
+    <TeamSwitcherPreview
+      initialTeams={[
+        {
+          id: 'long-name',
+          name: 'International Engineering and Architecture Leadership Team',
+          position: 'Senior Software Engineer and Technical Lead'
+        },
+        ...initialTeams
+      ]}
+    />
+  )
+}
