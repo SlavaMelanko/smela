@@ -59,9 +59,17 @@ export const Team = {
   ],
   render: () => (
     <div className='flex flex-col gap-4'>
-      <TeamBadge team={{ name: 'Engineering', position: 'Senior Developer' }} />
-      <TeamBadge team={{ name: 'Design', position: 'UI Designer' }} />
-      <TeamBadge team={{ name: 'No Position Team' }} />
+      <TeamBadge
+        team={{
+          id: 'engineering',
+          name: 'Engineering',
+          position: 'Senior Developer'
+        }}
+      />
+      <TeamBadge
+        team={{ id: 'design', name: 'Design', position: 'UI Designer' }}
+      />
+      <TeamBadge team={{ id: 'no-position', name: 'No Position Team' }} />
     </div>
   )
 }
