@@ -83,7 +83,10 @@ export const TeamsPage = () => {
           createLabel={id => t(`table.teams.${id}`)}
         />
         {canManageTeams && (
-          <AddButton label={t('add')} onClick={openCreateTeamDialog} />
+          <AddButton
+            label={t('team.add.title')}
+            onClick={openCreateTeamDialog}
+          />
         )}
       </Toolbar>
 

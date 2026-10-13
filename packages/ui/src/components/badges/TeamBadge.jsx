@@ -98,7 +98,7 @@ export const TeamBadge = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onCreateTeam} disabled={!onCreateTeam}>
             <Plus className='size-4' />
-            {t('team.switcher.create')}
+            {t('team.add.title')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

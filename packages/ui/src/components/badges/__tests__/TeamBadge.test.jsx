@@ -91,7 +91,7 @@ describe('TeamBadge', () => {
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))
     await user.click(
-      await screen.findByRole('menuitem', { name: 'Create a team' })
+      await screen.findByRole('menuitem', { name: 'Create team' })
     )
 
     expect(onCreateTeam).toHaveBeenCalledOnce()
@@ -109,7 +109,7 @@ describe('TeamBadge', () => {
     await user.click(screen.getByRole('button', { name: 'Switch team' }))
 
     expect(
-      await screen.findByRole('menuitem', { name: 'Create a team' })
+      await screen.findByRole('menuitem', { name: 'Create team' })
     ).toHaveAttribute('aria-disabled', 'true')
   })
 })

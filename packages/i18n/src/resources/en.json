@@ -456,7 +456,7 @@
     "add": {
       "cta": "Create",
       "success": "Team created.",
-      "title": "Add team"
+      "title": "Create team"
     },
     "members": {
       "empty": "No team members yet.",
@@ -471,7 +471,6 @@
       "label2": "Team"
     },
     "switcher": {
-      "create": "Create a team",
       "label": "Switch team"
     },
     "tabs": {
