@@ -10,8 +10,8 @@ const initialTeams = [
   { id: 'design', name: 'Design', position: 'Designer' }
 ]
 
-const TeamSwitcherPreview = () => {
-  const [teams, setTeams] = useState(initialTeams)
+const TeamSwitcherPreview = ({ initialTeams: previewTeams = initialTeams }) => {
+  const [teams, setTeams] = useState(previewTeams)
   const { openModal } = useModal()
 
   const createTeam = () => {
@@ -63,4 +63,8 @@ export const Switcher = {
 
 export const SingleTeam = {
   args: { teams: [initialTeams[0]] }
+}
+
+export const NoTeam = {
+  render: () => <TeamSwitcherPreview initialTeams={[]} />
 }

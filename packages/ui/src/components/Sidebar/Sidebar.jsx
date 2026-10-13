@@ -33,7 +33,7 @@ const formatBadge = count => {
   return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
 }
 
-export const Sidebar = ({ items, teams = [], onTeamChange, onCreateTeam }) => {
+export const Sidebar = ({ items, teams, onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -127,7 +127,7 @@ export const Sidebar = ({ items, teams = [], onTeamChange, onCreateTeam }) => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {teams.length > 0 && (
+        {teams && (
           <TeamBadge
             teams={teams}
             onTeamChange={onTeamChange}

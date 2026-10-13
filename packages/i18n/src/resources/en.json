@@ -458,6 +458,7 @@
       "success": "Team created.",
       "title": "Create team"
     },
+    "empty": "No team yet",
     "members": {
       "empty": "No team members yet.",
       "remove": {

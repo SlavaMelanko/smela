@@ -5,10 +5,27 @@ import { renderWithProviders } from '@ui/tests'
 import { TeamBadge } from '../TeamBadge'
 
 describe('TeamBadge', () => {
-  it('renders nothing when there are no teams', () => {
+  it('shows the no-team state with creation disabled until a callback is provided', () => {
     renderWithProviders(<TeamBadge teams={[]} />)
 
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(screen.getByText('No team yet')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Create team' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Switch team' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('creates the first team from the empty state without navigating', async () => {
+    const user = userEvent.setup()
+    const onCreateTeam = vi.fn()
+
+    renderWithProviders(<TeamBadge teams={[]} onCreateTeam={onCreateTeam} />)
+
+    await user.click(screen.getByRole('button', { name: 'Create team' }))
+
+    expect(onCreateTeam).toHaveBeenCalledOnce()
+    expect(globalThis.mockNavigate).not.toHaveBeenCalled()
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
   it('uses the first team in the ordered list as active', async () => {
