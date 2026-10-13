@@ -53,14 +53,14 @@ const TeamBadgeDetails = ({ team }) => {
   )
 }
 
-export const TeamBadge = ({
-  team,
-  teams = [team],
-  onTeamChange,
-  onCreateTeam
-}) => {
+export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
   const navigate = useNavigate()
+  const [team] = teams
+
+  if (!team) {
+    return null
+  }
 
   return (
     <div className='flex w-full rounded-lg border border-sidebar-border bg-sidebar-accent/50'>

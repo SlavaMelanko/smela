@@ -60,16 +60,18 @@ export const Team = {
   render: () => (
     <div className='flex flex-col gap-4'>
       <TeamBadge
-        team={{
-          id: 'engineering',
-          name: 'Engineering',
-          position: 'Senior Developer'
-        }}
+        teams={[
+          {
+            id: 'engineering',
+            name: 'Engineering',
+            position: 'Senior Developer'
+          }
+        ]}
       />
       <TeamBadge
-        team={{ id: 'design', name: 'Design', position: 'UI Designer' }}
+        teams={[{ id: 'design', name: 'Design', position: 'UI Designer' }]}
       />
-      <TeamBadge team={{ id: 'no-position', name: 'No Position Team' }} />
+      <TeamBadge teams={[{ id: 'no-position', name: 'No Position Team' }]} />
     </div>
   )
 }

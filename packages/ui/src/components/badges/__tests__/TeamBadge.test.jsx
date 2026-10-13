@@ -5,6 +5,39 @@ import { renderWithProviders } from '@ui/tests'
 import { TeamBadge } from '../TeamBadge'
 
 describe('TeamBadge', () => {
+  it('renders nothing when there are no teams', () => {
+    renderWithProviders(<TeamBadge teams={[]} />)
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('uses the first team in the ordered list as active', async () => {
+    const user = userEvent.setup()
+    const teams = [
+      { id: 'design', name: 'Design', position: 'Designer' },
+      { id: 'engineering', name: 'Engineering', position: 'Developer' }
+    ]
+
+    renderWithProviders(<TeamBadge teams={teams} />)
+
+    expect(screen.getByRole('button', { name: /Design/ })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Engineering/ })
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Switch team' }))
+
+    const menu = await screen.findByRole('menu')
+
+    expect(
+      within(menu).getByRole('menuitemradio', { name: /Design/ })
+    ).toHaveAttribute('aria-checked', 'true')
+
+    expect(
+      within(menu).getByRole('menuitemradio', { name: /Engineering/ })
+    ).toHaveAttribute('aria-checked', 'false')
+  })
+
   it('renders team badge with name, position, icon, and button', () => {
     const team = {
       id: 'engineering',
@@ -12,7 +45,7 @@ describe('TeamBadge', () => {
       position: 'Senior Developer'
     }
 
-    renderWithProviders(<TeamBadge team={team} />)
+    renderWithProviders(<TeamBadge teams={[team]} />)
 
     const button = screen.getByRole('button', {
       name: `${team.name}${team.position}`
@@ -27,7 +60,7 @@ describe('TeamBadge', () => {
   it('renders default position when position is missing', () => {
     const teamWithoutPosition = { id: 'design', name: 'Design Team' }
 
-    renderWithProviders(<TeamBadge team={teamWithoutPosition} />)
+    renderWithProviders(<TeamBadge teams={[teamWithoutPosition]} />)
 
     expect(screen.getByText('Team member')).toBeInTheDocument()
   })
@@ -36,7 +69,7 @@ describe('TeamBadge', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <TeamBadge team={{ id: 'engineering', name: 'Engineering' }} />
+      <TeamBadge teams={[{ id: 'engineering', name: 'Engineering' }]} />
     )
 
     await user.click(screen.getByRole('button', { name: /Engineering/ }))
@@ -53,9 +86,7 @@ describe('TeamBadge', () => {
     ]
     const onTeamChange = vi.fn()
 
-    renderWithProviders(
-      <TeamBadge team={teams[0]} teams={teams} onTeamChange={onTeamChange} />
-    )
+    renderWithProviders(<TeamBadge teams={teams} onTeamChange={onTeamChange} />)
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))
 
@@ -83,7 +114,7 @@ describe('TeamBadge', () => {
 
     renderWithProviders(
       <TeamBadge
-        team={{ id: 'engineering', name: 'Engineering' }}
+        teams={[{ id: 'engineering', name: 'Engineering' }]}
         onCreateTeam={onCreateTeam}
         onTeamChange={onTeamChange}
       />
@@ -103,7 +134,7 @@ describe('TeamBadge', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <TeamBadge team={{ id: 'engineering', name: 'Engineering' }} />
+      <TeamBadge teams={[{ id: 'engineering', name: 'Engineering' }]} />
     )
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))

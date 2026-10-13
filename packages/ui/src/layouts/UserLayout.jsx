@@ -8,12 +8,12 @@ import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { Suspense } from 'react'
 
 export const UserLayout = () => {
-  const { items, team } = useSidebarMenu()
+  const { items, teams } = useSidebarMenu()
 
   return (
     <NotificationProvider>
       <SidebarProvider>
-        <Sidebar items={items} team={team} />
+        <Sidebar items={items} teams={teams} />
         <SidebarInset>
           <header className='flex shrink-0 items-center z-10 h-11.25 px-4 md:px-8 bg-sidebar border-b border-sidebar-border'>
             <Header />

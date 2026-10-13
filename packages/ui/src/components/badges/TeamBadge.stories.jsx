@@ -12,7 +12,6 @@ const initialTeams = [
 
 const TeamSwitcherPreview = () => {
   const [teams, setTeams] = useState(initialTeams)
-  const [teamId, setTeamId] = useState(initialTeams[0].id)
   const { openModal } = useModal()
 
   const createTeam = () => {
@@ -23,8 +22,7 @@ const TeamSwitcherPreview = () => {
           onSubmit={data => {
             const team = { ...data, id: crypto.randomUUID() }
 
-            setTeams(current => [...current, team])
-            setTeamId(team.id)
+            setTeams(current => [team, ...current])
             close()
           }}
         />
@@ -34,9 +32,13 @@ const TeamSwitcherPreview = () => {
 
   return (
     <TeamBadge
-      team={teams.find(team => team.id === teamId)}
       teams={teams}
-      onTeamChange={setTeamId}
+      onTeamChange={teamId => {
+        setTeams(current => [
+          current.find(team => team.id === teamId),
+          ...current.filter(team => team.id !== teamId)
+        ])
+      }}
       onCreateTeam={createTeam}
     />
   )
@@ -60,5 +62,5 @@ export const Switcher = {
 }
 
 export const SingleTeam = {
-  args: { team: initialTeams[0] }
+  args: { teams: [initialTeams[0]] }
 }

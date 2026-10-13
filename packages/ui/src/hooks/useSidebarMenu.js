@@ -16,5 +16,5 @@ export const useSidebarMenu = () => {
     items = filterByPermission(getAdminMenuItems(), can)
   }
 
-  return { items, team }
+  return { items, teams: team ? [team] : [] }
 }
