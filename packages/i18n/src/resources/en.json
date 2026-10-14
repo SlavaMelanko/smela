@@ -456,8 +456,9 @@
     "add": {
       "cta": "Create",
       "success": "Team created.",
-      "title": "Add team"
+      "title": "Create team"
     },
+    "empty": "No team yet",
     "members": {
       "empty": "No team members yet.",
       "remove": {
@@ -470,6 +471,7 @@
     "name": {
       "label2": "Team"
     },
+    "switch": "Switch team",
     "tabs": {
       "general": "General",
       "members": {

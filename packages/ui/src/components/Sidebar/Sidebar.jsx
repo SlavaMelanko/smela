@@ -1,6 +1,6 @@
-import { TeamBadge } from '@ui/components/badges'
 import { Copyright } from '@ui/components/Copyright'
 import { ChevronIcon, Logo } from '@ui/components/icons'
+import { TeamSwitcher } from '@ui/components/TeamSwitcher'
 import {
   Badge,
   Collapsible,
@@ -33,7 +33,7 @@ const formatBadge = count => {
   return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
 }
 
-export const Sidebar = ({ items, team }) => {
+export const Sidebar = ({ items, teams, onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -127,7 +127,13 @@ export const Sidebar = ({ items, team }) => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {team && <TeamBadge team={team} />}
+        {teams && (
+          <TeamSwitcher
+            teams={teams}
+            onTeamChange={onTeamChange}
+            onCreateTeam={onCreateTeam}
+          />
+        )}
         <Copyright />
       </SidebarFooter>
     </ShadcnSidebar>

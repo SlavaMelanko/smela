@@ -1,5 +1,4 @@
 import { LastActiveBadge } from './LastActiveBadge'
-import { TeamBadge } from './TeamBadge'
 import { YouBadge } from './YouBadge'
 
 const ago = seconds => new Date(Date.now() - seconds * 1000).toISOString()
@@ -44,25 +43,6 @@ export const LastActive = {
         ))}
       </tbody>
     </table>
-  )
-}
-
-export const Team = {
-  decorators: [
-    Story => (
-      <div className='flex items-center justify-center p-6'>
-        <div className='w-64'>
-          <Story />
-        </div>
-      </div>
-    )
-  ],
-  render: () => (
-    <div className='flex flex-col gap-4'>
-      <TeamBadge team={{ name: 'Engineering', position: 'Senior Developer' }} />
-      <TeamBadge team={{ name: 'Design', position: 'UI Designer' }} />
-      <TeamBadge team={{ name: 'No Position Team' }} />
-    </div>
   )
 }
 

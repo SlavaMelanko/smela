@@ -9,12 +9,14 @@ export const useSidebarMenu = () => {
   const { user: me, team, can } = useCurrentUser()
 
   let items = []
+  let teams
 
   if (isUser(me?.role)) {
     items = getUserMenuItems()
+    teams = team ? [team] : []
   } else if (isAdmin(me?.role)) {
     items = filterByPermission(getAdminMenuItems(), can)
   }
 
-  return { items, team }
+  return { items, teams }
 }
