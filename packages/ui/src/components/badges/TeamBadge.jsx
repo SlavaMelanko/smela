@@ -53,6 +53,36 @@ const TeamBadgeDetails = ({ team }) => {
   )
 }
 
+const CreateTeamItem = ({ onCreateTeam }) => {
+  const { t } = useLocale()
+
+  return (
+    <DropdownMenuItem onClick={onCreateTeam} disabled={!onCreateTeam}>
+      <Plus className='size-4' />
+      {t('team.add.title')}
+    </DropdownMenuItem>
+  )
+}
+
+const TeamList = ({ teams, onTeamChange }) => {
+  const [activeTeam] = teams
+
+  return (
+    <DropdownMenuRadioGroup value={activeTeam.id} onValueChange={onTeamChange}>
+      {teams.map(team => (
+        <DropdownMenuRadioItem
+          key={team.id}
+          value={team.id}
+          disabled={!onTeamChange && team.id !== activeTeam.id}
+          className='py-3'
+        >
+          <TeamBadgeDetails team={team} />
+        </DropdownMenuRadioItem>
+      ))}
+    </DropdownMenuRadioGroup>
+  )
+}
+
 export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
   const navigate = useNavigate()
@@ -102,23 +132,9 @@ export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
           align='end'
           className='w-72 max-w-[calc(100vw-2rem)]'
         >
-          <DropdownMenuRadioGroup value={team.id} onValueChange={onTeamChange}>
-            {teams.map(availableTeam => (
-              <DropdownMenuRadioItem
-                key={availableTeam.id}
-                value={availableTeam.id}
-                disabled={!onTeamChange && availableTeam.id !== team.id}
-                className='py-3'
-              >
-                <TeamBadgeDetails team={availableTeam} />
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
+          <TeamList teams={teams} onTeamChange={onTeamChange} />
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onCreateTeam} disabled={!onCreateTeam}>
-            <Plus className='size-4' />
-            {t('team.add.title')}
-          </DropdownMenuItem>
+          <CreateTeamItem onCreateTeam={onCreateTeam} />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
