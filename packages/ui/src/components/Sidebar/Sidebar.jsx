@@ -1,6 +1,6 @@
-import { TeamBadge } from '@ui/components/badges'
 import { Copyright } from '@ui/components/Copyright'
 import { ChevronIcon, Logo } from '@ui/components/icons'
+import { TeamSwitcher } from '@ui/components/TeamSwitcher'
 import {
   Badge,
   Collapsible,
@@ -128,7 +128,7 @@ export const Sidebar = ({ items, teams, onTeamChange, onCreateTeam }) => {
       </SidebarContent>
       <SidebarFooter>
         {teams && (
-          <TeamBadge
+          <TeamSwitcher
             teams={teams}
             onTeamChange={onTeamChange}
             onCreateTeam={onCreateTeam}

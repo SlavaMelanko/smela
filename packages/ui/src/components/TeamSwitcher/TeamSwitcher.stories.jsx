@@ -2,7 +2,7 @@ import { CreateTeamDialog } from '@ui/components/dialogs'
 import { useModal } from '@ui/hooks/useModal'
 import { useState } from 'react'
 
-import { TeamBadge } from './TeamBadge'
+import { TeamSwitcher } from './TeamSwitcher'
 
 const initialTeams = [
   { id: 'kemmer', name: 'Kemmer and Co', position: 'Developer' },
@@ -35,7 +35,7 @@ const TeamSwitcherPreview = ({ initialTeams: previewTeams = initialTeams }) => {
   }
 
   return (
-    <TeamBadge
+    <TeamSwitcher
       teams={teams}
       onTeamChange={teamId => {
         setTeams(current => [
@@ -49,8 +49,8 @@ const TeamSwitcherPreview = ({ initialTeams: previewTeams = initialTeams }) => {
 }
 
 export default {
-  title: 'Components/TeamBadge',
-  component: TeamBadge,
+  title: 'Components/TeamSwitcher',
+  component: TeamSwitcher,
   parameters: { layout: 'centered' },
   decorators: [
     Story => (

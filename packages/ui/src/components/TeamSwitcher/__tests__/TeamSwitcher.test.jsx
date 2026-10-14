@@ -2,11 +2,11 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithProviders } from '@ui/tests'
 
-import { TeamBadge } from '../TeamBadge'
+import { TeamSwitcher } from '../TeamSwitcher'
 
-describe('TeamBadge', () => {
+describe('TeamSwitcher', () => {
   it('shows the no-team state with creation disabled until a callback is provided', () => {
-    renderWithProviders(<TeamBadge teams={[]} />)
+    renderWithProviders(<TeamSwitcher teams={[]} />)
 
     expect(screen.getByText('No team yet')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Create team' })).toBeDisabled()
@@ -19,7 +19,7 @@ describe('TeamBadge', () => {
     const user = userEvent.setup()
     const onCreateTeam = vi.fn()
 
-    renderWithProviders(<TeamBadge teams={[]} onCreateTeam={onCreateTeam} />)
+    renderWithProviders(<TeamSwitcher teams={[]} onCreateTeam={onCreateTeam} />)
 
     await user.click(screen.getByRole('button', { name: 'Create team' }))
 
@@ -35,7 +35,7 @@ describe('TeamBadge', () => {
       { id: 'engineering', name: 'Engineering', position: 'Developer' }
     ]
 
-    renderWithProviders(<TeamBadge teams={teams} />)
+    renderWithProviders(<TeamSwitcher teams={teams} />)
 
     expect(screen.getByRole('button', { name: /Design/ })).toBeInTheDocument()
     expect(
@@ -62,7 +62,7 @@ describe('TeamBadge', () => {
       position: 'Senior Developer'
     }
 
-    renderWithProviders(<TeamBadge teams={[team]} />)
+    renderWithProviders(<TeamSwitcher teams={[team]} />)
 
     const button = screen.getByRole('button', {
       name: `${team.name}${team.position}`
@@ -77,7 +77,7 @@ describe('TeamBadge', () => {
   it('renders default position when position is missing', () => {
     const teamWithoutPosition = { id: 'design', name: 'Design Team' }
 
-    renderWithProviders(<TeamBadge teams={[teamWithoutPosition]} />)
+    renderWithProviders(<TeamSwitcher teams={[teamWithoutPosition]} />)
 
     expect(screen.getByText('Team member')).toBeInTheDocument()
   })
@@ -86,7 +86,7 @@ describe('TeamBadge', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <TeamBadge teams={[{ id: 'engineering', name: 'Engineering' }]} />
+      <TeamSwitcher teams={[{ id: 'engineering', name: 'Engineering' }]} />
     )
 
     await user.click(screen.getByRole('button', { name: /Engineering/ }))
@@ -103,7 +103,9 @@ describe('TeamBadge', () => {
     ]
     const onTeamChange = vi.fn()
 
-    renderWithProviders(<TeamBadge teams={teams} onTeamChange={onTeamChange} />)
+    renderWithProviders(
+      <TeamSwitcher teams={teams} onTeamChange={onTeamChange} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))
 
@@ -130,7 +132,7 @@ describe('TeamBadge', () => {
     const onTeamChange = vi.fn()
 
     renderWithProviders(
-      <TeamBadge
+      <TeamSwitcher
         teams={[{ id: 'engineering', name: 'Engineering' }]}
         onCreateTeam={onCreateTeam}
         onTeamChange={onTeamChange}
@@ -151,7 +153,7 @@ describe('TeamBadge', () => {
     const user = userEvent.setup()
 
     renderWithProviders(
-      <TeamBadge teams={[{ id: 'engineering', name: 'Engineering' }]} />
+      <TeamSwitcher teams={[{ id: 'engineering', name: 'Engineering' }]} />
     )
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))

@@ -9,49 +9,10 @@ import {
 } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
-import { ChevronDown, Plus, Users } from 'lucide-react'
+import { ChevronDown, Plus } from 'lucide-react'
 
-const TeamBadgeIcon = ({ icon: Icon }) => (
-  <div className='flex shrink-0 items-center justify-center size-9 rounded-full text-sidebar-primary'>
-    <Icon className='size-6' />
-  </div>
-)
-
-const TeamBadgeContent = ({ children }) => (
-  <div className='flex min-w-0 flex-col gap-2'>{children}</div>
-)
-
-const TeamBadgeName = ({ children }) => (
-  <span className='truncate text-left text-base font-medium leading-tight text-sidebar-foreground'>
-    {children}
-  </span>
-)
-
-const TeamBadgePosition = ({ position }) => {
-  if (!position) {
-    return null
-  }
-
-  return (
-    <span className='truncate text-left text-xs font-light text-muted-foreground'>
-      {position}
-    </span>
-  )
-}
-
-const TeamInfo = ({ team }) => {
-  const { t } = useLocale()
-
-  return (
-    <>
-      <TeamBadgeIcon icon={Users} />
-      <TeamBadgeContent>
-        <TeamBadgeName>{team.name}</TeamBadgeName>
-        <TeamBadgePosition position={team.position || t('position.default')} />
-      </TeamBadgeContent>
-    </>
-  )
-}
+import { EmptyState } from './EmptyState'
+import { TeamInfo } from './TeamInfo'
 
 const CurrentTeamButton = ({ team }) => {
   const navigate = useNavigate()
@@ -62,7 +23,7 @@ const CurrentTeamButton = ({ team }) => {
       onClick={() => navigate('/team')}
       className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring'
     >
-      <TeamInfo team={team} />
+      <TeamInfo name={team.name} position={team.position} />
     </button>
   )
 }
@@ -90,38 +51,19 @@ const TeamList = ({ teams, onTeamChange }) => {
           disabled={!onTeamChange && team.id !== activeTeam.id}
           className='py-3'
         >
-          <TeamInfo team={team} />
+          <TeamInfo name={team.name} position={team.position} />
         </DropdownMenuRadioItem>
       ))}
     </DropdownMenuRadioGroup>
   )
 }
 
-export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
+export const TeamSwitcher = ({ teams = [], onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
   const [team] = teams
 
   if (!team) {
-    return (
-      <button
-        type='button'
-        aria-label={t('team.add.title')}
-        onClick={onCreateTeam}
-        disabled={!onCreateTeam}
-        className='flex w-full cursor-pointer rounded-lg border border-sidebar-border bg-sidebar-accent/50 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring disabled:cursor-default disabled:opacity-50'
-      >
-        <div className='flex min-w-0 flex-1 items-center gap-2 px-2 py-4'>
-          <TeamBadgeIcon icon={Users} />
-          <TeamBadgeContent>
-            <TeamBadgeName>{t('team.empty')}</TeamBadgeName>
-            <TeamBadgePosition position={t('team.add.title')} />
-          </TeamBadgeContent>
-        </div>
-        <span className='flex w-10 shrink-0 items-center justify-center border-l border-sidebar-border text-sidebar-foreground'>
-          <Plus className='size-4' />
-        </span>
-      </button>
-    )
+    return <EmptyState onCreateTeam={onCreateTeam} />
   }
 
   return (
