@@ -7,7 +7,7 @@ const TeamIcon = ({ icon: Icon }) => (
   </div>
 )
 
-const TeamInfoContent = ({ children }) => (
+const TeamBody = ({ children }) => (
   <div className='flex min-w-0 flex-col gap-2'>{children}</div>
 )
 
@@ -35,10 +35,10 @@ export const TeamInfo = ({ name, position }) => {
   return (
     <>
       <TeamIcon icon={Users} />
-      <TeamInfoContent>
+      <TeamBody>
         <TeamName>{name}</TeamName>
         <TeamPosition position={position || t('position.default')} />
-      </TeamInfoContent>
+      </TeamBody>
     </>
   )
 }
