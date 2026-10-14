@@ -39,7 +39,7 @@ const TeamBadgePosition = ({ position }) => {
   )
 }
 
-const TeamBadgeDetails = ({ team }) => {
+const TeamInfo = ({ team }) => {
   const { t } = useLocale()
 
   return (
@@ -50,6 +50,20 @@ const TeamBadgeDetails = ({ team }) => {
         <TeamBadgePosition position={team.position || t('position.default')} />
       </TeamBadgeContent>
     </>
+  )
+}
+
+const CurrentTeamButton = ({ team }) => {
+  const navigate = useNavigate()
+
+  return (
+    <button
+      type='button'
+      onClick={() => navigate('/team')}
+      className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring'
+    >
+      <TeamInfo team={team} />
+    </button>
   )
 }
 
@@ -76,7 +90,7 @@ const TeamList = ({ teams, onTeamChange }) => {
           disabled={!onTeamChange && team.id !== activeTeam.id}
           className='py-3'
         >
-          <TeamBadgeDetails team={team} />
+          <TeamInfo team={team} />
         </DropdownMenuRadioItem>
       ))}
     </DropdownMenuRadioGroup>
@@ -85,7 +99,6 @@ const TeamList = ({ teams, onTeamChange }) => {
 
 export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
   const { t } = useLocale()
-  const navigate = useNavigate()
   const [team] = teams
 
   if (!team) {
@@ -113,13 +126,7 @@ export const TeamBadge = ({ teams = [], onTeamChange, onCreateTeam }) => {
 
   return (
     <div className='flex w-full rounded-lg border border-sidebar-border bg-sidebar-accent/50'>
-      <button
-        type='button'
-        onClick={() => navigate('/team')}
-        className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring'
-      >
-        <TeamBadgeDetails team={team} />
-      </button>
+      <CurrentTeamButton team={team} />
 
       <DropdownMenu>
         <DropdownMenuTrigger
