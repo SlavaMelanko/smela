@@ -2,11 +2,7 @@ import type { DeviceInfo } from '@/net/http/device'
 
 import { authRepo, db, rbacRepo, teamRepo, userRepo } from '@/data'
 import { exchangeCodeForProfile } from '@/services/google'
-import {
-  AuthProvider,
-  getSelfServeUserDefaultPermissions,
-  UserStatus
-} from '@/types'
+import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens } from '../tokens'
@@ -47,7 +43,7 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
 
       await rbacRepo.setUserPermissions(
         user.id,
-        getSelfServeUserDefaultPermissions(),
+        getUserDefaultPermissions(),
         tx
       )
     }

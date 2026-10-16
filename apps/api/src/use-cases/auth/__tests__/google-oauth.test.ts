@@ -18,11 +18,7 @@ import {
 } from '@/__tests__'
 import { verifyJwt } from '@/security/jwt'
 import { hashToken } from '@/security/token'
-import {
-  AuthProvider,
-  getSelfServeUserDefaultPermissions,
-  UserStatus
-} from '@/types'
+import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { completeGoogleOAuth, logInOrSignUpWithGoogle } from '../google-oauth'
 
@@ -173,7 +169,7 @@ describe('google-oauth', () => {
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
       expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledWith(
         mockUser.id,
-        getSelfServeUserDefaultPermissions(),
+        getUserDefaultPermissions(),
         expect.anything()
       )
     })

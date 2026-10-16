@@ -10,11 +10,7 @@ import {
   emailService,
   VerificationEmailMessageBuilder
 } from '@/services/email'
-import {
-  AuthProvider,
-  getSelfServeUserDefaultPermissions,
-  UserStatus
-} from '@/types'
+import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens } from '../tokens'
@@ -67,7 +63,7 @@ const createNewUser = async (
 
     await rbacRepo.setUserPermissions(
       newUser.id,
-      getSelfServeUserDefaultPermissions(),
+      getUserDefaultPermissions(),
       tx
     )
 
