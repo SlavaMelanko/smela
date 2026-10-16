@@ -12,7 +12,7 @@ const loadSocialLinks = async (): Promise<SocialLink[]> => {
 
     return records.map(({ name, url, svg }) => ({ name, url, svg }))
   } catch (error) {
-    logger.error({ error }, 'Failed to load social links')
+    logger.error({ err: error }, 'Failed to load social links')
 
     return []
   }

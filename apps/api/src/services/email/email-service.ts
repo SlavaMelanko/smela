@@ -36,7 +36,7 @@ export class EmailService {
         'Email sent'
       )
     } catch (error) {
-      logger.error({ error }, 'Failed to send email')
+      logger.error({ err: error }, 'Failed to send email')
     }
   }
 
