@@ -6,7 +6,7 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 
 import { createTeam, getTeams } from '../teams'
 
-const { TEAM_1 } = testUuids
+const { ADMIN_1, TEAM_1 } = testUuids
 
 describe('getTeams', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -24,6 +24,7 @@ describe('getTeams', () => {
           name: 'Acme Corp',
           website: 'https://acme.com',
           description: 'A test team',
+          createdBy: null,
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
           memberCount: 3
@@ -73,6 +74,7 @@ describe('createTeam', () => {
       name: 'New Team',
       website: 'https://newteam.com',
       description: 'A new team',
+      createdBy: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }
@@ -90,12 +92,15 @@ describe('createTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('creates team', async () => {
+  it('creates team and records admin as creator', async () => {
     const params = { name: 'New Team', website: 'https://newteam.com' }
 
-    const result = await createTeam(params)
+    const result = await createTeam(ADMIN_1, params)
 
-    expect(mockTeamRepo.create).toHaveBeenCalledWith(params)
+    expect(mockTeamRepo.create).toHaveBeenCalledWith({
+      ...params,
+      createdBy: ADMIN_1
+    })
     expect(result).toEqual({ team: mockTeam })
   })
 })

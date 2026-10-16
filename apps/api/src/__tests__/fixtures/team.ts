@@ -14,6 +14,7 @@ export const buildTeam = (
   name: 'Engineering',
   website: 'https://example.com',
   description: null,
+  createdBy: null,
   createdAt: new Date(),
   updatedAt: new Date(),
   memberCount: 1,

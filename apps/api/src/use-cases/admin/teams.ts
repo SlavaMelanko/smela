@@ -15,8 +15,8 @@ export interface CreateTeamInput {
   description?: string
 }
 
-export const createTeam = async (input: CreateTeamInput) => {
-  const team = await teamRepo.create(input)
+export const createTeam = async (adminId: string, input: CreateTeamInput) => {
+  const team = await teamRepo.create({ ...input, createdBy: adminId })
 
   return { team }
 }

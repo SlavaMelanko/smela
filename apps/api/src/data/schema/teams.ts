@@ -19,6 +19,9 @@ export const teamsTable = pgTable('teams', {
   name: varchar('name', { length: 255 }).notNull(),
   website: varchar('website', { length: 255 }).notNull(),
   description: text('description'),
+  createdBy: uuid('created_by').references(() => usersTable.id, {
+    onDelete: 'set null'
+  }),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
