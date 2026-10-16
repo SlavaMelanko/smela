@@ -20,7 +20,7 @@ const loadSenderProfiles = async (): Promise<EmailSenderProfiles> => {
       records.map(({ profile, email, name }) => [profile, { email, name }])
     )
   } catch (error) {
-    logger.error({ error }, 'Failed to load email sender profiles')
+    logger.error({ err: error }, 'Failed to load email sender profiles')
     throw error
   }
 }
