@@ -44,6 +44,7 @@ describe('admin /teams', () => {
       name: 'Acme Corp',
       website: 'https://acme.com',
       description: 'A test team',
+      createdBy: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }
@@ -141,7 +142,7 @@ describe('admin /teams', () => {
       const res = await post(app, TEAMS_URL, body)
 
       expect(res.status).toBe(HttpStatus.CREATED)
-      expect(mockCreateTeam).toHaveBeenCalledWith(body)
+      expect(mockCreateTeam).toHaveBeenCalledWith(testUuids.ADMIN_1, body)
 
       const data = await res.json()
       expect(data.team).toMatchObject({ id: testUuids.TEAM_1 })

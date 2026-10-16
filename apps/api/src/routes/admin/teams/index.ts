@@ -31,9 +31,10 @@ adminTeamsRoute.post(
   validateBody(createTeamBodySchema),
   requirePermission(Permission.ManageTeams),
   async c => {
+    const { id: adminId } = c.get('user')
     const body = c.req.valid('json')
 
-    const result = await createTeam(body)
+    const result = await createTeam(adminId, body)
 
     return c.json(result, HttpStatus.CREATED)
   }

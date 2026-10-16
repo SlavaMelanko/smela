@@ -62,6 +62,7 @@ export const searchTeams = async (
         name: teamsTable.name,
         website: teamsTable.website,
         description: teamsTable.description,
+        createdBy: teamsTable.createdBy,
         createdAt: teamsTable.createdAt,
         updatedAt: teamsTable.updatedAt,
         memberCount: memberCountSubquery

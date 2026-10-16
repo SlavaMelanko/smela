@@ -22,6 +22,7 @@ describe('createTeam', () => {
       name: 'New Team',
       website: 'https://newteam.com',
       description: null,
+      createdBy: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }
@@ -51,10 +52,13 @@ describe('createTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('creates team and adds creator as member', async () => {
+  it('creates team, records creator, and adds them as member', async () => {
     const result = await createTeam(USER_1, input)
 
-    expect(mockTeamRepo.create).toHaveBeenCalledWith(input, {})
+    expect(mockTeamRepo.create).toHaveBeenCalledWith(
+      { ...input, createdBy: USER_1 },
+      {}
+    )
     expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
       { userId: USER_1, teamId: TEAM_1 },
       {}
@@ -76,6 +80,7 @@ describe('updateTeam', () => {
       name: 'Old Team',
       website: 'https://oldteam.com',
       description: 'An old team',
+      createdBy: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }
