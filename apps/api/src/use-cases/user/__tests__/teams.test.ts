@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { Team, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { ErrorCode } from '@/errors'
 
 import { createTeam, updateTeam } from '../teams'
 
@@ -28,7 +27,6 @@ describe('createTeam', () => {
     }
 
     mockTeamRepo = {
-      findUserTeam: mock(async () => undefined),
       create: mock(async () => mockTeam),
       createMember: mock(async () => ({
         id: 1,
@@ -62,19 +60,6 @@ describe('createTeam', () => {
       {}
     )
     expect(result).toEqual({ team: mockTeam })
-  })
-
-  it('rejects user who already belongs to a team', async () => {
-    mockTeamRepo.findUserTeam.mockImplementation(async () => ({
-      id: TEAM_1,
-      name: 'Existing',
-      position: null
-    }))
-
-    expect(createTeam(USER_1, input)).rejects.toMatchObject({
-      code: ErrorCode.Conflict
-    })
-    expect(mockTeamRepo.create).not.toHaveBeenCalled()
   })
 })
 

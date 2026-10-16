@@ -10,7 +10,6 @@ import {
   testUuids,
   withClaims
 } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
 import { Role } from '@/types'
 
@@ -53,15 +52,5 @@ describe('user POST /teams', () => {
 
     expect(res.status).toBe(HttpStatus.BAD_REQUEST)
     expect(mockCreateTeam).not.toHaveBeenCalled()
-  })
-
-  it('returns 409 when user already belongs to a team', async () => {
-    mockCreateTeam.mockImplementation(async () => {
-      throw new AppError(ErrorCode.Conflict)
-    })
-
-    const res = await post(app, TEAMS_URL, body)
-
-    expect(res.status).toBe(HttpStatus.CONFLICT)
   })
 })

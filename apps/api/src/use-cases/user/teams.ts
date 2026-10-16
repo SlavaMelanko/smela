@@ -1,5 +1,4 @@
 import { db, teamRepo } from '@/data'
-import { AppError, ErrorCode } from '@/errors'
 
 export interface CreateTeamInput {
   name: string
@@ -13,14 +12,7 @@ export interface UpdateTeamInput {
   description?: string | null
 }
 
-// A user belongs to at most one team
 export const createTeam = async (userId: string, input: CreateTeamInput) => {
-  const existingTeam = await teamRepo.findUserTeam(userId)
-
-  if (existingTeam) {
-    throw new AppError(ErrorCode.Conflict, 'User already belongs to a team')
-  }
-
   const team = await db.transaction(async tx => {
     const newTeam = await teamRepo.create(input, tx)
 
