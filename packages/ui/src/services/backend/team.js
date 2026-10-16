@@ -10,7 +10,8 @@ import {
   TEAM_MEMBER_RESEND_INVITE_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
-  TEAMS_PATH
+  TEAMS_PATH,
+  USER_TEAMS_PATH
 } from './paths'
 
 export const teamApi = {
@@ -21,6 +22,11 @@ export const teamApi = {
 
   createTeam(data) {
     return apiClient.post(ADMIN_TEAMS_PATH, data)
+  },
+
+  // Verified user operations
+  createUserTeam(data) {
+    return apiClient.post(USER_TEAMS_PATH, data)
   },
 
   // Verified user + admin operations

@@ -3,17 +3,23 @@ import { Sidebar } from '@ui/components/Sidebar'
 import { Spinner } from '@ui/components/Spinner'
 import { SidebarInset, SidebarProvider } from '@ui/components/ui'
 import { NotificationProvider } from '@ui/contexts/NotificationContext'
+import { useCreateUserTeam } from '@ui/hooks/useCreateUserTeam'
 import { Outlet } from '@ui/hooks/useRouter'
 import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { Suspense } from 'react'
 
 export const UserLayout = () => {
   const { items, teams } = useSidebarMenu()
+  const { openCreateTeamDialog } = useCreateUserTeam()
 
   return (
     <NotificationProvider>
       <SidebarProvider>
-        <Sidebar items={items} teams={teams} />
+        <Sidebar
+          items={items}
+          teams={teams}
+          onCreateTeam={openCreateTeamDialog}
+        />
         <SidebarInset>
           <header className='flex shrink-0 items-center z-10 h-11.25 px-4 md:px-8 bg-sidebar border-b border-sidebar-border'>
             <Header />

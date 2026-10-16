@@ -35,12 +35,8 @@
             "header": [],
             "url": {
               "raw": "{{admin_api_url}}/users",
-              "host": [
-                "{{admin_api_url}}"
-              ],
-              "path": [
-                "users"
-              ]
+              "host": ["{{admin_api_url}}"],
+              "path": ["users"]
             }
           },
           "response": []
@@ -52,13 +48,8 @@
             "header": [],
             "url": {
               "raw": "{{admin_api_url}}/users/{{last_user_id}}",
-              "host": [
-                "{{admin_api_url}}"
-              ],
-              "path": [
-                "users",
-                "{{last_user_id}}"
-              ]
+              "host": ["{{admin_api_url}}"],
+              "path": ["users", "{{last_user_id}}"]
             }
           },
           "response": []
@@ -89,12 +80,8 @@
             "header": [],
             "url": {
               "raw": "{{admin_api_url}}/teams",
-              "host": [
-                "{{admin_api_url}}"
-              ],
-              "path": [
-                "teams"
-              ]
+              "host": ["{{admin_api_url}}"],
+              "path": ["teams"]
             }
           },
           "response": []
@@ -134,12 +121,8 @@
             },
             "url": {
               "raw": "{{admin_api_url}}/teams",
-              "host": [
-                "{{admin_api_url}}"
-              ],
-              "path": [
-                "teams"
-              ]
+              "host": ["{{admin_api_url}}"],
+              "path": ["teams"]
             }
           },
           "response": []
@@ -229,12 +212,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/signup",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "signup"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["signup"]
             }
           },
           "response": []
@@ -255,12 +234,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/resend-verification-email",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "resend-verification-email"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["resend-verification-email"]
             }
           },
           "response": []
@@ -326,12 +301,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/verify-email",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "verify-email"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["verify-email"]
             }
           },
           "response": []
@@ -370,12 +341,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/login",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "login"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["login"]
             }
           },
           "response": []
@@ -396,12 +363,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/request-password-reset",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "request-password-reset"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["request-password-reset"]
             }
           },
           "response": []
@@ -422,12 +385,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/reset-password",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "reset-password"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["reset-password"]
             }
           },
           "response": []
@@ -476,12 +435,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/refresh-token",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "refresh-token"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["refresh-token"]
             }
           },
           "response": []
@@ -492,9 +447,7 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.environment.set('access_token', '')"
-                ],
+                "exec": ["pm.environment.set('access_token', '')"],
                 "type": "text/javascript",
                 "packages": {}
               }
@@ -505,12 +458,8 @@
             "header": [],
             "url": {
               "raw": "{{auth_api_url}}/logout",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "logout"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["logout"]
             }
           },
           "response": []
@@ -534,12 +483,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/check-invite?token=a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "check-invite"
-              ],
+              "host": ["{{auth_api_url}}"],
+              "path": ["check-invite"],
               "query": [
                 {
                   "key": "token",
@@ -566,12 +511,8 @@
             },
             "url": {
               "raw": "{{auth_api_url}}/accept-invite",
-              "host": [
-                "{{auth_api_url}}"
-              ],
-              "path": [
-                "accept-invite"
-              ]
+              "host": ["{{auth_api_url}}"],
+              "path": ["accept-invite"]
             }
           },
           "response": []
@@ -598,12 +539,8 @@
             "header": [],
             "url": {
               "raw": "{{user_allow_new_api_url}}/me",
-              "host": [
-                "{{user_allow_new_api_url}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{user_allow_new_api_url}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -624,12 +561,49 @@
             },
             "url": {
               "raw": "{{user_allow_new_api_url}}/me",
-              "host": [
-                "{{user_allow_new_api_url}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{user_allow_new_api_url}}"],
+              "path": ["me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "teams",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const lastTeam = res.team;",
+                  "",
+                  "if (lastTeam) {",
+                  "    pm.environment.set(\"last_team_id\", lastTeam.id);",
+                  "    console.log(\"Saved last_team_id:\", lastTeam.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Caddy\",\n    \"website\": \"https://caddy.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{user_verified_only_api_url}}/teams",
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams"]
             }
           },
           "response": []
@@ -653,13 +627,8 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
-              "path": [
-                "teams",
-                "{{last_team_id}}"
-              ]
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}"]
             }
           },
           "response": []
@@ -680,13 +649,8 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
-              "path": [
-                "teams",
-                "{{last_team_id}}"
-              ]
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}"]
             }
           },
           "response": []
@@ -717,14 +681,8 @@
             "header": [],
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
-              "path": [
-                "teams",
-                "{{last_team_id}}",
-                "members"
-              ]
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}", "members"]
             }
           },
           "response": []
@@ -736,9 +694,7 @@
             "header": [],
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/default-permissions",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -784,14 +740,8 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
-              "path": [
-                "teams",
-                "{{last_team_id}}",
-                "members"
-              ]
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}", "members"]
             }
           },
           "response": []
@@ -803,9 +753,7 @@
             "header": [],
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/{{last_member_id}}",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -832,9 +780,7 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/{{last_member_id}}",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -861,9 +807,7 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/{{last_member_id}}",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -890,9 +834,7 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/{{last_member_id}}/resend-invite",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -920,9 +862,7 @@
             },
             "url": {
               "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/members/{{last_member_id}}/cancel-invite",
-              "host": [
-                "{{user_verified_only_api_url}}"
-              ],
+              "host": ["{{user_verified_only_api_url}}"],
               "path": [
                 "teams",
                 "{{last_team_id}}",
@@ -965,12 +905,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins"]
             }
           },
           "response": []
@@ -981,9 +917,7 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  ""
-                ],
+                "exec": [""],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -995,13 +929,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins/default-permissions",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "default-permissions"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "default-permissions"]
             }
           },
           "response": []
@@ -1041,12 +970,8 @@
             },
             "url": {
               "raw": "{{owner_api_url}}/admins",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins"]
             }
           },
           "response": []
@@ -1058,13 +983,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins/{{last_admin_id}}",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "{{last_admin_id}}"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "{{last_admin_id}}"]
             }
           },
           "response": []
@@ -1076,14 +996,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins/{{last_admin_id}}/permissions",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "{{last_admin_id}}",
-                "permissions"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "{{last_admin_id}}", "permissions"]
             }
           },
           "response": []
@@ -1104,14 +1018,8 @@
             },
             "url": {
               "raw": "{{owner_api_url}}/admins/{{last_admin_id}}/permissions",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "{{last_admin_id}}",
-                "permissions"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "{{last_admin_id}}", "permissions"]
             }
           },
           "response": []
@@ -1123,14 +1031,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins/{{last_admin_id}}/resend-invite",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "{{last_admin_id}}",
-                "resend-invite"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "{{last_admin_id}}", "resend-invite"]
             }
           },
           "response": []
@@ -1142,14 +1044,8 @@
             "header": [],
             "url": {
               "raw": "{{owner_api_url}}/admins/{{last_admin_id}}/cancel-invite",
-              "host": [
-                "{{owner_api_url}}"
-              ],
-              "path": [
-                "admins",
-                "{{last_admin_id}}",
-                "cancel-invite"
-              ]
+              "host": ["{{owner_api_url}}"],
+              "path": ["admins", "{{last_admin_id}}", "cancel-invite"]
             }
           },
           "response": []
@@ -1173,9 +1069,7 @@
       "script": {
         "type": "text/javascript",
         "packages": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     },
     {
@@ -1183,9 +1077,7 @@
       "script": {
         "type": "text/javascript",
         "packages": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     }
   ]
