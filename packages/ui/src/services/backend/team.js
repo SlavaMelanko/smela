@@ -10,6 +10,7 @@ import {
   TEAM_MEMBER_RESEND_INVITE_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
+  TEAM_PATH,
   TEAMS_PATH
 } from './paths'
 
@@ -24,14 +25,18 @@ export const teamApi = {
   },
 
   // Verified user + admin operations
+  createUserTeam(data) {
+    return apiClient.post(TEAMS_PATH, data)
+  },
+
   getTeam(teamId) {
-    const path = buildPath(TEAMS_PATH, { teamId })
+    const path = buildPath(TEAM_PATH, { teamId })
 
     return apiClient.get(path)
   },
 
   updateTeam(teamId, data) {
-    const path = buildPath(TEAMS_PATH, { teamId })
+    const path = buildPath(TEAM_PATH, { teamId })
 
     return apiClient.patch(path, data)
   },

@@ -6,7 +6,7 @@ import {
 } from '@smela/e2e/actions'
 import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { HttpStatus } from '@smela/ui/lib/net'
-import { ADMIN_TEAMS_PATH, TEAMS_PATH } from '@smela/ui/services/backend/paths'
+import { ADMIN_TEAMS_PATH, TEAM_PATH } from '@smela/ui/services/backend/paths'
 
 import { expect, test } from './config/fixtures'
 
@@ -86,7 +86,7 @@ test.describe.serial('Admin: Teams Management', () => {
     await pageLoadPromise
 
     // Click on the team row to open details, wait for team detail to load
-    const teamPath = TEAMS_PATH.replace(':teamId', newTeam.id)
+    const teamPath = TEAM_PATH.replace(':teamId', newTeam.id)
 
     const detailPromise = waitForApiCall(page, {
       path: teamPath,

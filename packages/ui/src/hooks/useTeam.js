@@ -101,6 +101,17 @@ export const useCreateTeam = () => {
   })
 }
 
+export const useCreateUserTeam = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: data => teamApi.createUserTeam(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.user() })
+    }
+  })
+}
+
 export const useTeam = (id, options = {}) => {
   return useQuery({
     queryKey: teamKeys.team(id),

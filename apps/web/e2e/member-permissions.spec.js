@@ -13,7 +13,7 @@ import {
   TEAM_MEMBER_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
-  TEAMS_PATH
+  TEAM_PATH
 } from '@smela/ui/services/backend/paths'
 
 import { expect, test } from './config/fixtures'
@@ -42,7 +42,7 @@ test.describe.serial('User: Member Permissions', () => {
     await login(userCredentials)
 
     const teamDetailPromise = waitForApiCall(page, {
-      path: TEAMS_PATH.replace(':teamId', ''),
+      path: TEAM_PATH.replace(':teamId', ''),
       method: 'GET',
       status: HttpStatus.OK,
       validateResponse: body => !!body?.team?.id
@@ -89,7 +89,7 @@ test.describe.serial('User: Member Permissions', () => {
         status: HttpStatus.CREATED
       },
       {
-        path: TEAMS_PATH.replace(':teamId', teamId),
+        path: TEAM_PATH.replace(':teamId', teamId),
         method: 'GET',
         status: HttpStatus.OK
       },
