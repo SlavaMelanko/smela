@@ -27,9 +27,9 @@ export const ADMIN_SOCIAL_LINKS_PATH = `${ADMIN_SYSTEM_PATH}/social-links`
 export const ADMIN_SOCIAL_LINK_PATH = `${ADMIN_SOCIAL_LINKS_PATH}/:id`
 
 // Verified user/admin team operations
-export const USER_TEAMS_PATH = '/api/v1/user/verified/teams'
-export const TEAMS_PATH = `${USER_TEAMS_PATH}/:teamId`
-export const TEAM_MEMBERS_PATH = `${TEAMS_PATH}/members`
+export const TEAMS_PATH = '/api/v1/user/verified/teams'
+export const TEAM_PATH = `${TEAMS_PATH}/:teamId`
+export const TEAM_MEMBERS_PATH = `${TEAM_PATH}/members`
 export const TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH = `${TEAM_MEMBERS_PATH}/default-permissions`
 export const TEAM_MEMBER_PATH = `${TEAM_MEMBERS_PATH}/:memberId`
 export const TEAM_MEMBER_PERMISSIONS_PATH = `${TEAM_MEMBER_PATH}/permissions`
