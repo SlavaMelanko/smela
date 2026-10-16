@@ -86,7 +86,9 @@ describe('signUpWithEmail', () => {
       setUserPermissions: mock(async () => {}),
       findUserPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Dashboard },
-        { action: Action.Manage, resource: Resource.Dashboard }
+        { action: Action.Manage, resource: Resource.Dashboard },
+        { action: Action.View, resource: Resource.Teams },
+        { action: Action.Manage, resource: Resource.Teams }
       ])
     } satisfies Partial<typeof rbacRepo>
     mockTransaction = createTransactionMock()
@@ -194,7 +196,9 @@ describe('signUpWithEmail', () => {
 
     expect(result.data.permissions).toEqual([
       Permission.ViewDashboard,
-      Permission.ManageDashboard
+      Permission.ManageDashboard,
+      Permission.ViewTeams,
+      Permission.ManageTeams
     ])
     expect(verifyJwt(result.data.accessToken)).resolves.toMatchObject({
       id: mockNewUser.id,

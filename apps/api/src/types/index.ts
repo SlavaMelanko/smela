@@ -5,7 +5,7 @@ export {
   getAdminDefaultPermissions,
   getMemberBasePermissions,
   getMemberDefaultPermissions,
-  getSelfServeUserDefaultPermissions,
+  getUserDefaultPermissions,
   default as Permission
 } from './permission'
 export type { PermissionMap, PermissionsInput } from './permission'
