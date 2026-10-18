@@ -154,10 +154,12 @@ test.describe('Read-Only Admin: Teams', () => {
     await logOut(page, t)
   })
 
-  test('Add team button is not visible', async ({ page, t }) => {
+  test('Create team button is not visible', async ({ page, t }) => {
     await page.goto('/teams')
 
-    await expect(page.getByRole('button', { name: t.add })).not.toBeVisible()
+    await expect(
+      page.getByRole('button', { name: t.team.add.title })
+    ).not.toBeVisible()
   })
 
   test('Team general form fields are read-only and Invite button is hidden', async ({
