@@ -158,7 +158,7 @@ test.describe('Read-Only Admin: Teams', () => {
     await page.goto('/teams')
 
     await expect(
-      page.getByRole('button', { name: t.team.add.cta, exact: true })
+      page.getByRole('button', { name: t.team.add.cta })
     ).not.toBeVisible()
   })
 
