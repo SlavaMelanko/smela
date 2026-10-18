@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { tokenRepo, User, userRepo } from '@/data'
 
-import { buildUser, createTransactionMock, ModuleMocker } from '@/__tests__'
+import { buildUser, ModuleMocker } from '@/__tests__'
 import { hashToken, TokenType } from '@/security/token'
 import {
   buildVerificationUrl,
@@ -18,7 +18,6 @@ describe('resendVerificationEmail', () => {
   let mockUser: User
   let mockUserRepo: any
   let mockTokenRepo: any
-  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockEmailService: any
 
@@ -31,12 +30,10 @@ describe('resendVerificationEmail', () => {
     mockTokenRepo = {
       issue: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
-    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
-      tokenRepo: mockTokenRepo,
-      db: mockTransaction
+      tokenRepo: mockTokenRepo
     }))
 
     mockEmailService = {
@@ -55,8 +52,6 @@ describe('resendVerificationEmail', () => {
   it('replaces token with new verification token', async () => {
     const result = await resendVerificationEmail({ email: mockUser.email })
 
-    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-
     expect(mockTokenRepo.issue).toHaveBeenCalledWith(
       mockUser.id,
       {
@@ -65,7 +60,7 @@ describe('resendVerificationEmail', () => {
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
-      {}
+      undefined
     )
     expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 
@@ -179,7 +174,7 @@ describe('resendVerificationEmail', () => {
     }
   })
 
-  it('throws without sending email when transaction fails', async () => {
+  it('throws without sending email when token issue fails', async () => {
     mockTokenRepo.issue.mockImplementation(async () => {
       throw new Error('Database connection failed')
     })

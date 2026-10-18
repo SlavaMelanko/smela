@@ -123,9 +123,7 @@ export const resendMemberInvite = async (
     )
   }
 
-  const token = await db.transaction(async tx =>
-    issueOneTimeToken(member.id, TokenType.UserInvite, tx)
-  )
+  const token = await issueOneTimeToken(member.id, TokenType.UserInvite)
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(member.email, {

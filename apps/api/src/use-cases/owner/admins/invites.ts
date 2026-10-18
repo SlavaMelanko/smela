@@ -113,9 +113,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  const token = await db.transaction(async tx =>
-    issueOneTimeToken(adminId, TokenType.UserInvite, tx)
-  )
+  const token = await issueOneTimeToken(adminId, TokenType.UserInvite)
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(admin.email, {

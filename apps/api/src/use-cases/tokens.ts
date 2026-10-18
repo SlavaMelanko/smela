@@ -61,11 +61,10 @@ export const createAuthTokens = async (
     createRefreshToken(user.id, deviceInfo, tx)
   ])
 
-// Only the hash is stored, so a leaked database can't be used to redeem tokens
 export const issueOneTimeToken = async (
   userId: string,
   type: TokenType,
-  tx: Database
+  tx?: Database
 ) => {
   const {
     token: { raw, hashed },

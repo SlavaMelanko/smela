@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { tokenRepo, User, userRepo } from '@/data'
 
-import { buildUser, createTransactionMock, ModuleMocker } from '@/__tests__'
+import { buildUser, ModuleMocker } from '@/__tests__'
 import { hashToken, TokenType } from '@/security/token'
 import {
   buildResetPasswordUrl,
@@ -19,7 +19,6 @@ describe('requestPasswordReset', () => {
 
   let mockUserRepo: any
   let mockTokenRepo: any
-  let mockTransaction: ReturnType<typeof createTransactionMock>
 
   let mockEmailService: any
 
@@ -31,12 +30,10 @@ describe('requestPasswordReset', () => {
     mockTokenRepo = {
       issue: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
-    mockTransaction = createTransactionMock()
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: mockUserRepo,
-      tokenRepo: mockTokenRepo,
-      db: mockTransaction
+      tokenRepo: mockTokenRepo
     }))
 
     mockEmailService = {
@@ -55,8 +52,6 @@ describe('requestPasswordReset', () => {
   it('replaces token and sends reset email', async () => {
     const result = await requestPasswordReset({ email: mockUser.email })
 
-    expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-
     // Replace token should be called
     expect(mockTokenRepo.issue).toHaveBeenCalledWith(
       mockUser.id,
@@ -66,7 +61,7 @@ describe('requestPasswordReset', () => {
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
-      {}
+      undefined
     )
     expect(mockTokenRepo.issue).toHaveBeenCalledTimes(1)
 

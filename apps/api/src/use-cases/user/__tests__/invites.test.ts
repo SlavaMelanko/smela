@@ -229,7 +229,6 @@ describe('resendMemberInvite', () => {
   let mockInviter: User
   let mockUserRepoFindById: any
   let mockTokenRepoIssue: any
-  let mockTransaction: any
   let mockEmailService: any
 
   beforeEach(async () => {
@@ -271,11 +270,6 @@ describe('resendMemberInvite', () => {
 
     mockUserRepoFindById = mock(async () => mockInviter)
     mockTokenRepoIssue = mock(async () => {})
-    mockTransaction = mock(
-      async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
-        return callback({})
-      }
-    )
     mockEmailService = {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
@@ -286,8 +280,7 @@ describe('resendMemberInvite', () => {
       >,
       tokenRepo: { issue: mockTokenRepoIssue } satisfies Partial<
         typeof tokenRepo
-      >,
-      db: { transaction: mockTransaction } satisfies Partial<typeof db>
+      >
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -338,7 +331,7 @@ describe('resendMemberInvite', () => {
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
-      expect.anything()
+      undefined
     )
   })
 

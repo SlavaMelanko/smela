@@ -1,6 +1,6 @@
 import type { UserPreferences } from '@/types'
 
-import { db, userRepo } from '@/data'
+import { userRepo } from '@/data'
 import { TokenType } from '@/security/token'
 import {
   buildVerificationUrl,
@@ -24,9 +24,7 @@ export const resendVerificationEmail = async (
   // Always return success to prevent email enumeration
   // Only send email if user exists and is unverified
   if (user?.status === UserStatus.New) {
-    const token = await db.transaction(async tx =>
-      issueOneTimeToken(user.id, TokenType.EmailVerification, tx)
-    )
+    const token = await issueOneTimeToken(user.id, TokenType.EmailVerification)
 
     void emailService.send(
       new VerificationEmailMessageBuilder(
