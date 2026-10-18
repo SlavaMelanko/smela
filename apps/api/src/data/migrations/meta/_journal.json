@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1788359616748,
-      "tag": "0000_chunky_scrambler",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1792159066712,
-      "tag": "0001_charming_warbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1792330324861,
-      "tag": "0002_hash_one_time_tokens",
+      "when": 1792345029460,
+      "tag": "0000_amused_sway",
       "breakpoints": true
     }
   ]

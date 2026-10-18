@@ -43,6 +43,10 @@ export const getUserDefaultPermissions = (): PermissionsInput => ({
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
+export const getTeamCreatorPermissions = (): PermissionsInput => ({
+  [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+})
+
 // Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
 // Default: permissions granted on creation.
 export const getMemberBasePermissions = (): PermissionMap => ({

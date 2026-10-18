@@ -19,12 +19,20 @@
  */
 
 import { faker } from '@faker-js/faker'
+import { and, eq } from 'drizzle-orm'
 
 import { hashPassword } from '@/security/password'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
 
 import { db } from '../clients'
-import { authTable, teamMembersTable, teamsTable, usersTable } from '../schema'
+import {
+  authTable,
+  permissionsTable,
+  teamMemberPermissionsTable,
+  teamMembersTable,
+  teamsTable,
+  usersTable
+} from '../schema'
 
 const BATCH_SIZE = 500
 const DEFAULT_COUNT = 5000
@@ -128,6 +136,25 @@ const seedFakeTeams = async (userIds: string[]) => {
     i += size
   }
 
+  const findTeamsPermissionId = async (action: Action) => {
+    const [permission] = await db
+      .select({ id: permissionsTable.id })
+      .from(permissionsTable)
+      .where(
+        and(
+          eq(permissionsTable.action, action),
+          eq(permissionsTable.resource, Resource.Teams)
+        )
+      )
+
+    return permission.id
+  }
+
+  const [manageTeamsId, viewTeamsId] = await Promise.all([
+    findTeamsPermissionId(Action.Manage),
+    findTeamsPermissionId(Action.View)
+  ])
+
   const startTime = performance.now()
 
   for (const members of groups) {
@@ -143,11 +170,22 @@ const seedFakeTeams = async (userIds: string[]) => {
       })
       .returning({ id: teamsTable.id })
 
-    await db.insert(teamMembersTable).values(
-      members.map(userId => ({
-        userId,
-        teamId: team.id,
-        position: faker.person.jobTitle()
+    const insertedMembers = await db
+      .insert(teamMembersTable)
+      .values(
+        members.map(userId => ({
+          userId,
+          teamId: team.id,
+          position: faker.person.jobTitle()
+        }))
+      )
+      .returning({ id: teamMembersTable.id })
+
+    // First member acts as the creator with full access, the rest can view
+    await db.insert(teamMemberPermissionsTable).values(
+      insertedMembers.map(({ id }, index) => ({
+        memberId: id,
+        permissionId: index === 0 ? manageTeamsId : viewTeamsId
       }))
     )
   }

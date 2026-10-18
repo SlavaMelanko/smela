@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { Team, teamRepo } from '@/data'
+import type { rbacRepo, Team, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
+import { getTeamCreatorPermissions } from '@/types'
 
 import { createTeam, updateTeam } from '../teams'
 
@@ -15,6 +16,7 @@ describe('createTeam', () => {
 
   let mockTeam: Team
   let mockTeamRepo: any
+  let mockRbacRepo: any
 
   beforeEach(async () => {
     mockTeam = {
@@ -39,11 +41,16 @@ describe('createTeam', () => {
       }))
     } satisfies Partial<typeof teamRepo>
 
+    mockRbacRepo = {
+      setMemberPermissions: mock(async () => {})
+    } satisfies Partial<typeof rbacRepo>
+
     const transaction = async <T>(callback: (tx: unknown) => Promise<T>) =>
       callback({})
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: mockTeamRepo,
+      rbacRepo: mockRbacRepo,
       db: { transaction }
     }))
   })
@@ -52,7 +59,7 @@ describe('createTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('creates team, records creator, and adds them as member', async () => {
+  it('creates team, records creator, and adds them as member with every team permission', async () => {
     const result = await createTeam(USER_1, input)
 
     expect(mockTeamRepo.create).toHaveBeenCalledWith(
@@ -61,6 +68,11 @@ describe('createTeam', () => {
     )
     expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
       { userId: USER_1, teamId: TEAM_1 },
+      {}
+    )
+    expect(mockRbacRepo.setMemberPermissions).toHaveBeenCalledWith(
+      1,
+      getTeamCreatorPermissions(),
       {}
     )
     expect(result).toEqual({ team: mockTeam })

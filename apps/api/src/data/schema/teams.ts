@@ -1,7 +1,9 @@
 import { sql } from 'drizzle-orm'
 import {
   index,
+  integer,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -10,6 +12,7 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 
+import { permissionsTable } from './rbac'
 import { usersTable } from './users'
 
 export const teamsTable = pgTable('teams', {
@@ -52,4 +55,17 @@ export const teamMembersTable = pgTable(
     uniqueIndex('unique_team_member').on(table.userId, table.teamId),
     index('team_members_team_index').on(table.teamId)
   ]
+)
+
+export const teamMemberPermissionsTable = pgTable(
+  'team_member_permissions',
+  {
+    memberId: integer('member_id')
+      .notNull()
+      .references(() => teamMembersTable.id, { onDelete: 'cascade' }),
+    permissionId: integer('permission_id')
+      .notNull()
+      .references(() => permissionsTable.id, { onDelete: 'cascade' })
+  },
+  table => [primaryKey({ columns: [table.memberId, table.permissionId] })]
 )

@@ -6,6 +6,7 @@ import type { ActivePermissionRow, Inviter, UserRoleRecord } from './types'
 import { db } from '../../clients'
 import {
   permissionsTable,
+  teamMemberPermissionsTable,
   userPermissionsTable,
   userRoleTable,
   usersTable
@@ -33,6 +34,25 @@ export const findUserPermissions = async (
       eq(permissionsTable.id, userPermissionsTable.permissionId)
     )
     .where(eq(userPermissionsTable.userId, userId))
+
+  return expandPermissions(rows)
+}
+
+export const findMemberPermissions = async (
+  memberId: number,
+  tx?: Database
+): Promise<ActivePermissionRow[]> => {
+  const rows = await (tx || db)
+    .select({
+      action: permissionsTable.action,
+      resource: permissionsTable.resource
+    })
+    .from(teamMemberPermissionsTable)
+    .innerJoin(
+      permissionsTable,
+      eq(permissionsTable.id, teamMemberPermissionsTable.permissionId)
+    )
+    .where(eq(teamMemberPermissionsTable.memberId, memberId))
 
   return expandPermissions(rows)
 }
