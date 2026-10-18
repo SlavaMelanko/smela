@@ -1,7 +1,7 @@
 import type { UserPreferences } from '@/types'
 
-import { db, tokenRepo, userRepo } from '@/data'
-import { generateToken, TokenType } from '@/security/token'
+import { userRepo } from '@/data'
+import { TokenType } from '@/security/token'
 import {
   buildResetPasswordUrl,
   emailService,
@@ -9,15 +9,7 @@ import {
 } from '@/services/email'
 import { isActive } from '@/types'
 
-const createPasswordResetToken = async (userId: string) => {
-  const { type, token, expiresAt } = generateToken(TokenType.PasswordReset)
-
-  await db.transaction(async tx => {
-    await tokenRepo.issue(userId, { userId, type, token, expiresAt }, tx)
-  })
-
-  return token
-}
+import { issueOneTimeToken } from '../tokens'
 
 export interface RequestPasswordResetInput {
   email: string
@@ -32,7 +24,7 @@ export const requestPasswordReset = async (
   // Always return success to prevent email enumeration
   // Only send email if user exists and is active
   if (user && isActive(user.status)) {
-    const token = await createPasswordResetToken(user.id)
+    const token = await issueOneTimeToken(user.id, TokenType.PasswordReset)
 
     void emailService.send(
       new PasswordResetEmailMessageBuilder(

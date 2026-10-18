@@ -118,9 +118,6 @@ describe('signUpWithEmail', () => {
   const getStoredPasswordHash = () =>
     mockAuthRepo.create.mock.calls[0][0].passwordHash as string
 
-  const getIssuedVerificationToken = () =>
-    mockTokenRepo.issue.mock.calls[0][1].token as string
-
   it('creates a new user with correct data', async () => {
     const result = await signUpWithEmail(mockSignupParams, mockDeviceInfo)
 
@@ -169,7 +166,7 @@ describe('signUpWithEmail', () => {
       {
         userId: mockNewUser.id,
         type: TokenType.EmailVerification,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -184,11 +181,12 @@ describe('signUpWithEmail', () => {
       expect.any(VerificationEmailMessageBuilder)
     )
     expect(mockEmailService.send).toHaveBeenCalledTimes(1)
-    expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
-      data: {
-        verificationUrl: buildVerificationUrl(getIssuedVerificationToken())
-      }
-    })
+    const { verificationUrl } = mockEmailService.send.mock.calls[0][0].data
+    const rawToken = new URL(verificationUrl).searchParams.get('token')!
+    expect(verificationUrl).toBe(buildVerificationUrl(rawToken))
+    expect(await hashToken(rawToken)).toBe(
+      mockTokenRepo.issue.mock.calls[0][1].tokenHash
+    )
   })
 
   it('signs an access token with user claims and permissions', async () => {

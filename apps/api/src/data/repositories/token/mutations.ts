@@ -47,13 +47,18 @@ export const createToken = async (
   return createdToken.id
 }
 
+// Joins the caller's transaction when given, otherwise opens its own
 export const issueToken = async (
   userId: string,
   token: CreateTokenInput,
-  tx: Database
+  tx?: Database
 ): Promise<void> => {
-  await deprecateOldTokens(userId, token.type, tx)
-  await createToken(token, tx)
+  const run = async (executor: Database) => {
+    await deprecateOldTokens(userId, token.type, executor)
+    await createToken(token, executor)
+  }
+
+  return tx ? run(tx) : db.transaction(run)
 }
 
 export const updateToken = async (

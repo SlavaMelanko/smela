@@ -3,9 +3,9 @@ import {
   jsonb,
   pgTable,
   serial,
-  text,
   timestamp,
-  uuid
+  uuid,
+  varchar
 } from 'drizzle-orm/pg-core'
 
 import { TokenStatus, TokenType } from '@/security/token'
@@ -28,7 +28,7 @@ export const tokensTable = pgTable(
       .notNull()
       .default(TokenStatus.Pending)
       .$type<TokenStatus>(),
-    token: text('token').notNull().unique(),
+    tokenHash: varchar('token_hash', { length: 64 }).notNull().unique(),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
     usedAt: timestamp('used_at', { withTimezone: true }),
     metadata: jsonb('metadata'),

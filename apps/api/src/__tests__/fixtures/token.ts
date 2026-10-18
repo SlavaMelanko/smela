@@ -12,7 +12,7 @@ export const buildTokenRecord = (
   id: 1,
   userId: testUuids.USER_1,
   type: TokenType.EmailVerification,
-  token: '1'.repeat(TOKEN_LENGTH),
+  tokenHash: '1'.repeat(TOKEN_LENGTH),
   status: TokenStatus.Pending,
   expiresAt: nowPlus(hour()),
   createdAt: new Date(),

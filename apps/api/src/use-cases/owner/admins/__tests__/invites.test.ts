@@ -134,7 +134,7 @@ describe('inviteAdmin', () => {
       {
         userId: mockAdmin.id,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -157,7 +157,6 @@ describe('resendAdminInvite', () => {
   let mockInviter: User
   let mockFindById: any
   let mockTokenIssue: any
-  let mockTransaction: any
   let mockSendUserInviteEmail: any
 
   beforeEach(async () => {
@@ -196,13 +195,9 @@ describe('resendAdminInvite', () => {
     mockTokenIssue = mock(async () => ({}))
     mockSendUserInviteEmail = mock(async () => {})
 
-    // eslint-disable-next-line ts/no-unsafe-return
-    mockTransaction = mock(async (callback: any) => callback({}))
-
     await moduleMocker.mock('@/data', () => ({
       userRepo: { findById: mockFindById } satisfies Partial<typeof userRepo>,
-      tokenRepo: { issue: mockTokenIssue } satisfies Partial<typeof tokenRepo>,
-      db: { transaction: mockTransaction } satisfies Partial<typeof db>
+      tokenRepo: { issue: mockTokenIssue } satisfies Partial<typeof tokenRepo>
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -308,10 +303,10 @@ describe('resendAdminInvite', () => {
       {
         userId: testUuids.ADMIN_1,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
-      expect.anything()
+      undefined
     )
     expect(mockSendUserInviteEmail).toHaveBeenCalledWith(
       expect.any(UserInviteEmailMessageBuilder)
