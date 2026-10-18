@@ -44,7 +44,7 @@ test.describe.serial('Admin: Teams Management', () => {
     await pageLoadPromise
 
     // Open Add Team dialog
-    await page.getByRole('button', { name: t.team.add.title }).click()
+    await page.getByRole('button', { name: t.team.add.cta }).click()
     await expect(
       page.getByRole('heading', { name: t.team.add.title })
     ).toBeVisible()

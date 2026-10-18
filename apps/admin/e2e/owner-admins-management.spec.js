@@ -212,7 +212,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
 
     // Manage permission: Create team button must be visible
     await expect(
-      page.getByRole('button', { name: t.team.add.title })
+      page.getByRole('button', { name: t.team.add.cta })
     ).toBeVisible()
 
     // Open the first team row
