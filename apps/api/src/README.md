@@ -14,114 +14,65 @@ Architecture) with strict dependency rules:
 
 ## Layer Overview
 
-### 🌐 Layer 4: Presentation Layer (HTTP Interface)
+### 🌐 Layer 4: Presentation (HTTP Interface)
 
-**Purpose**: Handle HTTP requests and responses, translate between HTTP and
-application logic.
+Translates HTTP requests and responses to and from use cases.
 
-**Modules**:
-
-- `routes/` - HTTP route handlers (thin wrappers around use cases)
-- `middleware/` - HTTP middleware (authentication, validation, rate limiting,
-  security headers, CORS)
-- `handlers/` - Global error handlers (Hono-specific)
-
-**Key Principle**: Routes should be thin HTTP adapters with no business logic.
+- `routes/` - Thin HTTP adapters around use cases, no business logic
+- `middleware/` - Cross-cutting HTTP concerns (auth, access control, validation,
+  limits, security headers)
+- `handlers/` - Global error and not-found handlers
 
 ---
 
-### 🎯 Layer 3: Application Layer (Business Workflows)
+### 🎯 Layer 3: Application (Business Workflows)
 
-**Purpose**: Orchestrate business workflows and use cases, coordinate between
-infrastructure services.
+Orchestrates business workflows on top of infrastructure.
 
-**Modules**:
+- `use-cases/` - Business logic grouped by audience (auth, user, admin, owner)
 
-- `use-cases/` - Business logic and application workflows
-  - `use-cases/auth/` - Authentication workflows (login, signup, password reset,
-    email verification)
-  - `use-cases/user/` - User management workflows (profile operations)
-
-**Key Principle**: Use cases are framework-agnostic and can be called from
-routes, CLI, background jobs, or any other interface.
+Use cases are framework-agnostic and can be called from routes, CLI, background
+jobs, or any other interface.
 
 ---
 
-### 🔌 Layer 2: Infrastructure Layer (External Integrations)
+### 🔌 Layer 2: Infrastructure (External Integrations)
 
-**Purpose**: Integrate with external systems and manage data persistence.
+Integrates with external systems and persists data.
 
-#### Layer 2a: External Services
-
-**Modules**:
-
-- `services/` - External service adapters
-  - `services/captcha/` - CAPTCHA verification (reCAPTCHA)
-  - `services/email/` - Email providers (Ethereal for dev, Resend for prod) +
-    `emails/` - Email templates and rendering (React Email components)
-
-**Key Principle**: Services are "dumb adapters" that don't contain business
-logic.
-
-#### Layer 2b: Persistence
-
-**Modules**:
-
-- `data/` - Database layer
-  - `data/schema/` - Database schemas (users, auth, permissions, tokens)
-  - `data/repositories/` - Repository pattern for data access
-  - `data/clients/` - Database clients (Neon serverless PostgreSQL)
-  - `data/migrations/` - Drizzle ORM migrations
-
-**Key Principle**: Persistence layer encapsulates all database concerns.
+- `services/` - Adapters for external services with no business logic (see the
+  `service-integration` skill)
+- `data/` - Database access: schemas, repositories, clients, migrations, and
+  seeds
 
 ---
 
-### 🛠️ Layer 1.5: Technical Capabilities Layer (Reusable Technical Utilities)
+### 🛠️ Layer 1.5: Technical Capabilities
 
-**Purpose**: Provide infrastructure-level primitives (HTTP, security) that are
-reusable across the application.
+Reusable infrastructure building blocks.
 
-**Modules**:
-
-- `net/` - Networking primitives
-  - `net/http/` - HTTP client, cookie handling, status codes
-- `security/` - Security primitives
-  - `security/jwt/` - JWT token generation and validation
-  - `security/password/` - Password hashing and validation
-  - `security/token/` - Token generation for email verification and password
-    reset
-
-**Key Principle**: Technical layer provides reusable infrastructure building
-blocks.
+- `net/` - Networking primitives (HTTP client, cookies, status codes, URLs)
+- `security/` - Security primitives (JWT, passwords, one-time tokens)
 
 ---
 
-### 🧱 Layer 1: Foundation Layer (Pure Primitives)
+### 🧱 Layer 1: Foundation (Pure Primitives)
 
-**Purpose**: Provide fundamental primitives with zero internal dependencies
-(only external packages).
-
-**Modules**:
+Most stable modules, with no internal dependencies (only external packages).
 
 - `env/` - Environment configuration and validation
-- `errors/` - Custom error classes and error registry
-- `types/` - Shared TypeScript type definitions (HttpStatus, Role, Status,
-  Action, Resource)
-- `utils/` - Generic reusable utilities (async helpers, date utilities)
-- `crypto/` - Low-level cryptographic primitives (hashing, random bytes)
-- `logging/` - Core logger configuration (Pino with console transport)
-
-**Key Principle**: Foundation modules are the most stable and reusable parts of
-the codebase.
+- `errors/` - Application errors and error codes
+- `types/` - Shared domain types
+- `utils/` - Generic utilities (see
+  [Utils Directory](../AGENTS.md#utils-directory))
+- `crypto/` - Low-level cryptographic primitives
+- `logging/` - Logger configuration
 
 ---
 
 ## Special Modules
 
-### Context
-
-- `context/` - Hono application context type definitions (shared across layers)
+- `context.ts` - Hono application context types (shared across layers)
 
 ---
 
@@ -143,12 +94,8 @@ Layer 1 (env, errors, types, utils, crypto, logging)
 External Packages (npm, bun)
 ```
 
-### ❌ Forbidden Dependencies
-
-- Foundation layer (Layer 1) **cannot** import from any higher layer
-- Technical layer (Layer 1.5) **cannot** import from Layer 2, 3, or 4
-- Infrastructure layer (Layer 2) **cannot** import from Layer 3 or 4
-- Application layer (Layer 3) **cannot** import from Layer 4
+> **Note**: Upward dependencies are not allowed. A layer never imports from any
+> layer above it.
 
 ---
 
@@ -182,19 +129,3 @@ External Packages (npm, bun)
    ↓
 8. HTTP Response
 ```
-
----
-
-## Adding New Features
-
-When adding new features, follow this pattern:
-
-1. **Define types** in `types/` (Layer 1) if needed
-2. **Create use case** in `use-cases/` (Layer 3) with business logic
-3. **Add route** in `routes/` (Layer 4) with the handler inlined in `index.ts`
-   right after the path definition (Hono best practice) as a thin HTTP wrapper
-4. **Add tests** for both use case (business logic) and endpoint (HTTP
-   interface)
-5. **Update barrel exports** in relevant `index.ts` files
-
-**Never put business logic in route handlers** - always extract to use cases.
