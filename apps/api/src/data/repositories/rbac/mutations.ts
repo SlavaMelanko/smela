@@ -7,8 +7,7 @@ import type { CreateUserRoleInput, UserRoleRecord } from './types'
 
 import { db } from '../../clients'
 import { userPermissionsTable, userRoleTable } from '../../schema'
-import { collapsePermissions } from './normalize'
-import { findAllPermissions } from './queries'
+import { splitPermissionIds } from './queries'
 
 export const assignRole = async (
   input: CreateUserRoleInput,
@@ -30,30 +29,21 @@ export const setUserPermissions = async (
   tx?: Database
 ): Promise<void> => {
   const executor = tx || db
-  const normalized = collapsePermissions(permissions)
-  const allPerms = await findAllPermissions(tx)
+  const { grantIds, revokeIds } = await splitPermissionIds(permissions, tx)
 
   const grant = async () => {
-    const toGrant = allPerms
-      .filter(p => normalized[p.resource]?.[p.action] === true)
-      .map(p => ({ userId, permissionId: p.id }))
-
-    if (toGrant.length === 0) {
+    if (grantIds.length === 0) {
       return
     }
 
     await executor
       .insert(userPermissionsTable)
-      .values(toGrant)
+      .values(grantIds.map(permissionId => ({ userId, permissionId })))
       .onConflictDoNothing()
   }
 
   const revoke = async () => {
-    const toRevoke = allPerms
-      .filter(p => !normalized[p.resource]?.[p.action])
-      .map(p => p.id)
-
-    if (toRevoke.length === 0) {
+    if (revokeIds.length === 0) {
       return
     }
 
@@ -62,7 +52,7 @@ export const setUserPermissions = async (
       .where(
         and(
           eq(userPermissionsTable.userId, userId),
-          inArray(userPermissionsTable.permissionId, toRevoke)
+          inArray(userPermissionsTable.permissionId, revokeIds)
         )
       )
   }
