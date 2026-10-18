@@ -1,4 +1,4 @@
-import { db, rbacRepo, teamRepo } from '@/data'
+import { db, teamRepo } from '@/data'
 import { getTeamCreatorPermissions } from '@/types'
 
 export interface CreateTeamInput {
@@ -22,7 +22,7 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
       tx
     )
 
-    await rbacRepo.setMemberPermissions(
+    await teamRepo.setMemberPermissions(
       member.id,
       getTeamCreatorPermissions(),
       tx

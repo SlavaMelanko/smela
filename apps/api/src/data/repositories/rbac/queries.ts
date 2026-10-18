@@ -1,22 +1,40 @@
 import { eq, inArray } from 'drizzle-orm'
 
+import type { PermissionsInput } from '@/types'
+
 import type { Database } from '../../clients'
 import type { ActivePermissionRow, Inviter, UserRoleRecord } from './types'
 
 import { db } from '../../clients'
 import {
   permissionsTable,
-  teamMemberPermissionsTable,
   userPermissionsTable,
   userRoleTable,
   usersTable
 } from '../../schema'
-import { expandPermissions } from './normalize'
+import { collapsePermissions, expandPermissions } from './normalize'
 
 export const findAllPermissions = async (
   tx?: Database
 ): Promise<(typeof permissionsTable.$inferSelect)[]> => {
   return (tx || db).select().from(permissionsTable)
+}
+
+// Splits the catalog into permission ids to grant and to revoke
+export const splitPermissionIds = async (
+  permissions: PermissionsInput,
+  tx?: Database
+) => {
+  const normalized = collapsePermissions(permissions)
+  const allPerms = await findAllPermissions(tx)
+
+  const isGranted = (p: (typeof allPerms)[number]) =>
+    normalized[p.resource]?.[p.action] === true
+
+  return {
+    grantIds: allPerms.filter(isGranted).map(p => p.id),
+    revokeIds: allPerms.filter(p => !isGranted(p)).map(p => p.id)
+  }
 }
 
 export const findUserPermissions = async (
@@ -34,25 +52,6 @@ export const findUserPermissions = async (
       eq(permissionsTable.id, userPermissionsTable.permissionId)
     )
     .where(eq(userPermissionsTable.userId, userId))
-
-  return expandPermissions(rows)
-}
-
-export const findMemberPermissions = async (
-  memberId: number,
-  tx?: Database
-): Promise<ActivePermissionRow[]> => {
-  const rows = await (tx || db)
-    .select({
-      action: permissionsTable.action,
-      resource: permissionsTable.resource
-    })
-    .from(teamMemberPermissionsTable)
-    .innerJoin(
-      permissionsTable,
-      eq(permissionsTable.id, teamMemberPermissionsTable.permissionId)
-    )
-    .where(eq(teamMemberPermissionsTable.memberId, memberId))
 
   return expandPermissions(rows)
 }

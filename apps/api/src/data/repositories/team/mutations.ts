@@ -1,4 +1,6 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
+
+import type { PermissionsInput } from '@/types'
 
 import { AppError, ErrorCode } from '@/errors'
 
@@ -12,7 +14,12 @@ import type {
 } from './types'
 
 import { db } from '../../clients'
-import { teamMembersTable, teamsTable } from '../../schema'
+import {
+  teamMemberPermissionsTable,
+  teamMembersTable,
+  teamsTable
+} from '../../schema'
+import { splitPermissionIds } from '../rbac/queries'
 
 export const createTeam = async (
   input: CreateTeamInput,
@@ -112,4 +119,41 @@ export const deleteTeamMember = async (
         eq(teamMembersTable.teamId, teamId)
       )
     )
+}
+
+export const setTeamMemberPermissions = async (
+  memberId: number,
+  permissions: PermissionsInput,
+  tx?: Database
+): Promise<void> => {
+  const executor = tx || db
+  const { grantIds, revokeIds } = await splitPermissionIds(permissions, tx)
+
+  const grant = async () => {
+    if (grantIds.length === 0) {
+      return
+    }
+
+    await executor
+      .insert(teamMemberPermissionsTable)
+      .values(grantIds.map(permissionId => ({ memberId, permissionId })))
+      .onConflictDoNothing()
+  }
+
+  const revoke = async () => {
+    if (revokeIds.length === 0) {
+      return
+    }
+
+    await executor
+      .delete(teamMemberPermissionsTable)
+      .where(
+        and(
+          eq(teamMemberPermissionsTable.memberId, memberId),
+          inArray(teamMemberPermissionsTable.permissionId, revokeIds)
+        )
+      )
+  }
+
+  await Promise.all([grant(), revoke()])
 }
