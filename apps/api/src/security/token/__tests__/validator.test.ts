@@ -14,7 +14,7 @@ describe('TokenValidator', () => {
     userId: testUuids.USER_1,
     type: TokenType.EmailVerification,
     status: TokenStatus.Pending,
-    token: 'valid-token-123',
+    tokenHash: 'a'.repeat(64),
     expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
     usedAt: null,
     metadata: null,

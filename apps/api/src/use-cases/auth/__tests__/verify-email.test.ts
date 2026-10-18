@@ -52,7 +52,7 @@ describe('verifyEmail', () => {
       id: 1,
       userId: testUuids.USER_1,
       type: TokenType.EmailVerification,
-      token: mockTokenString,
+      tokenHash: await hashToken(mockTokenString),
       status: TokenStatus.Pending,
       expiresAt: nowPlus(hours(48)),
       usedAt: null,
@@ -60,7 +60,7 @@ describe('verifyEmail', () => {
       createdAt: new Date()
     }
     mockTokenRepo = {
-      findByToken: mock(async () => mockTokenRecord),
+      findByHash: mock(async () => mockTokenRecord),
       update: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
     mockUser = buildUser()
@@ -94,8 +94,10 @@ describe('verifyEmail', () => {
   it('marks token as used, updates user status, and returns user with JWT token', async () => {
     const result = await verifyEmail({ token: mockTokenString }, mockDeviceInfo)
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledTimes(1)
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
@@ -170,7 +172,7 @@ describe('verifyEmail', () => {
   })
 
   it('throws TokenNotFound when token does not exist', async () => {
-    mockTokenRepo.findByToken.mockImplementation(async () => null)
+    mockTokenRepo.findByHash.mockImplementation(async () => null)
 
     expect(
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -180,7 +182,9 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -192,7 +196,7 @@ describe('verifyEmail', () => {
       usedAt: nowMinus(hour())
     }
 
-    mockTokenRepo.findByToken.mockImplementation(async () => usedTokenRecord)
+    mockTokenRepo.findByHash.mockImplementation(async () => usedTokenRecord)
 
     expect(
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -202,7 +206,9 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -213,7 +219,7 @@ describe('verifyEmail', () => {
       status: TokenStatus.Deprecated
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
+    mockTokenRepo.findByHash.mockImplementation(
       async () => deprecatedTokenRecord
     )
 
@@ -225,7 +231,9 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -236,7 +244,7 @@ describe('verifyEmail', () => {
       expiresAt: nowMinus(hour())
     }
 
-    mockTokenRepo.findByToken.mockImplementation(async () => expiredTokenRecord)
+    mockTokenRepo.findByHash.mockImplementation(async () => expiredTokenRecord)
 
     expect(
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
@@ -246,7 +254,9 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -257,7 +267,7 @@ describe('verifyEmail', () => {
       type: TokenType.PasswordReset
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
+    mockTokenRepo.findByHash.mockImplementation(
       async () => wrongTypeTokenRecord
     )
 
@@ -274,13 +284,15 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
-  it('propagates findByToken errors', async () => {
-    mockTokenRepo.findByToken.mockImplementation(async () => {
+  it('propagates findByHash errors', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () => {
       throw new Error('Database connection failed')
     })
 
@@ -288,7 +300,9 @@ describe('verifyEmail', () => {
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
     ).rejects.toThrow('Database connection failed')
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -302,7 +316,9 @@ describe('verifyEmail', () => {
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
     ).rejects.toThrow('Token update failed')
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
@@ -316,7 +332,9 @@ describe('verifyEmail', () => {
       verifyEmail({ token: mockTokenString }, mockDeviceInfo)
     ).rejects.toThrow('User update failed')
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
   })
@@ -334,7 +352,9 @@ describe('verifyEmail', () => {
       })
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
     expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
   })
@@ -345,9 +365,7 @@ describe('verifyEmail', () => {
       expiresAt: new Date(Date.now() + 1000)
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
-      async () => boundaryTokenRecord
-    )
+    mockTokenRepo.findByHash.mockImplementation(async () => boundaryTokenRecord)
 
     const result = await verifyEmail({ token: mockTokenString }, mockDeviceInfo)
 
@@ -366,7 +384,7 @@ describe('verifyEmail', () => {
       userId: testUuids.NON_EXISTENT
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
+    mockTokenRepo.findByHash.mockImplementation(
       async () => differentUserTokenRecord
     )
 
@@ -397,7 +415,7 @@ describe('verifyEmail', () => {
     for (const testToken of testTokens) {
       const testTokenRecord = { ...mockTokenRecord, token: testToken }
 
-      mockTokenRepo.findByToken.mockImplementation(async () => testTokenRecord)
+      mockTokenRepo.findByHash.mockImplementation(async () => testTokenRecord)
 
       const result = await verifyEmail({ token: testToken }, mockDeviceInfo)
 
@@ -406,7 +424,9 @@ describe('verifyEmail', () => {
       expect(result.data).toHaveProperty('user')
       expect(result.data).toHaveProperty('accessToken')
       expect(result.data.user.email).toBe(mockUser.email)
-      expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(testToken)
+      expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+        await hashToken(testToken)
+      )
     }
   })
 
@@ -416,9 +436,7 @@ describe('verifyEmail', () => {
       usedAt: null
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
-      async () => tokenWithNullUsedAt
-    )
+    mockTokenRepo.findByHash.mockImplementation(async () => tokenWithNullUsedAt)
 
     const result = await verifyEmail({ token: mockTokenString }, mockDeviceInfo)
 
@@ -444,7 +462,7 @@ describe('verifyEmail', () => {
       usedAt: nowMinus(hour())
     }
 
-    mockTokenRepo.findByToken.mockImplementation(
+    mockTokenRepo.findByHash.mockImplementation(
       async () => inconsistentTokenRecord
     )
 

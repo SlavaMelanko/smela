@@ -1,8 +1,10 @@
-import { rbacRepo, teamRepo, tokenRepo } from '@/data'
+import { rbacRepo, teamRepo } from '@/data'
 import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
-import { TokenType, TokenValidator } from '@/security/token'
+import { TokenType } from '@/security/token'
 import { Role } from '@/types'
+
+import { validateOneTimeToken } from '../tokens'
 
 type InviteType = 'member' | 'admin'
 
@@ -38,11 +40,7 @@ const checkAdminInvite = async (
 export const checkInvite = async (
   token: string
 ): Promise<CheckInviteResult> => {
-  const tokenRecord = await tokenRepo.findByToken(token)
-  const validatedToken = TokenValidator.validate(
-    tokenRecord,
-    TokenType.UserInvite
-  )
+  const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
 
   const memberInvite = await checkMemberInvite(validatedToken.userId)
   if (memberInvite) {

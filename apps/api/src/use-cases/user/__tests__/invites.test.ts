@@ -190,7 +190,7 @@ describe('inviteMember', () => {
       {
         userId: USER_1,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -335,7 +335,7 @@ describe('resendMemberInvite', () => {
       {
         userId: USER_1,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()

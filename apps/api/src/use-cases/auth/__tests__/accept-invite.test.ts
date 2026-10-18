@@ -21,12 +21,18 @@ import {
 } from '@/__tests__'
 import { verifyJwt } from '@/security/jwt'
 import { comparePasswordHashes } from '@/security/password'
-import { hashToken, TokenStatus, TokenType } from '@/security/token'
+import {
+  hashToken,
+  TOKEN_LENGTH,
+  TokenStatus,
+  TokenType
+} from '@/security/token'
 import { Role, UserStatus } from '@/types'
 
 import { acceptInvite } from '../accept-invite'
 
 describe('acceptInvite', () => {
+  const RAW_TOKEN = 'a'.repeat(TOKEN_LENGTH)
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const INVITE_TOKEN = {
@@ -70,7 +76,7 @@ describe('acceptInvite', () => {
     }
 
     mockTokenRepo = {
-      findByToken: mock(async () => mockTokenRecord),
+      findByHash: mock(async () => mockTokenRecord),
       update: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
     mockAuthRepo = {
@@ -109,12 +115,12 @@ describe('acceptInvite', () => {
 
   it('marks token as used, updates password, activates user, and returns user with tokens', async () => {
     const result = await acceptInvite(
-      { token: mockTokenRecord.token, password: mockPassword },
+      { token: RAW_TOKEN, password: mockPassword },
       mockDeviceInfo
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
-      mockTokenRecord.token
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(RAW_TOKEN)
     )
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
@@ -150,7 +156,7 @@ describe('acceptInvite', () => {
 
   it('stores a hash that matches the new password', async () => {
     await acceptInvite(
-      { token: mockTokenRecord.token, password: mockPassword },
+      { token: RAW_TOKEN, password: mockPassword },
       mockDeviceInfo
     )
 
@@ -164,7 +170,7 @@ describe('acceptInvite', () => {
 
   it('signs an access token with activated user claims', async () => {
     const result = await acceptInvite(
-      { token: mockTokenRecord.token, password: mockPassword },
+      { token: RAW_TOKEN, password: mockPassword },
       mockDeviceInfo
     )
 
@@ -178,7 +184,7 @@ describe('acceptInvite', () => {
 
   it('stores only the hash of the returned refresh token', async () => {
     const result = await acceptInvite(
-      { token: mockTokenRecord.token, password: mockPassword },
+      { token: RAW_TOKEN, password: mockPassword },
       mockDeviceInfo
     )
 
@@ -197,10 +203,10 @@ describe('acceptInvite', () => {
     TokenType.PasswordReset
   ).forEach(({ name, record, code }) => {
     it(`throws ${code} without updating anything when token is ${name}`, async () => {
-      mockTokenRepo.findByToken.mockImplementation(async () => record)
+      mockTokenRepo.findByHash.mockImplementation(async () => record)
 
       const error = await acceptInvite(
-        { token: mockTokenRecord.token, password: mockPassword },
+        { token: RAW_TOKEN, password: mockPassword },
         mockDeviceInfo
       ).catch((error: unknown) => error)
 
@@ -233,7 +239,7 @@ describe('acceptInvite', () => {
         })
 
         const error = await acceptInvite(
-          { token: mockTokenRecord.token, password: mockPassword },
+          { token: RAW_TOKEN, password: mockPassword },
           mockDeviceInfo
         ).catch((error: unknown) => error)
 
@@ -248,10 +254,7 @@ describe('acceptInvite', () => {
 
   it('rejects empty password', async () => {
     expect(
-      acceptInvite(
-        { token: mockTokenRecord.token, password: '' },
-        mockDeviceInfo
-      )
+      acceptInvite({ token: RAW_TOKEN, password: '' }, mockDeviceInfo)
     ).rejects.toThrow('password must not be empty')
   })
 
@@ -259,7 +262,7 @@ describe('acceptInvite', () => {
     const longPassword = `A1@${'a'.repeat(1000)}`
 
     const result = await acceptInvite(
-      { token: mockTokenRecord.token, password: longPassword },
+      { token: RAW_TOKEN, password: longPassword },
       mockDeviceInfo
     )
 

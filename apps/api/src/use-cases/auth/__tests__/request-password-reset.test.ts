@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { tokenRepo, User, userRepo } from '@/data'
 
 import { buildUser, createTransactionMock, ModuleMocker } from '@/__tests__'
-import { TokenType } from '@/security/token'
+import { hashToken, TokenType } from '@/security/token'
 import {
   buildResetPasswordUrl,
   PasswordResetEmailMessageBuilder
@@ -63,7 +63,7 @@ describe('requestPasswordReset', () => {
       {
         userId: mockUser.id,
         type: TokenType.PasswordReset,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       {}
@@ -75,14 +75,12 @@ describe('requestPasswordReset', () => {
       expect.any(PasswordResetEmailMessageBuilder)
     )
     expect(mockEmailService.send).toHaveBeenCalledTimes(1)
-    expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
-      data: {
-        resetUrl: buildResetPasswordUrl(
-          mockUser.role,
-          mockTokenRepo.issue.mock.calls[0][1].token
-        )
-      }
-    })
+    const { resetUrl } = mockEmailService.send.mock.calls[0][0].data
+    const rawToken = new URL(resetUrl).searchParams.get('token')!
+    expect(resetUrl).toBe(buildResetPasswordUrl(mockUser.role, rawToken))
+    expect(await hashToken(rawToken)).toBe(
+      mockTokenRepo.issue.mock.calls[0][1].tokenHash
+    )
 
     expect(result).toEqual({ success: true })
   })

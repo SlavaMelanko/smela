@@ -4,13 +4,15 @@ import type { PermissionsInput } from '@/types'
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
-import { generateToken, TokenType } from '@/security/token'
+import { TokenType } from '@/security/token'
 import {
   buildInviteUrl,
   emailService,
   UserInviteEmailMessageBuilder
 } from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
+
+import { issueOneTimeToken } from '../tokens'
 
 export interface InviteMemberInput {
   firstName: string
@@ -74,18 +76,7 @@ export const inviteMember = async (
 
     await rbacRepo.setUserPermissions(newUser.id, member.permissions, tx)
 
-    const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
-
-    await tokenRepo.issue(
-      newUser.id,
-      {
-        userId: newUser.id,
-        type,
-        token,
-        expiresAt
-      },
-      tx
-    )
+    const token = await issueOneTimeToken(newUser.id, TokenType.UserInvite, tx)
 
     return {
       member: {
@@ -132,16 +123,9 @@ export const resendMemberInvite = async (
     )
   }
 
-  const token = await db.transaction(async tx => {
-    const { type, token, expiresAt } = generateToken(TokenType.UserInvite)
-    await tokenRepo.issue(
-      member.id,
-      { userId: member.id, type, token, expiresAt },
-      tx
-    )
-
-    return token
-  })
+  const token = await db.transaction(async tx =>
+    issueOneTimeToken(member.id, TokenType.UserInvite, tx)
+  )
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(member.email, {

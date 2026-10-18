@@ -17,12 +17,13 @@ import {
 } from '@/__tests__'
 import { env } from '@/env'
 import { ErrorCode } from '@/errors'
-import { TokenType } from '@/security/token'
+import { hashToken, TOKEN_LENGTH, TokenType } from '@/security/token'
 import { Role } from '@/types'
 
 import { checkInvite } from '../check-invite'
 
 describe('checkInvite', () => {
+  const RAW_TOKEN = 'a'.repeat(TOKEN_LENGTH)
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const INVITE_TOKEN = {
@@ -55,7 +56,7 @@ describe('checkInvite', () => {
     }
 
     mockTokenRepo = {
-      findByToken: mock(async () => mockTokenRecord)
+      findByHash: mock(async () => mockTokenRecord)
     } satisfies Partial<typeof tokenRepo>
     mockTeamRepo = {
       findUserTeam: mock(async () => mockTeam)
@@ -76,12 +77,12 @@ describe('checkInvite', () => {
   })
 
   it('returns member type and team name for member invite token', async () => {
-    const result = await checkInvite(mockTokenRecord.token)
+    const result = await checkInvite(RAW_TOKEN)
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(
-      mockTokenRecord.token
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(RAW_TOKEN)
     )
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledTimes(1)
 
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
       mockTokenRecord.userId
@@ -99,7 +100,7 @@ describe('checkInvite', () => {
     })
 
     it('returns admin type and company name', async () => {
-      const result = await checkInvite(mockTokenRecord.token)
+      const result = await checkInvite(RAW_TOKEN)
 
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
         mockTokenRecord.userId
@@ -116,9 +117,9 @@ describe('checkInvite', () => {
     TokenType.PasswordReset
   ).forEach(({ name, record, code }) => {
     it(`throws ${code} when token is ${name}`, async () => {
-      mockTokenRepo.findByToken.mockImplementation(async () => record)
+      mockTokenRepo.findByHash.mockImplementation(async () => record)
 
-      const error = await checkInvite(mockTokenRecord.token).catch(
+      const error = await checkInvite(RAW_TOKEN).catch(
         (error: unknown) => error
       )
 
@@ -132,9 +133,7 @@ describe('checkInvite', () => {
     mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
     mockRbacRepo.findRole.mockResolvedValue(undefined)
 
-    const error = await checkInvite(mockTokenRecord.token).catch(
-      (error: unknown) => error
-    )
+    const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
     expect(error).toMatchObject({
       name: 'AppError',
@@ -155,9 +154,7 @@ describe('checkInvite', () => {
       role: Role.User
     })
 
-    const error = await checkInvite(mockTokenRecord.token).catch(
-      (error: unknown) => error
-    )
+    const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
     expect(error).toMatchObject({
       name: 'AppError',
@@ -171,9 +168,7 @@ describe('checkInvite', () => {
       new Error('Database connection failed')
     )
 
-    const error = await checkInvite(mockTokenRecord.token).catch(
-      (error: unknown) => error
-    )
+    const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
     expect(error).toMatchObject({ message: 'Database connection failed' })
   })

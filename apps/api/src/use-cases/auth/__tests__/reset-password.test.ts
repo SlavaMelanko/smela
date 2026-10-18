@@ -60,7 +60,7 @@ describe('resetPassword', () => {
       id: 1,
       userId: testUuids.USER_1,
       type: TokenType.PasswordReset,
-      token: mockTokenString,
+      tokenHash: await hashToken(mockTokenString),
       status: TokenStatus.Pending,
       expiresAt: nowPlus(hour()),
       createdAt: new Date(),
@@ -76,7 +76,7 @@ describe('resetPassword', () => {
     })
 
     mockTokenRepo = {
-      findByToken: mock(async () => mockTokenRecord),
+      findByHash: mock(async () => mockTokenRecord),
       update: mock(async () => {})
     } satisfies Partial<typeof tokenRepo>
     mockAuthRepo = {
@@ -136,8 +136,10 @@ describe('resetPassword', () => {
       mockDeviceInfo
     )
 
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledWith(mockTokenString)
-    expect(mockTokenRepo.findByToken).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
+      await hashToken(mockTokenString)
+    )
+    expect(mockTokenRepo.findByHash).toHaveBeenCalledTimes(1)
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
@@ -237,7 +239,7 @@ describe('resetPassword', () => {
   })
 
   it('throws TokenNotFound without updating anything when token does not exist', async () => {
-    mockTokenRepo.findByToken.mockImplementation(async () => undefined)
+    mockTokenRepo.findByHash.mockImplementation(async () => undefined)
 
     await expectRejectsWithoutUpdates(ErrorCode.TokenNotFound)
   })

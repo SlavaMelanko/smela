@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { tokenRepo, User, userRepo } from '@/data'
 
 import { buildUser, createTransactionMock, ModuleMocker } from '@/__tests__'
-import { TokenType } from '@/security/token'
+import { hashToken, TokenType } from '@/security/token'
 import {
   buildVerificationUrl,
   VerificationEmailMessageBuilder
@@ -62,7 +62,7 @@ describe('resendVerificationEmail', () => {
       {
         userId: mockUser.id,
         type: TokenType.EmailVerification,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       {}
@@ -79,13 +79,12 @@ describe('resendVerificationEmail', () => {
       expect.any(VerificationEmailMessageBuilder)
     )
     expect(mockEmailService.send).toHaveBeenCalledTimes(1)
-    expect(mockEmailService.send.mock.calls[0][0]).toMatchObject({
-      data: {
-        verificationUrl: buildVerificationUrl(
-          mockTokenRepo.issue.mock.calls[0][1].token
-        )
-      }
-    })
+    const { verificationUrl } = mockEmailService.send.mock.calls[0][0].data
+    const rawToken = new URL(verificationUrl).searchParams.get('token')!
+    expect(verificationUrl).toBe(buildVerificationUrl(rawToken))
+    expect(await hashToken(rawToken)).toBe(
+      mockTokenRepo.issue.mock.calls[0][1].tokenHash
+    )
   })
 
   it('returns success when user does not exist', async () => {

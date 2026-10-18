@@ -134,7 +134,7 @@ describe('inviteAdmin', () => {
       {
         userId: mockAdmin.id,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()
@@ -308,7 +308,7 @@ describe('resendAdminInvite', () => {
       {
         userId: testUuids.ADMIN_1,
         type: TokenType.UserInvite,
-        token: expect.any(String),
+        tokenHash: expect.any(String),
         expiresAt: expect.any(Date)
       },
       expect.anything()

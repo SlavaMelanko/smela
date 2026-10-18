@@ -1,10 +1,10 @@
 import type { DeviceInfo } from '@/net/http/device'
 import type { UserPreferences } from '@/types'
 
-import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, rbacRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
-import { generateToken, TokenType } from '@/security/token'
+import { TokenType } from '@/security/token'
 import {
   buildVerificationUrl,
   emailService,
@@ -13,7 +13,7 @@ import {
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { createAuthTokens } from '../tokens'
+import { createAuthTokens, issueOneTimeToken } from '../tokens'
 
 const createNewUser = async (
   firstName: string,
@@ -23,13 +23,7 @@ const createNewUser = async (
 ) => {
   const hashedPassword = await hashPassword(password)
 
-  const {
-    type,
-    token: verificationToken,
-    expiresAt
-  } = generateToken(TokenType.EmailVerification)
-
-  const newUser = await db.transaction(async tx => {
+  return db.transaction(async tx => {
     const newUser = await userRepo.create(
       {
         firstName,
@@ -50,14 +44,9 @@ const createNewUser = async (
       tx
     )
 
-    await tokenRepo.issue(
+    const verificationToken = await issueOneTimeToken(
       newUser.id,
-      {
-        userId: newUser.id,
-        type,
-        token: verificationToken,
-        expiresAt
-      },
+      TokenType.EmailVerification,
       tx
     )
 
@@ -67,10 +56,8 @@ const createNewUser = async (
       tx
     )
 
-    return newUser
+    return { newUser, verificationToken }
   })
-
-  return { newUser, verificationToken }
 }
 
 export interface SignupInput {

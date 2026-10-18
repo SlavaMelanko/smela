@@ -6,8 +6,8 @@ import type { Token } from './types'
 import { db } from '../../clients'
 import { tokensTable } from '../../schema'
 
-export const findByToken = async (
-  token: string,
+export const findByTokenHash = async (
+  tokenHash: string,
   tx?: Database
 ): Promise<Token | undefined> => {
   const executor = tx || db
@@ -15,7 +15,7 @@ export const findByToken = async (
   const [foundToken] = await executor
     .select()
     .from(tokensTable)
-    .where(eq(tokensTable.token, token))
+    .where(eq(tokensTable.tokenHash, tokenHash))
 
   return foundToken
 }

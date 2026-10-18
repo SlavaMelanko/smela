@@ -65,6 +65,8 @@ Security decisions that aren't obvious from the code:
 - **JWT secret rotation**: signing uses `JWT_SECRET`, verification falls back to
   optional `JWT_SECRET_PREVIOUS` during the grace period. Runbook:
   [README.md](README.md#-jwt-secret-rotation).
+- **Token storage**: refresh and one-time tokens are stored as SHA-256 hashes
+  only, so a leaked database can't be used to redeem them.
 - **Email enumeration**: auth endpoints return consistent responses whether or
   not the account exists.
 - **Zod strictness**: use `.strict()` on body schemas for auth, payment, and

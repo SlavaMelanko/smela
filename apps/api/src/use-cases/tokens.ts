@@ -7,6 +7,7 @@ import { env } from '@/env'
 import { signJwt } from '@/security/jwt'
 import {
   generateHashedToken,
+  hashToken,
   TokenType,
   TokenValidator
 } from '@/security/token'
@@ -60,8 +61,28 @@ export const createAuthTokens = async (
     createRefreshToken(user.id, deviceInfo, tx)
   ])
 
+// Only the hash is stored, so a leaked database can't be used to redeem tokens
+export const issueOneTimeToken = async (
+  userId: string,
+  type: TokenType,
+  tx: Database
+) => {
+  const {
+    token: { raw, hashed },
+    expiresAt
+  } = await generateHashedToken(type)
+
+  await tokenRepo.issue(
+    userId,
+    { userId, type, tokenHash: hashed, expiresAt },
+    tx
+  )
+
+  return raw
+}
+
 export const validateOneTimeToken = async (token: string, type: TokenType) => {
-  const tokenRecord = await tokenRepo.findByToken(token)
+  const tokenRecord = await tokenRepo.findByHash(await hashToken(token))
 
   return TokenValidator.validate(tokenRecord, type)
 }
