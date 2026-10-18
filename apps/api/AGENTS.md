@@ -85,6 +85,8 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
 - **Imports**: `@/` path alias for src.
 - **Exports**: inline named exports (`export const`, `export class`,
   `export enum`); no `export default`.
+- **Routes**: inline handlers in `index.ts` right after the path definition
+  (Hono best practice); no `factory.createHandlers`.
 - **Style**: arrow functions, 2-space indent, no semicolons, single quotes,
   curly braces always.
 - **Naming**: camelCase for objects/arrays, SCREAMING_SNAKE_CASE for primitive
