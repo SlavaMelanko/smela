@@ -89,7 +89,6 @@ export const issueInviteToken = async (
   tx?: Database
 ) => issueOneTimeToken(userId, TokenType.UserInvite, tx, { kind })
 
-// Tokens issued before invites carried a kind must be resent
 export const readInviteKind = (metadata: InviteMetadata | null) => {
   if (!metadata) {
     throw new AppError(ErrorCode.TokenDeprecated, 'Invite token has no kind')
