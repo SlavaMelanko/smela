@@ -18,6 +18,6 @@ checkInviteRoute.get(
 
     const result = await checkInvite(token)
 
-    return c.json({ data: result }, HttpStatus.OK)
+    return c.json(result, HttpStatus.OK)
   }
 )

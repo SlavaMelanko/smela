@@ -164,7 +164,6 @@ export const useCheckInvite = token =>
   useQuery({
     queryKey: authKeys.invitation(token),
     queryFn: () => authApi.checkInvite(token),
-    select: response => response.data,
     enabled: !!token,
     retry: false,
     staleTime: Infinity,

@@ -71,7 +71,7 @@ describe('checkInvite', () => {
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
       mockTokenRecord.userId
     )
-    expect(result).toEqual({ type: InviteKind.Member, teamName: 'Acme Corp' })
+    expect(result).toEqual({ kind: InviteKind.Member, teamName: 'Acme Corp' })
   })
 
   it('returns admin type and company name without a team lookup', async () => {
@@ -86,7 +86,7 @@ describe('checkInvite', () => {
 
     expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
     expect(result).toEqual({
-      type: InviteKind.Admin,
+      kind: InviteKind.Admin,
       teamName: env.COMPANY_NAME
     })
   })

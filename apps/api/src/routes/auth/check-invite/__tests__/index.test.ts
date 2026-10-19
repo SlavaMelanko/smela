@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { createTestApp, get, ModuleMocker } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
-import { TOKEN_LENGTH } from '@/security/token'
+import { InviteKind, TOKEN_LENGTH } from '@/security/token'
 
 import { checkInviteRoute } from '../index'
 
@@ -20,7 +20,7 @@ describe('auth /check-invite', () => {
 
   beforeEach(async () => {
     mockCheckInvite = mock(async () => ({
-      type: 'member',
+      kind: InviteKind.Member,
       teamName: 'Acme Corp'
     }))
 
@@ -42,7 +42,7 @@ describe('auth /check-invite', () => {
       expect(res.status).toBe(HttpStatus.OK)
 
       const json = await res.json()
-      expect(json).toEqual({ data: { type: 'member', teamName: 'Acme Corp' } })
+      expect(json).toEqual({ kind: InviteKind.Member, teamName: 'Acme Corp' })
 
       expect(mockCheckInvite).toHaveBeenCalledWith(validToken)
       expect(mockCheckInvite).toHaveBeenCalledTimes(1)
