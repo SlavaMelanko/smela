@@ -1,5 +1,4 @@
 import { assignRole, setUserPermissions } from './mutations'
-import { expandPermissions, splitPermissions } from './normalize'
 import {
   findAllPermissions,
   findInviters,
@@ -7,12 +6,12 @@ import {
   findUserPermissions
 } from './queries'
 
+export { expandPermissions, splitPermissions } from './normalize'
 export * from './types'
-
-export { expandPermissions, findAllPermissions, splitPermissions }
 
 export const rbacRepo = {
   assignRole,
+  findAllPermissions,
   findInviters,
   findRole,
   findUserPermissions,
