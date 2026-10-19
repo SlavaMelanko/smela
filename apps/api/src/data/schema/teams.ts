@@ -50,6 +50,10 @@ export const teamMembersTable = pgTable(
     }),
     joinedAt: timestamp('joined_at', { withTimezone: true })
       .notNull()
+      .defaultNow(),
+    // The latest one is the user's active team
+    lastActiveAt: timestamp('last_active_at', { withTimezone: true })
+      .notNull()
       .defaultNow()
   },
   table => [
