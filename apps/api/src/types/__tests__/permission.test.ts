@@ -3,7 +3,8 @@ import { describe, expect, it } from 'bun:test'
 import {
   getAdminDefaultPermissions,
   getMemberDefaultPermissions,
-  getMemberFullPermissions
+  getMemberFullPermissions,
+  getUserDefaultPermissions
 } from '../permission'
 import Resource from '../resource'
 
@@ -39,33 +40,25 @@ describe('getAdminDefaultPermissions', () => {
 })
 
 describe('getMemberDefaultPermissions', () => {
-  it('grants view but not manage for teams', () => {
-    const permissions = getMemberDefaultPermissions()
-
-    expect(permissions[Resource.Teams]).toEqual({ view: true })
-  })
-
-  it('grants view but not manage for dashboard', () => {
-    const permissions = getMemberDefaultPermissions()
-
-    expect(permissions[Resource.Dashboard]).toEqual({ view: true })
-  })
-
-  it('includes only teams and dashboard resources', () => {
-    const permissions = getMemberDefaultPermissions()
-
-    expect(Object.keys(permissions)).toEqual([
-      Resource.Dashboard,
-      Resource.Teams
-    ])
+  it('grants view but not manage for teams only', () => {
+    expect(getMemberDefaultPermissions()).toEqual({
+      [Resource.Teams]: { view: true }
+    })
   })
 })
 
 describe('getMemberFullPermissions', () => {
-  it('grants view and manage for teams and dashboard only', () => {
+  it('grants view and manage for teams only', () => {
     expect(getMemberFullPermissions()).toEqual({
-      [Resource.Dashboard]: { view: true, manage: true },
       [Resource.Teams]: { view: true, manage: true }
+    })
+  })
+})
+
+describe('getUserDefaultPermissions', () => {
+  it('grants dashboard only, since team permissions live on the membership', () => {
+    expect(getUserDefaultPermissions()).toEqual({
+      [Resource.Dashboard]: { view: true, manage: true }
     })
   })
 })

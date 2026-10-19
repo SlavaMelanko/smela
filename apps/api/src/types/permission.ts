@@ -36,27 +36,23 @@ export const getAdminDefaultPermissions = (): PermissionMap => ({
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
-// Granted to a user on signup
+// Granted to a user on signup. Team permissions live on the membership
 export const getUserDefaultPermissions = (): PermissionsInput => ({
-  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
-  [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true }
 })
 
 // All-false skeleton merged with stored permissions so frontend always gets a full map
 export const getMemberBasePermissions = (): PermissionMap => ({
-  [Resource.Dashboard]: { [Action.View]: false },
   [Resource.Teams]: { [Action.View]: false }
 })
 
 // Granted to a team member on creation
 export const getMemberDefaultPermissions = (): PermissionMap => ({
-  [Resource.Dashboard]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
 })
 
 // Every team member permission, granted to the team creator
 export const getMemberFullPermissions = (): PermissionsInput => ({
-  [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 

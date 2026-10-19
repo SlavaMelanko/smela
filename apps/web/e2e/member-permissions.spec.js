@@ -143,7 +143,11 @@ test.describe.serial('User: Member Permissions', () => {
 
     await fillAcceptInviteFormAndSubmit(page, readOnlyMember.password, t)
 
-    await acceptPromise
+    const { body } = await acceptPromise
+
+    // Team permissions live on the membership, not on the user
+    expect(body.team.permissions).toEqual(['view:teams'])
+    expect(body.permissions).not.toEqual(expect.arrayContaining(['view:teams']))
 
     // Navigate to own member detail to check permissions
     await page.goto(`/team/members/${readOnlyMemberId}`)
