@@ -5,6 +5,7 @@ export {
   getAdminDefaultPermissions,
   getMemberBasePermissions,
   getMemberDefaultPermissions,
+  getMemberFullPermissions,
   getUserDefaultPermissions,
   default as Permission
 } from './permission'

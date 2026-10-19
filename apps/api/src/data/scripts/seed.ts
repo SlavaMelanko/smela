@@ -13,10 +13,21 @@
 import { faker } from '@faker-js/faker'
 import { eq, sql } from 'drizzle-orm'
 
+import type { PermissionMap } from '@/types'
+
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
 import { EmailSenderType } from '@/services/email'
-import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  getMemberDefaultPermissions,
+  getMemberFullPermissions,
+  getUserDefaultPermissions,
+  Resource,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { db } from '../clients'
 import {
@@ -24,6 +35,7 @@ import {
   emailSenderProfilesTable,
   permissionsTable,
   socialLinksTable,
+  teamMemberPermissionsTable,
   teamMembersTable,
   teamsTable,
   userPermissionsTable,
@@ -149,24 +161,47 @@ const seedSocialLinks = async () => {
   console.log(`✅ ${socialLinks.length} social links seeded`)
 }
 
-const setUserPermissions = async (
-  userId: string,
-  permissions: { action: Action; resource: Resource }[]
-) => {
+const findPermissionIds = async (permissions: PermissionMap<Resource>) => {
   const allPermissions = await db.select().from(permissionsTable)
 
-  const toInsert = permissions
-    .map(({ action, resource }) => {
-      const perm = allPermissions.find(
-        p => p.action === action && p.resource === resource
+  // Manage implies view, so view is not stored next to manage
+  return allPermissions
+    .filter(({ action, resource }) => {
+      const granted = permissions[resource]
+
+      return (
+        granted?.[action] === true &&
+        !(action === Action.View && granted[Action.Manage] === true)
       )
-
-      return perm ? { userId, permissionId: perm.id } : null
     })
-    .filter(Boolean) as { userId: string; permissionId: number }[]
+    .map(p => p.id)
+}
 
-  if (toInsert.length > 0) {
-    await db.insert(userPermissionsTable).values(toInsert).onConflictDoNothing()
+const setUserPermissions = async (
+  userId: string,
+  permissions: PermissionMap<Resource>
+) => {
+  const permissionIds = await findPermissionIds(permissions)
+
+  if (permissionIds.length > 0) {
+    await db
+      .insert(userPermissionsTable)
+      .values(permissionIds.map(permissionId => ({ userId, permissionId })))
+      .onConflictDoNothing()
+  }
+}
+
+const setMemberPermissions = async (
+  memberId: number,
+  permissions: PermissionMap<Resource>
+) => {
+  const permissionIds = await findPermissionIds(permissions)
+
+  if (permissionIds.length > 0) {
+    await db
+      .insert(teamMemberPermissionsTable)
+      .values(permissionIds.map(permissionId => ({ memberId, permissionId })))
+      .onConflictDoNothing()
   }
 }
 
@@ -231,7 +266,7 @@ const seedSystemUsers = async () => {
     password: string
     role: Role
     status: UserStatus
-    permissions: { action: Action; resource: Resource }[]
+    userPermissions: PermissionMap<Resource>
   }[] = [
     {
       firstName: 'Slava',
@@ -240,13 +275,13 @@ const seedSystemUsers = async () => {
       password: SEED_USER_PASSWORD,
       role: Role.Owner,
       status: UserStatus.Active,
-      permissions: [
-        { action: Action.Manage, resource: Resource.Admins },
-        { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard },
-        { action: Action.Manage, resource: Resource.System }
-      ]
+      userPermissions: {
+        [Resource.Admins]: { [Action.Manage]: true },
+        [Resource.Users]: { [Action.Manage]: true },
+        [Resource.Teams]: { [Action.Manage]: true },
+        [Resource.Dashboard]: { [Action.Manage]: true },
+        [Resource.System]: { [Action.Manage]: true }
+      }
     },
     {
       firstName: 'Slava',
@@ -255,12 +290,12 @@ const seedSystemUsers = async () => {
       password: SEED_USER_PASSWORD,
       role: Role.Admin,
       status: UserStatus.Active,
-      permissions: [
-        { action: Action.Manage, resource: Resource.Users },
-        { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard },
-        { action: Action.Manage, resource: Resource.System }
-      ]
+      userPermissions: {
+        [Resource.Users]: { [Action.Manage]: true },
+        [Resource.Teams]: { [Action.Manage]: true },
+        [Resource.Dashboard]: { [Action.Manage]: true },
+        [Resource.System]: { [Action.Manage]: true }
+      }
     },
     {
       firstName: 'Support',
@@ -269,11 +304,11 @@ const seedSystemUsers = async () => {
       password: SEED_USER_PASSWORD,
       role: Role.Admin,
       status: UserStatus.Active,
-      permissions: [
-        { action: Action.View, resource: Resource.Users },
-        { action: Action.View, resource: Resource.Teams },
-        { action: Action.View, resource: Resource.Dashboard }
-      ]
+      userPermissions: {
+        [Resource.Users]: { [Action.View]: true },
+        [Resource.Teams]: { [Action.View]: true },
+        [Resource.Dashboard]: { [Action.View]: true }
+      }
     }
   ]
 
@@ -312,7 +347,7 @@ const seedSystemUsers = async () => {
       role: user.role
     })
 
-    await setUserPermissions(createdUser.id, user.permissions)
+    await setUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ ${user.role} ${user.email} seeded`)
   }
@@ -328,10 +363,8 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Active,
       position: 'Developer',
-      permissions: [
-        { action: Action.Manage, resource: Resource.Teams },
-        { action: Action.Manage, resource: Resource.Dashboard }
-      ]
+      userPermissions: getUserDefaultPermissions(),
+      memberPermissions: getMemberFullPermissions()
     },
     {
       firstName: faker.person.firstName(),
@@ -340,10 +373,8 @@ const seedTestUsers = async (teamId: string) => {
       password: SEED_USER_PASSWORD,
       status: UserStatus.Pending,
       position: 'Designer',
-      permissions: [
-        { action: Action.View, resource: Resource.Teams },
-        { action: Action.View, resource: Resource.Dashboard }
-      ]
+      userPermissions: getUserDefaultPermissions(),
+      memberPermissions: getMemberDefaultPermissions()
     }
   ]
 
@@ -363,11 +394,13 @@ const seedTestUsers = async (teamId: string) => {
       if (existingLink) {
         console.log(`✅ user ${user.email} already exists`)
       } else {
-        await db.insert(teamMembersTable).values({
-          userId: existingUser.id,
-          teamId,
-          position: user.position
-        })
+        const [member] = await db
+          .insert(teamMembersTable)
+          .values({ userId: existingUser.id, teamId, position: user.position })
+          .returning({ id: teamMembersTable.id })
+
+        await setMemberPermissions(member.id, user.memberPermissions)
+
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
       }
 
@@ -393,13 +426,13 @@ const seedTestUsers = async (teamId: string) => {
       passwordHash: hashedPassword
     })
 
-    await db.insert(teamMembersTable).values({
-      userId: createdUser.id,
-      teamId,
-      position: user.position
-    })
+    const [member] = await db
+      .insert(teamMembersTable)
+      .values({ userId: createdUser.id, teamId, position: user.position })
+      .returning({ id: teamMembersTable.id })
 
-    await setUserPermissions(createdUser.id, user.permissions)
+    await setUserPermissions(createdUser.id, user.userPermissions)
+    await setMemberPermissions(member.id, user.memberPermissions)
 
     console.log(`✅ user ${user.email} seeded and linked to team`)
   }
@@ -414,7 +447,9 @@ const seedGoogleUsers = async () => {
       email: 'user.google@gmail.com',
       googleId: 'mock-google-id-user-google',
       status: UserStatus.Verified,
-      permissions: [{ action: Action.Manage, resource: Resource.Dashboard }]
+      userPermissions: {
+        [Resource.Dashboard]: { [Action.Manage]: true }
+      }
     }
   ]
 
@@ -446,7 +481,7 @@ const seedGoogleUsers = async () => {
       passwordHash: null
     })
 
-    await setUserPermissions(createdUser.id, user.permissions)
+    await setUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ Google user ${user.email} seeded`)
   }
