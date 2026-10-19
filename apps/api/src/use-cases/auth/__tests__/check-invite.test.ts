@@ -1,13 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type {
-  rbacRepo,
-  teamRepo,
-  TokenRecord,
-  tokenRepo,
-  UserRoleRecord,
-  UserTeamInfo
-} from '@/data'
+import type { teamRepo, TokenRecord, tokenRepo, UserTeamInfo } from '@/data'
 
 import {
   buildInvalidTokenCases,
@@ -17,8 +10,12 @@ import {
 } from '@/__tests__'
 import { env } from '@/env'
 import { ErrorCode } from '@/errors'
-import { hashToken, TOKEN_LENGTH, TokenType } from '@/security/token'
-import { Role } from '@/types'
+import {
+  hashToken,
+  InviteKind,
+  TOKEN_LENGTH,
+  TokenType
+} from '@/security/token'
 
 import { checkInvite } from '../check-invite'
 
@@ -27,17 +24,16 @@ describe('checkInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   const INVITE_TOKEN = {
-    userId: testUuids.ADMIN_1,
-    type: TokenType.UserInvite
+    userId: testUuids.USER_1,
+    type: TokenType.UserInvite,
+    metadata: { kind: InviteKind.Member }
   }
 
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
   let mockTeamRepo: any
-  let mockRbacRepo: any
 
   let mockTeam: UserTeamInfo
-  let mockAdminRole: UserRoleRecord
 
   beforeEach(async () => {
     mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
@@ -49,27 +45,16 @@ describe('checkInvite', () => {
       position: 'Team Member'
     }
 
-    mockAdminRole = {
-      userId: testUuids.ADMIN_1,
-      role: Role.Admin,
-      invitedBy: testUuids.OWNER_1,
-      assignedAt: new Date()
-    }
-
     mockTokenRepo = {
       findByHash: mock(async () => mockTokenRecord)
     } satisfies Partial<typeof tokenRepo>
     mockTeamRepo = {
       findUserTeam: mock(async () => mockTeam)
     } satisfies Partial<typeof teamRepo>
-    mockRbacRepo = {
-      findRole: mock(async () => mockAdminRole)
-    } satisfies Partial<typeof rbacRepo>
 
     await moduleMocker.mock('@/data', () => ({
       tokenRepo: mockTokenRepo,
-      teamRepo: mockTeamRepo,
-      rbacRepo: mockRbacRepo
+      teamRepo: mockTeamRepo
     }))
   })
 
@@ -83,34 +68,41 @@ describe('checkInvite', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(RAW_TOKEN)
     )
-    expect(mockTokenRepo.findByHash).toHaveBeenCalledTimes(1)
-
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
       mockTokenRecord.userId
     )
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledTimes(1)
-
-    expect(mockRbacRepo.findRole).not.toHaveBeenCalled()
-
-    expect(result).toEqual({ type: 'member', teamName: 'Acme Corp' })
+    expect(result).toEqual({ kind: InviteKind.Member, teamName: 'Acme Corp' })
   })
 
-  describe('when token is valid for admin invite', () => {
-    beforeEach(() => {
-      mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
+  it('returns admin type and company name without a team lookup', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord({
+        ...INVITE_TOKEN,
+        metadata: { kind: InviteKind.Admin }
+      })
+    )
+
+    const result = await checkInvite(RAW_TOKEN)
+
+    expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      kind: InviteKind.Admin,
+      teamName: env.COMPANY_NAME
     })
+  })
 
-    it('returns admin type and company name', async () => {
-      const result = await checkInvite(RAW_TOKEN)
+  it('throws TokenDeprecated when token has no kind', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord({ ...INVITE_TOKEN, metadata: null })
+    )
 
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
-        mockTokenRecord.userId
-      )
-      expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
-      expect(mockRbacRepo.findRole).toHaveBeenCalledTimes(1)
+    const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
-      expect(result).toEqual({ type: 'admin', teamName: env.COMPANY_NAME })
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.TokenDeprecated
     })
+    expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
   })
 
   buildInvalidTokenCases(
@@ -130,30 +122,8 @@ describe('checkInvite', () => {
     })
   })
 
-  it('throws TokenDeprecated when user has no team membership and no admin role', async () => {
+  it('throws TokenDeprecated when member invite has no team', async () => {
     mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
-    mockRbacRepo.findRole.mockResolvedValue(undefined)
-
-    const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
-
-    expect(error).toMatchObject({
-      name: 'AppError',
-      code: ErrorCode.TokenDeprecated,
-      message: 'Invalid invite'
-    })
-
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
-      mockTokenRecord.userId
-    )
-    expect(mockRbacRepo.findRole).toHaveBeenCalledWith(mockTokenRecord.userId)
-  })
-
-  it('throws TokenDeprecated when user has non-admin role', async () => {
-    mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
-    mockRbacRepo.findRole.mockResolvedValue({
-      ...mockAdminRole,
-      role: Role.User
-    })
 
     const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 

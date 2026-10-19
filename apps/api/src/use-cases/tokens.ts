@@ -5,6 +5,7 @@ import type { Permission } from '@/types'
 
 import { refreshTokenRepo, tokenRepo } from '@/data'
 import { env } from '@/env'
+import { AppError, ErrorCode } from '@/errors'
 import { signJwt } from '@/security/jwt'
 import {
   generateHashedToken,
@@ -87,6 +88,14 @@ export const issueInviteToken = async (
   kind: InviteKind,
   tx?: Database
 ) => issueOneTimeToken(userId, TokenType.UserInvite, tx, { kind })
+
+export const readInviteKind = (metadata: InviteMetadata | null) => {
+  if (!metadata) {
+    throw new AppError(ErrorCode.TokenDeprecated, 'Invite token has no kind')
+  }
+
+  return metadata.kind
+}
 
 export const validateOneTimeToken = async (token: string, type: TokenType) => {
   const tokenRecord = await tokenRepo.findByHash(await hashToken(token))

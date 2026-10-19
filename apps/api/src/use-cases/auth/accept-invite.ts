@@ -1,15 +1,17 @@
 import type { DeviceInfo } from '@/net/http/device'
-import type { InviteMetadata } from '@/security/token'
 
 import { authRepo, db, tokenRepo, userRepo } from '@/data'
-import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
 import { InviteKind, TokenStatus, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeam } from '../resolve-team'
-import { createAuthTokens, validateOneTimeToken } from '../tokens'
+import {
+  createAuthTokens,
+  readInviteKind,
+  validateOneTimeToken
+} from '../tokens'
 
 export interface AcceptInviteInput {
   token: string
@@ -17,17 +19,9 @@ export interface AcceptInviteInput {
 }
 
 // The invite link proves the email like the verification link does.
-// Admins need Active because the admin app accepts only that status.
-// Tokens issued before invites carried a kind must be resent
-const resolveAcceptedStatus = (metadata: InviteMetadata | null) => {
-  if (!metadata) {
-    throw new AppError(ErrorCode.TokenDeprecated, 'Invite token has no kind')
-  }
-
-  return metadata.kind === InviteKind.Admin
-    ? UserStatus.Active
-    : UserStatus.Verified
-}
+// Admins need Active because the admin app accepts only that status
+const resolveAcceptedStatus = (kind: InviteKind) =>
+  kind === InviteKind.Admin ? UserStatus.Active : UserStatus.Verified
 
 export const acceptInvite = async (
   { token, password }: AcceptInviteInput,
@@ -35,7 +29,7 @@ export const acceptInvite = async (
 ) => {
   const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
 
-  const status = resolveAcceptedStatus(validatedToken.metadata)
+  const status = resolveAcceptedStatus(readInviteKind(validatedToken.metadata))
 
   const user = await db.transaction(async tx => {
     // Mark token as used
