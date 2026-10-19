@@ -1,11 +1,12 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
 
 export interface ResetPasswordInput {
@@ -48,7 +49,7 @@ export const resetPassword = async (
   }
 
   const [team, permissions] = await Promise.all([
-    teamRepo.findUserTeam(user.id),
+    resolveUserTeam(user.id),
     resolvePermissionList(user.id)
   ])
 

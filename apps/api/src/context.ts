@@ -6,6 +6,7 @@ export interface Variables {
   team: TeamWithMemberCount | undefined
   currentUser: TeamMemberDetails | undefined
   targetMember: TeamMemberDetails | undefined
+  teamPermissions: string[] | undefined
 }
 
 export interface AppContext {

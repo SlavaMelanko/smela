@@ -1,11 +1,12 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { db, refreshTokenRepo, teamRepo, userRepo } from '@/data'
+import { db, refreshTokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 import { hashToken } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 import { createAccessToken, createRefreshToken } from '../tokens'
 
 const validateToken = async (refreshToken: string | undefined) => {
@@ -65,7 +66,7 @@ export const refreshAuthTokens = async (
 
   const [user, team] = await Promise.all([
     userRepo.findById(storedToken.userId),
-    teamRepo.findUserTeam(storedToken.userId)
+    resolveUserTeam(storedToken.userId)
   ])
 
   if (!user) {

@@ -27,7 +27,7 @@ import {
   TokenStatus,
   TokenType
 } from '@/security/token'
-import { UserStatus } from '@/types'
+import { Action, Permission, Resource, UserStatus } from '@/types'
 import { hour, nowMinus, nowPlus } from '@/utils/chrono'
 
 import { resetPassword } from '../reset-password'
@@ -90,7 +90,10 @@ describe('resetPassword', () => {
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam)
+      findUserTeam: mock(async () => mockTeam),
+      findMemberPermissions: mock(async () => [
+        { action: Action.View, resource: Resource.Teams }
+      ])
     } satisfies Partial<typeof teamRepo>
     mockTransaction = createTransactionMock()
 
@@ -224,6 +227,7 @@ describe('resetPassword', () => {
   it('includes team info when user belongs to a team', async () => {
     mockTeam = {
       id: 'team-456',
+      membershipId: 1,
       name: 'Tech Inc',
       position: 'Developer'
     }
@@ -234,7 +238,12 @@ describe('resetPassword', () => {
       mockDeviceInfo
     )
 
-    expect(result.data.team).toEqual(mockTeam)
+    expect(result.data.team).toEqual({
+      id: 'team-456',
+      name: 'Tech Inc',
+      position: 'Developer',
+      permissions: [Permission.ViewTeams]
+    })
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
   })
 

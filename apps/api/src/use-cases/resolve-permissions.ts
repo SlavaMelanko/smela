@@ -3,18 +3,26 @@ import type { Permission, PermissionMap, Resource } from '@/types'
 
 import { rbacRepo, teamRepo } from '@/data'
 
+// Maps DB rows to "action:resource" strings, e.g.
+// "view:users", "manage:teams" for frontend consumption
+const toPermissionList = (rows: ActivePermissionRow[]): Permission[] =>
+  rows.map(row => `${row.action}:${row.resource}` as Permission)
+
 export const resolvePermissionList = async (
   userId: string
 ): Promise<Permission[] | undefined> => {
   const rows = await rbacRepo.findUserPermissions(userId)
-
-  // Maps DB rows to "action:resource" strings, e.g.
-  // "view:users", "manage:teams" for frontend consumption
-  const permissions = rows.map(
-    row => `${row.action}:${row.resource}` as Permission
-  )
+  const permissions = toPermissionList(rows)
 
   return permissions.length > 0 ? permissions : undefined
+}
+
+export const resolveMemberPermissionList = async (
+  membershipId: number
+): Promise<Permission[]> => {
+  const rows = await teamRepo.findMemberPermissions(membershipId)
+
+  return toPermissionList(rows)
 }
 
 // Builds a permission map grouped by resource.

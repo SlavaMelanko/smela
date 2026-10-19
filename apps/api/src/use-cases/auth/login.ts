@@ -1,10 +1,11 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, teamRepo, userRepo } from '@/data'
+import { authRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { comparePasswordHashes } from '@/security/password'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 import { createAuthTokens } from '../tokens'
 
 export interface LoginInput {
@@ -42,7 +43,7 @@ export const logInWithEmail = async (
   }
 
   const [team, permissions] = await Promise.all([
-    teamRepo.findUserTeam(user.id),
+    resolveUserTeam(user.id),
     resolvePermissionList(user.id)
   ])
 

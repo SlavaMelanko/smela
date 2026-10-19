@@ -1,11 +1,12 @@
 import type { UpdateUserInput } from '@/data'
 
-import { authRepo, db, refreshTokenRepo, teamRepo, userRepo } from '@/data'
+import { authRepo, db, refreshTokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { comparePasswordHashes, hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 
 const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
   return Object.fromEntries(
@@ -16,7 +17,7 @@ const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
 export const getUser = async (userId: string) => {
   const [user, team, permissions] = await Promise.all([
     userRepo.findById(userId),
-    teamRepo.findUserTeam(userId),
+    resolveUserTeam(userId),
     resolvePermissionList(userId)
   ])
 
@@ -73,7 +74,7 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
       ...validUpdates,
       updatedAt: new Date()
     }),
-    teamRepo.findUserTeam(userId),
+    resolveUserTeam(userId),
     resolvePermissionList(userId)
   ])
 

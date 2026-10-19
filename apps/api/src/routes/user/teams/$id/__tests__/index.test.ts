@@ -29,16 +29,14 @@ describe('user /teams/:teamId', () => {
 
   let mockTeam: TeamWithMemberCount
   let mockTeamRepo: any
+  let mockTeamPermissions: any
 
   let mockUpdateTeam: any
 
-  const buildApp = (permissions: string[]) =>
+  // Team permissions come from the membership, not the claims
+  const buildApp = () =>
     createTestApp('/api/v1/user/verified', teamsRoute, [
-      withClaims({
-        id: testUuids.USER_1,
-        role: Role.User,
-        permissions
-      })
+      withClaims({ id: testUuids.USER_1, role: Role.User, permissions: [] })
     ])
 
   beforeEach(async () => {
@@ -49,13 +47,22 @@ describe('user /teams/:teamId', () => {
       teamRepo: mockTeamRepo
     }))
 
+    mockTeamPermissions = mock(async (): Promise<Permission[]> => [
+      Permission.ViewTeams,
+      Permission.ManageTeams
+    ])
+
+    await moduleMocker.mock('@/use-cases/resolve-permissions', () => ({
+      resolveMemberPermissionList: mockTeamPermissions
+    }))
+
     mockUpdateTeam = mock(async () => ({ team: mockTeam }))
 
     await moduleMocker.mock('@/use-cases/user', () => ({
       updateTeam: mockUpdateTeam
     }))
 
-    app = buildApp([Permission.ViewTeams, Permission.ManageTeams])
+    app = buildApp()
   })
 
   afterEach(async () => {
@@ -83,13 +90,12 @@ describe('user /teams/:teamId', () => {
       expect(mockTeamRepo.find).not.toHaveBeenCalled()
     })
 
-    it('returns 403 when claims lack view permission', async () => {
-      const noPermissionApp = buildApp([])
+    it('returns 403 when membership lacks view permission', async () => {
+      mockTeamPermissions.mockImplementation(async () => [])
 
-      const res = await get(noPermissionApp, TEAM_URL)
+      const res = await get(app, TEAM_URL)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
-      expect(mockTeamRepo.find).not.toHaveBeenCalled()
     })
 
     it('returns 404 when team does not exist', async () => {
@@ -129,10 +135,10 @@ describe('user /teams/:teamId', () => {
       expect(mockUpdateTeam).not.toHaveBeenCalled()
     })
 
-    it('returns 403 when claims lack manage permission', async () => {
-      const viewOnlyApp = buildApp([Permission.ViewTeams])
+    it('returns 403 when membership lacks manage permission', async () => {
+      mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])
 
-      const res = await patch(viewOnlyApp, TEAM_URL, body)
+      const res = await patch(app, TEAM_URL, body)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
       expect(mockUpdateTeam).not.toHaveBeenCalled()

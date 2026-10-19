@@ -1,3 +1,5 @@
+import type { MiddlewareHandler } from 'hono'
+
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 
@@ -11,7 +13,8 @@ import { Permission, Role, UserStatus } from '@/types'
 
 import {
   requirePermission,
-  requireSelfOrPermission
+  requireSelfOrTeamPermission,
+  requireTeamPermission
 } from '../require-permission'
 
 const makeApp = (permissions?: string[]) => {
@@ -33,7 +36,13 @@ const makeApp = (permissions?: string[]) => {
   return app
 }
 
-const makeSelfOrPermissionApp = (userId: string, permissions?: string[]) => {
+// Simulates requireTeamAccess, which sets the caller's team permissions.
+// Claims always grant ManageTeams to prove team checks ignore them
+const makeTeamApp = (
+  userId: string,
+  middleware: MiddlewareHandler<AppContext>,
+  teamPermissions?: string[]
+) => {
   const app = new Hono<AppContext>()
   app.onError(onError)
   app.use('/teams/:teamId/members/:memberId', async (c, next) => {
@@ -42,14 +51,12 @@ const makeSelfOrPermissionApp = (userId: string, permissions?: string[]) => {
       email: 'user@example.com',
       role: Role.User,
       status: UserStatus.Active,
-      permissions
+      permissions: [Permission.ManageTeams]
     })
+    c.set('teamPermissions', teamPermissions)
     await next()
   })
-  app.use(
-    '/teams/:teamId/members/:memberId',
-    requireSelfOrPermission(Permission.ManageTeams)
-  )
+  app.use('/teams/:teamId/members/:memberId', middleware)
   app.patch('/teams/:teamId/members/:memberId', c =>
     c.json({ message: 'success' })
   )
@@ -83,49 +90,62 @@ describe('requirePermission', () => {
   })
 })
 
-describe('requireSelfOrPermission', () => {
-  const path = `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+describe('requireTeamPermission', () => {
+  const path = `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+  const middleware = requireTeamPermission(Permission.ManageTeams)
 
-  it('allows when user id matches memberId', async () => {
-    const res = await makeSelfOrPermissionApp(testUuids.USER_1).request(path, {
-      method: 'PATCH'
-    })
-
-    expect(res.status).toBe(HttpStatus.OK)
-    expect((await res.json()).message).toBe('success')
-  })
-
-  it('allows self access even without permissions', async () => {
-    const res = await makeSelfOrPermissionApp(testUuids.USER_1, []).request(
-      path,
-      { method: 'PATCH' }
-    )
-
-    expect(res.status).toBe(HttpStatus.OK)
-  })
-
-  it('allows when user has required permission and id differs', async () => {
-    const res = await makeSelfOrPermissionApp(testUuids.USER_2, [
+  it('allows when team permissions include the permission', async () => {
+    const res = await makeTeamApp(testUuids.USER_1, middleware, [
       Permission.ManageTeams
     ]).request(path, { method: 'PATCH' })
 
     expect(res.status).toBe(HttpStatus.OK)
   })
 
-  it('throws Forbidden when user is not self and lacks permission', async () => {
-    const res = await makeSelfOrPermissionApp(testUuids.USER_2, []).request(
-      path,
-      { method: 'PATCH' }
-    )
+  it('throws Forbidden when only claims include the permission', async () => {
+    const res = await makeTeamApp(testUuids.USER_1, middleware, [
+      Permission.ViewTeams
+    ]).request(path, { method: 'PATCH' })
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
     expect((await res.json()).code).toBe(ErrorCode.Forbidden)
   })
 
-  it('throws Forbidden when user is not self and permissions is undefined', async () => {
-    const res = await makeSelfOrPermissionApp(testUuids.USER_2).request(path, {
+  it('throws Forbidden when team permissions are not resolved', async () => {
+    const res = await makeTeamApp(testUuids.USER_1, middleware).request(path, {
       method: 'PATCH'
     })
+
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+  })
+})
+
+describe('requireSelfOrTeamPermission', () => {
+  const path = `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+  const middleware = requireSelfOrTeamPermission(Permission.ManageTeams)
+
+  it('allows self access without team permissions', async () => {
+    const res = await makeTeamApp(testUuids.USER_1, middleware, []).request(
+      path,
+      { method: 'PATCH' }
+    )
+
+    expect(res.status).toBe(HttpStatus.OK)
+  })
+
+  it('allows when user has team permission and id differs', async () => {
+    const res = await makeTeamApp(testUuids.USER_2, middleware, [
+      Permission.ManageTeams
+    ]).request(path, { method: 'PATCH' })
+
+    expect(res.status).toBe(HttpStatus.OK)
+  })
+
+  it('throws Forbidden when user is not self and lacks team permission', async () => {
+    const res = await makeTeamApp(testUuids.USER_2, middleware, []).request(
+      path,
+      { method: 'PATCH' }
+    )
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
     expect((await res.json()).code).toBe(ErrorCode.Forbidden)

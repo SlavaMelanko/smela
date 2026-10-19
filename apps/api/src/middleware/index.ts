@@ -19,7 +19,8 @@ export {
 
 export {
   requirePermission,
-  requireSelfOrPermission
+  requireSelfOrTeamPermission,
+  requireTeamPermission
 } from './require-permission'
 
 export { secureHeaders } from './secure-headers'

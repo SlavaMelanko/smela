@@ -175,6 +175,7 @@ export const findUserTeam = async (
   const [result] = await executor
     .select({
       id: teamsTable.id,
+      membershipId: teamMembersTable.id,
       name: teamsTable.name,
       position: teamMembersTable.position
     })
