@@ -10,7 +10,12 @@ import {
   emailService,
   UserInviteEmailMessageBuilder
 } from '@/services/email'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import {
+  AuthProvider,
+  getUserDefaultPermissions,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { issueOneTimeToken } from '../tokens'
 
@@ -81,8 +86,11 @@ export const inviteMember = async (
       tx
     )
 
-    // User-level copy keeps authorization working until it reads membership permissions
-    await rbacRepo.setUserPermissions(newUser.id, member.permissions, tx)
+    await rbacRepo.setUserPermissions(
+      newUser.id,
+      getUserDefaultPermissions(),
+      tx
+    )
 
     const token = await issueOneTimeToken(newUser.id, TokenType.UserInvite, tx)
 

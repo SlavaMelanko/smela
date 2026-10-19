@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { db, rbacRepo, teamRepo, userRepo } from '@/data'
+import type { db, teamRepo, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { Action, Resource, UserStatus } from '@/types'
@@ -81,7 +81,6 @@ describe('team member permissions', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeamRepo: any
-  let mockRbacRepo: any
 
   beforeEach(async () => {
     mockTeamRepo = {
@@ -91,17 +90,9 @@ describe('team member permissions', () => {
       ]),
       setMemberPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
-    mockRbacRepo = {
-      setUserPermissions: mock(async () => {})
-    } satisfies Partial<typeof rbacRepo>
-
-    const transaction = async <T>(callback: (tx: unknown) => Promise<T>) =>
-      callback({})
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: mockTeamRepo,
-      rbacRepo: mockRbacRepo,
-      db: { transaction }
+      teamRepo: mockTeamRepo
     }))
   })
 
@@ -131,19 +122,13 @@ describe('team member permissions', () => {
       [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
     }
 
-    it('writes permissions to membership and user in one transaction', async () => {
+    it('writes permissions to membership', async () => {
       await updateTeamMemberPermissions(TEAM_1, USER_1, permissions)
 
       expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
         USER_1,
         TEAM_1,
-        permissions,
-        {}
-      )
-      expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledWith(
-        USER_1,
-        permissions,
-        {}
+        permissions
       )
     })
 

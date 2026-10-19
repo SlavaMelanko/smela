@@ -16,7 +16,7 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
-import { Role, UserStatus } from '@/types'
+import { getUserDefaultPermissions, Role, UserStatus } from '@/types'
 
 import {
   cancelMemberInvite,
@@ -178,7 +178,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('grants requested permissions on membership and user', async () => {
+  it('grants requested permissions on membership and default ones on user', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoSetMemberPermissions).toHaveBeenCalledWith(
@@ -189,7 +189,7 @@ describe('inviteMember', () => {
     )
     expect(mockRbacSet).toHaveBeenCalledWith(
       USER_1,
-      inviteParams.permissions,
+      getUserDefaultPermissions(),
       expect.anything()
     )
   })
