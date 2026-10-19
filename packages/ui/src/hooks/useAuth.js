@@ -59,7 +59,6 @@ export const useCurrentUser = (options = {}) => {
     isAuthenticated: !!query.data?.user,
     can: p => permissions.includes(p),
     canAll: perms => perms.every(p => permissions.includes(p)),
-    canAny: perms => perms.some(p => permissions.includes(p)),
     canInTeam: p => teamPermissions.includes(p),
     canAllInTeam: perms => perms.every(p => teamPermissions.includes(p))
   }
