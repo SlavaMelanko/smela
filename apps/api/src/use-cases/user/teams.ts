@@ -1,4 +1,5 @@
 import { db, teamRepo } from '@/data'
+import { getTeamCreatorPermissions } from '@/types'
 
 export interface CreateTeamInput {
   name: string
@@ -16,7 +17,16 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
   const team = await db.transaction(async tx => {
     const newTeam = await teamRepo.create({ ...input, createdBy: userId }, tx)
 
-    await teamRepo.createMember({ userId, teamId: newTeam.id }, tx)
+    const member = await teamRepo.createMember(
+      { userId, teamId: newTeam.id },
+      tx
+    )
+
+    await teamRepo.setMemberPermissions(
+      member.id,
+      getTeamCreatorPermissions(),
+      tx
+    )
 
     return newTeam
   })

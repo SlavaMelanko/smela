@@ -24,6 +24,7 @@ import {
   emailSenderProfilesTable,
   permissionsTable,
   socialLinksTable,
+  teamMemberPermissionsTable,
   teamMembersTable,
   teamsTable,
   userPermissionsTable,
@@ -149,24 +150,45 @@ const seedSocialLinks = async () => {
   console.log(`✅ ${socialLinks.length} social links seeded`)
 }
 
-const setUserPermissions = async (
-  userId: string,
-  permissions: { action: Action; resource: Resource }[]
-) => {
+type PermissionList = { action: Action; resource: Resource }[]
+
+const findPermissionIds = async (permissions: PermissionList) => {
   const allPermissions = await db.select().from(permissionsTable)
 
-  const toInsert = permissions
-    .map(({ action, resource }) => {
-      const perm = allPermissions.find(
-        p => p.action === action && p.resource === resource
+  return allPermissions
+    .filter(p =>
+      permissions.some(
+        ({ action, resource }) => p.action === action && p.resource === resource
       )
+    )
+    .map(p => p.id)
+}
 
-      return perm ? { userId, permissionId: perm.id } : null
-    })
-    .filter(Boolean) as { userId: string; permissionId: number }[]
+const setUserPermissions = async (
+  userId: string,
+  permissions: PermissionList
+) => {
+  const permissionIds = await findPermissionIds(permissions)
 
-  if (toInsert.length > 0) {
-    await db.insert(userPermissionsTable).values(toInsert).onConflictDoNothing()
+  if (permissionIds.length > 0) {
+    await db
+      .insert(userPermissionsTable)
+      .values(permissionIds.map(permissionId => ({ userId, permissionId })))
+      .onConflictDoNothing()
+  }
+}
+
+const setMemberPermissions = async (
+  memberId: number,
+  permissions: PermissionList
+) => {
+  const permissionIds = await findPermissionIds(permissions)
+
+  if (permissionIds.length > 0) {
+    await db
+      .insert(teamMemberPermissionsTable)
+      .values(permissionIds.map(permissionId => ({ memberId, permissionId })))
+      .onConflictDoNothing()
   }
 }
 
@@ -231,7 +253,7 @@ const seedSystemUsers = async () => {
     password: string
     role: Role
     status: UserStatus
-    permissions: { action: Action; resource: Resource }[]
+    permissions: PermissionList
   }[] = [
     {
       firstName: 'Slava',
@@ -331,7 +353,8 @@ const seedTestUsers = async (teamId: string) => {
       permissions: [
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.Manage, resource: Resource.Dashboard }
-      ]
+      ],
+      memberPermissions: [{ action: Action.Manage, resource: Resource.Teams }]
     },
     {
       firstName: faker.person.firstName(),
@@ -343,7 +366,8 @@ const seedTestUsers = async (teamId: string) => {
       permissions: [
         { action: Action.View, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Dashboard }
-      ]
+      ],
+      memberPermissions: [{ action: Action.View, resource: Resource.Teams }]
     }
   ]
 
@@ -363,11 +387,13 @@ const seedTestUsers = async (teamId: string) => {
       if (existingLink) {
         console.log(`✅ user ${user.email} already exists`)
       } else {
-        await db.insert(teamMembersTable).values({
-          userId: existingUser.id,
-          teamId,
-          position: user.position
-        })
+        const [member] = await db
+          .insert(teamMembersTable)
+          .values({ userId: existingUser.id, teamId, position: user.position })
+          .returning({ id: teamMembersTable.id })
+
+        await setMemberPermissions(member.id, user.memberPermissions)
+
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
       }
 
@@ -393,13 +419,13 @@ const seedTestUsers = async (teamId: string) => {
       passwordHash: hashedPassword
     })
 
-    await db.insert(teamMembersTable).values({
-      userId: createdUser.id,
-      teamId,
-      position: user.position
-    })
+    const [member] = await db
+      .insert(teamMembersTable)
+      .values({ userId: createdUser.id, teamId, position: user.position })
+      .returning({ id: teamMembersTable.id })
 
     await setUserPermissions(createdUser.id, user.permissions)
+    await setMemberPermissions(member.id, user.memberPermissions)
 
     console.log(`✅ user ${user.email} seeded and linked to team`)
   }
