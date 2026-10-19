@@ -11,6 +11,7 @@ import {
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
   TEAM_PATH,
+  TEAM_SWITCH_PATH,
   TEAMS_PATH
 } from './paths'
 
@@ -39,6 +40,12 @@ export const teamApi = {
     const path = buildPath(TEAM_PATH, { teamId })
 
     return apiClient.patch(path, data)
+  },
+
+  switchTeam(teamId) {
+    const path = buildPath(TEAM_SWITCH_PATH, { teamId })
+
+    return apiClient.post(path)
   },
 
   getMembers(teamId) {
