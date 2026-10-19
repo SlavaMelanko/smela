@@ -41,6 +41,7 @@ export type TeamWithMemberCount = Team & {
 
 export interface UserTeamInfo {
   id: string
+  membershipId: number
   name: string
   position: string | null
 }

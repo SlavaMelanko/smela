@@ -7,19 +7,20 @@ import type { AppContext } from '@/context'
 import { teamRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { isAdmin } from '@/types'
+import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
 
 /**
  * Team access middleware - ensures user has access to the team.
  *
- * IMPORTANT: Must be used in strict chain with requirePermission middleware:
- * 1. First: requirePermission with either Permission.ViewTeams or Permission.ManageTeams
- * 2. Then: requireTeamAccess (this middleware)
+ * IMPORTANT: Must run before requireTeamPermission or requireSelfOrTeamPermission,
+ * which check the teamPermissions this middleware sets.
  *
  * Logic:
  * - Always validates team existence
  * - For routes with memberId: validates target member exists in team
- * - For admins: only validates team/member existence (permissions already checked)
- * - For regular users: validates both current user AND target member access
+ * - For admins: only validates team/member existence; team permissions come from their claims
+ * - For regular users: validates both current user AND target member access;
+ *   team permissions come from the current user's membership
  *
  * Note: teamId is already validated by validateParams middleware
  */
@@ -29,6 +30,8 @@ const handleAdminAccess = async (
   teamId: string,
   memberId: string | undefined
 ) => {
+  c.set('teamPermissions', c.get('user').permissions ?? [])
+
   if (!memberId) {
     return
   }
@@ -70,6 +73,9 @@ const handleUserAccess = async (
 
     c.set('currentUser', currentUser)
   }
+
+  const { membershipId } = c.get('currentUser')!
+  c.set('teamPermissions', await resolveMemberPermissionList(membershipId))
 }
 
 export const requireTeamAccess = createMiddleware<AppContext>(

@@ -3,8 +3,8 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import {
-  requirePermission,
   requireTeamAccess,
+  requireTeamPermission,
   validateBody,
   validateParams
 } from '@/middleware'
@@ -20,8 +20,8 @@ export const teamsMembersRoute = new Hono<AppContext>()
 teamsMembersRoute.get(
   '/',
   validateParams(teamIdParamsSchema),
-  requirePermission(Permission.ViewTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ViewTeams),
   async c => {
     const { teamId } = c.req.valid('param')
 
@@ -35,8 +35,8 @@ teamsMembersRoute.post(
   '/',
   validateParams(teamIdParamsSchema),
   validateBody(inviteMemberBodySchema),
-  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ManageTeams),
   async c => {
     const team = c.get('team')!
     const member = c.req.valid('json')
@@ -51,8 +51,8 @@ teamsMembersRoute.post(
 teamsMembersRoute.get(
   '/default-permissions',
   validateParams(teamIdParamsSchema),
-  requirePermission(Permission.ViewTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ViewTeams),
   c => {
     return c.json({ permissions: getMemberDefaultPermissions() }, HttpStatus.OK)
   }

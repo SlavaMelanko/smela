@@ -1,10 +1,11 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, rbacRepo, teamRepo, userRepo } from '@/data'
+import { authRepo, db, rbacRepo, userRepo } from '@/data'
 import { exchangeCodeForProfile } from '@/services/google'
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 import { createAuthTokens } from '../tokens'
 
 interface GoogleOAuthInput {
@@ -71,7 +72,7 @@ export const logInOrSignUpWithGoogle = async (
   const { user, isNew } = await findOrCreateGoogleUser(profile)
 
   const [team, permissions] = await Promise.all([
-    teamRepo.findUserTeam(user.id),
+    resolveUserTeam(user.id),
     resolvePermissionList(user.id)
   ])
 

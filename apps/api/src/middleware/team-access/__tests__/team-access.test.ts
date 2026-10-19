@@ -7,18 +7,23 @@ import { testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
-import { Role, UserStatus } from '@/types'
+import { Permission, Role, UserStatus } from '@/types'
 
 import { requireTeamAccess } from '../team-access'
 
 const mockTeamRepoFind = mock()
 const mockTeamRepoFindMember = mock()
+const mockResolveMemberPermissionList = mock(async () => [Permission.ViewTeams])
 
 void mock.module('@/data', () => ({
   teamRepo: {
     find: mockTeamRepoFind,
     findMember: mockTeamRepoFindMember
   }
+}))
+
+void mock.module('@/use-cases/resolve-permissions', () => ({
+  resolveMemberPermissionList: mockResolveMemberPermissionList
 }))
 
 const makeApp = (role: Role, userId: string) => {
@@ -31,14 +36,20 @@ const makeApp = (role: Role, userId: string) => {
       id: userId,
       email: 'user@example.com',
       role,
-      status: UserStatus.Active
+      status: UserStatus.Active,
+      permissions: [Permission.ManageTeams]
     })
     await next()
   })
 
   // Team-only routes
   app.use('/teams/:teamId', requireTeamAccess)
-  app.get('/teams/:teamId', c => c.json({ message: 'team success' }))
+  app.get('/teams/:teamId', c =>
+    c.json({
+      message: 'team success',
+      teamPermissions: c.get('teamPermissions')
+    })
+  )
 
   // Member-specific routes
   app.use('/teams/:teamId/members/:memberId', requireTeamAccess)
@@ -53,6 +64,7 @@ describe('requireTeamAccess', () => {
   beforeEach(() => {
     mockTeamRepoFind.mockClear()
     mockTeamRepoFindMember.mockClear()
+    mockResolveMemberPermissionList.mockClear()
 
     // Default: team exists
     mockTeamRepoFind.mockImplementation(async () => ({
@@ -95,6 +107,30 @@ describe('requireTeamAccess', () => {
       testUuids.USER_1
     )
     expect((await res.json()).message).toBe('team success')
+  })
+
+  it('resolves team permissions from user membership, not claims', async () => {
+    mockTeamRepoFindMember.mockImplementation(async () => ({
+      membershipId: 7,
+      userId: testUuids.USER_1,
+      teamId: testUuids.TEAM_1
+    }))
+
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
+
+    expect(mockResolveMemberPermissionList).toHaveBeenCalledWith(7)
+    expect((await res.json()).teamPermissions).toEqual([Permission.ViewTeams])
+  })
+
+  it('resolves admin team permissions from claims', async () => {
+    const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
+
+    expect(mockResolveMemberPermissionList).not.toHaveBeenCalled()
+    expect((await res.json()).teamPermissions).toEqual([Permission.ManageTeams])
   })
 
   it('blocks user who is not team member on team routes', async () => {

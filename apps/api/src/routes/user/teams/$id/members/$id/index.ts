@@ -4,9 +4,9 @@ import type { AppContext } from '@/context'
 
 import { AppError, ErrorCode } from '@/errors'
 import {
-  requirePermission,
-  requireSelfOrPermission,
+  requireSelfOrTeamPermission,
   requireTeamAccess,
+  requireTeamPermission,
   validateBody,
   validateParams
 } from '@/middleware'
@@ -29,8 +29,8 @@ teamsMemberByIdRoute.route('/permissions', teamMemberPermissionsRoute)
 teamsMemberByIdRoute.get(
   '/',
   validateParams(memberIdParamsSchema),
-  requirePermission(Permission.ViewTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ViewTeams),
   async c => {
     const targetMember = c.get('targetMember')!
 
@@ -42,15 +42,16 @@ teamsMemberByIdRoute.patch(
   '/',
   validateParams(memberIdParamsSchema),
   validateBody(updateTeamMemberBodySchema),
-  requireSelfOrPermission(Permission.ManageTeams),
   requireTeamAccess,
+  requireSelfOrTeamPermission(Permission.ManageTeams),
   async c => {
     const { teamId, memberId } = c.req.valid('param')
     const body = c.req.valid('json')
-    const { id: currentUserId, permissions } = c.get('user')
+    const { id: currentUserId } = c.get('user')
 
     const isSelf = currentUserId === memberId
-    const canManage = permissions?.includes(Permission.ManageTeams) ?? false
+    const canManage =
+      c.get('teamPermissions')?.includes(Permission.ManageTeams) ?? false
 
     // Prevent self-updating users from changing membership fields (e.g. position)
     if (isSelf && !canManage && body.membership) {
@@ -66,8 +67,8 @@ teamsMemberByIdRoute.patch(
 teamsMemberByIdRoute.delete(
   '/',
   validateParams(memberIdParamsSchema),
-  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ManageTeams),
   async c => {
     const { teamId, memberId } = c.req.valid('param')
 
@@ -80,8 +81,8 @@ teamsMemberByIdRoute.delete(
 teamsMemberByIdRoute.post(
   '/resend-invite',
   validateParams(memberIdParamsSchema),
-  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ManageTeams),
   async c => {
     const team = c.get('team')!
     const targetMember = c.get('targetMember')!
@@ -96,8 +97,8 @@ teamsMemberByIdRoute.post(
 teamsMemberByIdRoute.post(
   '/cancel-invite',
   validateParams(memberIdParamsSchema),
-  requirePermission(Permission.ManageTeams),
   requireTeamAccess,
+  requireTeamPermission(Permission.ManageTeams),
   async c => {
     const targetMember = c.get('targetMember')!
 

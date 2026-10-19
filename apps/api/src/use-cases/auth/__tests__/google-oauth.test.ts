@@ -18,7 +18,14 @@ import {
 } from '@/__tests__'
 import { verifyJwt } from '@/security/jwt'
 import { hashToken } from '@/security/token'
-import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  getUserDefaultPermissions,
+  Permission,
+  Resource,
+  UserStatus
+} from '@/types'
 
 import { completeGoogleOAuth, logInOrSignUpWithGoogle } from '../google-oauth'
 
@@ -81,7 +88,10 @@ describe('google-oauth', () => {
     } satisfies Partial<typeof refreshTokenRepo>
 
     mockTeamRepo = {
-      findUserTeam: mock(async () => undefined)
+      findUserTeam: mock(async () => undefined),
+      findMemberPermissions: mock(async () => [
+        { action: Action.View, resource: Resource.Teams }
+      ])
     } satisfies Partial<typeof teamRepo>
 
     mockTransaction = createTransactionMock()
@@ -122,7 +132,12 @@ describe('google-oauth', () => {
   })
 
   it('includes team when returning user belongs to one', async () => {
-    const mockTeam = { id: 'team-1', name: 'Acme', position: 'Engineer' }
+    const mockTeam = {
+      id: 'team-1',
+      membershipId: 1,
+      name: 'Acme',
+      position: 'Engineer'
+    }
     mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
 
     const result = await logInOrSignUpWithGoogle(
@@ -130,7 +145,12 @@ describe('google-oauth', () => {
       mockDeviceInfo
     )
 
-    expect(result.data.team).toEqual(mockTeam)
+    expect(result.data.team).toEqual({
+      id: 'team-1',
+      name: 'Acme',
+      position: 'Engineer',
+      permissions: [Permission.ViewTeams]
+    })
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
   })
 

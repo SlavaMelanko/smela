@@ -24,7 +24,7 @@ import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { comparePasswordHashes, hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
-import { AuthProvider, UserStatus } from '@/types'
+import { Action, AuthProvider, Permission, Resource, UserStatus } from '@/types'
 
 import { changePassword, getUser, updateUser } from '../me'
 
@@ -51,7 +51,10 @@ describe('me', () => {
     } satisfies Partial<typeof userRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam)
+      findUserTeam: mock(async () => mockTeam),
+      findMemberPermissions: mock(async () => [
+        { action: Action.View, resource: Resource.Teams }
+      ])
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -86,6 +89,7 @@ describe('me', () => {
     it('returns user, team info, and permissions when user belongs to a team', async () => {
       mockTeam = {
         id: 'team-789',
+        membershipId: 1,
         name: 'My Team',
         position: 'Product Manager'
       }
@@ -95,7 +99,12 @@ describe('me', () => {
 
       expect(result).toEqual({
         user: mockUser,
-        team: mockTeam,
+        team: {
+          id: 'team-789',
+          name: 'My Team',
+          position: 'Product Manager',
+          permissions: [Permission.ViewTeams]
+        },
         permissions: undefined
       })
       expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(testUuids.USER_1)

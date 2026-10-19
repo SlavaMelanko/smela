@@ -23,7 +23,14 @@ import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  Permission,
+  Resource,
+  Role,
+  UserStatus
+} from '@/types'
 
 import type { LoginInput } from '../login'
 
@@ -82,7 +89,10 @@ describe('logInWithEmail', () => {
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam)
+      findUserTeam: mock(async () => mockTeam),
+      findMemberPermissions: mock(async () => [
+        { action: Action.View, resource: Resource.Teams }
+      ])
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -140,6 +150,7 @@ describe('logInWithEmail', () => {
   it('returns team info when user belongs to a team', async () => {
     mockTeam = {
       id: 'team-123',
+      membershipId: 1,
       name: 'Acme Corp',
       position: 'Software Engineer'
     }
@@ -147,7 +158,12 @@ describe('logInWithEmail', () => {
 
     const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
 
-    expect(result.data.team).toEqual(mockTeam)
+    expect(result.data.team).toEqual({
+      id: 'team-123',
+      name: 'Acme Corp',
+      position: 'Software Engineer',
+      permissions: [Permission.ViewTeams]
+    })
     expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
   })
 

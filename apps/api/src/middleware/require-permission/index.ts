@@ -1,4 +1,5 @@
 export {
   requirePermission,
-  requireSelfOrPermission
+  requireSelfOrTeamPermission,
+  requireTeamPermission
 } from './require-permission'

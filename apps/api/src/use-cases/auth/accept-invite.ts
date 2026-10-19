@@ -1,11 +1,12 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, tokenRepo, userRepo } from '@/data'
 import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
+import { resolveUserTeam } from '../resolve-team'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
 
 export interface AcceptInviteInput {
@@ -43,7 +44,7 @@ export const acceptInvite = async (
   })
 
   const [team, permissions] = await Promise.all([
-    teamRepo.findUserTeam(user.id),
+    resolveUserTeam(user.id),
     resolvePermissionList(user.id)
   ])
 
