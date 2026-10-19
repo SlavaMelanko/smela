@@ -66,13 +66,13 @@ CREATE TABLE "social_links" (
 );
 --> statement-breakpoint
 CREATE TABLE "team_member_permissions" (
-	"member_id" integer NOT NULL,
+	"member_id" uuid NOT NULL,
 	"permission_id" integer NOT NULL,
 	CONSTRAINT "team_member_permissions_member_id_permission_id_pk" PRIMARY KEY("member_id","permission_id")
 );
 --> statement-breakpoint
 CREATE TABLE "team_members" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"user_id" uuid NOT NULL,
 	"team_id" uuid NOT NULL,
 	"position" varchar(100),

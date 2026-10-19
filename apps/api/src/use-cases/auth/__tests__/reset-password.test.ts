@@ -227,7 +227,7 @@ describe('resetPassword', () => {
   it('includes team info when user belongs to a team', async () => {
     mockTeam = {
       id: 'team-456',
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       name: 'Tech Inc',
       position: 'Developer'
     }

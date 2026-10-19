@@ -271,7 +271,7 @@ describe('resendMemberInvite', () => {
 
     mockTargetMember = {
       id: USER_1,
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -389,7 +389,7 @@ describe('cancelMemberInvite', () => {
   beforeEach(async () => {
     mockTargetMember = {
       id: USER_1,
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',

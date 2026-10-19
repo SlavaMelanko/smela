@@ -18,7 +18,7 @@ export const resolvePermissionList = async (
 }
 
 export const resolveMemberPermissionList = async (
-  membershipId: number
+  membershipId: string
 ): Promise<Permission[]> => {
   const rows = await teamRepo.findMemberPermissions(membershipId)
 
@@ -70,7 +70,7 @@ export const resolvePermissionMap = async (
 }
 
 export const resolveMemberPermissionMap = async (
-  membershipId: number,
+  membershipId: string,
   baseline?: PermissionMap
 ): Promise<PermissionMap> => {
   const rows = await teamRepo.findMemberPermissions(membershipId)

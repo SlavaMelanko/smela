@@ -78,7 +78,7 @@ describe('removeTeamMember', () => {
 })
 
 describe('team member permissions', () => {
-  const MEMBERSHIP_ID = 1
+  const MEMBERSHIP_ID = testUuids.MEMBERSHIP_1
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeamRepo: any

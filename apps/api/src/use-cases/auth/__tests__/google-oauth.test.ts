@@ -134,7 +134,7 @@ describe('google-oauth', () => {
   it('includes team when returning user belongs to one', async () => {
     const mockTeam = {
       id: 'team-1',
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       name: 'Acme',
       position: 'Engineer'
     }

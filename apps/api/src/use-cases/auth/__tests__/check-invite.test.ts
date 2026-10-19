@@ -44,7 +44,7 @@ describe('checkInvite', () => {
 
     mockTeam = {
       id: testUuids.TEAM_1,
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       name: 'Acme Corp',
       position: 'Team Member'
     }

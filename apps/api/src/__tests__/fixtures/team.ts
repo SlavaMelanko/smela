@@ -4,6 +4,8 @@ import type { TeamMemberDetails, teamRepo, TeamWithMemberCount } from '@/data'
 
 import { UserStatus } from '@/types'
 
+import { testUuids } from '../uuid'
+
 // Valid for z.uuid(), unlike testUuids.TEAM_1 (invalid variant nibble)
 export const TEST_TEAM_ID = '00000000-0000-4000-a0c0-000000000001'
 
@@ -23,7 +25,7 @@ export const buildTeam = (
 
 export const buildTeamMember = (id: string): TeamMemberDetails => ({
   id,
-  membershipId: 1,
+  membershipId: testUuids.MEMBERSHIP_1,
   firstName: 'Alice',
   lastName: null,
   email: 'alice@example.com',

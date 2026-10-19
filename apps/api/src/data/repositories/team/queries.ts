@@ -187,7 +187,7 @@ export const findUserTeam = async (
 }
 
 export const findTeamMemberPermissions = async (
-  membershipId: number,
+  membershipId: string,
   tx?: Database
 ): Promise<ActivePermissionRow[]> => {
   const rows = await (tx || db)
