@@ -77,7 +77,8 @@ CREATE TABLE "team_members" (
 	"team_id" uuid NOT NULL,
 	"position" varchar(100),
 	"invited_by" uuid,
-	"joined_at" timestamp with time zone DEFAULT now() NOT NULL
+	"joined_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"last_active_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "teams" (

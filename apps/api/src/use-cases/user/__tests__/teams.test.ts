@@ -36,7 +36,8 @@ describe('createTeam', () => {
         teamId: TEAM_1,
         position: null,
         invitedBy: null,
-        joinedAt: new Date('2024-01-01')
+        joinedAt: new Date('2024-01-01'),
+        lastActiveAt: new Date('2024-01-01')
       })),
       setMemberPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>

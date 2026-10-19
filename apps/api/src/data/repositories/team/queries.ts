@@ -182,6 +182,8 @@ export const findUserTeam = async (
     .from(teamMembersTable)
     .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
     .where(eq(teamMembersTable.userId, userId))
+    .orderBy(desc(teamMembersTable.lastActiveAt))
+    .limit(1)
 
   return result
 }
