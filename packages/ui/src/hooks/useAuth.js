@@ -22,9 +22,14 @@ const cacheAuthResponse = (queryClient, data) => {
   accessTokenStorage.set(data.accessToken)
 
   if (data?.user) {
-    const { user, team, permissions } = data
+    const { user, team, teams, permissions } = data
 
-    queryClient.setQueryData(authKeys.user(), { user, team, permissions })
+    queryClient.setQueryData(authKeys.user(), {
+      user,
+      team,
+      teams,
+      permissions
+    })
 
     setErrorTrackerUser(user)
   } else {
@@ -55,6 +60,7 @@ export const useCurrentUser = (options = {}) => {
     isSuccess: hasAccessToken ? query.isSuccess : false,
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
+    teams: query.data?.teams ?? [],
     permissions,
     isAuthenticated: !!query.data?.user,
     can: p => permissions.includes(p),

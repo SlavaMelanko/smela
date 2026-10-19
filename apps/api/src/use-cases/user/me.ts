@@ -6,7 +6,7 @@ import { comparePasswordHashes, hashPassword } from '@/security/password'
 import { hashToken } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 
 const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
   return Object.fromEntries(
@@ -15,9 +15,9 @@ const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
 }
 
 export const getUser = async (userId: string) => {
-  const [user, team, permissions] = await Promise.all([
+  const [user, { team, teams }, permissions] = await Promise.all([
     userRepo.findById(userId),
-    resolveUserTeam(userId),
+    resolveUserTeams(userId),
     resolvePermissionList(userId)
   ])
 
@@ -27,7 +27,7 @@ export const getUser = async (userId: string) => {
     throw new AppError(ErrorCode.InternalError)
   }
 
-  return { user, team, permissions }
+  return { user, team, teams, permissions }
 }
 
 export const changePassword = async (
@@ -69,14 +69,14 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
     return getUser(userId)
   }
 
-  const [user, team, permissions] = await Promise.all([
+  const [user, { team, teams }, permissions] = await Promise.all([
     userRepo.update(userId, {
       ...validUpdates,
       updatedAt: new Date()
     }),
-    resolveUserTeam(userId),
+    resolveUserTeams(userId),
     resolvePermissionList(userId)
   ])
 
-  return { user, team, permissions }
+  return { user, team, teams, permissions }
 }

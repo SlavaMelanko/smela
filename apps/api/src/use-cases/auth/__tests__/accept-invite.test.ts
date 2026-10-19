@@ -7,7 +7,8 @@ import type {
   TokenRecord,
   tokenRepo,
   User,
-  userRepo
+  userRepo,
+  UserTeamInfo
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
@@ -92,7 +93,7 @@ describe('acceptInvite', () => {
       create: mock(async () => 1)
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeamRepo = {
-      findUserTeam: mock(async () => undefined)
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => [])
     } satisfies Partial<typeof teamRepo>
     mockTransaction = createTransactionMock()
 
@@ -150,6 +151,7 @@ describe('acceptInvite', () => {
       data: {
         user: mockActivatedUser,
         team: undefined,
+        teams: [],
         permissions: undefined,
         accessToken: expect.any(String)
       },

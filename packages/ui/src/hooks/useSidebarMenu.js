@@ -6,14 +6,14 @@ const filterByPermission = (items, can) =>
   items.filter(item => !item.permission || can(item.permission))
 
 export const useSidebarMenu = () => {
-  const { user: me, team, can } = useCurrentUser()
+  const { user: me, teams: userTeams, can } = useCurrentUser()
 
   let items = []
   let teams
 
   if (isUser(me?.role)) {
     items = getUserMenuItems()
-    teams = team ? [team] : []
+    teams = userTeams
   } else if (isAdmin(me?.role)) {
     items = filterByPermission(getAdminMenuItems(), can)
   }

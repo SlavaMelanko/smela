@@ -5,7 +5,7 @@ import { exchangeCodeForProfile } from '@/services/google'
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 import { createAuthTokens } from '../tokens'
 
 interface GoogleOAuthInput {
@@ -71,8 +71,8 @@ export const logInOrSignUpWithGoogle = async (
 ) => {
   const { user, isNew } = await findOrCreateGoogleUser(profile)
 
-  const [team, permissions] = await Promise.all([
-    resolveUserTeam(user.id),
+  const [{ team, teams }, permissions] = await Promise.all([
+    resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
 
@@ -83,7 +83,7 @@ export const logInOrSignUpWithGoogle = async (
   )
 
   return {
-    data: { user, team, permissions, accessToken },
+    data: { user, team, teams, permissions, accessToken },
     isNew,
     refreshToken
   }

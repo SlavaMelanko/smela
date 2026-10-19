@@ -12,7 +12,7 @@ import {
   findTeamMember,
   findTeamMemberPermissions,
   findTeamMembers,
-  findUserTeam,
+  findUserTeams,
   searchTeams
 } from './queries'
 
@@ -26,7 +26,7 @@ const teamMutations = {
 const teamQueries = {
   find: findTeam,
   findById: findTeamById,
-  findUserTeam,
+  findUserTeams,
   search: searchTeams
 }
 
