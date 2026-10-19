@@ -7,6 +7,7 @@ import type {
 } from '../../schema'
 
 // Database types
+export type PermissionRecord = typeof permissionsTable.$inferSelect
 export type UserPermissionRecord = typeof userPermissionsTable.$inferSelect
 export type UserRoleRecord = typeof userRoleTable.$inferSelect
 

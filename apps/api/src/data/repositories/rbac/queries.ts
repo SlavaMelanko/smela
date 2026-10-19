@@ -1,9 +1,12 @@
 import { eq, inArray } from 'drizzle-orm'
 
-import type { PermissionsInput } from '@/types'
-
 import type { Database } from '../../clients'
-import type { ActivePermissionRow, Inviter, UserRoleRecord } from './types'
+import type {
+  ActivePermissionRow,
+  Inviter,
+  PermissionRecord,
+  UserRoleRecord
+} from './types'
 
 import { db } from '../../clients'
 import {
@@ -12,29 +15,12 @@ import {
   userRoleTable,
   usersTable
 } from '../../schema'
-import { collapsePermissions, expandPermissions } from './normalize'
+import { expandPermissions } from './normalize'
 
 export const findAllPermissions = async (
   tx?: Database
-): Promise<(typeof permissionsTable.$inferSelect)[]> => {
+): Promise<PermissionRecord[]> => {
   return (tx || db).select().from(permissionsTable)
-}
-
-// Splits the catalog into permission ids to grant and to revoke
-export const splitPermissionIds = async (
-  permissions: PermissionsInput,
-  tx?: Database
-) => {
-  const normalized = collapsePermissions(permissions)
-  const allPerms = await findAllPermissions(tx)
-
-  const isGranted = (p: (typeof allPerms)[number]) =>
-    normalized[p.resource]?.[p.action] === true
-
-  return {
-    grantIds: allPerms.filter(isGranted).map(p => p.id),
-    revokeIds: allPerms.filter(p => !isGranted(p)).map(p => p.id)
-  }
 }
 
 export const findUserPermissions = async (

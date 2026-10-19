@@ -23,7 +23,7 @@ import {
   usersTable
 } from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
-import { expandPermissions } from '../rbac/normalize'
+import { expandPermissions } from '../rbac'
 
 const buildWhereConditions = ({ ids, search }: TeamSearchParams) => {
   const conditions = []

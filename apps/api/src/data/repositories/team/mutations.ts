@@ -19,7 +19,7 @@ import {
   teamMembersTable,
   teamsTable
 } from '../../schema'
-import { splitPermissionIds } from '../rbac/queries'
+import { findAllPermissions, splitPermissions } from '../rbac'
 
 export const createTeam = async (
   input: CreateTeamInput,
@@ -127,7 +127,8 @@ export const setTeamMemberPermissions = async (
   tx?: Database
 ): Promise<void> => {
   const executor = tx || db
-  const { grantIds, revokeIds } = await splitPermissionIds(permissions, tx)
+  const allPermissions = await findAllPermissions(tx)
+  const { grantIds, revokeIds } = splitPermissions(permissions, allPermissions)
 
   const grant = async () => {
     if (grantIds.length === 0) {

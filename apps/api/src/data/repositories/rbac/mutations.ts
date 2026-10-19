@@ -7,7 +7,8 @@ import type { CreateUserRoleInput, UserRoleRecord } from './types'
 
 import { db } from '../../clients'
 import { userPermissionsTable, userRoleTable } from '../../schema'
-import { splitPermissionIds } from './queries'
+import { splitPermissions } from './normalize'
+import { findAllPermissions } from './queries'
 
 export const assignRole = async (
   input: CreateUserRoleInput,
@@ -29,7 +30,8 @@ export const setUserPermissions = async (
   tx?: Database
 ): Promise<void> => {
   const executor = tx || db
-  const { grantIds, revokeIds } = await splitPermissionIds(permissions, tx)
+  const allPermissions = await findAllPermissions(tx)
+  const { grantIds, revokeIds } = splitPermissions(permissions, allPermissions)
 
   const grant = async () => {
     if (grantIds.length === 0) {
