@@ -22,6 +22,7 @@ export interface TeamMemberInviter {
 
 export interface TeamMemberDetails {
   id: string
+  membershipId: number
   firstName: string
   lastName: string | null
   email: string

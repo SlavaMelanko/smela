@@ -42,23 +42,19 @@ export const updateTeamMember = async (
   return { member }
 }
 
-export const getTeamMemberPermissions = async (
-  teamId: string,
-  memberId: string
-) => {
-  const rows = await teamRepo.findMemberPermissions(teamId, memberId)
+export const getTeamMemberPermissions = async (membershipId: number) => {
+  const rows = await teamRepo.findMemberPermissions(membershipId)
 
   return { permissions: toPermissionMap(rows, getMemberBasePermissions()) }
 }
 
 export const updateTeamMemberPermissions = async (
-  teamId: string,
-  memberId: string,
+  membershipId: number,
   permissions: PermissionsInput
 ) => {
-  await teamRepo.setMemberPermissions(memberId, teamId, permissions)
+  await teamRepo.setMemberPermissions(membershipId, permissions)
 
-  return getTeamMemberPermissions(teamId, memberId)
+  return getTeamMemberPermissions(membershipId)
 }
 
 export const removeTeamMember = async (teamId: string, memberId: string) => {

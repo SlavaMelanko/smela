@@ -78,6 +78,7 @@ describe('removeTeamMember', () => {
 })
 
 describe('team member permissions', () => {
+  const MEMBERSHIP_ID = 1
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeamRepo: any
@@ -102,11 +103,10 @@ describe('team member permissions', () => {
 
   describe('getTeamMemberPermissions', () => {
     it('merges membership permissions into the member baseline', async () => {
-      const result = await getTeamMemberPermissions(TEAM_1, USER_1)
+      const result = await getTeamMemberPermissions(MEMBERSHIP_ID)
 
       expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
-        TEAM_1,
-        USER_1
+        MEMBERSHIP_ID
       )
       expect(result).toEqual({
         permissions: {
@@ -123,19 +123,17 @@ describe('team member permissions', () => {
     }
 
     it('writes permissions to membership', async () => {
-      await updateTeamMemberPermissions(TEAM_1, USER_1, permissions)
+      await updateTeamMemberPermissions(MEMBERSHIP_ID, permissions)
 
       expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
-        USER_1,
-        TEAM_1,
+        MEMBERSHIP_ID,
         permissions
       )
     })
 
     it('returns updated membership permissions', async () => {
       const result = await updateTeamMemberPermissions(
-        TEAM_1,
-        USER_1,
+        MEMBERSHIP_ID,
         permissions
       )
 

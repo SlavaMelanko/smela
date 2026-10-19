@@ -91,7 +91,14 @@ describe('inviteMember', () => {
       updatedAt: new Date('2024-01-01')
     }))
     mockAuthRepoCreate = mock(async () => {})
-    mockTeamRepoCreateMember = mock(async () => {})
+    mockTeamRepoCreateMember = mock(async () => ({
+      id: 1,
+      userId: USER_1,
+      teamId: TEAM_1,
+      position: 'Developer',
+      invitedBy: USER_2,
+      joinedAt: new Date('2024-01-01')
+    }))
     mockTeamRepoSetMemberPermissions = mock(async () => {})
     mockTokenRepoIssue = mock(async () => {})
     mockRbacSet = mock(async () => {})
@@ -182,8 +189,7 @@ describe('inviteMember', () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoSetMemberPermissions).toHaveBeenCalledWith(
-      USER_1,
-      TEAM_1,
+      1,
       inviteParams.permissions,
       expect.anything()
     )
@@ -264,6 +270,7 @@ describe('resendMemberInvite', () => {
 
     mockTargetMember = {
       id: USER_1,
+      membershipId: 1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -380,6 +387,7 @@ describe('cancelMemberInvite', () => {
   beforeEach(async () => {
     mockTargetMember = {
       id: USER_1,
+      membershipId: 1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',

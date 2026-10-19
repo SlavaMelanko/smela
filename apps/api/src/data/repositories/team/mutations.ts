@@ -122,28 +122,11 @@ export const deleteTeamMember = async (
 }
 
 export const setTeamMemberPermissions = async (
-  userId: string,
-  teamId: string,
+  membershipId: number,
   permissions: PermissionsInput,
   tx?: Database
 ): Promise<void> => {
   const executor = tx || db
-
-  const [membership] = await executor
-    .select({ id: teamMembersTable.id })
-    .from(teamMembersTable)
-    .where(
-      and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId)
-      )
-    )
-
-  if (!membership) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
-  const memberId = membership.id
   const allPermissions = await rbacRepo.findAllPermissions(tx)
   const { grantIds, revokeIds } = splitPermissions(permissions, allPermissions)
 
@@ -154,7 +137,9 @@ export const setTeamMemberPermissions = async (
 
     await executor
       .insert(teamMemberPermissionsTable)
-      .values(grantIds.map(permissionId => ({ memberId, permissionId })))
+      .values(
+        grantIds.map(permissionId => ({ memberId: membershipId, permissionId }))
+      )
       .onConflictDoNothing()
   }
 
@@ -167,7 +152,7 @@ export const setTeamMemberPermissions = async (
       .delete(teamMemberPermissionsTable)
       .where(
         and(
-          eq(teamMemberPermissionsTable.memberId, memberId),
+          eq(teamMemberPermissionsTable.memberId, membershipId),
           inArray(teamMemberPermissionsTable.permissionId, revokeIds)
         )
       )

@@ -79,10 +79,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       const res = await get(app, PERMISSIONS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockGetTeamMemberPermissions).toHaveBeenCalledWith(
-        TEST_TEAM_ID,
-        testUuids.USER_2
-      )
+      expect(mockGetTeamMemberPermissions).toHaveBeenCalledWith(1)
 
       const data = await res.json()
       expect(data.permissions).toEqual(mockPermissions)
@@ -125,11 +122,9 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       const res = await patch(app, PERMISSIONS_URL, body)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockUpdateTeamMemberPermissions).toHaveBeenCalledWith(
-        TEST_TEAM_ID,
-        testUuids.USER_2,
-        { teams: { view: true, manage: false } }
-      )
+      expect(mockUpdateTeamMemberPermissions).toHaveBeenCalledWith(1, {
+        teams: { view: true, manage: false }
+      })
 
       const data = await res.json()
       expect(data.permissions).toEqual(mockPermissions)

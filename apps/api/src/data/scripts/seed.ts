@@ -349,13 +349,14 @@ const seedTestUsers = async (teamId: string) => {
       if (existingLink) {
         console.log(`✅ user ${user.email} already exists`)
       } else {
-        await db
-          .insert(teamMembersTable)
-          .values({ userId: existingUser.id, teamId, position: user.position })
+        const membership = await teamRepo.createMember({
+          userId: existingUser.id,
+          teamId,
+          position: user.position
+        })
 
         await teamRepo.setMemberPermissions(
-          existingUser.id,
-          teamId,
+          membership.id,
           user.memberPermissions
         )
 
@@ -384,16 +385,14 @@ const seedTestUsers = async (teamId: string) => {
       passwordHash: hashedPassword
     })
 
-    await db
-      .insert(teamMembersTable)
-      .values({ userId: createdUser.id, teamId, position: user.position })
+    const membership = await teamRepo.createMember({
+      userId: createdUser.id,
+      teamId,
+      position: user.position
+    })
 
     await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
-    await teamRepo.setMemberPermissions(
-      createdUser.id,
-      teamId,
-      user.memberPermissions
-    )
+    await teamRepo.setMemberPermissions(membership.id, user.memberPermissions)
 
     console.log(`✅ user ${user.email} seeded and linked to team`)
   }

@@ -69,7 +69,7 @@ export const inviteMember = async (
       tx
     )
 
-    await teamRepo.createMember(
+    const membership = await teamRepo.createMember(
       {
         userId: newUser.id,
         teamId: team.id,
@@ -79,12 +79,7 @@ export const inviteMember = async (
       tx
     )
 
-    await teamRepo.setMemberPermissions(
-      newUser.id,
-      team.id,
-      member.permissions,
-      tx
-    )
+    await teamRepo.setMemberPermissions(membership.id, member.permissions, tx)
 
     await rbacRepo.setUserPermissions(
       newUser.id,
