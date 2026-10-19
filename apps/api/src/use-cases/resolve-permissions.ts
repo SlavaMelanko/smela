@@ -1,7 +1,7 @@
 import type { ActivePermissionRow } from '@/data'
 import type { Permission, PermissionMap, Resource } from '@/types'
 
-import { rbacRepo } from '@/data'
+import { rbacRepo, teamRepo } from '@/data'
 
 export const resolvePermissionList = async (
   userId: string
@@ -35,7 +35,7 @@ export const resolvePermissionList = async (
 //   users: { view: true, manage: true },
 //   teams: { view: true, manage: false }
 // }
-export const toPermissionMap = (
+const toPermissionMap = (
   rows: ActivePermissionRow[],
   baseline?: PermissionMap
 ): PermissionMap => {
@@ -57,6 +57,15 @@ export const resolvePermissionMap = async (
   baseline?: PermissionMap
 ): Promise<PermissionMap> => {
   const rows = await rbacRepo.findUserPermissions(userId)
+
+  return toPermissionMap(rows, baseline)
+}
+
+export const resolveMemberPermissionMap = async (
+  membershipId: number,
+  baseline?: PermissionMap
+): Promise<PermissionMap> => {
+  const rows = await teamRepo.findMemberPermissions(membershipId)
 
   return toPermissionMap(rows, baseline)
 }

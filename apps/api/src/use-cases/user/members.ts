@@ -2,7 +2,7 @@ import type { PermissionsInput } from '@/types'
 
 import { db, teamRepo, userRepo } from '@/data'
 import { getMemberBasePermissions, UserStatus } from '@/types'
-import { toPermissionMap } from '@/use-cases/resolve-permissions'
+import { resolveMemberPermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
@@ -43,9 +43,12 @@ export const updateTeamMember = async (
 }
 
 export const getTeamMemberPermissions = async (membershipId: number) => {
-  const rows = await teamRepo.findMemberPermissions(membershipId)
+  const permissions = await resolveMemberPermissionMap(
+    membershipId,
+    getMemberBasePermissions()
+  )
 
-  return { permissions: toPermissionMap(rows, getMemberBasePermissions()) }
+  return { permissions }
 }
 
 export const updateTeamMemberPermissions = async (
