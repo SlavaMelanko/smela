@@ -1,13 +1,11 @@
 import Action from './action'
 import Resource from './resource'
 
-export type PermissionsInput = Partial<
-  Record<Resource, Record<Action, boolean>>
->
-
 export type PermissionMap<
   R extends Resource = Exclude<Resource, Resource.Admins>
 > = Partial<Record<R, Partial<Record<Action, boolean>>>>
+
+export type PermissionsInput = PermissionMap<Resource>
 
 enum Permission {
   ViewDashboard = 'view:dashboard',

@@ -16,7 +16,7 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
-import { Role, UserStatus } from '@/types'
+import { getUserDefaultPermissions, Role, UserStatus } from '@/types'
 
 import {
   cancelMemberInvite,
@@ -37,6 +37,7 @@ describe('inviteMember', () => {
   let mockUserRepoCreate: any
   let mockAuthRepoCreate: any
   let mockTeamRepoCreateMember: any
+  let mockTeamRepoSetMemberPermissions: any
   let mockTokenRepoIssue: any
   let mockRbacSet: any
   let mockTransaction: any
@@ -90,7 +91,15 @@ describe('inviteMember', () => {
       updatedAt: new Date('2024-01-01')
     }))
     mockAuthRepoCreate = mock(async () => {})
-    mockTeamRepoCreateMember = mock(async () => {})
+    mockTeamRepoCreateMember = mock(async () => ({
+      id: 1,
+      userId: USER_1,
+      teamId: TEAM_1,
+      position: 'Developer',
+      invitedBy: USER_2,
+      joinedAt: new Date('2024-01-01')
+    }))
+    mockTeamRepoSetMemberPermissions = mock(async () => {})
     mockTokenRepoIssue = mock(async () => {})
     mockRbacSet = mock(async () => {})
     mockTransaction = mock(
@@ -105,7 +114,8 @@ describe('inviteMember', () => {
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         findById: mockTeamRepoFindById,
-        createMember: mockTeamRepoCreateMember
+        createMember: mockTeamRepoCreateMember,
+        setMemberPermissions: mockTeamRepoSetMemberPermissions
       } satisfies Partial<typeof teamRepo>,
       userRepo: {
         findByEmail: mockUserRepoFindByEmail,
@@ -171,6 +181,21 @@ describe('inviteMember', () => {
         position: 'Developer',
         invitedBy: USER_2
       },
+      expect.anything()
+    )
+  })
+
+  it('grants requested permissions on membership and default ones on user', async () => {
+    await inviteMember(mockTeam, inviteParams, USER_2)
+
+    expect(mockTeamRepoSetMemberPermissions).toHaveBeenCalledWith(
+      1,
+      inviteParams.permissions,
+      expect.anything()
+    )
+    expect(mockRbacSet).toHaveBeenCalledWith(
+      USER_1,
+      getUserDefaultPermissions(),
       expect.anything()
     )
   })
@@ -245,6 +270,7 @@ describe('resendMemberInvite', () => {
 
     mockTargetMember = {
       id: USER_1,
+      membershipId: 1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -361,6 +387,7 @@ describe('cancelMemberInvite', () => {
   beforeEach(async () => {
     mockTargetMember = {
       id: USER_1,
+      membershipId: 1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',

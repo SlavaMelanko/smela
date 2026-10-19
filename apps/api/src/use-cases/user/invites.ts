@@ -10,7 +10,12 @@ import {
   emailService,
   UserInviteEmailMessageBuilder
 } from '@/services/email'
-import { AuthProvider, Role, UserStatus } from '@/types'
+import {
+  AuthProvider,
+  getUserDefaultPermissions,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { issueOneTimeToken } from '../tokens'
 
@@ -64,7 +69,7 @@ export const inviteMember = async (
       tx
     )
 
-    await teamRepo.createMember(
+    const membership = await teamRepo.createMember(
       {
         userId: newUser.id,
         teamId: team.id,
@@ -74,7 +79,13 @@ export const inviteMember = async (
       tx
     )
 
-    await rbacRepo.setUserPermissions(newUser.id, member.permissions, tx)
+    await teamRepo.setMemberPermissions(membership.id, member.permissions, tx)
+
+    await rbacRepo.setUserPermissions(
+      newUser.id,
+      getUserDefaultPermissions(),
+      tx
+    )
 
     const token = await issueOneTimeToken(newUser.id, TokenType.UserInvite, tx)
 

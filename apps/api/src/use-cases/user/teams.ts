@@ -17,13 +17,13 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
   const team = await db.transaction(async tx => {
     const newTeam = await teamRepo.create({ ...input, createdBy: userId }, tx)
 
-    const member = await teamRepo.createMember(
+    const membership = await teamRepo.createMember(
       { userId, teamId: newTeam.id },
       tx
     )
 
     await teamRepo.setMemberPermissions(
-      member.id,
+      membership.id,
       getMemberFullPermissions(),
       tx
     )

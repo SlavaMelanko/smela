@@ -122,7 +122,7 @@ export const deleteTeamMember = async (
 }
 
 export const setTeamMemberPermissions = async (
-  memberId: number,
+  membershipId: number,
   permissions: PermissionsInput,
   tx?: Database
 ): Promise<void> => {
@@ -137,7 +137,9 @@ export const setTeamMemberPermissions = async (
 
     await executor
       .insert(teamMemberPermissionsTable)
-      .values(grantIds.map(permissionId => ({ memberId, permissionId })))
+      .values(
+        grantIds.map(permissionId => ({ memberId: membershipId, permissionId }))
+      )
       .onConflictDoNothing()
   }
 
@@ -150,7 +152,7 @@ export const setTeamMemberPermissions = async (
       .delete(teamMemberPermissionsTable)
       .where(
         and(
-          eq(teamMemberPermissionsTable.memberId, memberId),
+          eq(teamMemberPermissionsTable.memberId, membershipId),
           inArray(teamMemberPermissionsTable.permissionId, revokeIds)
         )
       )

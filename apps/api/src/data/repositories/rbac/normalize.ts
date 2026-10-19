@@ -4,10 +4,6 @@ import { Action, Resource } from '@/types'
 
 import type { ActivePermissionRow, PermissionRecord } from './types'
 
-export type NormalizedPermissions = Partial<
-  Record<Resource, { view?: boolean; manage: boolean }>
->
-
 // Before writing: collapse view + manage → manage only, since manage implies view.
 // The DB never stores a view row next to manage for the same resource.
 //
@@ -18,8 +14,8 @@ export type NormalizedPermissions = Partial<
 //   { users: { manage: true } }
 export const collapsePermissions = (
   permissions: PermissionsInput
-): NormalizedPermissions => {
-  const result: NormalizedPermissions = { ...permissions }
+): PermissionsInput => {
+  const result: PermissionsInput = { ...permissions }
 
   for (const resource of Object.values(Resource)) {
     const perms = result[resource]

@@ -23,6 +23,7 @@ export const buildTeam = (
 
 export const buildTeamMember = (id: string): TeamMemberDetails => ({
   id,
+  membershipId: 1,
   firstName: 'Alice',
   lastName: null,
   email: 'alice@example.com',

@@ -3,9 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { db, teamRepo, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { UserStatus } from '@/types'
+import { Action, Resource, UserStatus } from '@/types'
 
-import { removeTeamMember } from '../members'
+import {
+  getTeamMemberPermissions,
+  removeTeamMember,
+  updateTeamMemberPermissions
+} from '../members'
 
 const { TEAM_1, USER_1 } = testUuids
 
@@ -70,5 +74,73 @@ describe('removeTeamMember', () => {
     const result = await removeTeamMember(TEAM_1, USER_1)
 
     expect(result).toEqual({ success: true })
+  })
+})
+
+describe('team member permissions', () => {
+  const MEMBERSHIP_ID = 1
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  let mockTeamRepo: any
+
+  beforeEach(async () => {
+    mockTeamRepo = {
+      findMemberPermissions: mock(async () => [
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Teams }
+      ]),
+      setMemberPermissions: mock(async () => {})
+    } satisfies Partial<typeof teamRepo>
+
+    await moduleMocker.mock('@/data', () => ({
+      teamRepo: mockTeamRepo
+    }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  describe('getTeamMemberPermissions', () => {
+    it('merges membership permissions into the member baseline', async () => {
+      const result = await getTeamMemberPermissions(MEMBERSHIP_ID)
+
+      expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
+        MEMBERSHIP_ID
+      )
+      expect(result).toEqual({
+        permissions: {
+          [Resource.Dashboard]: { [Action.View]: false },
+          [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+        }
+      })
+    })
+  })
+
+  describe('updateTeamMemberPermissions', () => {
+    const permissions = {
+      [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+    }
+
+    it('writes permissions to membership', async () => {
+      await updateTeamMemberPermissions(MEMBERSHIP_ID, permissions)
+
+      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+        MEMBERSHIP_ID,
+        permissions
+      )
+    })
+
+    it('returns updated membership permissions', async () => {
+      const result = await updateTeamMemberPermissions(
+        MEMBERSHIP_ID,
+        permissions
+      )
+
+      expect(result.permissions[Resource.Teams]).toEqual({
+        [Action.View]: true,
+        [Action.Manage]: true
+      })
+    })
   })
 })

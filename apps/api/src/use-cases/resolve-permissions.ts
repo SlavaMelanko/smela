@@ -1,6 +1,7 @@
+import type { ActivePermissionRow } from '@/data'
 import type { Permission, PermissionMap, Resource } from '@/types'
 
-import { rbacRepo } from '@/data'
+import { rbacRepo, teamRepo } from '@/data'
 
 export const resolvePermissionList = async (
   userId: string
@@ -34,12 +35,10 @@ export const resolvePermissionList = async (
 //   users: { view: true, manage: true },
 //   teams: { view: true, manage: false }
 // }
-export const resolvePermissionMap = async (
-  userId: string,
+const toPermissionMap = (
+  rows: ActivePermissionRow[],
   baseline?: PermissionMap
-): Promise<PermissionMap> => {
-  const rows = await rbacRepo.findUserPermissions(userId)
-
+): PermissionMap => {
   const result: PermissionMap<Resource> = baseline
     ? structuredClone(baseline)
     : {}
@@ -51,4 +50,22 @@ export const resolvePermissionMap = async (
   }
 
   return result
+}
+
+export const resolvePermissionMap = async (
+  userId: string,
+  baseline?: PermissionMap
+): Promise<PermissionMap> => {
+  const rows = await rbacRepo.findUserPermissions(userId)
+
+  return toPermissionMap(rows, baseline)
+}
+
+export const resolveMemberPermissionMap = async (
+  membershipId: number,
+  baseline?: PermissionMap
+): Promise<PermissionMap> => {
+  const rows = await teamRepo.findMemberPermissions(membershipId)
+
+  return toPermissionMap(rows, baseline)
 }
