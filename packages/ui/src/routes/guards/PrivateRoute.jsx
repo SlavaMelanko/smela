@@ -8,12 +8,14 @@ export const PrivateRoute = ({
   children,
   requireStatuses = [],
   requireRoles = [],
-  requirePermissions = []
+  requirePermissions = [],
+  requireTeamPermissions = []
 }) => {
   const { isPending, isAuthenticated, hasAccess } = useHasAccess({
     requireStatuses,
     requireRoles,
-    requirePermissions
+    requirePermissions,
+    requireTeamPermissions
   })
 
   if (isPending) {

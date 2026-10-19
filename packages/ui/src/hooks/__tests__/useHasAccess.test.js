@@ -5,11 +5,16 @@ import { useHasAccess } from '../useHasAccess'
 
 vi.mock('../useAuth')
 
-const authenticated = ({ permissions = [], ...overrides } = {}) => ({
+const authenticated = ({
+  permissions = [],
+  teamPermissions = [],
+  ...overrides
+} = {}) => ({
   isPending: false,
   isAuthenticated: true,
   permissions,
   canAll: perms => perms.every(p => permissions.includes(p)),
+  canAllInTeam: perms => perms.every(p => teamPermissions.includes(p)),
   user: {
     status: 'active',
     role: 'user',
@@ -140,6 +145,32 @@ describe('useHasAccess', () => {
       )
 
       expect(result.current.hasAccess).toBe(true)
+    })
+  })
+
+  describe('requireTeamPermissions', () => {
+    it('allows when team has all required permissions', () => {
+      useCurrentUser.mockReturnValue(
+        authenticated({ teamPermissions: ['view:teams'] })
+      )
+
+      const { result } = renderHook(() =>
+        useHasAccess({ requireTeamPermissions: ['view:teams'] })
+      )
+
+      expect(result.current.hasAccess).toBe(true)
+    })
+
+    it('denies when only user-wide permissions include them', () => {
+      useCurrentUser.mockReturnValue(
+        authenticated({ permissions: ['view:teams'], teamPermissions: [] })
+      )
+
+      const { result } = renderHook(() =>
+        useHasAccess({ requireTeamPermissions: ['view:teams'] })
+      )
+
+      expect(result.current.hasAccess).toBe(false)
     })
   })
 })

@@ -23,7 +23,7 @@ import { ProfileTab } from './ProfileTab'
 export const TeamMemberPage = () => {
   const { id } = useParams()
   const { state } = useLocation()
-  const { user: me, team: myTeam, can } = useCurrentUser()
+  const { user: me, team: myTeam, canInTeam } = useCurrentUser()
   const { t } = useLocale()
 
   const {
@@ -38,8 +38,8 @@ export const TeamMemberPage = () => {
   })
 
   const isOwnProfile = me?.id === id
-  const canViewTeams = can('view:teams')
-  const canManageTeams = can('manage:teams')
+  const canViewTeams = canInTeam('view:teams')
+  const canManageTeams = canInTeam('manage:teams')
 
   const hasMembership = !isPending && !!myTeam && canViewTeams
 

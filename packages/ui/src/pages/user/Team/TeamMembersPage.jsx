@@ -6,9 +6,9 @@ import { userTeamQueryOptions } from '@ui/hooks/useTeam'
 export const TeamMembersPage = () => {
   const { team } = useOutletContext()
   const navigate = useNavigate()
-  const { can } = useCurrentUser()
+  const { canInTeam } = useCurrentUser()
 
-  const canManageTeams = can('manage:teams')
+  const canManageTeams = canInTeam('manage:teams')
 
   return (
     <TeamMembersSection
