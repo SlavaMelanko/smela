@@ -9,5 +9,6 @@ export {
 } from './options'
 export type { Options } from './options'
 export type { default as TokenGenerator } from './token-generator'
-export { TokenStatus, TokenType } from './types'
+export { InviteKind, TokenStatus, TokenType } from './types'
+export type { InviteMetadata } from './types'
 export { default as TokenValidator } from './validator'

@@ -5,6 +5,15 @@ export enum TokenType {
   UserInvite = 'user_invite'
 }
 
+export enum InviteKind {
+  Admin = 'admin',
+  Member = 'member'
+}
+
+export interface InviteMetadata {
+  kind: InviteKind
+}
+
 export enum TokenStatus {
   Pending = 'pending',
   Used = 'used',

@@ -4,7 +4,7 @@ import type { authRepo, db, rbacRepo, tokenRepo, User, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { TokenType } from '@/security/token'
+import { InviteKind, TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { Role, UserStatus } from '@/types'
 
@@ -135,7 +135,8 @@ describe('inviteAdmin', () => {
         userId: mockAdmin.id,
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
-        expiresAt: expect.any(Date)
+        expiresAt: expect.any(Date),
+        metadata: { kind: InviteKind.Admin }
       },
       expect.anything()
     )
@@ -304,7 +305,8 @@ describe('resendAdminInvite', () => {
         userId: testUuids.ADMIN_1,
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
-        expiresAt: expect.any(Date)
+        expiresAt: expect.any(Date),
+        metadata: { kind: InviteKind.Admin }
       },
       undefined
     )
