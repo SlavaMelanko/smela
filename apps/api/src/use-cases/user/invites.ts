@@ -4,7 +4,7 @@ import type { PermissionsInput } from '@/types'
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
-import { TokenType } from '@/security/token'
+import { InviteKind, TokenType } from '@/security/token'
 import {
   buildInviteUrl,
   emailService,
@@ -17,7 +17,7 @@ import {
   UserStatus
 } from '@/types'
 
-import { issueOneTimeToken } from '../tokens'
+import { issueInviteToken } from '../tokens'
 
 export interface InviteMemberInput {
   firstName: string
@@ -87,7 +87,7 @@ export const inviteMember = async (
       tx
     )
 
-    const token = await issueOneTimeToken(newUser.id, TokenType.UserInvite, tx)
+    const token = await issueInviteToken(newUser.id, InviteKind.Member, tx)
 
     return {
       member: {
@@ -134,7 +134,7 @@ export const resendMemberInvite = async (
     )
   }
 
-  const token = await issueOneTimeToken(member.id, TokenType.UserInvite)
+  const token = await issueInviteToken(member.id, InviteKind.Member)
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(member.email, {

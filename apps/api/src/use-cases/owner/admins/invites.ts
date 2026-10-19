@@ -4,7 +4,7 @@ import { authRepo, db, rbacRepo, tokenRepo, userRepo } from '@/data'
 import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
-import { TokenType } from '@/security/token'
+import { InviteKind, TokenType } from '@/security/token'
 import {
   buildInviteUrl,
   emailService,
@@ -12,7 +12,7 @@ import {
 } from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
-import { issueOneTimeToken } from '../../tokens'
+import { issueInviteToken } from '../../tokens'
 
 export interface InviteAdminInput {
   firstName: string
@@ -75,7 +75,7 @@ export const inviteAdmin = async (
 
     await rbacRepo.setUserPermissions(newAdmin.id, admin.permissions, tx)
 
-    const token = await issueOneTimeToken(newAdmin.id, TokenType.UserInvite, tx)
+    const token = await issueInviteToken(newAdmin.id, InviteKind.Admin, tx)
 
     return { admin: { ...newAdmin, role }, token }
   })
@@ -113,7 +113,7 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  const token = await issueOneTimeToken(adminId, TokenType.UserInvite)
+  const token = await issueInviteToken(adminId, InviteKind.Admin)
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(admin.email, {

@@ -19,10 +19,12 @@ import {
   ModuleMocker,
   testUuids
 } from '@/__tests__'
+import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { comparePasswordHashes } from '@/security/password'
 import {
   hashToken,
+  InviteKind,
   TOKEN_LENGTH,
   TokenStatus,
   TokenType
@@ -37,7 +39,8 @@ describe('acceptInvite', () => {
 
   const INVITE_TOKEN = {
     userId: testUuids.ADMIN_1,
-    type: TokenType.UserInvite
+    type: TokenType.UserInvite,
+    metadata: { kind: InviteKind.Admin }
   }
 
   let mockPassword: string
@@ -113,7 +116,7 @@ describe('acceptInvite', () => {
     await moduleMocker.clear()
   })
 
-  it('marks token as used, updates password, activates user, and returns user with tokens', async () => {
+  it('marks token as used, updates password, activates admin, and returns user with tokens', async () => {
     const result = await acceptInvite(
       { token: RAW_TOKEN, password: mockPassword },
       mockDeviceInfo
@@ -152,6 +155,43 @@ describe('acceptInvite', () => {
       },
       refreshToken: expect.any(String)
     })
+  })
+
+  it('sets an invited member to verified', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord({
+        ...INVITE_TOKEN,
+        metadata: { kind: InviteKind.Member }
+      })
+    )
+
+    await acceptInvite(
+      { token: RAW_TOKEN, password: mockPassword },
+      mockDeviceInfo
+    )
+
+    expect(mockUserRepo.update).toHaveBeenCalledWith(
+      mockTokenRecord.userId,
+      { status: UserStatus.Verified },
+      {}
+    )
+  })
+
+  it('throws TokenDeprecated without updating anything when token has no kind', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord({ ...INVITE_TOKEN, metadata: null })
+    )
+
+    const error = await acceptInvite(
+      { token: RAW_TOKEN, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.TokenDeprecated
+    })
+    expect(mockTransaction.transaction).not.toHaveBeenCalled()
   })
 
   it('stores a hash that matches the new password', async () => {

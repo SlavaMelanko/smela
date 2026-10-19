@@ -14,7 +14,7 @@ import type {
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
-import { TokenType } from '@/security/token'
+import { InviteKind, TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
 import { getUserDefaultPermissions, Role, UserStatus } from '@/types'
 
@@ -216,7 +216,8 @@ describe('inviteMember', () => {
         userId: USER_1,
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
-        expiresAt: expect.any(Date)
+        expiresAt: expect.any(Date),
+        metadata: { kind: InviteKind.Member }
       },
       expect.anything()
     )
@@ -355,7 +356,8 @@ describe('resendMemberInvite', () => {
         userId: USER_1,
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
-        expiresAt: expect.any(Date)
+        expiresAt: expect.any(Date),
+        metadata: { kind: InviteKind.Member }
       },
       undefined
     )

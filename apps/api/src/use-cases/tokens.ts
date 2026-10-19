@@ -1,5 +1,6 @@
 import type { Database, User } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
+import type { InviteKind, InviteMetadata } from '@/security/token'
 import type { Permission } from '@/types'
 
 import { refreshTokenRepo, tokenRepo } from '@/data'
@@ -64,7 +65,8 @@ export const createAuthTokens = async (
 export const issueOneTimeToken = async (
   userId: string,
   type: TokenType,
-  tx?: Database
+  tx?: Database,
+  metadata?: InviteMetadata
 ) => {
   const {
     token: { raw, hashed },
@@ -73,12 +75,18 @@ export const issueOneTimeToken = async (
 
   await tokenRepo.issue(
     userId,
-    { userId, type, tokenHash: hashed, expiresAt },
+    { userId, type, tokenHash: hashed, expiresAt, metadata },
     tx
   )
 
   return raw
 }
+
+export const issueInviteToken = async (
+  userId: string,
+  kind: InviteKind,
+  tx?: Database
+) => issueOneTimeToken(userId, TokenType.UserInvite, tx, { kind })
 
 export const validateOneTimeToken = async (token: string, type: TokenType) => {
   const tokenRecord = await tokenRepo.findByHash(await hashToken(token))

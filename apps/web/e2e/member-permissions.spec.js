@@ -217,7 +217,7 @@ test.describe.serial('User: Member Permissions', () => {
     await logOut(page, t)
   })
 
-  test('owner verifies member is Active and removes them from the team', async ({
+  test('owner verifies member is Verified and removes them from the team', async ({
     page,
     t,
     login
@@ -241,7 +241,7 @@ test.describe.serial('User: Member Permissions', () => {
     })
 
     await expect(memberRow).toBeVisible()
-    await expect(memberRow.getByText(t.status.values.active)).toBeVisible()
+    await expect(memberRow.getByText(t.status.values.verified)).toBeVisible()
 
     // Open member detail and verify no manage permissions on the Permissions tab
     await memberRow.click()
