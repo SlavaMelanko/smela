@@ -3,9 +3,16 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 export const useHasAccess = ({
   requireStatuses = [],
   requireRoles = [],
-  requirePermissions = []
+  requirePermissions = [],
+  requireTeamPermissions = []
 } = {}) => {
-  const { isPending, isAuthenticated, user: me, canAll } = useCurrentUser()
+  const {
+    isPending,
+    isAuthenticated,
+    user: me,
+    canAll,
+    canAllInTeam
+  } = useCurrentUser()
 
   const hasRequiredStatus =
     requireStatuses.length === 0 || requireStatuses.includes(me?.status)
@@ -16,11 +23,15 @@ export const useHasAccess = ({
   const hasRequiredPermissions =
     requirePermissions.length === 0 || canAll(requirePermissions)
 
+  const hasRequiredTeamPermissions =
+    requireTeamPermissions.length === 0 || canAllInTeam(requireTeamPermissions)
+
   const hasAccess =
     isAuthenticated &&
     hasRequiredStatus &&
     hasRequiredRole &&
-    hasRequiredPermissions
+    hasRequiredPermissions &&
+    hasRequiredTeamPermissions
 
   return { isPending, isAuthenticated, hasAccess }
 }

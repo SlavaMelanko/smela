@@ -4,9 +4,9 @@ import { useOutletContext } from '@ui/hooks/useRouter'
 
 export const TeamGeneralPage = () => {
   const { team } = useOutletContext()
-  const { can } = useCurrentUser()
+  const { canInTeam } = useCurrentUser()
 
-  const canManageTeams = can('manage:teams')
+  const canManageTeams = canInTeam('manage:teams')
 
   return <TeamGeneralSection team={team} canManageTeams={canManageTeams} />
 }
