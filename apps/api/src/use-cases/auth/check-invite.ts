@@ -1,56 +1,29 @@
-import { rbacRepo, teamRepo } from '@/data'
+import { teamRepo } from '@/data'
 import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
-import { TokenType } from '@/security/token'
-import { Role } from '@/types'
+import { InviteKind, TokenType } from '@/security/token'
 
-import { validateOneTimeToken } from '../tokens'
-
-type InviteType = 'member' | 'admin'
+import { readInviteKind, validateOneTimeToken } from '../tokens'
 
 interface CheckInviteResult {
-  type: InviteType
+  type: InviteKind
   teamName: string
-}
-
-const checkMemberInvite = async (
-  userId: string
-): Promise<CheckInviteResult | null> => {
-  const userTeam = await teamRepo.findUserTeam(userId)
-
-  if (!userTeam) {
-    return null
-  }
-
-  return { type: 'member', teamName: userTeam.name }
-}
-
-const checkAdminInvite = async (
-  userId: string
-): Promise<CheckInviteResult | null> => {
-  const userRole = await rbacRepo.findRole(userId)
-
-  if (userRole?.role !== Role.Admin) {
-    return null
-  }
-
-  return { type: 'admin', teamName: env.COMPANY_NAME }
 }
 
 export const checkInvite = async (
   token: string
 ): Promise<CheckInviteResult> => {
   const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
+  const kind = readInviteKind(validatedToken.metadata)
 
-  const memberInvite = await checkMemberInvite(validatedToken.userId)
-  if (memberInvite) {
-    return memberInvite
+  if (kind === InviteKind.Admin) {
+    return { type: kind, teamName: env.COMPANY_NAME }
   }
 
-  const adminInvite = await checkAdminInvite(validatedToken.userId)
-  if (adminInvite) {
-    return adminInvite
+  const userTeam = await teamRepo.findUserTeam(validatedToken.userId)
+  if (!userTeam) {
+    throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
   }
 
-  throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
+  return { type: kind, teamName: userTeam.name }
 }
