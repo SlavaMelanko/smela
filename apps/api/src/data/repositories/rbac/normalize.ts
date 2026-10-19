@@ -10,8 +10,12 @@ export type NormalizedPermissions = Partial<
 
 // Before writing: collapse view + manage → manage only, since manage implies view.
 // The DB never stores a view row next to manage for the same resource.
-// Before: { users: { view: true, manage: true } }
-// After: { users: { manage: true } }
+//
+// Before:
+//   { users: { view: true, manage: true } }
+//
+// After:
+//   { users: { manage: true } }
 export const collapsePermissions = (
   permissions: PermissionsInput
 ): NormalizedPermissions => {
@@ -29,8 +33,15 @@ export const collapsePermissions = (
 
 // After reading: expand manage → derive synthetic view rows, since manage implies view.
 // Callers above the repository always see both view and manage.
-// Before: [{ action: 'manage', resource: 'users' }]
-// After: [{ action: 'manage', resource: 'users' }, { action: 'view', resource: 'users' }]
+//
+// Before:
+//   [{ action: 'manage', resource: 'users' }]
+//
+// After:
+//   [
+//     { action: 'manage', resource: 'users' },
+//     { action: 'view', resource: 'users' }
+//   ]
 export const expandPermissions = (
   rows: ActivePermissionRow[]
 ): ActivePermissionRow[] => {
@@ -43,8 +54,16 @@ export const expandPermissions = (
 
 // Before writing: split all permissions into ids to grant and to revoke.
 // Missing or false requested permissions are revoked.
-// Before: requested { users: { view: true } }, all [{ id: 1, users:view }, { id: 2, users:manage }]
-// After: { grantIds: [1], revokeIds: [2] }
+//
+// Before:
+//   requestedPermissions: { users: { view: true, manage: false } }
+//   allPermissions: [
+//     { id: 1, action: 'view', resource: 'users' },
+//     { id: 2, action: 'manage', resource: 'users' }
+//   ]
+//
+// After:
+//   { grantIds: [1], revokeIds: [2] }
 export const splitPermissions = (
   requestedPermissions: PermissionsInput,
   allPermissions: PermissionRecord[]
