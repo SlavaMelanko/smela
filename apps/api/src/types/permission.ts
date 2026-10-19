@@ -22,8 +22,7 @@ enum Permission {
   ManageSystem = 'manage:system'
 }
 
-// Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
-// Default: permissions granted on creation.
+// All-false skeleton merged with stored permissions so frontend always gets a full map
 export const getAdminBasePermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: false, [Action.Manage]: false },
   [Resource.Users]: { [Action.View]: false, [Action.Manage]: false },
@@ -31,6 +30,7 @@ export const getAdminBasePermissions = (): PermissionMap => ({
   [Resource.System]: { [Action.View]: false, [Action.Manage]: false }
 })
 
+// Granted to an admin on creation
 export const getAdminDefaultPermissions = (): PermissionMap => ({
   ...getAdminBasePermissions(),
   [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
@@ -38,24 +38,25 @@ export const getAdminDefaultPermissions = (): PermissionMap => ({
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
+// Granted to a user on signup
 export const getUserDefaultPermissions = (): PermissionsInput => ({
   [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
 })
 
-// Base: all-false skeleton merged with stored permissions so frontend always gets a full map.
-// Default: permissions granted on creation.
-// Full: every member permission, granted to the team creator.
+// All-false skeleton merged with stored permissions so frontend always gets a full map
 export const getMemberBasePermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: false },
   [Resource.Teams]: { [Action.View]: false }
 })
 
+// Granted to a team member on creation
 export const getMemberDefaultPermissions = (): PermissionMap => ({
   [Resource.Dashboard]: { [Action.View]: true },
   [Resource.Teams]: { [Action.View]: true }
 })
 
+// Every team member permission, granted to the team creator
 export const getMemberFullPermissions = (): PermissionsInput => ({
   [Resource.Dashboard]: { [Action.View]: true, [Action.Manage]: true },
   [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
