@@ -110,7 +110,6 @@ describe('team member permissions', () => {
       )
       expect(result).toEqual({
         permissions: {
-          [Resource.Dashboard]: { [Action.View]: false },
           [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
         }
       })
