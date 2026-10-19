@@ -2,15 +2,18 @@ import { teamRepo } from '@/data'
 
 import { resolveMemberPermissionList } from './resolve-permissions'
 
-export const resolveUserTeam = async (userId: string) => {
-  const team = await teamRepo.findUserTeam(userId)
+// The active team comes with its permissions. The rest feed the team switcher
+export const resolveUserTeams = async (userId: string) => {
+  const memberships = await teamRepo.findUserTeams(userId)
+  const teams = memberships.map(({ membershipId, ...info }) => info)
 
-  if (!team) {
-    return undefined
+  const [active] = memberships
+
+  if (!active) {
+    return { team: undefined, teams }
   }
 
-  const { membershipId, ...info } = team
-  const permissions = await resolveMemberPermissionList(membershipId)
+  const permissions = await resolveMemberPermissionList(active.membershipId)
 
-  return { ...info, permissions }
+  return { team: { ...teams[0], permissions }, teams }
 }

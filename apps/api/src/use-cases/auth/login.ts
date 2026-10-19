@@ -5,7 +5,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { comparePasswordHashes } from '@/security/password'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 import { createAuthTokens } from '../tokens'
 
 export interface LoginInput {
@@ -42,8 +42,8 @@ export const logInWithEmail = async (
     throw new AppError(ErrorCode.InvalidCredentials)
   }
 
-  const [team, permissions] = await Promise.all([
-    resolveUserTeam(user.id),
+  const [{ team, teams }, permissions] = await Promise.all([
+    resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
 
@@ -54,7 +54,7 @@ export const logInWithEmail = async (
   )
 
   return {
-    data: { user, team, permissions, accessToken },
+    data: { user, team, teams, permissions, accessToken },
     refreshToken
   }
 }

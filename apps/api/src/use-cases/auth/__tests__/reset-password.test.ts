@@ -90,7 +90,7 @@ describe('resetPassword', () => {
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam),
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -172,6 +172,7 @@ describe('resetPassword', () => {
       data: {
         user: mockUser,
         team: undefined,
+        teams: [],
         permissions: undefined,
         accessToken: expect.any(String)
       },
@@ -231,7 +232,7 @@ describe('resetPassword', () => {
       name: 'Tech Inc',
       position: 'Developer'
     }
-    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+    mockTeamRepo.findUserTeams.mockImplementation(async () => [mockTeam])
 
     const result = await resetPassword(
       { token: mockTokenString, password: mockPassword },
@@ -244,7 +245,7 @@ describe('resetPassword', () => {
       position: 'Developer',
       permissions: [Permission.ViewTeams]
     })
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+    expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(mockUser.id)
   })
 
   it('throws TokenNotFound without updating anything when token does not exist', async () => {

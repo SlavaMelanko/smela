@@ -49,7 +49,7 @@ describe('checkInvite', () => {
       findByHash: mock(async () => mockTokenRecord)
     } satisfies Partial<typeof tokenRepo>
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam)
+      findUserTeams: mock(async () => [mockTeam])
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -68,7 +68,7 @@ describe('checkInvite', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(RAW_TOKEN)
     )
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(
+    expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(
       mockTokenRecord.userId
     )
     expect(result).toEqual({ kind: InviteKind.Member, teamName: 'Acme Corp' })
@@ -84,7 +84,7 @@ describe('checkInvite', () => {
 
     const result = await checkInvite(RAW_TOKEN)
 
-    expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
+    expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
     expect(result).toEqual({
       kind: InviteKind.Admin,
       teamName: env.COMPANY_NAME
@@ -102,7 +102,7 @@ describe('checkInvite', () => {
       name: 'AppError',
       code: ErrorCode.TokenDeprecated
     })
-    expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
+    expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
   })
 
   buildInvalidTokenCases(
@@ -118,12 +118,12 @@ describe('checkInvite', () => {
 
       expect(error).toMatchObject({ name: 'AppError', code })
 
-      expect(mockTeamRepo.findUserTeam).not.toHaveBeenCalled()
+      expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
     })
   })
 
   it('throws TokenDeprecated when member invite has no team', async () => {
-    mockTeamRepo.findUserTeam.mockResolvedValue(undefined)
+    mockTeamRepo.findUserTeams.mockResolvedValue([])
 
     const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
@@ -135,7 +135,7 @@ describe('checkInvite', () => {
   })
 
   it('propagates database query errors', async () => {
-    mockTeamRepo.findUserTeam.mockRejectedValue(
+    mockTeamRepo.findUserTeams.mockRejectedValue(
       new Error('Database connection failed')
     )
 

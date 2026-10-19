@@ -166,13 +166,14 @@ export const findTeamMember = async (
   return members[0]
 }
 
-export const findUserTeam = async (
+// Most recently active first, so the first one is the user's active team
+export const findUserTeams = async (
   userId: string,
   tx?: Database
-): Promise<UserTeamInfo | undefined> => {
+): Promise<UserTeamInfo[]> => {
   const executor = tx || db
 
-  const [result] = await executor
+  return executor
     .select({
       id: teamsTable.id,
       membershipId: teamMembersTable.id,
@@ -183,9 +184,6 @@ export const findUserTeam = async (
     .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
     .where(eq(teamMembersTable.userId, userId))
     .orderBy(desc(teamMembersTable.lastActiveAt))
-    .limit(1)
-
-  return result
 }
 
 export const findTeamMemberPermissions = async (

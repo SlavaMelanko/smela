@@ -20,7 +20,8 @@ export const checkInvite = async (
     return { kind, teamName: env.COMPANY_NAME }
   }
 
-  const userTeam = await teamRepo.findUserTeam(validatedToken.userId)
+  // A new invited user has exactly one team
+  const [userTeam] = await teamRepo.findUserTeams(validatedToken.userId)
   if (!userTeam) {
     throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
   }

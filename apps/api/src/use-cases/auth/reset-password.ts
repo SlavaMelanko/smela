@@ -6,7 +6,7 @@ import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 import { createAuthTokens, validateOneTimeToken } from '../tokens'
 
 export interface ResetPasswordInput {
@@ -48,8 +48,8 @@ export const resetPassword = async (
     )
   }
 
-  const [team, permissions] = await Promise.all([
-    resolveUserTeam(user.id),
+  const [{ team, teams }, permissions] = await Promise.all([
+    resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
 
@@ -60,7 +60,7 @@ export const resetPassword = async (
   )
 
   return {
-    data: { user, team, permissions, accessToken },
+    data: { user, team, teams, permissions, accessToken },
     refreshToken
   }
 }

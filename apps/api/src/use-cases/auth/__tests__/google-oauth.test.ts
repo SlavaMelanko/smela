@@ -7,7 +7,8 @@ import type {
   refreshTokenRepo,
   teamRepo,
   User,
-  userRepo
+  userRepo,
+  UserTeamInfo
 } from '@/data'
 
 import {
@@ -88,7 +89,7 @@ describe('google-oauth', () => {
     } satisfies Partial<typeof refreshTokenRepo>
 
     mockTeamRepo = {
-      findUserTeam: mock(async () => undefined),
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -138,7 +139,7 @@ describe('google-oauth', () => {
       name: 'Acme',
       position: 'Engineer'
     }
-    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+    mockTeamRepo.findUserTeams.mockImplementation(async () => [mockTeam])
 
     const result = await logInOrSignUpWithGoogle(
       mockGoogleProfile,
@@ -151,7 +152,7 @@ describe('google-oauth', () => {
       position: 'Engineer',
       permissions: [Permission.ViewTeams]
     })
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+    expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(mockUser.id)
   })
 
   describe('when Google user has no account', () => {

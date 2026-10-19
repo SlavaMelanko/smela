@@ -51,7 +51,7 @@ describe('me', () => {
     } satisfies Partial<typeof userRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam),
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -80,10 +80,11 @@ describe('me', () => {
       expect(result).toEqual({
         user: mockUser,
         team: undefined,
+        teams: [],
         permissions: undefined
       })
       expect(mockUserRepo.findById).toHaveBeenCalledWith(testUuids.USER_1)
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(testUuids.USER_1)
+      expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
     it('returns user, team info, and permissions when user belongs to a team', async () => {
@@ -93,7 +94,7 @@ describe('me', () => {
         name: 'My Team',
         position: 'Product Manager'
       }
-      mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+      mockTeamRepo.findUserTeams.mockImplementation(async () => [mockTeam])
 
       const result = await getUser(testUuids.USER_1)
 
@@ -105,9 +106,12 @@ describe('me', () => {
           position: 'Product Manager',
           permissions: [Permission.ViewTeams]
         },
+        teams: [
+          { id: 'team-789', name: 'My Team', position: 'Product Manager' }
+        ],
         permissions: undefined
       })
-      expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(testUuids.USER_1)
+      expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
     it('throws InternalError when user is missing', async () => {
@@ -285,6 +289,7 @@ describe('me', () => {
       expect(result).toEqual({
         user: mockUser,
         team: undefined,
+        teams: [],
         permissions: undefined
       })
       expect(mockUserRepo.update).not.toHaveBeenCalled()

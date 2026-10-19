@@ -5,21 +5,29 @@ import type { teamRepo } from '@/data'
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { Action, Permission, Resource } from '@/types'
 
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 
-describe('resolveUserTeam', () => {
+describe('resolveUserTeams', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeamRepo: any
 
   beforeEach(async () => {
     mockTeamRepo = {
-      findUserTeam: mock(async () => ({
-        id: testUuids.TEAM_1,
-        membershipId: testUuids.MEMBERSHIP_2,
-        name: 'Acme Corp',
-        position: 'Developer'
-      })),
+      findUserTeams: mock(async () => [
+        {
+          id: testUuids.TEAM_1,
+          membershipId: testUuids.MEMBERSHIP_2,
+          name: 'Acme Corp',
+          position: 'Developer'
+        },
+        {
+          id: testUuids.TEAM_2,
+          membershipId: testUuids.MEMBERSHIP_1,
+          name: 'Globex',
+          position: null
+        }
+      ]),
       findMemberPermissions: mock(async () => [
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Teams }
@@ -33,24 +41,34 @@ describe('resolveUserTeam', () => {
     await moduleMocker.clear()
   })
 
-  it('returns undefined when user has no team', async () => {
-    mockTeamRepo.findUserTeam.mockImplementation(async () => undefined)
+  it('returns no team when user has no memberships', async () => {
+    mockTeamRepo.findUserTeams.mockImplementation(async () => [])
 
-    expect(await resolveUserTeam(testUuids.USER_1)).toBeUndefined()
+    expect(await resolveUserTeams(testUuids.USER_1)).toEqual({
+      team: undefined,
+      teams: []
+    })
     expect(mockTeamRepo.findMemberPermissions).not.toHaveBeenCalled()
   })
 
-  it('returns team with membership permissions and without membership id', async () => {
-    const team = await resolveUserTeam(testUuids.USER_1)
+  it('returns the first team as active with its permissions and all teams without membership ids', async () => {
+    const result = await resolveUserTeams(testUuids.USER_1)
 
+    expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledTimes(1)
     expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
       testUuids.MEMBERSHIP_2
     )
-    expect(team).toEqual({
-      id: testUuids.TEAM_1,
-      name: 'Acme Corp',
-      position: 'Developer',
-      permissions: [Permission.ManageTeams, Permission.ViewTeams]
+    expect(result).toEqual({
+      team: {
+        id: testUuids.TEAM_1,
+        name: 'Acme Corp',
+        position: 'Developer',
+        permissions: [Permission.ManageTeams, Permission.ViewTeams]
+      },
+      teams: [
+        { id: testUuids.TEAM_1, name: 'Acme Corp', position: 'Developer' },
+        { id: testUuids.TEAM_2, name: 'Globex', position: null }
+      ]
     })
   })
 })

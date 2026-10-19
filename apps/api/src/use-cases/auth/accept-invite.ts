@@ -6,7 +6,7 @@ import { InviteKind, TokenStatus, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 import {
   createAuthTokens,
   readInviteKind,
@@ -49,8 +49,8 @@ export const acceptInvite = async (
     return userRepo.update(validatedToken.userId, { status }, tx)
   })
 
-  const [team, permissions] = await Promise.all([
-    resolveUserTeam(user.id),
+  const [{ team, teams }, permissions] = await Promise.all([
+    resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
 
@@ -61,7 +61,7 @@ export const acceptInvite = async (
   )
 
   return {
-    data: { user, team, permissions, accessToken },
+    data: { user, team, teams, permissions, accessToken },
     refreshToken
   }
 }

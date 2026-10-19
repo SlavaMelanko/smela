@@ -26,6 +26,22 @@ export const teamKeys = {
   ]
 }
 
+const patchTeam = (team, teamId, changes) =>
+  team?.id === teamId ? { ...team, ...changes } : team
+
+// Syncs /me cache, which holds the team as active and in the switcher list
+const patchCachedTeam = (cached, teamId, changes) => {
+  if (!cached || !changes) {
+    return cached
+  }
+
+  return {
+    ...cached,
+    team: patchTeam(cached.team, teamId, changes),
+    teams: cached.teams?.map(team => patchTeam(team, teamId, changes))
+  }
+}
+
 // Admin: always fresh — browsing multiple teams in real time.
 const teamQueryOptions = {
   staleTime: 0,
@@ -134,13 +150,9 @@ export const useUpdateTeam = teamId => {
         exact: true
       })
 
-      queryClient.setQueryData(authKeys.user(), old => {
-        if (!old?.team) {
-          return old
-        }
-
-        return { ...old, team: { ...old.team, name: data.team.name } }
-      })
+      queryClient.setQueryData(authKeys.user(), cached =>
+        patchCachedTeam(cached, teamId, { name: data.team.name })
+      )
     }
   })
 }
@@ -214,20 +226,12 @@ export const useUpdateTeamMember = (teamId, memberId, selfId) => {
       // Sync /me cache to avoid a full refetch and UI blink
       if (memberId === selfId) {
         queryClient.setQueryData(authKeys.user(), cached => {
-          if (!cached) {
-            return cached
-          }
+          const withUser =
+            cached && variables.member
+              ? { ...cached, user: { ...cached.user, ...variables.member } }
+              : cached
 
-          return {
-            ...cached,
-            ...(variables.member && {
-              user: { ...cached.user, ...variables.member }
-            }),
-            ...(variables.membership &&
-              cached.team && {
-                team: { ...cached.team, ...variables.membership }
-              })
-          }
+          return patchCachedTeam(withUser, teamId, variables.membership)
         })
       }
     }

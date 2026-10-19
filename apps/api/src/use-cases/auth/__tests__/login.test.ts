@@ -89,7 +89,7 @@ describe('logInWithEmail', () => {
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeam = undefined
     mockTeamRepo = {
-      findUserTeam: mock(async () => mockTeam),
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -154,7 +154,7 @@ describe('logInWithEmail', () => {
       name: 'Acme Corp',
       position: 'Software Engineer'
     }
-    mockTeamRepo.findUserTeam.mockImplementation(async () => mockTeam)
+    mockTeamRepo.findUserTeams.mockImplementation(async () => [mockTeam])
 
     const result = await logInWithEmail(mockLoginParams, mockDeviceInfo)
 
@@ -164,7 +164,7 @@ describe('logInWithEmail', () => {
       position: 'Software Engineer',
       permissions: [Permission.ViewTeams]
     })
-    expect(mockTeamRepo.findUserTeam).toHaveBeenCalledWith(mockUser.id)
+    expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(mockUser.id)
   })
 
   it('returns admin role for admin user', async () => {

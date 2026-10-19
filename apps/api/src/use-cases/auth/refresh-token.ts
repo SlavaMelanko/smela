@@ -6,7 +6,7 @@ import { logger } from '@/logging'
 import { hashToken } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { resolveUserTeam } from '../resolve-team'
+import { resolveUserTeams } from '../resolve-team'
 import { createAccessToken, createRefreshToken } from '../tokens'
 
 const validateToken = async (refreshToken: string | undefined) => {
@@ -64,9 +64,9 @@ export const refreshAuthTokens = async (
 ) => {
   const { storedToken, hashedToken } = await validateToken(refreshToken)
 
-  const [user, team] = await Promise.all([
+  const [user, { team, teams }] = await Promise.all([
     userRepo.findById(storedToken.userId),
-    resolveUserTeam(storedToken.userId)
+    resolveUserTeams(storedToken.userId)
   ])
 
   if (!user) {
@@ -90,7 +90,7 @@ export const refreshAuthTokens = async (
   ])
 
   return {
-    data: { user, team, permissions, accessToken },
+    data: { user, team, teams, permissions, accessToken },
     refreshToken: newRefreshToken
   }
 }
