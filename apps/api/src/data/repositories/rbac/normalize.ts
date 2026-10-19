@@ -9,6 +9,7 @@ export type NormalizedPermissions = Partial<
 >
 
 // Before writing: collapse view + manage → manage only, since manage implies view.
+// The DB never stores a view row next to manage for the same resource.
 // Before: { users: { view: true, manage: true } }
 // After: { users: { manage: true } }
 export const collapsePermissions = (
@@ -26,7 +27,8 @@ export const collapsePermissions = (
   return result
 }
 
-// After reading: expand manage → derive synthetic view rows.
+// After reading: expand manage → derive synthetic view rows, since manage implies view.
+// Callers above the repository always see both view and manage.
 // Before: [{ action: 'manage', resource: 'users' }]
 // After: [{ action: 'manage', resource: 'users' }, { action: 'view', resource: 'users' }]
 export const expandPermissions = (
