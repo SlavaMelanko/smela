@@ -1,11 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { db, teamRepo, userRepo } from '@/data'
+import type { db, rbacRepo, teamRepo, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { UserStatus } from '@/types'
+import { Action, Resource, UserStatus } from '@/types'
 
-import { removeTeamMember } from '../members'
+import {
+  getTeamMemberPermissions,
+  removeTeamMember,
+  updateTeamMemberPermissions
+} from '../members'
 
 const { TEAM_1, USER_1 } = testUuids
 
@@ -70,5 +74,90 @@ describe('removeTeamMember', () => {
     const result = await removeTeamMember(TEAM_1, USER_1)
 
     expect(result).toEqual({ success: true })
+  })
+})
+
+describe('team member permissions', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  let mockTeamRepo: any
+  let mockRbacRepo: any
+
+  beforeEach(async () => {
+    mockTeamRepo = {
+      findMemberPermissions: mock(async () => [
+        { action: Action.Manage, resource: Resource.Teams },
+        { action: Action.View, resource: Resource.Teams }
+      ]),
+      setMemberPermissions: mock(async () => {})
+    } satisfies Partial<typeof teamRepo>
+    mockRbacRepo = {
+      setUserPermissions: mock(async () => {})
+    } satisfies Partial<typeof rbacRepo>
+
+    const transaction = async <T>(callback: (tx: unknown) => Promise<T>) =>
+      callback({})
+
+    await moduleMocker.mock('@/data', () => ({
+      teamRepo: mockTeamRepo,
+      rbacRepo: mockRbacRepo,
+      db: { transaction }
+    }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  describe('getTeamMemberPermissions', () => {
+    it('merges membership permissions into the member baseline', async () => {
+      const result = await getTeamMemberPermissions(TEAM_1, USER_1)
+
+      expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
+        TEAM_1,
+        USER_1
+      )
+      expect(result).toEqual({
+        permissions: {
+          [Resource.Dashboard]: { [Action.View]: false },
+          [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+        }
+      })
+    })
+  })
+
+  describe('updateTeamMemberPermissions', () => {
+    const permissions = {
+      [Resource.Teams]: { [Action.View]: true, [Action.Manage]: true }
+    }
+
+    it('writes permissions to membership and user in one transaction', async () => {
+      await updateTeamMemberPermissions(TEAM_1, USER_1, permissions)
+
+      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+        USER_1,
+        TEAM_1,
+        permissions,
+        {}
+      )
+      expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledWith(
+        USER_1,
+        permissions,
+        {}
+      )
+    })
+
+    it('returns updated membership permissions', async () => {
+      const result = await updateTeamMemberPermissions(
+        TEAM_1,
+        USER_1,
+        permissions
+      )
+
+      expect(result.permissions[Resource.Teams]).toEqual({
+        [Action.View]: true,
+        [Action.Manage]: true
+      })
+    })
   })
 })

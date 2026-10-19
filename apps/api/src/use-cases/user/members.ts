@@ -2,7 +2,7 @@ import type { PermissionsInput } from '@/types'
 
 import { db, rbacRepo, teamRepo, userRepo } from '@/data'
 import { getMemberBasePermissions, UserStatus } from '@/types'
-import { resolvePermissionMap } from '@/use-cases/resolve-permissions'
+import { toPermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
@@ -42,27 +42,28 @@ export const updateTeamMember = async (
   return { member }
 }
 
-export const getTeamMemberPermissions = async (memberId: string) => {
-  const permissions = await resolvePermissionMap(
-    memberId,
-    getMemberBasePermissions()
-  )
+export const getTeamMemberPermissions = async (
+  teamId: string,
+  memberId: string
+) => {
+  const rows = await teamRepo.findMemberPermissions(teamId, memberId)
 
-  return { permissions }
+  return { permissions: toPermissionMap(rows, getMemberBasePermissions()) }
 }
 
 export const updateTeamMemberPermissions = async (
+  teamId: string,
   memberId: string,
   permissions: PermissionsInput
 ) => {
-  await rbacRepo.setUserPermissions(memberId, permissions)
+  await db.transaction(async tx => {
+    await teamRepo.setMemberPermissions(memberId, teamId, permissions, tx)
 
-  const updated = await resolvePermissionMap(
-    memberId,
-    getMemberBasePermissions()
-  )
+    // User-level copy keeps authorization working until it reads membership permissions
+    await rbacRepo.setUserPermissions(memberId, permissions, tx)
+  })
 
-  return { permissions: updated }
+  return getTeamMemberPermissions(teamId, memberId)
 }
 
 export const removeTeamMember = async (teamId: string, memberId: string) => {

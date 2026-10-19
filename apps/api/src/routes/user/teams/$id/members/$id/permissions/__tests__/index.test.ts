@@ -80,6 +80,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockGetTeamMemberPermissions).toHaveBeenCalledWith(
+        TEST_TEAM_ID,
         testUuids.USER_2
       )
 
@@ -125,6 +126,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateTeamMemberPermissions).toHaveBeenCalledWith(
+        TEST_TEAM_ID,
         testUuids.USER_2,
         { teams: { view: true, manage: false } }
       )

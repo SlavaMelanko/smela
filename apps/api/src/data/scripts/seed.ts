@@ -13,7 +13,7 @@
 import { faker } from '@faker-js/faker'
 import { eq, sql } from 'drizzle-orm'
 
-import type { PermissionMap } from '@/types'
+import type { PermissionsInput } from '@/types'
 
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
@@ -30,15 +30,14 @@ import {
 } from '@/types'
 
 import { db } from '../clients'
+import { rbacRepo, teamRepo } from '../repositories'
 import {
   authTable,
   emailSenderProfilesTable,
   permissionsTable,
   socialLinksTable,
-  teamMemberPermissionsTable,
   teamMembersTable,
   teamsTable,
-  userPermissionsTable,
   userRoleTable,
   usersTable
 } from '../schema'
@@ -161,50 +160,6 @@ const seedSocialLinks = async () => {
   console.log(`✅ ${socialLinks.length} social links seeded`)
 }
 
-const findPermissionIds = async (permissions: PermissionMap<Resource>) => {
-  const allPermissions = await db.select().from(permissionsTable)
-
-  // Manage implies view, so view is not stored next to manage
-  return allPermissions
-    .filter(({ action, resource }) => {
-      const granted = permissions[resource]
-
-      return (
-        granted?.[action] === true &&
-        !(action === Action.View && granted[Action.Manage] === true)
-      )
-    })
-    .map(p => p.id)
-}
-
-const setUserPermissions = async (
-  userId: string,
-  permissions: PermissionMap<Resource>
-) => {
-  const permissionIds = await findPermissionIds(permissions)
-
-  if (permissionIds.length > 0) {
-    await db
-      .insert(userPermissionsTable)
-      .values(permissionIds.map(permissionId => ({ userId, permissionId })))
-      .onConflictDoNothing()
-  }
-}
-
-const setMemberPermissions = async (
-  memberId: number,
-  permissions: PermissionMap<Resource>
-) => {
-  const permissionIds = await findPermissionIds(permissions)
-
-  if (permissionIds.length > 0) {
-    await db
-      .insert(teamMemberPermissionsTable)
-      .values(permissionIds.map(permissionId => ({ memberId, permissionId })))
-      .onConflictDoNothing()
-  }
-}
-
 const seedTeams = async () => {
   const teams = [
     {
@@ -266,7 +221,7 @@ const seedSystemUsers = async () => {
     password: string
     role: Role
     status: UserStatus
-    userPermissions: PermissionMap<Resource>
+    userPermissions: PermissionsInput
   }[] = [
     {
       firstName: 'Slava',
@@ -347,7 +302,7 @@ const seedSystemUsers = async () => {
       role: user.role
     })
 
-    await setUserPermissions(createdUser.id, user.userPermissions)
+    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ ${user.role} ${user.email} seeded`)
   }
@@ -394,12 +349,15 @@ const seedTestUsers = async (teamId: string) => {
       if (existingLink) {
         console.log(`✅ user ${user.email} already exists`)
       } else {
-        const [member] = await db
+        await db
           .insert(teamMembersTable)
           .values({ userId: existingUser.id, teamId, position: user.position })
-          .returning({ id: teamMembersTable.id })
 
-        await setMemberPermissions(member.id, user.memberPermissions)
+        await teamRepo.setMemberPermissions(
+          existingUser.id,
+          teamId,
+          user.memberPermissions
+        )
 
         console.log(`✅ Linked ${user.email} to team as ${user.position}`)
       }
@@ -426,13 +384,16 @@ const seedTestUsers = async (teamId: string) => {
       passwordHash: hashedPassword
     })
 
-    const [member] = await db
+    await db
       .insert(teamMembersTable)
       .values({ userId: createdUser.id, teamId, position: user.position })
-      .returning({ id: teamMembersTable.id })
 
-    await setUserPermissions(createdUser.id, user.userPermissions)
-    await setMemberPermissions(member.id, user.memberPermissions)
+    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
+    await teamRepo.setMemberPermissions(
+      createdUser.id,
+      teamId,
+      user.memberPermissions
+    )
 
     console.log(`✅ user ${user.email} seeded and linked to team`)
   }
@@ -481,7 +442,7 @@ const seedGoogleUsers = async () => {
       passwordHash: null
     })
 
-    await setUserPermissions(createdUser.id, user.userPermissions)
+    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ Google user ${user.email} seeded`)
   }

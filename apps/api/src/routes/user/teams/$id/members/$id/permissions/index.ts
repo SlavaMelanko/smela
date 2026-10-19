@@ -28,9 +28,9 @@ teamMemberPermissionsRoute.get(
   requirePermission(Permission.ViewTeams),
   requireTeamAccess,
   async c => {
-    const { memberId } = c.req.valid('param')
+    const { teamId, memberId } = c.req.valid('param')
 
-    const result = await getTeamMemberPermissions(memberId)
+    const result = await getTeamMemberPermissions(teamId, memberId)
 
     return c.json(result, HttpStatus.OK)
   }
@@ -43,10 +43,14 @@ teamMemberPermissionsRoute.patch(
   requirePermission(Permission.ManageTeams),
   requireTeamAccess,
   async c => {
-    const { memberId } = c.req.valid('param')
+    const { teamId, memberId } = c.req.valid('param')
     const { permissions } = c.req.valid('json')
 
-    const result = await updateTeamMemberPermissions(memberId, permissions)
+    const result = await updateTeamMemberPermissions(
+      teamId,
+      memberId,
+      permissions
+    )
 
     return c.json(result, HttpStatus.OK)
   }

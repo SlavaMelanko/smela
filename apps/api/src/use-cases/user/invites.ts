@@ -74,6 +74,14 @@ export const inviteMember = async (
       tx
     )
 
+    await teamRepo.setMemberPermissions(
+      newUser.id,
+      team.id,
+      member.permissions,
+      tx
+    )
+
+    // User-level copy keeps authorization working until it reads membership permissions
     await rbacRepo.setUserPermissions(newUser.id, member.permissions, tx)
 
     const token = await issueOneTimeToken(newUser.id, TokenType.UserInvite, tx)

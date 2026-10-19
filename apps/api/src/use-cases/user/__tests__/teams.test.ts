@@ -66,7 +66,8 @@ describe('createTeam', () => {
       {}
     )
     expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
-      1,
+      USER_1,
+      TEAM_1,
       getMemberFullPermissions(),
       {}
     )

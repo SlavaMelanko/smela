@@ -185,7 +185,8 @@ export const findUserTeam = async (
 }
 
 export const findTeamMemberPermissions = async (
-  memberId: number,
+  teamId: string,
+  userId: string,
   tx?: Database
 ): Promise<ActivePermissionRow[]> => {
   const rows = await (tx || db)
@@ -195,10 +196,19 @@ export const findTeamMemberPermissions = async (
     })
     .from(teamMemberPermissionsTable)
     .innerJoin(
+      teamMembersTable,
+      eq(teamMembersTable.id, teamMemberPermissionsTable.memberId)
+    )
+    .innerJoin(
       permissionsTable,
       eq(permissionsTable.id, teamMemberPermissionsTable.permissionId)
     )
-    .where(eq(teamMemberPermissionsTable.memberId, memberId))
+    .where(
+      and(
+        eq(teamMembersTable.teamId, teamId),
+        eq(teamMembersTable.userId, userId)
+      )
+    )
 
   return expandPermissions(rows)
 }

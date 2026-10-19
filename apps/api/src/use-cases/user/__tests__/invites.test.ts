@@ -37,6 +37,7 @@ describe('inviteMember', () => {
   let mockUserRepoCreate: any
   let mockAuthRepoCreate: any
   let mockTeamRepoCreateMember: any
+  let mockTeamRepoSetMemberPermissions: any
   let mockTokenRepoIssue: any
   let mockRbacSet: any
   let mockTransaction: any
@@ -91,6 +92,7 @@ describe('inviteMember', () => {
     }))
     mockAuthRepoCreate = mock(async () => {})
     mockTeamRepoCreateMember = mock(async () => {})
+    mockTeamRepoSetMemberPermissions = mock(async () => {})
     mockTokenRepoIssue = mock(async () => {})
     mockRbacSet = mock(async () => {})
     mockTransaction = mock(
@@ -105,7 +107,8 @@ describe('inviteMember', () => {
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
         findById: mockTeamRepoFindById,
-        createMember: mockTeamRepoCreateMember
+        createMember: mockTeamRepoCreateMember,
+        setMemberPermissions: mockTeamRepoSetMemberPermissions
       } satisfies Partial<typeof teamRepo>,
       userRepo: {
         findByEmail: mockUserRepoFindByEmail,
@@ -171,6 +174,22 @@ describe('inviteMember', () => {
         position: 'Developer',
         invitedBy: USER_2
       },
+      expect.anything()
+    )
+  })
+
+  it('grants requested permissions on membership and user', async () => {
+    await inviteMember(mockTeam, inviteParams, USER_2)
+
+    expect(mockTeamRepoSetMemberPermissions).toHaveBeenCalledWith(
+      USER_1,
+      TEAM_1,
+      inviteParams.permissions,
+      expect.anything()
+    )
+    expect(mockRbacSet).toHaveBeenCalledWith(
+      USER_1,
+      inviteParams.permissions,
       expect.anything()
     )
   })
