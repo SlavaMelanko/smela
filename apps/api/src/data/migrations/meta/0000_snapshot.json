@@ -1,5 +1,5 @@
 {
-  "id": "d51002be-f038-401b-ac2c-423ebdbaf437",
+  "id": "7b998900-0ddc-4d31-9ce5-df778d367849",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -446,6 +446,55 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.team_member_permissions": {
+      "name": "team_member_permissions",
+      "schema": "",
+      "columns": {
+        "member_id": {
+          "name": "member_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permission_id": {
+          "name": "permission_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "team_member_permissions_member_id_team_members_id_fk": {
+          "name": "team_member_permissions_member_id_team_members_id_fk",
+          "tableFrom": "team_member_permissions",
+          "tableTo": "team_members",
+          "columnsFrom": ["member_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "team_member_permissions_permission_id_permissions_id_fk": {
+          "name": "team_member_permissions_permission_id_permissions_id_fk",
+          "tableFrom": "team_member_permissions",
+          "tableTo": "permissions",
+          "columnsFrom": ["permission_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "team_member_permissions_member_id_permission_id_pk": {
+          "name": "team_member_permissions_member_id_permission_id_pk",
+          "columns": ["member_id", "permission_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.team_members": {
       "name": "team_members",
       "schema": "",
@@ -589,6 +638,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -605,7 +660,17 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "teams_created_by_users_id_fk": {
+          "name": "teams_created_by_users_id_fk",
+          "tableFrom": "teams",
+          "tableTo": "users",
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -643,9 +708,9 @@
           "notNull": true,
           "default": "'pending'"
         },
-        "token": {
-          "name": "token",
-          "type": "text",
+        "token_hash": {
+          "name": "token_hash",
+          "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         },
@@ -711,10 +776,10 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "tokens_token_unique": {
-          "name": "tokens_token_unique",
+        "tokens_token_hash_unique": {
+          "name": "tokens_token_hash_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": ["token_hash"]
         }
       },
       "policies": {},

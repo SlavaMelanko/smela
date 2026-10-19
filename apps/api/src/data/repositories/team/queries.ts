@@ -3,6 +3,7 @@ import { alias } from 'drizzle-orm/pg-core'
 
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
+import type { ActivePermissionRow } from '../rbac'
 import type {
   Team,
   TeamMemberDetails,
@@ -14,12 +15,15 @@ import type {
 
 import { db } from '../../clients'
 import {
+  permissionsTable,
   refreshTokensTable,
+  teamMemberPermissionsTable,
   teamMembersTable,
   teamsTable,
   usersTable
 } from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
+import { expandPermissions } from '../rbac'
 
 const buildWhereConditions = ({ ids, search }: TeamSearchParams) => {
   const conditions = []
@@ -178,4 +182,23 @@ export const findUserTeam = async (
     .where(eq(teamMembersTable.userId, userId))
 
   return result
+}
+
+export const findTeamMemberPermissions = async (
+  memberId: number,
+  tx?: Database
+): Promise<ActivePermissionRow[]> => {
+  const rows = await (tx || db)
+    .select({
+      action: permissionsTable.action,
+      resource: permissionsTable.resource
+    })
+    .from(teamMemberPermissionsTable)
+    .innerJoin(
+      permissionsTable,
+      eq(permissionsTable.id, teamMemberPermissionsTable.permissionId)
+    )
+    .where(eq(teamMemberPermissionsTable.memberId, memberId))
+
+  return expandPermissions(rows)
 }

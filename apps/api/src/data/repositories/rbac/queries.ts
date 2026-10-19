@@ -1,7 +1,12 @@
 import { eq, inArray } from 'drizzle-orm'
 
 import type { Database } from '../../clients'
-import type { ActivePermissionRow, Inviter, UserRoleRecord } from './types'
+import type {
+  ActivePermissionRow,
+  Inviter,
+  PermissionRecord,
+  UserRoleRecord
+} from './types'
 
 import { db } from '../../clients'
 import {
@@ -14,7 +19,7 @@ import { expandPermissions } from './normalize'
 
 export const findAllPermissions = async (
   tx?: Database
-): Promise<(typeof permissionsTable.$inferSelect)[]> => {
+): Promise<PermissionRecord[]> => {
   return (tx || db).select().from(permissionsTable)
 }
 
