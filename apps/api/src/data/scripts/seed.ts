@@ -13,10 +13,20 @@
 import { faker } from '@faker-js/faker'
 import { eq, sql } from 'drizzle-orm'
 
+import type { PermissionMap } from '@/types'
+
 import { isProdEnv } from '@/env'
 import { hashPassword } from '@/security/password'
 import { EmailSenderType } from '@/services/email'
-import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  getMemberDefaultPermissions,
+  getMemberFullPermissions,
+  Resource,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { db } from '../clients'
 import {
@@ -180,9 +190,21 @@ const setUserPermissions = async (
 
 const setMemberPermissions = async (
   memberId: number,
-  permissions: PermissionList
+  permissions: PermissionMap<Resource>
 ) => {
-  const permissionIds = await findPermissionIds(permissions)
+  const allPermissions = await db.select().from(permissionsTable)
+
+  // Manage implies view, so view is not stored next to manage
+  const permissionIds = allPermissions
+    .filter(({ action, resource }) => {
+      const granted = permissions[resource]
+
+      return (
+        granted?.[action] === true &&
+        !(action === Action.View && granted[Action.Manage] === true)
+      )
+    })
+    .map(p => p.id)
 
   if (permissionIds.length > 0) {
     await db
@@ -354,7 +376,7 @@ const seedTestUsers = async (teamId: string) => {
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.Manage, resource: Resource.Dashboard }
       ],
-      memberPermissions: [{ action: Action.Manage, resource: Resource.Teams }]
+      memberPermissions: getMemberFullPermissions()
     },
     {
       firstName: faker.person.firstName(),
@@ -367,7 +389,7 @@ const seedTestUsers = async (teamId: string) => {
         { action: Action.View, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Dashboard }
       ],
-      memberPermissions: [{ action: Action.View, resource: Resource.Teams }]
+      memberPermissions: getMemberDefaultPermissions()
     }
   ]
 
