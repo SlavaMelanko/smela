@@ -122,7 +122,7 @@ export const deleteTeamMember = async (
 }
 
 export const setTeamMemberPermissions = async (
-  membershipId: number,
+  membershipId: string,
   permissions: PermissionsInput,
   tx?: Database
 ): Promise<void> => {

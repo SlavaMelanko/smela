@@ -111,7 +111,7 @@ describe('requireTeamAccess', () => {
 
   it('resolves team permissions from user membership, not claims', async () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
-      membershipId: 7,
+      membershipId: testUuids.MEMBERSHIP_2,
       userId: testUuids.USER_1,
       teamId: testUuids.TEAM_1
     }))
@@ -120,7 +120,9 @@ describe('requireTeamAccess', () => {
       `/teams/${testUuids.TEAM_1}`
     )
 
-    expect(mockResolveMemberPermissionList).toHaveBeenCalledWith(7)
+    expect(mockResolveMemberPermissionList).toHaveBeenCalledWith(
+      testUuids.MEMBERSHIP_2
+    )
     expect((await res.json()).teamPermissions).toEqual([Permission.ViewTeams])
   })
 

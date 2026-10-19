@@ -22,7 +22,7 @@ export interface TeamMemberInviter {
 
 export interface TeamMemberDetails {
   id: string
-  membershipId: number
+  membershipId: string
   firstName: string
   lastName: string | null
   email: string
@@ -41,7 +41,7 @@ export type TeamWithMemberCount = Team & {
 
 export interface UserTeamInfo {
   id: string
-  membershipId: number
+  membershipId: string
   name: string
   position: string | null
 }

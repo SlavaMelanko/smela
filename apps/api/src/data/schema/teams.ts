@@ -4,7 +4,6 @@ import {
   integer,
   pgTable,
   primaryKey,
-  serial,
   text,
   timestamp,
   uniqueIndex,
@@ -36,7 +35,9 @@ export const teamsTable = pgTable('teams', {
 export const teamMembersTable = pgTable(
   'team_members',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id')
+      .primaryKey()
+      .$defaultFn(() => sql`uuidv7()`),
     userId: uuid('user_id')
       .notNull()
       .references(() => usersTable.id, { onDelete: 'cascade' }),
@@ -60,7 +61,7 @@ export const teamMembersTable = pgTable(
 export const teamMemberPermissionsTable = pgTable(
   'team_member_permissions',
   {
-    memberId: integer('member_id')
+    memberId: uuid('member_id')
       .notNull()
       .references(() => teamMembersTable.id, { onDelete: 'cascade' }),
     permissionId: integer('permission_id')

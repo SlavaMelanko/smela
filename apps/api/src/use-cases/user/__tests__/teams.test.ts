@@ -31,7 +31,7 @@ describe('createTeam', () => {
     mockTeamRepo = {
       create: mock(async () => mockTeam),
       createMember: mock(async () => ({
-        id: 1,
+        id: testUuids.MEMBERSHIP_1,
         userId: USER_1,
         teamId: TEAM_1,
         position: null,
@@ -66,7 +66,7 @@ describe('createTeam', () => {
       {}
     )
     expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
-      1,
+      testUuids.MEMBERSHIP_1,
       getMemberFullPermissions(),
       {}
     )

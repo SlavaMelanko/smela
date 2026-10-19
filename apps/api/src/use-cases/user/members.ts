@@ -42,7 +42,7 @@ export const updateTeamMember = async (
   return { member }
 }
 
-export const getTeamMemberPermissions = async (membershipId: number) => {
+export const getTeamMemberPermissions = async (membershipId: string) => {
   const permissions = await resolveMemberPermissionMap(
     membershipId,
     getMemberBasePermissions()
@@ -52,7 +52,7 @@ export const getTeamMemberPermissions = async (membershipId: number) => {
 }
 
 export const updateTeamMemberPermissions = async (
-  membershipId: number,
+  membershipId: string,
   permissions: PermissionsInput
 ) => {
   await teamRepo.setMemberPermissions(membershipId, permissions)

@@ -16,7 +16,7 @@ describe('resolveUserTeam', () => {
     mockTeamRepo = {
       findUserTeam: mock(async () => ({
         id: testUuids.TEAM_1,
-        membershipId: 7,
+        membershipId: testUuids.MEMBERSHIP_2,
         name: 'Acme Corp',
         position: 'Developer'
       })),
@@ -43,7 +43,9 @@ describe('resolveUserTeam', () => {
   it('returns team with membership permissions and without membership id', async () => {
     const team = await resolveUserTeam(testUuids.USER_1)
 
-    expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(7)
+    expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
+      testUuids.MEMBERSHIP_2
+    )
     expect(team).toEqual({
       id: testUuids.TEAM_1,
       name: 'Acme Corp',

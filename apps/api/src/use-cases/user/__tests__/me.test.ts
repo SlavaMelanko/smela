@@ -89,7 +89,7 @@ describe('me', () => {
     it('returns user, team info, and permissions when user belongs to a team', async () => {
       mockTeam = {
         id: 'team-789',
-        membershipId: 1,
+        membershipId: testUuids.MEMBERSHIP_1,
         name: 'My Team',
         position: 'Product Manager'
       }

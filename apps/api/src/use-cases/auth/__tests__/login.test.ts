@@ -150,7 +150,7 @@ describe('logInWithEmail', () => {
   it('returns team info when user belongs to a team', async () => {
     mockTeam = {
       id: 'team-123',
-      membershipId: 1,
+      membershipId: testUuids.MEMBERSHIP_1,
       name: 'Acme Corp',
       position: 'Software Engineer'
     }
