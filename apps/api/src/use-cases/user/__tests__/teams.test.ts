@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { Team, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { getTeamCreatorPermissions } from '@/types'
+import { getMemberFullPermissions } from '@/types'
 
 import { createTeam, updateTeam } from '../teams'
 
@@ -67,7 +67,7 @@ describe('createTeam', () => {
     )
     expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
       1,
-      getTeamCreatorPermissions(),
+      getMemberFullPermissions(),
       {}
     )
     expect(result).toEqual({ team: mockTeam })

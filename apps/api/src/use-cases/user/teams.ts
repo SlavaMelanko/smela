@@ -1,5 +1,5 @@
 import { db, teamRepo } from '@/data'
-import { getTeamCreatorPermissions } from '@/types'
+import { getMemberFullPermissions } from '@/types'
 
 export interface CreateTeamInput {
   name: string
@@ -24,7 +24,7 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
 
     await teamRepo.setMemberPermissions(
       member.id,
-      getTeamCreatorPermissions(),
+      getMemberFullPermissions(),
       tx
     )
 

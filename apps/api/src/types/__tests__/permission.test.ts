@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test'
 
 import {
   getAdminDefaultPermissions,
-  getMemberDefaultPermissions
+  getMemberDefaultPermissions,
+  getMemberFullPermissions
 } from '../permission'
 import Resource from '../resource'
 
@@ -57,5 +58,14 @@ describe('getMemberDefaultPermissions', () => {
       Resource.Dashboard,
       Resource.Teams
     ])
+  })
+})
+
+describe('getMemberFullPermissions', () => {
+  it('grants view and manage for teams and dashboard only', () => {
+    expect(getMemberFullPermissions()).toEqual({
+      [Resource.Dashboard]: { view: true, manage: true },
+      [Resource.Teams]: { view: true, manage: true }
+    })
   })
 })
