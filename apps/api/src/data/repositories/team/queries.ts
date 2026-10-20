@@ -12,7 +12,8 @@ import type {
   TeamSearchParams,
   TeamSearchResult,
   TeamWithMemberCount,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from './types'
 
 import { db } from '../../clients'
@@ -192,6 +193,35 @@ export const findUserTeams = async (
       )
     )
     .orderBy(desc(teamMembersTable.lastActiveAt))
+}
+
+// Pending memberships, newest invite first. Until accepted, joinedAt holds the invite time
+export const findUserInvites = async (
+  userId: string,
+  tx?: Database
+): Promise<UserTeamInvite[]> => {
+  const executor = tx || db
+  const invitersTable = alias(usersTable, 'inviters')
+
+  return executor
+    .select({
+      id: teamsTable.id,
+      name: teamsTable.name,
+      inviter: {
+        firstName: invitersTable.firstName,
+        lastName: invitersTable.lastName
+      }
+    })
+    .from(teamMembersTable)
+    .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
+    .leftJoin(invitersTable, eq(teamMembersTable.invitedBy, invitersTable.id))
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.status, MembershipStatus.Pending)
+      )
+    )
+    .orderBy(desc(teamMembersTable.joinedAt))
 }
 
 export const findTeamMemberPermissions = async (

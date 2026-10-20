@@ -71,7 +71,7 @@ export const logInOrSignUpWithGoogle = async (
 ) => {
   const { user, isNew } = await findOrCreateGoogleUser(profile)
 
-  const [{ team, teams }, permissions] = await Promise.all([
+  const [userTeams, permissions] = await Promise.all([
     resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
@@ -83,7 +83,7 @@ export const logInOrSignUpWithGoogle = async (
   )
 
   return {
-    data: { user, team, teams, permissions, accessToken },
+    data: { user, ...userTeams, permissions, accessToken },
     isNew,
     refreshToken
   }

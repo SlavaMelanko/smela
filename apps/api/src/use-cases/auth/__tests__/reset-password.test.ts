@@ -8,7 +8,8 @@ import type {
   tokenRepo,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 
@@ -91,6 +92,7 @@ describe('resetPassword', () => {
     mockTeam = undefined
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -173,6 +175,7 @@ describe('resetPassword', () => {
         user: mockUser,
         team: undefined,
         teams: [],
+        invites: [],
         permissions: undefined,
         accessToken: expect.any(String)
       },

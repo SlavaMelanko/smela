@@ -17,7 +17,8 @@ import type {
   UpdateUserInput,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 
 import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
@@ -52,6 +53,7 @@ describe('me', () => {
     mockTeam = undefined
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -81,6 +83,7 @@ describe('me', () => {
         user: mockUser,
         team: undefined,
         teams: [],
+        invites: [],
         permissions: undefined
       })
       expect(mockUserRepo.findById).toHaveBeenCalledWith(testUuids.USER_1)
@@ -109,6 +112,7 @@ describe('me', () => {
         teams: [
           { id: 'team-789', name: 'My Team', position: 'Product Manager' }
         ],
+        invites: [],
         permissions: undefined
       })
       expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(testUuids.USER_1)
@@ -290,6 +294,7 @@ describe('me', () => {
         user: mockUser,
         team: undefined,
         teams: [],
+        invites: [],
         permissions: undefined
       })
       expect(mockUserRepo.update).not.toHaveBeenCalled()

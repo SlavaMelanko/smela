@@ -9,7 +9,8 @@ import type {
   tokenRepo,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 import type { InviteMetadata } from '@/security/token'
@@ -100,6 +101,7 @@ describe('acceptInvite', () => {
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
       activateMember: mock(async (): Promise<TeamMember | undefined> => ({
         id: testUuids.MEMBERSHIP_1,
         userId: testUuids.ADMIN_1,
@@ -168,6 +170,7 @@ describe('acceptInvite', () => {
         user: mockActivatedUser,
         team: undefined,
         teams: [],
+        invites: [],
         permissions: undefined,
         accessToken: expect.any(String)
       },

@@ -48,6 +48,15 @@ export interface UserTeamInfo {
   position: string | null
 }
 
+export interface UserTeamInvite {
+  id: string
+  name: string
+  inviter: {
+    firstName: string | null
+    lastName: string | null
+  } | null
+}
+
 export interface TeamSearchParams {
   ids?: string[]
   search?: string

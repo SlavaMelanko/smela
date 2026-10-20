@@ -15,7 +15,8 @@ import type {
   teamRepo,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 
 import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
@@ -90,6 +91,7 @@ describe('logInWithEmail', () => {
     mockTeam = undefined
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])

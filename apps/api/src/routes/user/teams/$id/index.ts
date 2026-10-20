@@ -5,7 +5,12 @@ import type { AppContext } from '@/context'
 import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-import { switchTeam, updateTeam } from '@/use-cases/user'
+import {
+  acceptTeamInvite,
+  declineTeamInvite,
+  switchTeam,
+  updateTeam
+} from '@/use-cases/user'
 
 import { teamsMembersRoute } from './members'
 import { teamIdParamsSchema, updateTeamBodySchema } from './schema'
@@ -47,5 +52,33 @@ teamByIdRoute.post('/switch', validateParams(teamIdParamsSchema), async c => {
 
   return c.json(result, HttpStatus.OK)
 })
+
+// No requireTeamAccess: a pending invite grants no team access,
+// and the use case only matches the caller's own pending membership
+teamByIdRoute.post(
+  '/accept-invite',
+  validateParams(teamIdParamsSchema),
+  async c => {
+    const { id: userId } = c.get('user')
+    const { teamId } = c.req.valid('param')
+
+    const result = await acceptTeamInvite(userId, teamId)
+
+    return c.json(result, HttpStatus.OK)
+  }
+)
+
+teamByIdRoute.post(
+  '/decline-invite',
+  validateParams(teamIdParamsSchema),
+  async c => {
+    const { id: userId } = c.get('user')
+    const { teamId } = c.req.valid('param')
+
+    const result = await declineTeamInvite(userId, teamId)
+
+    return c.json(result, HttpStatus.OK)
+  }
+)
 
 teamByIdRoute.route('/members', teamsMembersRoute)

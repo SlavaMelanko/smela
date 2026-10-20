@@ -43,6 +43,26 @@ export const updateTeam = async (teamId: string, updates: UpdateTeamInput) => {
   return { team }
 }
 
+export const acceptTeamInvite = async (userId: string, teamId: string) => {
+  const membership = await teamRepo.activateMember(userId, teamId)
+
+  if (!membership) {
+    throw new AppError(ErrorCode.NotFound, 'Invite not found')
+  }
+
+  return resolveUserTeams(userId)
+}
+
+export const declineTeamInvite = async (userId: string, teamId: string) => {
+  const membership = await teamRepo.deletePendingMember(userId, teamId)
+
+  if (!membership) {
+    throw new AppError(ErrorCode.NotFound, 'Invite not found')
+  }
+
+  return resolveUserTeams(userId)
+}
+
 export const switchTeam = async (userId: string, teamId: string) => {
   const membership = await teamRepo.markMemberLastActive(userId, teamId)
 

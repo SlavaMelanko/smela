@@ -35,6 +35,8 @@ describe('user /teams/:teamId', () => {
 
   let mockUpdateTeam: any
   let mockSwitchTeam: any
+  let mockAcceptTeamInvite: ReturnType<typeof mock>
+  let mockDeclineTeamInvite: ReturnType<typeof mock>
 
   // Team permissions come from the membership, not the claims
   const buildApp = () =>
@@ -66,9 +68,19 @@ describe('user /teams/:teamId', () => {
       teams: [{ id: TEST_TEAM_ID, name: 'Engineering', position: null }]
     }))
 
+    const userTeams = {
+      team: undefined,
+      teams: [],
+      invites: []
+    }
+    mockAcceptTeamInvite = mock(async () => userTeams)
+    mockDeclineTeamInvite = mock(async () => userTeams)
+
     await moduleMocker.mock('@/use-cases/user', () => ({
       updateTeam: mockUpdateTeam,
-      switchTeam: mockSwitchTeam
+      switchTeam: mockSwitchTeam,
+      acceptTeamInvite: mockAcceptTeamInvite,
+      declineTeamInvite: mockDeclineTeamInvite
     }))
 
     app = buildApp()
@@ -196,6 +208,39 @@ describe('user /teams/:teamId', () => {
       const res = await post(app, SWITCH_URL)
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    })
+  })
+
+  const inviteActions = [
+    { path: 'accept-invite', getUseCase: () => mockAcceptTeamInvite },
+    { path: 'decline-invite', getUseCase: () => mockDeclineTeamInvite }
+  ]
+
+  inviteActions.forEach(({ path, getUseCase }) => {
+    describe(`POST /teams/:teamId/${path}`, () => {
+      const URL = `${TEAM_URL}/${path}`
+
+      it("handles the caller's own invite without the team access check", async () => {
+        const res = await post(app, URL)
+
+        expect(res.status).toBe(HttpStatus.OK)
+        expect(getUseCase()).toHaveBeenCalledWith(
+          testUuids.USER_1,
+          TEST_TEAM_ID
+        )
+        expect(mockTeamRepo.findMember).not.toHaveBeenCalled()
+        expect(await res.json()).toEqual({ teams: [], invites: [] })
+      })
+
+      it('returns 404 when there is no pending invite', async () => {
+        getUseCase().mockImplementation(async () => {
+          throw new AppError(ErrorCode.NotFound, 'Invite not found')
+        })
+
+        const res = await post(app, URL)
+
+        expect(res.status).toBe(HttpStatus.NOT_FOUND)
+      })
     })
   })
 })

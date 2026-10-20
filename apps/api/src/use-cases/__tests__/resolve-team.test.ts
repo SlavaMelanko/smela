@@ -28,6 +28,13 @@ describe('resolveUserTeams', () => {
           position: null
         }
       ]),
+      findUserInvites: mock(async () => [
+        {
+          id: testUuids.TEAM_3,
+          name: 'Initech',
+          inviter: { firstName: 'Alice', lastName: null }
+        }
+      ]),
       findMemberPermissions: mock(async () => [
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Teams }
@@ -41,12 +48,19 @@ describe('resolveUserTeams', () => {
     await moduleMocker.clear()
   })
 
-  it('returns no team when user has no memberships', async () => {
+  it('returns no team but keeps invites when user has no memberships', async () => {
     mockTeamRepo.findUserTeams.mockImplementation(async () => [])
 
     expect(await resolveUserTeams(testUuids.USER_1)).toEqual({
       team: undefined,
-      teams: []
+      teams: [],
+      invites: [
+        {
+          id: testUuids.TEAM_3,
+          name: 'Initech',
+          inviter: { firstName: 'Alice', lastName: null }
+        }
+      ]
     })
     expect(mockTeamRepo.findMemberPermissions).not.toHaveBeenCalled()
   })
@@ -68,6 +82,13 @@ describe('resolveUserTeams', () => {
       teams: [
         { id: testUuids.TEAM_1, name: 'Acme Corp', position: 'Developer' },
         { id: testUuids.TEAM_2, name: 'Globex', position: null }
+      ],
+      invites: [
+        {
+          id: testUuids.TEAM_3,
+          name: 'Initech',
+          inviter: { firstName: 'Alice', lastName: null }
+        }
       ]
     })
   })

@@ -8,7 +8,8 @@ import type {
   teamRepo,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 
 import {
@@ -90,6 +91,7 @@ describe('google-oauth', () => {
 
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])

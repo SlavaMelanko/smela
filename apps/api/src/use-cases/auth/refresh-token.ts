@@ -64,7 +64,7 @@ export const refreshAuthTokens = async (
 ) => {
   const { storedToken, hashedToken } = await validateToken(refreshToken)
 
-  const [user, { team, teams }] = await Promise.all([
+  const [user, userTeams] = await Promise.all([
     userRepo.findById(storedToken.userId),
     resolveUserTeams(storedToken.userId)
   ])
@@ -90,7 +90,7 @@ export const refreshAuthTokens = async (
   ])
 
   return {
-    data: { user, team, teams, permissions, accessToken },
+    data: { user, ...userTeams, permissions, accessToken },
     refreshToken: newRefreshToken
   }
 }

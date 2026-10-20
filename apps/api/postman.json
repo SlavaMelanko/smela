@@ -656,6 +656,45 @@
           "response": []
         },
         {
+          "name": "teams/:id/switch",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/switch",
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}", "switch"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "teams/:id/accept-invite",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/accept-invite",
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}", "accept-invite"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "teams/:id/decline-invite",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{user_verified_only_api_url}}/teams/{{last_team_id}}/decline-invite",
+              "host": ["{{user_verified_only_api_url}}"],
+              "path": ["teams", "{{last_team_id}}", "decline-invite"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "teams/:id/members",
           "event": [
             {
