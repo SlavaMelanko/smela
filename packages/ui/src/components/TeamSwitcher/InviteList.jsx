@@ -28,7 +28,8 @@ const InviteItem = ({ invite, onAccept, onDecline }) => {
         onClick={() => onAccept(invite.id)}
         disabled={!onAccept}
       >
-        <Check />
+        {/* Important keeps it green over the menu's focus color */}
+        <Check className='text-green-500!' />
       </DropdownMenuItem>
       <DropdownMenuItem
         variant='destructive'
