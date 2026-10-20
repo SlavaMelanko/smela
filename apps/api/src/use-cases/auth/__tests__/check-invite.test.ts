@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { teamRepo, TokenRecord, tokenRepo, UserTeamInfo } from '@/data'
+import type { Team, teamRepo, TokenRecord, tokenRepo } from '@/data'
 
 import {
   buildInvalidTokenCases,
@@ -26,30 +26,33 @@ describe('checkInvite', () => {
   const INVITE_TOKEN = {
     userId: testUuids.USER_1,
     type: TokenType.UserInvite,
-    metadata: { kind: InviteKind.Member }
+    metadata: { kind: InviteKind.Member, teamId: testUuids.TEAM_1 }
   }
 
   let mockTokenRecord: TokenRecord
   let mockTokenRepo: any
   let mockTeamRepo: any
 
-  let mockTeam: UserTeamInfo
+  let mockTeam: Team
 
   beforeEach(async () => {
     mockTokenRecord = buildTokenRecord(INVITE_TOKEN)
 
     mockTeam = {
       id: testUuids.TEAM_1,
-      membershipId: testUuids.MEMBERSHIP_1,
       name: 'Acme Corp',
-      position: 'Team Member'
+      website: 'https://acme.com',
+      description: null,
+      createdBy: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
     mockTokenRepo = {
       findByHash: mock(async () => mockTokenRecord)
     } satisfies Partial<typeof tokenRepo>
     mockTeamRepo = {
-      findUserTeams: mock(async () => [mockTeam])
+      findById: mock(async (): Promise<Team | undefined> => mockTeam)
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -68,9 +71,7 @@ describe('checkInvite', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(RAW_TOKEN)
     )
-    expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(
-      mockTokenRecord.userId
-    )
+    expect(mockTeamRepo.findById).toHaveBeenCalledWith(testUuids.TEAM_1)
     expect(result).toEqual({ kind: InviteKind.Member, teamName: 'Acme Corp' })
   })
 
@@ -84,7 +85,7 @@ describe('checkInvite', () => {
 
     const result = await checkInvite(RAW_TOKEN)
 
-    expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
+    expect(mockTeamRepo.findById).not.toHaveBeenCalled()
     expect(result).toEqual({
       kind: InviteKind.Admin,
       teamName: env.COMPANY_NAME
@@ -102,7 +103,7 @@ describe('checkInvite', () => {
       name: 'AppError',
       code: ErrorCode.TokenDeprecated
     })
-    expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
+    expect(mockTeamRepo.findById).not.toHaveBeenCalled()
   })
 
   buildInvalidTokenCases(
@@ -118,12 +119,12 @@ describe('checkInvite', () => {
 
       expect(error).toMatchObject({ name: 'AppError', code })
 
-      expect(mockTeamRepo.findUserTeams).not.toHaveBeenCalled()
+      expect(mockTeamRepo.findById).not.toHaveBeenCalled()
     })
   })
 
-  it('throws TokenDeprecated when member invite has no team', async () => {
-    mockTeamRepo.findUserTeams.mockResolvedValue([])
+  it('throws TokenDeprecated when the invited team no longer exists', async () => {
+    mockTeamRepo.findById.mockResolvedValue(undefined)
 
     const error = await checkInvite(RAW_TOKEN).catch((error: unknown) => error)
 
@@ -135,7 +136,7 @@ describe('checkInvite', () => {
   })
 
   it('propagates database query errors', async () => {
-    mockTeamRepo.findUserTeams.mockRejectedValue(
+    mockTeamRepo.findById.mockRejectedValue(
       new Error('Database connection failed')
     )
 

@@ -11,8 +11,16 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 
+import { MembershipStatus } from '@/types'
+
+import { createPgEnum } from '../utils'
 import { permissionsTable } from './rbac'
 import { usersTable } from './users'
+
+export const membershipStatusEnum = createPgEnum(
+  'membership_status',
+  MembershipStatus
+)
 
 export const teamsTable = pgTable('teams', {
   id: uuid('id')
@@ -45,6 +53,11 @@ export const teamMembersTable = pgTable(
       .notNull()
       .references(() => teamsTable.id, { onDelete: 'cascade' }),
     position: varchar('position', { length: 100 }),
+    // Pending until the invited user accepts. A pending membership grants nothing
+    status: membershipStatusEnum('status')
+      .notNull()
+      .default(MembershipStatus.Pending)
+      .$type<MembershipStatus>(),
     invitedBy: uuid('invited_by').references(() => usersTable.id, {
       onDelete: 'set null'
     }),

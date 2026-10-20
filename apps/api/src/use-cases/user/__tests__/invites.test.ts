@@ -16,7 +16,12 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { InviteKind, TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
-import { getUserDefaultPermissions, Role, UserStatus } from '@/types'
+import {
+  getUserDefaultPermissions,
+  MembershipStatus,
+  Role,
+  UserStatus
+} from '@/types'
 
 import {
   cancelMemberInvite,
@@ -86,7 +91,7 @@ describe('inviteMember', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }))
@@ -171,7 +176,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('adds user to team with invitedBy', async () => {
+  it('adds user to team as a pending member with invitedBy', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoCreateMember).toHaveBeenCalledWith(
@@ -179,6 +184,7 @@ describe('inviteMember', () => {
         userId: USER_1,
         teamId: TEAM_1,
         position: 'Developer',
+        status: MembershipStatus.Pending,
         invitedBy: USER_2
       },
       expect.anything()
@@ -217,7 +223,7 @@ describe('inviteMember', () => {
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member }
+        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
       },
       expect.anything()
     )
@@ -275,7 +281,7 @@ describe('resendMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,
@@ -320,7 +326,7 @@ describe('resendMemberInvite', () => {
   })
 
   it('throws BadRequest when member already accepted invitation', async () => {
-    mockTargetMember.status = UserStatus.Active
+    mockTargetMember.status = MembershipStatus.Active
 
     expect(
       resendMemberInvite(mockTeam, mockTargetMember, USER_2)
@@ -357,7 +363,7 @@ describe('resendMemberInvite', () => {
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member }
+        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
       },
       undefined
     )
@@ -393,7 +399,7 @@ describe('cancelMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,
@@ -429,7 +435,7 @@ describe('cancelMemberInvite', () => {
   })
 
   it('throws BadRequest when member already accepted invitation', async () => {
-    mockTargetMember.status = UserStatus.Active
+    mockTargetMember.status = MembershipStatus.Active
 
     expect(cancelMemberInvite(mockTargetMember)).rejects.toThrow(AppError)
     expect(cancelMemberInvite(mockTargetMember)).rejects.toMatchObject({

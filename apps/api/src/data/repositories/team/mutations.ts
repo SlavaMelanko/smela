@@ -3,6 +3,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 import type { PermissionsInput } from '@/types'
 
 import { AppError, ErrorCode } from '@/errors'
+import { MembershipStatus } from '@/types'
 
 import type { Database } from '../../clients'
 import type {
@@ -104,7 +105,7 @@ export const updateTeamMember = async (
   return membership
 }
 
-// Returns undefined when the user is not a member of the team
+// Returns undefined when the user is not an active member of the team
 export const markTeamMemberLastActive = async (
   userId: string,
   teamId: string,
@@ -118,7 +119,33 @@ export const markTeamMemberLastActive = async (
     .where(
       and(
         eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId)
+        eq(teamMembersTable.teamId, teamId),
+        eq(teamMembersTable.status, MembershipStatus.Active)
+      )
+    )
+    .returning()
+
+  return membership
+}
+
+// Accepting makes the team active. Returns undefined when there is no pending membership
+export const activateTeamMember = async (
+  userId: string,
+  teamId: string,
+  tx?: Database
+): Promise<TeamMember | undefined> => {
+  const executor = tx || db
+
+  const now = new Date()
+
+  const [membership] = await executor
+    .update(teamMembersTable)
+    .set({ status: MembershipStatus.Active, joinedAt: now, lastActiveAt: now })
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.teamId, teamId),
+        eq(teamMembersTable.status, MembershipStatus.Pending)
       )
     )
     .returning()

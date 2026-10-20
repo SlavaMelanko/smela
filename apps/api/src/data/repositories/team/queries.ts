@@ -1,6 +1,8 @@
 import { and, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
+import { MembershipStatus } from '@/types'
+
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
 import type { ActivePermissionRow } from '../rbac'
@@ -131,7 +133,7 @@ export const findTeamMembers = async (
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
-      status: usersTable.status,
+      status: teamMembersTable.status,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
       lastActive: sql<Date | null>`(
@@ -166,7 +168,8 @@ export const findTeamMember = async (
   return members[0]
 }
 
-// Most recently active first, so the first one is the user's active team
+// Active memberships only, most recently active first,
+// so the first one is the user's active team
 export const findUserTeams = async (
   userId: string,
   tx?: Database
@@ -182,7 +185,12 @@ export const findUserTeams = async (
     })
     .from(teamMembersTable)
     .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
-    .where(eq(teamMembersTable.userId, userId))
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.status, MembershipStatus.Active)
+      )
+    )
     .orderBy(desc(teamMembersTable.lastActiveAt))
 }
 

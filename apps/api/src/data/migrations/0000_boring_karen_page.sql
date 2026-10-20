@@ -3,6 +3,7 @@ CREATE TYPE "public"."action" AS ENUM('view', 'manage');--> statement-breakpoint
 CREATE TYPE "public"."resource" AS ENUM('users', 'admins', 'teams', 'dashboard', 'system');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('owner', 'admin', 'user');--> statement-breakpoint
 CREATE TYPE "public"."email_sender_profile" AS ENUM('system', 'support', 'security');--> statement-breakpoint
+CREATE TYPE "public"."membership_status" AS ENUM('pending', 'active');--> statement-breakpoint
 CREATE TYPE "public"."token_status" AS ENUM('pending', 'used', 'deprecated', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."token_type" AS ENUM('email_verification', 'password_reset', 'refresh_token', 'user_invite');--> statement-breakpoint
 CREATE TYPE "public"."status" AS ENUM('new', 'verified', 'trial', 'active', 'suspended', 'archived', 'pending');--> statement-breakpoint
@@ -76,6 +77,7 @@ CREATE TABLE "team_members" (
 	"user_id" uuid NOT NULL,
 	"team_id" uuid NOT NULL,
 	"position" varchar(100),
+	"status" "membership_status" DEFAULT 'pending' NOT NULL,
 	"invited_by" uuid,
 	"joined_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_active_at" timestamp with time zone DEFAULT now() NOT NULL

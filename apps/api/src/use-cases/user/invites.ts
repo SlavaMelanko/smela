@@ -13,6 +13,7 @@ import {
 import {
   AuthProvider,
   getUserDefaultPermissions,
+  MembershipStatus,
   Role,
   UserStatus
 } from '@/types'
@@ -74,6 +75,7 @@ export const inviteMember = async (
         userId: newUser.id,
         teamId: team.id,
         position: member.position,
+        status: MembershipStatus.Pending,
         invitedBy: inviterId
       },
       tx
@@ -87,7 +89,11 @@ export const inviteMember = async (
       tx
     )
 
-    const token = await issueInviteToken(newUser.id, InviteKind.Member, tx)
+    const token = await issueInviteToken(
+      newUser.id,
+      { kind: InviteKind.Member, teamId: team.id },
+      tx
+    )
 
     return {
       member: {
@@ -127,14 +133,17 @@ export const resendMemberInvite = async (
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  if (member.status !== UserStatus.Pending) {
+  if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
       'Member has already accepted invitation'
     )
   }
 
-  const token = await issueInviteToken(member.id, InviteKind.Member)
+  const token = await issueInviteToken(member.id, {
+    kind: InviteKind.Member,
+    teamId: team.id
+  })
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(member.email, {
@@ -149,7 +158,7 @@ export const resendMemberInvite = async (
 }
 
 export const cancelMemberInvite = async (member: TeamMemberDetails) => {
-  if (member.status !== UserStatus.Pending) {
+  if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
       'Member has already accepted invitation'

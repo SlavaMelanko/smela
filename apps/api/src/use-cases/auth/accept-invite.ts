@@ -1,6 +1,9 @@
+import type { Database } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
+import type { InviteMetadata } from '@/security/token'
 
-import { authRepo, db, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
+import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
 import { InviteKind, TokenStatus, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
@@ -9,7 +12,7 @@ import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeams } from '../resolve-team'
 import {
   createAuthTokens,
-  readInviteKind,
+  readInviteMetadata,
   validateOneTimeToken
 } from '../tokens'
 
@@ -23,13 +26,28 @@ export interface AcceptInviteInput {
 const resolveAcceptedStatus = (kind: InviteKind) =>
   kind === InviteKind.Admin ? UserStatus.Active : UserStatus.Verified
 
+const joinInvitedTeam = async (
+  userId: string,
+  metadata: InviteMetadata,
+  tx: Database
+) => {
+  if (metadata.kind !== InviteKind.Member) {
+    return
+  }
+
+  const membership = await teamRepo.activateMember(userId, metadata.teamId, tx)
+  if (!membership) {
+    throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
+  }
+}
+
 export const acceptInvite = async (
   { token, password }: AcceptInviteInput,
   deviceInfo: DeviceInfo
 ) => {
   const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
 
-  const status = resolveAcceptedStatus(readInviteKind(validatedToken.metadata))
+  const metadata = readInviteMetadata(validatedToken.metadata)
 
   const user = await db.transaction(async tx => {
     // Mark token as used
@@ -46,7 +64,13 @@ export const acceptInvite = async (
     const passwordHash = await hashPassword(password)
     await authRepo.update(validatedToken.userId, { passwordHash }, tx)
 
-    return userRepo.update(validatedToken.userId, { status }, tx)
+    await joinInvitedTeam(validatedToken.userId, metadata, tx)
+
+    return userRepo.update(
+      validatedToken.userId,
+      { status: resolveAcceptedStatus(metadata.kind) },
+      tx
+    )
   })
 
   const [{ team, teams }, permissions] = await Promise.all([

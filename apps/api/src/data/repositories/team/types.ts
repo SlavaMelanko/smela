@@ -1,3 +1,5 @@
+import type { MembershipStatus } from '@/types'
+
 import type { teamMembersTable, teamsTable } from '../../schema'
 import type { PaginatedResult } from '../pagination'
 
@@ -26,7 +28,7 @@ export interface TeamMemberDetails {
   firstName: string
   lastName: string | null
   email: string
-  status: string
+  status: MembershipStatus
   createdAt: Date
   updatedAt: Date
   lastActive: Date | null

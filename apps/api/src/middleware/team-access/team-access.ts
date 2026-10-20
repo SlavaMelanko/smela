@@ -3,11 +3,12 @@ import type { Context } from 'hono'
 import { createMiddleware } from 'hono/factory'
 
 import type { AppContext } from '@/context'
+import type { TeamMemberDetails } from '@/data'
 import type { Permission } from '@/types'
 
 import { teamRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { isAdmin } from '@/types'
+import { isAdmin, MembershipStatus } from '@/types'
 import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
 
 /**
@@ -18,7 +19,8 @@ import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
  * - For routes with memberId: validates target member exists in team
  * - For admins: only validates team/member existence; team permissions come from their claims
  * - For regular users: validates both current user AND target member access;
- *   team permissions come from the current user's membership
+ *   team permissions come from the current user's membership. Only an active
+ *   membership grants access
  * - Requires the permission in team permissions, unless allowSelf is set
  *   and the caller targets their own member record
  *
@@ -48,6 +50,10 @@ const handleAdminAccess = async (
   c.set('targetMember', targetMember)
 }
 
+const isJoined = (
+  member: TeamMemberDetails | undefined
+): member is TeamMemberDetails => member?.status === MembershipStatus.Active
+
 const handleUserAccess = async (
   c: Context<AppContext>,
   teamId: string,
@@ -60,7 +66,7 @@ const handleUserAccess = async (
       teamRepo.findMember(teamId, memberId)
     ])
 
-    if (!currentUser) {
+    if (!isJoined(currentUser)) {
       throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
     }
     if (!targetMember) {
@@ -71,7 +77,7 @@ const handleUserAccess = async (
     c.set('targetMember', targetMember)
   } else {
     const currentUser = await teamRepo.findMember(teamId, currentUserId)
-    if (!currentUser) {
+    if (!isJoined(currentUser)) {
       throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
     }
 

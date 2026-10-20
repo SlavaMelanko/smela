@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type {
   authRepo,
   refreshTokenRepo,
+  TeamMember,
   teamRepo,
   TokenRecord,
   tokenRepo,
@@ -11,6 +12,7 @@ import type {
   UserTeamInfo
 } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
+import type { InviteMetadata } from '@/security/token'
 
 import {
   buildInvalidTokenCases,
@@ -30,7 +32,7 @@ import {
   TokenStatus,
   TokenType
 } from '@/security/token'
-import { Role, UserStatus } from '@/types'
+import { MembershipStatus, Role, UserStatus } from '@/types'
 
 import { acceptInvite } from '../accept-invite'
 
@@ -41,7 +43,11 @@ describe('acceptInvite', () => {
   const INVITE_TOKEN = {
     userId: testUuids.ADMIN_1,
     type: TokenType.UserInvite,
-    metadata: { kind: InviteKind.Admin }
+    metadata: { kind: InviteKind.Admin } as InviteMetadata
+  }
+  const MEMBER_INVITE_TOKEN = {
+    ...INVITE_TOKEN,
+    metadata: { kind: InviteKind.Member, teamId: testUuids.TEAM_1 }
   }
 
   let mockPassword: string
@@ -93,7 +99,17 @@ describe('acceptInvite', () => {
       create: mock(async () => 1)
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeamRepo = {
-      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => [])
+      findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+      activateMember: mock(async (): Promise<TeamMember | undefined> => ({
+        id: testUuids.MEMBERSHIP_1,
+        userId: testUuids.ADMIN_1,
+        teamId: testUuids.TEAM_1,
+        position: null,
+        status: MembershipStatus.Active,
+        invitedBy: null,
+        joinedAt: new Date(),
+        lastActiveAt: new Date()
+      }))
     } satisfies Partial<typeof teamRepo>
     mockTransaction = createTransactionMock()
 
@@ -159,12 +175,18 @@ describe('acceptInvite', () => {
     })
   })
 
-  it('sets an invited member to verified', async () => {
+  it('does not join a team when accepting an admin invite', async () => {
+    await acceptInvite(
+      { token: RAW_TOKEN, password: mockPassword },
+      mockDeviceInfo
+    )
+
+    expect(mockTeamRepo.activateMember).not.toHaveBeenCalled()
+  })
+
+  it('sets an invited member to verified and activates the invited membership', async () => {
     mockTokenRepo.findByHash.mockImplementation(async () =>
-      buildTokenRecord({
-        ...INVITE_TOKEN,
-        metadata: { kind: InviteKind.Member }
-      })
+      buildTokenRecord(MEMBER_INVITE_TOKEN)
     )
 
     await acceptInvite(
@@ -172,11 +194,34 @@ describe('acceptInvite', () => {
       mockDeviceInfo
     )
 
+    expect(mockTeamRepo.activateMember).toHaveBeenCalledWith(
+      mockTokenRecord.userId,
+      testUuids.TEAM_1,
+      {}
+    )
     expect(mockUserRepo.update).toHaveBeenCalledWith(
       mockTokenRecord.userId,
       { status: UserStatus.Verified },
       {}
     )
+  })
+
+  it('throws TokenDeprecated without activating the user when the membership is no longer pending', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord(MEMBER_INVITE_TOKEN)
+    )
+    mockTeamRepo.activateMember.mockImplementation(async () => undefined)
+
+    const error = await acceptInvite(
+      { token: RAW_TOKEN, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({
+      name: 'AppError',
+      code: ErrorCode.TokenDeprecated
+    })
+    expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
   it('throws TokenDeprecated without updating anything when token has no kind', async () => {

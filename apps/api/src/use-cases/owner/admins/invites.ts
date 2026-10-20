@@ -75,7 +75,11 @@ export const inviteAdmin = async (
 
     await rbacRepo.setUserPermissions(newAdmin.id, admin.permissions, tx)
 
-    const token = await issueInviteToken(newAdmin.id, InviteKind.Admin, tx)
+    const token = await issueInviteToken(
+      newAdmin.id,
+      { kind: InviteKind.Admin },
+      tx
+    )
 
     return { admin: { ...newAdmin, role }, token }
   })
@@ -113,7 +117,9 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  const token = await issueInviteToken(adminId, InviteKind.Admin)
+  const token = await issueInviteToken(adminId, {
+    kind: InviteKind.Admin
+  })
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(admin.email, {

@@ -2,7 +2,7 @@ import { mock } from 'bun:test'
 
 import type { TeamMemberDetails, teamRepo, TeamWithMemberCount } from '@/data'
 
-import { UserStatus } from '@/types'
+import { MembershipStatus } from '@/types'
 
 import { testUuids } from '../uuid'
 
@@ -29,7 +29,7 @@ export const buildTeamMember = (id: string): TeamMemberDetails => ({
   firstName: 'Alice',
   lastName: null,
   email: 'alice@example.com',
-  status: UserStatus.Active,
+  status: MembershipStatus.Active,
   createdAt: new Date(),
   updatedAt: new Date(),
   lastActive: null,

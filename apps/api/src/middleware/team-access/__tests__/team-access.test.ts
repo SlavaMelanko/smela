@@ -7,7 +7,7 @@ import { testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
-import { Permission, Role, UserStatus } from '@/types'
+import { MembershipStatus, Permission, Role, UserStatus } from '@/types'
 
 import { requireTeamAccess } from '../team-access'
 
@@ -108,7 +108,8 @@ describe('requireTeamAccess', () => {
   it('allows user who is team member on team routes', async () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1
+      teamId: testUuids.TEAM_1,
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -128,7 +129,8 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       membershipId: testUuids.MEMBERSHIP_2,
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1
+      teamId: testUuids.TEAM_1,
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -161,11 +163,26 @@ describe('requireTeamAccess', () => {
     expect((await res.json()).code).toBe(ErrorCode.Forbidden)
   })
 
+  it('blocks user whose invite to the team is still pending', async () => {
+    mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
+      userId,
+      teamId,
+      status: MembershipStatus.Pending
+    }))
+
+    const res = await makeApp(Role.User, testUuids.USER_1).request(
+      `/teams/${testUuids.TEAM_1}`
+    )
+
+    expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    expect(mockResolveMemberPermissionList).not.toHaveBeenCalled()
+  })
+
   it('allows user on member routes when both user and target are team members', async () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
       userId,
       teamId,
-      joinedAt: new Date()
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -186,7 +203,9 @@ describe('requireTeamAccess', () => {
 
   it('blocks user who is not team member on member routes', async () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
-      return userId === testUuids.USER_1 ? undefined : { userId, teamId }
+      return userId === testUuids.USER_1
+        ? undefined
+        : { userId, teamId, status: MembershipStatus.Active }
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -199,7 +218,9 @@ describe('requireTeamAccess', () => {
 
   it('blocks user on member routes when target member is not in team', async () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
-      return userId === testUuids.USER_2 ? undefined : { userId, teamId }
+      return userId === testUuids.USER_2
+        ? undefined
+        : { userId, teamId, status: MembershipStatus.Active }
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -223,7 +244,8 @@ describe('requireTeamAccess', () => {
   it('allows admin on member routes when member exists', async () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1
+      teamId: testUuids.TEAM_1,
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
@@ -264,7 +286,8 @@ describe('requireTeamAccess', () => {
       mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
         membershipId: testUuids.MEMBERSHIP_2,
         userId,
-        teamId
+        teamId,
+        status: MembershipStatus.Active
       }))
     })
 

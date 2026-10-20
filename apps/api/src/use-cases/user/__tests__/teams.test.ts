@@ -4,7 +4,13 @@ import type { Team, TeamMember, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
-import { Action, getMemberFullPermissions, Permission, Resource } from '@/types'
+import {
+  Action,
+  getMemberFullPermissions,
+  MembershipStatus,
+  Permission,
+  Resource
+} from '@/types'
 
 import { createTeam, switchTeam, updateTeam } from '../teams'
 
@@ -36,6 +42,7 @@ describe('createTeam', () => {
         userId: USER_1,
         teamId: TEAM_1,
         position: null,
+        status: MembershipStatus.Active,
         invitedBy: null,
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-01')
@@ -64,7 +71,7 @@ describe('createTeam', () => {
       {}
     )
     expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
-      { userId: USER_1, teamId: TEAM_1 },
+      { userId: USER_1, teamId: TEAM_1, status: MembershipStatus.Active },
       {}
     )
     expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
@@ -135,6 +142,7 @@ describe('switchTeam', () => {
         userId: USER_1,
         teamId: TEAM_2,
         position: null,
+        status: MembershipStatus.Active,
         invitedBy: null,
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-02')

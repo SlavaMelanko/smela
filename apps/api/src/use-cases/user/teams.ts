@@ -1,6 +1,6 @@
 import { db, teamRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { getMemberFullPermissions } from '@/types'
+import { getMemberFullPermissions, MembershipStatus } from '@/types'
 
 import { resolveUserTeams } from '../resolve-team'
 
@@ -21,7 +21,7 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
     const newTeam = await teamRepo.create({ ...input, createdBy: userId }, tx)
 
     const membership = await teamRepo.createMember(
-      { userId, teamId: newTeam.id },
+      { userId, teamId: newTeam.id, status: MembershipStatus.Active },
       tx
     )
 

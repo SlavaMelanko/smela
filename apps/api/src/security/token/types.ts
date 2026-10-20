@@ -10,9 +10,8 @@ export enum InviteKind {
   Member = 'member'
 }
 
-export interface InviteMetadata {
-  kind: InviteKind
-}
+export type InviteMetadata =
+  { kind: InviteKind.Admin } | { kind: InviteKind.Member; teamId: string }
 
 export enum TokenStatus {
   Pending = 'pending',

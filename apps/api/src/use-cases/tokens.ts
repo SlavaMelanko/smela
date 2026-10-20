@@ -1,6 +1,6 @@
 import type { Database, User } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
-import type { InviteKind, InviteMetadata } from '@/security/token'
+import type { InviteMetadata } from '@/security/token'
 import type { Permission } from '@/types'
 
 import { refreshTokenRepo, tokenRepo } from '@/data'
@@ -85,16 +85,16 @@ export const issueOneTimeToken = async (
 
 export const issueInviteToken = async (
   userId: string,
-  kind: InviteKind,
+  metadata: InviteMetadata,
   tx?: Database
-) => issueOneTimeToken(userId, TokenType.UserInvite, tx, { kind })
+) => issueOneTimeToken(userId, TokenType.UserInvite, tx, metadata)
 
-export const readInviteKind = (metadata: InviteMetadata | null) => {
+export const readInviteMetadata = (metadata: InviteMetadata | null) => {
   if (!metadata) {
     throw new AppError(ErrorCode.TokenDeprecated, 'Invite token has no kind')
   }
 
-  return metadata.kind
+  return metadata
 }
 
 export const validateOneTimeToken = async (token: string, type: TokenType) => {
