@@ -1,6 +1,8 @@
 import { and, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
+import { MembershipStatus, UserStatus } from '@/types'
+
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
 import type { ActivePermissionRow } from '../rbac'
@@ -131,7 +133,12 @@ export const findTeamMembers = async (
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
-      status: usersTable.status,
+      // A pending invite shows as pending, even for a user who already has an account
+      status: sql<string>`CASE
+        WHEN ${teamMembersTable.status}::text = ${MembershipStatus.Pending} THEN ${UserStatus.Pending}
+        ELSE ${usersTable.status}::text
+      END`,
+      membershipStatus: teamMembersTable.status,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
       lastActive: sql<Date | null>`(
@@ -166,7 +173,8 @@ export const findTeamMember = async (
   return members[0]
 }
 
-// Most recently active first, so the first one is the user's active team
+// Active memberships only, most recently active first,
+// so the first one is the user's active team
 export const findUserTeams = async (
   userId: string,
   tx?: Database
@@ -182,7 +190,12 @@ export const findUserTeams = async (
     })
     .from(teamMembersTable)
     .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
-    .where(eq(teamMembersTable.userId, userId))
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.status, MembershipStatus.Active)
+      )
+    )
     .orderBy(desc(teamMembersTable.lastActiveAt))
 }
 

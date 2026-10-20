@@ -16,7 +16,12 @@ import { ModuleMocker, testUuids } from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { InviteKind, TokenType } from '@/security/token'
 import { UserInviteEmailMessageBuilder } from '@/services/email'
-import { getUserDefaultPermissions, Role, UserStatus } from '@/types'
+import {
+  getUserDefaultPermissions,
+  MembershipStatus,
+  Role,
+  UserStatus
+} from '@/types'
 
 import {
   cancelMemberInvite,
@@ -87,6 +92,7 @@ describe('inviteMember', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Pending,
+      membershipStatus: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }))
@@ -171,7 +177,7 @@ describe('inviteMember', () => {
     )
   })
 
-  it('adds user to team with invitedBy', async () => {
+  it('adds user to team as a pending member with invitedBy', async () => {
     await inviteMember(mockTeam, inviteParams, USER_2)
 
     expect(mockTeamRepoCreateMember).toHaveBeenCalledWith(
@@ -179,6 +185,7 @@ describe('inviteMember', () => {
         userId: USER_1,
         teamId: TEAM_1,
         position: 'Developer',
+        status: MembershipStatus.Pending,
         invitedBy: USER_2
       },
       expect.anything()
@@ -217,7 +224,7 @@ describe('inviteMember', () => {
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member }
+        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
       },
       expect.anything()
     )
@@ -276,6 +283,7 @@ describe('resendMemberInvite', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Pending,
+      membershipStatus: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,
@@ -357,7 +365,7 @@ describe('resendMemberInvite', () => {
         type: TokenType.UserInvite,
         tokenHash: expect.any(String),
         expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member }
+        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
       },
       undefined
     )
@@ -394,6 +402,7 @@ describe('cancelMemberInvite', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       status: UserStatus.Pending,
+      membershipStatus: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,

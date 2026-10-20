@@ -24,6 +24,7 @@ import {
   getMemberDefaultPermissions,
   getMemberFullPermissions,
   getUserDefaultPermissions,
+  MembershipStatus,
   Resource,
   Role,
   UserStatus
@@ -317,6 +318,7 @@ const seedTestUsers = async (teamId: string) => {
       email: 'alyce96@gmail.com', // Use a consistent email for testing
       password: SEED_USER_PASSWORD,
       status: UserStatus.Active,
+      membershipStatus: MembershipStatus.Active,
       position: 'Developer',
       userPermissions: getUserDefaultPermissions(),
       memberPermissions: getMemberFullPermissions()
@@ -327,6 +329,7 @@ const seedTestUsers = async (teamId: string) => {
       email: faker.internet.email().toLowerCase(),
       password: SEED_USER_PASSWORD,
       status: UserStatus.Pending,
+      membershipStatus: MembershipStatus.Pending,
       position: 'Designer',
       userPermissions: getUserDefaultPermissions(),
       memberPermissions: getMemberDefaultPermissions()
@@ -352,7 +355,8 @@ const seedTestUsers = async (teamId: string) => {
         const membership = await teamRepo.createMember({
           userId: existingUser.id,
           teamId,
-          position: user.position
+          position: user.position,
+          status: user.membershipStatus
         })
 
         await teamRepo.setMemberPermissions(
@@ -388,7 +392,8 @@ const seedTestUsers = async (teamId: string) => {
     const membership = await teamRepo.createMember({
       userId: createdUser.id,
       teamId,
-      position: user.position
+      position: user.position,
+      status: user.membershipStatus
     })
 
     await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)

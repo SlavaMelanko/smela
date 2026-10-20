@@ -3,7 +3,7 @@ import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { InviteKind, TokenType } from '@/security/token'
 
-import { readInviteKind, validateOneTimeToken } from '../tokens'
+import { readInviteMetadata, validateOneTimeToken } from '../tokens'
 
 interface CheckInviteResult {
   kind: InviteKind
@@ -14,17 +14,16 @@ export const checkInvite = async (
   token: string
 ): Promise<CheckInviteResult> => {
   const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
-  const kind = readInviteKind(validatedToken.metadata)
+  const metadata = readInviteMetadata(validatedToken.metadata)
 
-  if (kind === InviteKind.Admin) {
-    return { kind, teamName: env.COMPANY_NAME }
+  if (metadata.kind === InviteKind.Admin) {
+    return { kind: metadata.kind, teamName: env.COMPANY_NAME }
   }
 
-  // A new invited user has exactly one team
-  const [userTeam] = await teamRepo.findUserTeams(validatedToken.userId)
-  if (!userTeam) {
+  const team = await teamRepo.findById(metadata.teamId)
+  if (!team) {
     throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
   }
 
-  return { kind, teamName: userTeam.name }
+  return { kind: metadata.kind, teamName: team.name }
 }

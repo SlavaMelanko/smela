@@ -13,6 +13,7 @@ import {
 import {
   AuthProvider,
   getUserDefaultPermissions,
+  MembershipStatus,
   Role,
   UserStatus
 } from '@/types'
@@ -74,6 +75,7 @@ export const inviteMember = async (
         userId: newUser.id,
         teamId: team.id,
         position: member.position,
+        status: MembershipStatus.Pending,
         invitedBy: inviterId
       },
       tx
@@ -87,7 +89,11 @@ export const inviteMember = async (
       tx
     )
 
-    const token = await issueInviteToken(newUser.id, InviteKind.Member, tx)
+    const token = await issueInviteToken(
+      newUser.id,
+      { kind: InviteKind.Member, teamId: team.id },
+      tx
+    )
 
     return {
       member: {
@@ -134,7 +140,10 @@ export const resendMemberInvite = async (
     )
   }
 
-  const token = await issueInviteToken(member.id, InviteKind.Member)
+  const token = await issueInviteToken(member.id, {
+    kind: InviteKind.Member,
+    teamId: team.id
+  })
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(member.email, {

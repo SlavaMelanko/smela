@@ -1,5 +1,5 @@
 {
-  "id": "6b47b7d8-4c5f-4bd9-8e6f-748c2368086c",
+  "id": "ef4d436b-98d9-4aee-87f3-1d249f6f946d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -523,6 +523,14 @@
           "primaryKey": false,
           "notNull": false
         },
+        "status": {
+          "name": "status",
+          "type": "membership_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
         "invited_by": {
           "name": "invited_by",
           "type": "uuid",
@@ -884,6 +892,11 @@
       "name": "email_sender_profile",
       "schema": "public",
       "values": ["system", "support", "security"]
+    },
+    "public.membership_status": {
+      "name": "membership_status",
+      "schema": "public",
+      "values": ["pending", "active"]
     },
     "public.token_status": {
       "name": "token_status",
