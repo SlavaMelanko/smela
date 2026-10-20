@@ -17,11 +17,7 @@ export {
   generalRateLimiter
 } from './rate-limiter'
 
-export {
-  requirePermission,
-  requireSelfOrTeamPermission,
-  requireTeamPermission
-} from './require-permission'
+export { requirePermission } from './require-permission'
 
 export { secureHeaders } from './secure-headers'
 

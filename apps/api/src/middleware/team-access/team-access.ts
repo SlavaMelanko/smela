@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { createMiddleware } from 'hono/factory'
 
 import type { AppContext } from '@/context'
+import type { Permission } from '@/types'
 
 import { teamRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
@@ -10,10 +11,7 @@ import { isAdmin } from '@/types'
 import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
 
 /**
- * Team access middleware - ensures user has access to the team.
- *
- * IMPORTANT: Must run before requireTeamPermission or requireSelfOrTeamPermission,
- * which check the teamPermissions this middleware sets.
+ * Team access middleware - ensures user has access to the team and holds the permission.
  *
  * Logic:
  * - Always validates team existence
@@ -21,9 +19,15 @@ import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
  * - For admins: only validates team/member existence; team permissions come from their claims
  * - For regular users: validates both current user AND target member access;
  *   team permissions come from the current user's membership
+ * - Requires the permission in team permissions, unless allowSelf is set
+ *   and the caller targets their own member record
  *
  * Note: teamId is already validated by validateParams middleware
  */
+
+interface TeamAccessOptions {
+  allowSelf?: boolean
+}
 
 const handleAdminAccess = async (
   c: Context<AppContext>,
@@ -78,8 +82,11 @@ const handleUserAccess = async (
   c.set('teamPermissions', await resolveMemberPermissionList(membershipId))
 }
 
-export const requireTeamAccess = createMiddleware<AppContext>(
-  async (c, next) => {
+export const requireTeamAccess = (
+  permission: Permission,
+  { allowSelf = false }: TeamAccessOptions = {}
+) =>
+  createMiddleware<AppContext>(async (c, next) => {
     const teamId = c.req.param('teamId')!
     const memberId = c.req.param('memberId')
     const { id: currentUserId, role } = c.get('user')
@@ -97,6 +104,10 @@ export const requireTeamAccess = createMiddleware<AppContext>(
       await handleUserAccess(c, teamId, currentUserId, memberId)
     }
 
+    const isSelf = allowSelf && memberId === currentUserId
+    if (!isSelf && !c.get('teamPermissions')!.includes(permission)) {
+      throw new AppError(ErrorCode.Forbidden)
+    }
+
     return next()
-  }
-)
+  })

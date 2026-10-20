@@ -2,12 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import {
-  requireTeamAccess,
-  requireTeamPermission,
-  validateBody,
-  validateParams
-} from '@/middleware'
+import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
 import { switchTeam, updateTeam } from '@/use-cases/user'
@@ -20,8 +15,7 @@ export const teamByIdRoute = new Hono<AppContext>()
 teamByIdRoute.get(
   '/',
   validateParams(teamIdParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ViewTeams),
+  requireTeamAccess(Permission.ViewTeams),
   async c => {
     const team = c.get('team')
 
@@ -33,8 +27,7 @@ teamByIdRoute.patch(
   '/',
   validateParams(teamIdParamsSchema),
   validateBody(updateTeamBodySchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams),
   async c => {
     const { teamId } = c.req.valid('param')
     const body = c.req.valid('json')
