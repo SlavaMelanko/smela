@@ -12,19 +12,41 @@ import { useNavigate } from '@ui/hooks/useRouter'
 import { ChevronDown, Plus } from 'lucide-react'
 
 import { EmptyState } from './EmptyState'
+import { InviteList } from './InviteList'
 import { TeamInfo } from './TeamInfo'
+
+const TeamButton = ({ name, position, onClick }) => (
+  <button
+    type='button'
+    onClick={onClick}
+    disabled={!onClick}
+    className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring disabled:cursor-default'
+  >
+    <TeamInfo name={name} position={position} />
+  </button>
+)
 
 const CurrentTeamButton = ({ team }) => {
   const navigate = useNavigate()
 
   return (
-    <button
-      type='button'
+    <TeamButton
+      name={team.name}
+      position={team.position}
       onClick={() => navigate('/team')}
-      className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring'
-    >
-      <TeamInfo name={team.name} position={team.position} />
-    </button>
+    />
+  )
+}
+
+const NoTeamButton = ({ onCreateTeam }) => {
+  const { t } = useLocale()
+
+  return (
+    <TeamButton
+      name={t('team.empty')}
+      position={t('team.add.title')}
+      onClick={onCreateTeam}
+    />
   )
 }
 
@@ -58,31 +80,63 @@ const TeamList = ({ teams, onTeamChange }) => {
   )
 }
 
-export const TeamSwitcher = ({ teams = [], onTeamChange, onCreateTeam }) => {
+// Pending invites dot the trigger, since accepting them happens inside the menu
+const InvitesIndicator = () => (
+  <span className='absolute top-3 right-2 size-2 rounded-full bg-destructive' />
+)
+
+export const TeamSwitcher = ({
+  teams = [],
+  invites = [],
+  onTeamChange,
+  onCreateTeam,
+  onAcceptInvite,
+  onDeclineInvite
+}) => {
   const { t } = useLocale()
   const [team] = teams
+  const hasInvites = invites.length > 0
 
-  if (!team) {
+  if (!team && !hasInvites) {
     return <EmptyState onCreateTeam={onCreateTeam} />
   }
 
   return (
     <div className='flex w-full rounded-lg border border-sidebar-border bg-sidebar-accent/50'>
-      <CurrentTeamButton team={team} />
+      {team ? (
+        <CurrentTeamButton team={team} />
+      ) : (
+        <NoTeamButton onCreateTeam={onCreateTeam} />
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t('team.switch')}
-          className='flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
+          className='relative flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
         >
           <ChevronDown className='size-4' />
+          {hasInvites && <InvitesIndicator />}
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align='end'
           className='w-72 max-w-[calc(100vw-2rem)]'
         >
-          <TeamList teams={teams} onTeamChange={onTeamChange} />
-          <DropdownMenuSeparator />
+          {hasInvites && (
+            <>
+              <InviteList
+                invites={invites}
+                onAccept={onAcceptInvite}
+                onDecline={onDeclineInvite}
+              />
+              <DropdownMenuSeparator />
+            </>
+          )}
+          {team && (
+            <>
+              <TeamList teams={teams} onTeamChange={onTeamChange} />
+              <DropdownMenuSeparator />
+            </>
+          )}
           <CreateTeamItem onCreateTeam={onCreateTeam} />
         </DropdownMenuContent>
       </DropdownMenu>

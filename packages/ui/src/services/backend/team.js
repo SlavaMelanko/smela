@@ -4,6 +4,8 @@ import { apiClient } from './apiClient'
 import {
   ADMIN_TEAMS_PATH,
   buildPath,
+  TEAM_ACCEPT_INVITE_PATH,
+  TEAM_DECLINE_INVITE_PATH,
   TEAM_MEMBER_CANCEL_INVITE_PATH,
   TEAM_MEMBER_PATH,
   TEAM_MEMBER_PERMISSIONS_PATH,
@@ -44,6 +46,18 @@ export const teamApi = {
 
   switchTeam(teamId) {
     const path = buildPath(TEAM_SWITCH_PATH, { teamId })
+
+    return apiClient.post(path)
+  },
+
+  acceptInvite(teamId) {
+    const path = buildPath(TEAM_ACCEPT_INVITE_PATH, { teamId })
+
+    return apiClient.post(path)
+  },
+
+  declineInvite(teamId) {
+    const path = buildPath(TEAM_DECLINE_INVITE_PATH, { teamId })
 
     return apiClient.post(path)
   },

@@ -128,19 +128,28 @@ export const useCreateUserTeam = () => {
   })
 }
 
-export const useSwitchTeam = () => {
+// Switching, accepting and declining all return the user's fresh team state
+const useUserTeamsMutation = mutationFn => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: teamId => teamApi.switchTeam(teamId),
-    onSuccess: ({ team, teams }) => {
+    mutationFn,
+    onSuccess: ({ team, teams, invites }) => {
       queryClient.setQueryData(
         authKeys.user(),
-        cached => cached && { ...cached, team, teams }
+        cached => cached && { ...cached, team, teams, invites }
       )
     }
   })
 }
+
+export const useSwitchTeam = () => useUserTeamsMutation(teamApi.switchTeam)
+
+export const useAcceptTeamInvite = () =>
+  useUserTeamsMutation(teamApi.acceptInvite)
+
+export const useDeclineTeamInvite = () =>
+  useUserTeamsMutation(teamApi.declineInvite)
 
 export const useTeam = (id, options = {}) => {
   return useQuery({

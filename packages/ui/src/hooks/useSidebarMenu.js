@@ -6,10 +6,10 @@ const filterByPermission = (items, can) =>
   items.filter(item => !item.permission || can(item.permission))
 
 export const useSidebarMenu = () => {
-  const { user: me, teams, can } = useCurrentUser()
+  const { user: me, teams, invites, can } = useCurrentUser()
 
   if (isUser(me?.role)) {
-    return { items: getUserMenuItems(), teams }
+    return { items: getUserMenuItems(), teams, invites }
   }
 
   if (isAdmin(me?.role)) {

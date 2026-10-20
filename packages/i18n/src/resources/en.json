@@ -459,6 +459,12 @@
       "title": "Create team"
     },
     "empty": "No team yet",
+    "invites": {
+      "accept": "Accept invitation to {{name}}",
+      "decline": "Decline invitation to {{name}}",
+      "from": "From {{name}}",
+      "title": "Invitations"
+    },
     "members": {
       "empty": "No team members yet.",
       "remove": {

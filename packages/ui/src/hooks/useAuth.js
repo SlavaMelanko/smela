@@ -61,6 +61,7 @@ export const useCurrentUser = (options = {}) => {
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
     teams: query.data?.teams ?? [],
+    invites: query.data?.invites ?? [],
     permissions,
     isAuthenticated: !!query.data?.user,
     can: p => permissions.includes(p),

@@ -72,3 +72,20 @@ export const SingleTeam = {
 export const NoTeam = {
   render: () => <TeamSwitcherPreview initialTeams={[]} />
 }
+
+const invites = [
+  {
+    id: 'marketing',
+    name: 'Marketing',
+    inviter: { firstName: 'Jane', lastName: 'Doe' }
+  },
+  { id: 'sales', name: 'Sales', inviter: null }
+]
+
+export const WithInvites = {
+  args: { teams: initialTeams, invites }
+}
+
+export const InvitesWithoutTeam = {
+  args: { teams: [], invites }
+}
