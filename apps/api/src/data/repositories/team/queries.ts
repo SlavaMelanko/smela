@@ -1,7 +1,7 @@
 import { and, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
-import { MembershipStatus, UserStatus } from '@/types'
+import { MembershipStatus } from '@/types'
 
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
@@ -133,12 +133,7 @@ export const findTeamMembers = async (
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
-      // A pending invite shows as pending, even for a user who already has an account
-      status: sql<string>`CASE
-        WHEN ${teamMembersTable.status}::text = ${MembershipStatus.Pending} THEN ${UserStatus.Pending}
-        ELSE ${usersTable.status}::text
-      END`,
-      membershipStatus: teamMembersTable.status,
+      status: teamMembersTable.status,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
       lastActive: sql<Date | null>`(

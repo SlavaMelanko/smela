@@ -28,8 +28,7 @@ export interface TeamMemberDetails {
   firstName: string
   lastName: string | null
   email: string
-  status: string
-  membershipStatus: MembershipStatus
+  status: MembershipStatus
   createdAt: Date
   updatedAt: Date
   lastActive: Date | null

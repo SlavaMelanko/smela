@@ -52,8 +52,7 @@ const handleAdminAccess = async (
 
 const isJoined = (
   member: TeamMemberDetails | undefined
-): member is TeamMemberDetails =>
-  member?.membershipStatus === MembershipStatus.Active
+): member is TeamMemberDetails => member?.status === MembershipStatus.Active
 
 const handleUserAccess = async (
   c: Context<AppContext>,

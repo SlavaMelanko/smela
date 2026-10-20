@@ -91,8 +91,7 @@ describe('inviteMember', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
-      membershipStatus: MembershipStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     }))
@@ -282,8 +281,7 @@ describe('resendMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
-      membershipStatus: MembershipStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,
@@ -328,7 +326,7 @@ describe('resendMemberInvite', () => {
   })
 
   it('throws BadRequest when member already accepted invitation', async () => {
-    mockTargetMember.status = UserStatus.Active
+    mockTargetMember.status = MembershipStatus.Active
 
     expect(
       resendMemberInvite(mockTeam, mockTargetMember, USER_2)
@@ -401,8 +399,7 @@ describe('cancelMemberInvite', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      status: UserStatus.Pending,
-      membershipStatus: MembershipStatus.Pending,
+      status: MembershipStatus.Pending,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       lastActive: null,
@@ -438,7 +435,7 @@ describe('cancelMemberInvite', () => {
   })
 
   it('throws BadRequest when member already accepted invitation', async () => {
-    mockTargetMember.status = UserStatus.Active
+    mockTargetMember.status = MembershipStatus.Active
 
     expect(cancelMemberInvite(mockTargetMember)).rejects.toThrow(AppError)
     expect(cancelMemberInvite(mockTargetMember)).rejects.toMatchObject({

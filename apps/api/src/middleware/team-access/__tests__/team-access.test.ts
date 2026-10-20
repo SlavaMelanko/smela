@@ -109,7 +109,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
       teamId: testUuids.TEAM_1,
-      membershipStatus: MembershipStatus.Active
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -130,7 +130,7 @@ describe('requireTeamAccess', () => {
       membershipId: testUuids.MEMBERSHIP_2,
       userId: testUuids.USER_1,
       teamId: testUuids.TEAM_1,
-      membershipStatus: MembershipStatus.Active
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -167,7 +167,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
       userId,
       teamId,
-      membershipStatus: MembershipStatus.Pending
+      status: MembershipStatus.Pending
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -182,7 +182,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
       userId,
       teamId,
-      membershipStatus: MembershipStatus.Active
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -205,7 +205,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
       return userId === testUuids.USER_1
         ? undefined
-        : { userId, teamId, membershipStatus: MembershipStatus.Active }
+        : { userId, teamId, status: MembershipStatus.Active }
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -220,7 +220,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => {
       return userId === testUuids.USER_2
         ? undefined
-        : { userId, teamId, membershipStatus: MembershipStatus.Active }
+        : { userId, teamId, status: MembershipStatus.Active }
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
@@ -245,7 +245,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
       teamId: testUuids.TEAM_1,
-      membershipStatus: MembershipStatus.Active
+      status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
@@ -287,7 +287,7 @@ describe('requireTeamAccess', () => {
         membershipId: testUuids.MEMBERSHIP_2,
         userId,
         teamId,
-        membershipStatus: MembershipStatus.Active
+        status: MembershipStatus.Active
       }))
     })
 

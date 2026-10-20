@@ -133,7 +133,7 @@ export const resendMemberInvite = async (
     throw new AppError(ErrorCode.NotFound, 'Inviter not found')
   }
 
-  if (member.status !== UserStatus.Pending) {
+  if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
       'Member has already accepted invitation'
@@ -158,7 +158,7 @@ export const resendMemberInvite = async (
 }
 
 export const cancelMemberInvite = async (member: TeamMemberDetails) => {
-  if (member.status !== UserStatus.Pending) {
+  if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
       'Member has already accepted invitation'
