@@ -3,13 +3,7 @@ import { Hono } from 'hono'
 import type { AppContext } from '@/context'
 
 import { AppError, ErrorCode } from '@/errors'
-import {
-  requireSelfOrTeamPermission,
-  requireTeamAccess,
-  requireTeamPermission,
-  validateBody,
-  validateParams
-} from '@/middleware'
+import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
 import {
@@ -29,8 +23,7 @@ teamsMemberByIdRoute.route('/permissions', teamMemberPermissionsRoute)
 teamsMemberByIdRoute.get(
   '/',
   validateParams(memberIdParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ViewTeams),
+  requireTeamAccess(Permission.ViewTeams),
   async c => {
     const targetMember = c.get('targetMember')!
 
@@ -42,8 +35,7 @@ teamsMemberByIdRoute.patch(
   '/',
   validateParams(memberIdParamsSchema),
   validateBody(updateTeamMemberBodySchema),
-  requireTeamAccess,
-  requireSelfOrTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams, { allowSelf: true }),
   async c => {
     const { teamId, memberId } = c.req.valid('param')
     const body = c.req.valid('json')
@@ -67,8 +59,7 @@ teamsMemberByIdRoute.patch(
 teamsMemberByIdRoute.delete(
   '/',
   validateParams(memberIdParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams),
   async c => {
     const { teamId, memberId } = c.req.valid('param')
 
@@ -81,8 +72,7 @@ teamsMemberByIdRoute.delete(
 teamsMemberByIdRoute.post(
   '/resend-invite',
   validateParams(memberIdParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams),
   async c => {
     const team = c.get('team')!
     const targetMember = c.get('targetMember')!
@@ -97,8 +87,7 @@ teamsMemberByIdRoute.post(
 teamsMemberByIdRoute.post(
   '/cancel-invite',
   validateParams(memberIdParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams),
   async c => {
     const targetMember = c.get('targetMember')!
 

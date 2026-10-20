@@ -2,12 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import {
-  requireTeamAccess,
-  requireTeamPermission,
-  validateBody,
-  validateParams
-} from '@/middleware'
+import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
 import {
@@ -25,8 +20,7 @@ export const teamMemberPermissionsRoute = new Hono<AppContext>()
 teamMemberPermissionsRoute.get(
   '/',
   validateParams(memberPermissionsParamsSchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ViewTeams),
+  requireTeamAccess(Permission.ViewTeams),
   async c => {
     const { membershipId } = c.get('targetMember')!
 
@@ -40,8 +34,7 @@ teamMemberPermissionsRoute.patch(
   '/',
   validateParams(memberPermissionsParamsSchema),
   validateBody(updateMemberPermissionsBodySchema),
-  requireTeamAccess,
-  requireTeamPermission(Permission.ManageTeams),
+  requireTeamAccess(Permission.ManageTeams),
   async c => {
     const { membershipId } = c.get('targetMember')!
     const { permissions } = c.req.valid('json')

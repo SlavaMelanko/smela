@@ -26,6 +26,10 @@ void mock.module('@/use-cases/resolve-permissions', () => ({
   resolveMemberPermissionList: mockResolveMemberPermissionList
 }))
 
+// Claims grant both permissions so admins pass, while proving regular users
+// get team permissions from their membership instead
+const claims = [Permission.ViewTeams, Permission.ManageTeams]
+
 const makeApp = (role: Role, userId: string) => {
   const app = new Hono<AppContext>()
   app.onError(onError)
@@ -37,13 +41,13 @@ const makeApp = (role: Role, userId: string) => {
       email: 'user@example.com',
       role,
       status: UserStatus.Active,
-      permissions: [Permission.ManageTeams]
+      permissions: claims
     })
     await next()
   })
 
   // Team-only routes
-  app.use('/teams/:teamId', requireTeamAccess)
+  app.use('/teams/:teamId', requireTeamAccess(Permission.ViewTeams))
   app.get('/teams/:teamId', c =>
     c.json({
       message: 'team success',
@@ -52,9 +56,20 @@ const makeApp = (role: Role, userId: string) => {
   )
 
   // Member-specific routes
-  app.use('/teams/:teamId/members/:memberId', requireTeamAccess)
-  app.get('/teams/:teamId/members/:memberId', c =>
-    c.json({ message: 'member success' })
+  app.get(
+    '/teams/:teamId/members/:memberId',
+    requireTeamAccess(Permission.ViewTeams),
+    c => c.json({ message: 'member success' })
+  )
+  app.patch(
+    '/teams/:teamId/members/:memberId',
+    requireTeamAccess(Permission.ManageTeams),
+    c => c.json({ message: 'member success' })
+  )
+  app.put(
+    '/teams/:teamId/members/:memberId',
+    requireTeamAccess(Permission.ManageTeams, { allowSelf: true }),
+    c => c.json({ message: 'member success' })
   )
 
   return app
@@ -132,7 +147,7 @@ describe('requireTeamAccess', () => {
     )
 
     expect(mockResolveMemberPermissionList).not.toHaveBeenCalled()
-    expect((await res.json()).teamPermissions).toEqual([Permission.ManageTeams])
+    expect((await res.json()).teamPermissions).toEqual(claims)
   })
 
   it('blocks user who is not team member on team routes', async () => {
@@ -242,5 +257,65 @@ describe('requireTeamAccess', () => {
     expect(res.status).toBe(HttpStatus.OK)
     expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
     expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
+  })
+
+  describe('permission check', () => {
+    beforeEach(() => {
+      mockTeamRepoFindMember.mockImplementation(async (teamId, userId) => ({
+        membershipId: testUuids.MEMBERSHIP_2,
+        userId,
+        teamId
+      }))
+    })
+
+    it('blocks user when only claims include the permission', async () => {
+      const res = await makeApp(Role.User, testUuids.USER_1).request(
+        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        { method: 'PATCH' }
+      )
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+      expect((await res.json()).code).toBe(ErrorCode.Forbidden)
+    })
+
+    it('allows user when membership grants the permission', async () => {
+      mockResolveMemberPermissionList.mockImplementationOnce(async () => [
+        Permission.ManageTeams
+      ])
+
+      const res = await makeApp(Role.User, testUuids.USER_1).request(
+        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        { method: 'PATCH' }
+      )
+
+      expect(res.status).toBe(HttpStatus.OK)
+    })
+
+    it('blocks self access without allowSelf', async () => {
+      const res = await makeApp(Role.User, testUuids.USER_1).request(
+        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`,
+        { method: 'PATCH' }
+      )
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    })
+
+    it('allows self access with allowSelf', async () => {
+      const res = await makeApp(Role.User, testUuids.USER_1).request(
+        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`,
+        { method: 'PUT' }
+      )
+
+      expect(res.status).toBe(HttpStatus.OK)
+    })
+
+    it('blocks other member access with allowSelf', async () => {
+      const res = await makeApp(Role.User, testUuids.USER_1).request(
+        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        { method: 'PUT' }
+      )
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    })
   })
 })
