@@ -4,7 +4,7 @@ import type { PermissionsInput } from '@/types'
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
-import { InviteKind, TokenType } from '@/security/token'
+import { InviteKind } from '@/security/token'
 import {
   buildInviteUrl,
   emailService,
@@ -157,7 +157,11 @@ export const resendMemberInvite = async (
   return { success: true }
 }
 
-export const cancelMemberInvite = async (member: TeamMemberDetails) => {
+// Removes only the pending membership. The account and other memberships stay intact
+export const cancelMemberInvite = async (
+  teamId: string,
+  member: TeamMemberDetails
+) => {
   if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
@@ -166,8 +170,8 @@ export const cancelMemberInvite = async (member: TeamMemberDetails) => {
   }
 
   await db.transaction(async tx => {
-    await tokenRepo.deprecate(member.id, TokenType.UserInvite, tx)
-    await userRepo.update(member.id, { status: UserStatus.Archived }, tx)
+    await tokenRepo.deprecateTeamInvites(member.id, teamId, tx)
+    await teamRepo.deleteMember(member.id, teamId, tx)
   })
 
   return { success: true }

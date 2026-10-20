@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { db, teamRepo, userRepo } from '@/data'
+import type { teamRepo, userRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
-import { Action, Resource, UserStatus } from '@/types'
+import { Action, Resource } from '@/types'
 
 import {
   getTeamMemberPermissions,
@@ -18,16 +18,10 @@ describe('removeTeamMember', () => {
 
   let mockTeamRepoDeleteMember: any
   let mockUserRepoUpdate: any
-  let mockTransaction: any
 
   beforeEach(async () => {
     mockTeamRepoDeleteMember = mock(async () => {})
     mockUserRepoUpdate = mock(async () => {})
-    mockTransaction = mock(
-      async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
-        return callback({})
-      }
-    )
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
@@ -35,8 +29,7 @@ describe('removeTeamMember', () => {
       } satisfies Partial<typeof teamRepo>,
       userRepo: { update: mockUserRepoUpdate } satisfies Partial<
         typeof userRepo
-      >,
-      db: { transaction: mockTransaction } satisfies Partial<typeof db>
+      >
     }))
   })
 
@@ -44,35 +37,11 @@ describe('removeTeamMember', () => {
     await moduleMocker.clear()
   })
 
-  it('deletes membership row in transaction', async () => {
-    await removeTeamMember(TEAM_1, USER_1)
-
-    expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(
-      USER_1,
-      TEAM_1,
-      expect.anything()
-    )
-  })
-
-  it('archives user in transaction', async () => {
-    await removeTeamMember(TEAM_1, USER_1)
-
-    expect(mockUserRepoUpdate).toHaveBeenCalledWith(
-      USER_1,
-      { status: UserStatus.Archived },
-      expect.anything()
-    )
-  })
-
-  it('runs delete and archive atomically in one transaction', async () => {
-    await removeTeamMember(TEAM_1, USER_1)
-
-    expect(mockTransaction).toHaveBeenCalledTimes(1)
-  })
-
-  it('returns success true', async () => {
+  it('deletes the membership and keeps the user account untouched', async () => {
     const result = await removeTeamMember(TEAM_1, USER_1)
 
+    expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(USER_1, TEAM_1)
+    expect(mockUserRepoUpdate).not.toHaveBeenCalled()
     expect(result).toEqual({ success: true })
   })
 })

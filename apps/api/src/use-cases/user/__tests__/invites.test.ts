@@ -388,7 +388,8 @@ describe('cancelMemberInvite', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTargetMember: TeamMemberDetails
-  let mockTokenDeprecate: any
+  let mockDeprecateTeamInvites: any
+  let mockDeleteMember: any
   let mockUserUpdate: any
   let mockTransaction: any
 
@@ -408,12 +409,9 @@ describe('cancelMemberInvite', () => {
       joinedAt: new Date('2024-01-01')
     }
 
-    mockTokenDeprecate = mock(async () => {})
-    mockUserUpdate = mock(async () => ({
-      ...mockTargetMember,
-      status: UserStatus.Archived,
-      updatedAt: new Date()
-    }))
+    mockDeprecateTeamInvites = mock(async () => {})
+    mockDeleteMember = mock(async () => {})
+    mockUserUpdate = mock(async () => {})
 
     mockTransaction = mock(
       async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
@@ -423,9 +421,12 @@ describe('cancelMemberInvite', () => {
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: { update: mockUserUpdate } satisfies Partial<typeof userRepo>,
-      tokenRepo: { deprecate: mockTokenDeprecate } satisfies Partial<
-        typeof tokenRepo
+      teamRepo: { deleteMember: mockDeleteMember } satisfies Partial<
+        typeof teamRepo
       >,
+      tokenRepo: {
+        deprecateTeamInvites: mockDeprecateTeamInvites
+      } satisfies Partial<typeof tokenRepo>,
       db: { transaction: mockTransaction } satisfies Partial<typeof db>
     }))
   })
@@ -437,26 +438,32 @@ describe('cancelMemberInvite', () => {
   it('throws BadRequest when member already accepted invitation', async () => {
     mockTargetMember.status = MembershipStatus.Active
 
-    expect(cancelMemberInvite(mockTargetMember)).rejects.toThrow(AppError)
-    expect(cancelMemberInvite(mockTargetMember)).rejects.toMatchObject({
+    expect(cancelMemberInvite(TEAM_1, mockTargetMember)).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
       message: 'Member has already accepted invitation'
     })
   })
 
-  it('deprecates token and archives user in a transaction', async () => {
-    const result = await cancelMemberInvite(mockTargetMember)
+  it('deprecates the team invite and deletes the pending membership in a transaction', async () => {
+    const result = await cancelMemberInvite(TEAM_1, mockTargetMember)
 
-    expect(mockTokenDeprecate).toHaveBeenCalledWith(
+    expect(mockTransaction).toHaveBeenCalledTimes(1)
+    expect(mockDeprecateTeamInvites).toHaveBeenCalledWith(
       USER_1,
-      TokenType.UserInvite,
+      TEAM_1,
       expect.anything()
     )
-    expect(mockUserUpdate).toHaveBeenCalledWith(
+    expect(mockDeleteMember).toHaveBeenCalledWith(
       USER_1,
-      { status: UserStatus.Archived },
+      TEAM_1,
       expect.anything()
     )
     expect(result).toEqual({ success: true })
+  })
+
+  it('keeps the user account untouched', async () => {
+    await cancelMemberInvite(TEAM_1, mockTargetMember)
+
+    expect(mockUserUpdate).not.toHaveBeenCalled()
   })
 })

@@ -89,9 +89,10 @@ teamsMemberByIdRoute.post(
   validateParams(memberIdParamsSchema),
   requireTeamAccess(Permission.ManageTeams),
   async c => {
+    const { teamId } = c.req.valid('param')
     const targetMember = c.get('targetMember')!
 
-    const result = await cancelMemberInvite(targetMember)
+    const result = await cancelMemberInvite(teamId, targetMember)
 
     return c.json(result, HttpStatus.OK)
   }

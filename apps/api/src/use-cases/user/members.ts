@@ -1,7 +1,7 @@
 import type { PermissionsInput } from '@/types'
 
-import { db, teamRepo, userRepo } from '@/data'
-import { getMemberBasePermissions, UserStatus } from '@/types'
+import { teamRepo, userRepo } from '@/data'
+import { getMemberBasePermissions } from '@/types'
 import { resolveMemberPermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
@@ -60,11 +60,9 @@ export const updateTeamMemberPermissions = async (
   return getTeamMemberPermissions(membershipId)
 }
 
+// Removes only the membership. The account and other memberships stay intact
 export const removeTeamMember = async (teamId: string, memberId: string) => {
-  await db.transaction(async tx => {
-    await teamRepo.deleteMember(memberId, teamId, tx)
-    await userRepo.update(memberId, { status: UserStatus.Archived }, tx)
-  })
+  await teamRepo.deleteMember(memberId, teamId)
 
   return { success: true }
 }

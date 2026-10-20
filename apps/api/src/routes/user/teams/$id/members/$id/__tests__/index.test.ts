@@ -249,6 +249,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockCancelMemberInvite).toHaveBeenCalledWith(
+        TEST_TEAM_ID,
         expect.objectContaining({ id: testUuids.USER_2 })
       )
     })
