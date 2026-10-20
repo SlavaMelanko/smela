@@ -12,6 +12,11 @@ const extractLink = (text, regex) => {
   return match ? match[0] : null
 }
 
+const findLinkByOrigin = (text, origin) =>
+  text
+    .match(/https?:\/\/[^\s\])>]+/g)
+    ?.find(url => new URL(url).origin === origin) ?? null
+
 export class EmailService {
   #client
   #namespace
@@ -112,6 +117,23 @@ export class EmailService {
 
     if (!link) {
       throw new Error('Invite link not found.')
+    }
+
+    return {
+      link,
+      text: email.text,
+      html: email.html,
+      subject: email.subject
+    }
+  }
+
+  // Existing users get a tokenless link to the app, so match it by origin
+  async waitForAppInvitationEmail(emailAddress, { subject, appUrl }) {
+    const email = await this.#waitForEmail(emailAddress, subject)
+    const link = findLinkByOrigin(email.text, new URL(appUrl).origin)
+
+    if (!link) {
+      throw new Error('App invite link not found.')
     }
 
     return {
