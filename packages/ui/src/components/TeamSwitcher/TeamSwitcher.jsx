@@ -82,7 +82,7 @@ const TeamList = ({ teams, onTeamChange }) => {
 
 // Pending invites dot the trigger, since accepting them happens inside the menu
 const InvitesIndicator = () => (
-  <span className='absolute top-3 right-2 size-2 rounded-full bg-destructive' />
+  <span className='absolute top-1/2 right-2 size-2 -translate-y-1/2 rounded-full bg-destructive' />
 )
 
 export const TeamSwitcher = ({
