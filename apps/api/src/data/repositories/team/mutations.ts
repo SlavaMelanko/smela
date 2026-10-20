@@ -104,6 +104,28 @@ export const updateTeamMember = async (
   return membership
 }
 
+// Returns undefined when the user is not a member of the team
+export const markTeamMemberLastActive = async (
+  userId: string,
+  teamId: string,
+  tx?: Database
+): Promise<TeamMember | undefined> => {
+  const executor = tx || db
+
+  const [membership] = await executor
+    .update(teamMembersTable)
+    .set({ lastActiveAt: new Date() })
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.teamId, teamId)
+      )
+    )
+    .returning()
+
+  return membership
+}
+
 export const deleteTeamMember = async (
   userId: string,
   teamId: string,

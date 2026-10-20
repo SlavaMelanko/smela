@@ -10,7 +10,7 @@ import {
 } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { Permission } from '@/types'
-import { updateTeam } from '@/use-cases/user'
+import { switchTeam, updateTeam } from '@/use-cases/user'
 
 import { teamsMembersRoute } from './members'
 import { teamIdParamsSchema, updateTeamBodySchema } from './schema'
@@ -44,5 +44,15 @@ teamByIdRoute.patch(
     return c.json(result, HttpStatus.OK)
   }
 )
+
+// No requireTeamAccess: markMemberLastActive only matches the caller's own membership row
+teamByIdRoute.post('/switch', validateParams(teamIdParamsSchema), async c => {
+  const { id: userId } = c.get('user')
+  const { teamId } = c.req.valid('param')
+
+  const result = await switchTeam(userId, teamId)
+
+  return c.json(result, HttpStatus.OK)
+})
 
 teamByIdRoute.route('/members', teamsMembersRoute)

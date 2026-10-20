@@ -6,11 +6,13 @@ import { NotificationProvider } from '@ui/contexts/NotificationContext'
 import { useCreateUserTeam } from '@ui/hooks/useCreateUserTeam'
 import { Outlet } from '@ui/hooks/useRouter'
 import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
+import { useSwitchUserTeam } from '@ui/hooks/useSwitchUserTeam'
 import { Suspense } from 'react'
 
 export const UserLayout = () => {
   const { items, teams } = useSidebarMenu()
   const { openCreateTeamDialog } = useCreateUserTeam()
+  const { switchTeam } = useSwitchUserTeam()
 
   return (
     <NotificationProvider>
@@ -18,6 +20,7 @@ export const UserLayout = () => {
         <Sidebar
           items={items}
           teams={teams}
+          onTeamChange={switchTeam}
           onCreateTeam={openCreateTeamDialog}
         />
         <SidebarInset>

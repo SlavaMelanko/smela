@@ -1,5 +1,8 @@
 import { db, teamRepo } from '@/data'
+import { AppError, ErrorCode } from '@/errors'
 import { getMemberFullPermissions } from '@/types'
+
+import { resolveUserTeams } from '../resolve-team'
 
 export interface CreateTeamInput {
   name: string
@@ -38,4 +41,14 @@ export const updateTeam = async (teamId: string, updates: UpdateTeamInput) => {
   const team = await teamRepo.update(teamId, updates)
 
   return { team }
+}
+
+export const switchTeam = async (userId: string, teamId: string) => {
+  const membership = await teamRepo.markMemberLastActive(userId, teamId)
+
+  if (!membership) {
+    throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
+  }
+
+  return resolveUserTeams(userId)
 }

@@ -128,6 +128,20 @@ export const useCreateUserTeam = () => {
   })
 }
 
+export const useSwitchTeam = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: teamId => teamApi.switchTeam(teamId),
+    onSuccess: ({ team, teams }) => {
+      queryClient.setQueryData(
+        authKeys.user(),
+        cached => cached && { ...cached, team, teams }
+      )
+    }
+  })
+}
+
 export const useTeam = (id, options = {}) => {
   return useQuery({
     queryKey: teamKeys.team(id),

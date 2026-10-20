@@ -10,4 +10,4 @@ export {
   updateTeamMemberPermissions
 } from './members'
 
-export { createTeam, updateTeam } from './teams'
+export { createTeam, switchTeam, updateTeam } from './teams'

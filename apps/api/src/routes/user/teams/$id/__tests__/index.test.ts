@@ -11,10 +11,12 @@ import {
   get,
   ModuleMocker,
   patch,
+  post,
   TEST_TEAM_ID,
   testUuids,
   withClaims
 } from '@/__tests__'
+import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
 import { Permission, Role } from '@/types'
 
@@ -32,6 +34,7 @@ describe('user /teams/:teamId', () => {
   let mockTeamPermissions: any
 
   let mockUpdateTeam: any
+  let mockSwitchTeam: any
 
   // Team permissions come from the membership, not the claims
   const buildApp = () =>
@@ -58,8 +61,14 @@ describe('user /teams/:teamId', () => {
 
     mockUpdateTeam = mock(async () => ({ team: mockTeam }))
 
+    mockSwitchTeam = mock(async () => ({
+      team: { id: TEST_TEAM_ID, name: 'Engineering', permissions: [] },
+      teams: [{ id: TEST_TEAM_ID, name: 'Engineering', position: null }]
+    }))
+
     await moduleMocker.mock('@/use-cases/user', () => ({
-      updateTeam: mockUpdateTeam
+      updateTeam: mockUpdateTeam,
+      switchTeam: mockSwitchTeam
     }))
 
     app = buildApp()
@@ -152,6 +161,41 @@ describe('user /teams/:teamId', () => {
       const res = await patch(app, TEAM_URL, body)
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('POST /teams/:teamId/switch', () => {
+    const SWITCH_URL = `${TEAM_URL}/switch`
+
+    it('switches to the team and returns the active team with all teams', async () => {
+      const res = await post(app, SWITCH_URL)
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockSwitchTeam).toHaveBeenCalledWith(
+        testUuids.USER_1,
+        TEST_TEAM_ID
+      )
+
+      const data = await res.json()
+      expect(data.team).toMatchObject({ id: TEST_TEAM_ID })
+      expect(data.teams).toHaveLength(1)
+    })
+
+    it('rejects invalid team id', async () => {
+      const res = await post(app, '/api/v1/user/verified/teams/invalid/switch')
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockSwitchTeam).not.toHaveBeenCalled()
+    })
+
+    it('returns 403 when user is not a team member', async () => {
+      mockSwitchTeam.mockImplementation(async () => {
+        throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
+      })
+
+      const res = await post(app, SWITCH_URL)
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
     })
   })
 })
