@@ -1,4 +1,9 @@
-import type { TeamMemberDetails, TeamWithMemberCount } from '@/data'
+import type {
+  Database,
+  TeamMemberDetails,
+  TeamWithMemberCount,
+  User
+} from '@/data'
 import type { PermissionsInput } from '@/types'
 
 import { authRepo, db, rbacRepo, teamRepo, tokenRepo, userRepo } from '@/data'
@@ -6,6 +11,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { generatePasswordHash } from '@/security/password'
 import { InviteKind } from '@/security/token'
 import {
+  buildAppUrl,
   buildInviteUrl,
   emailService,
   UserInviteEmailMessageBuilder
@@ -13,6 +19,8 @@ import {
 import {
   AuthProvider,
   getUserDefaultPermissions,
+  isNewOrActive,
+  isUser,
   MembershipStatus,
   Role,
   UserStatus
@@ -28,25 +36,70 @@ export interface InviteMemberInput {
   permissions: PermissionsInput
 }
 
-export const inviteMember = async (
+interface Invitee {
+  email: string
+  firstName: string
+}
+
+// A pending account never set a password, so it still needs the token link.
+// Any other account signs in and accepts the invite in the app
+const needsInviteToken = (user: User) => user.status === UserStatus.Pending
+
+const canBeInvited = (user: User) =>
+  isUser(user.role) &&
+  (user.status === UserStatus.Pending || isNewOrActive(user.status))
+
+const issueTeamInviteToken = async (
+  userId: string,
+  teamId: string,
+  tx?: Database
+) => issueInviteToken(userId, { kind: InviteKind.Member, teamId }, tx)
+
+const sendInviteEmail = (
+  invitee: Invitee,
+  inviter: User,
+  team: TeamWithMemberCount,
+  token?: string
+) =>
+  void emailService.send(
+    new UserInviteEmailMessageBuilder(invitee.email, {
+      firstName: invitee.firstName,
+      inviteUrl: token
+        ? buildInviteUrl(Role.User, token)
+        : buildAppUrl(Role.User),
+      hasAccount: !token,
+      inviterName: inviter.firstName,
+      teamName: team.name
+    })
+  )
+
+const addPendingMember = async (
+  userId: string,
+  team: TeamWithMemberCount,
+  member: InviteMemberInput,
+  inviterId: string,
+  tx: Database
+) => {
+  const membership = await teamRepo.createMember(
+    {
+      userId,
+      teamId: team.id,
+      position: member.position,
+      status: MembershipStatus.Pending,
+      invitedBy: inviterId
+    },
+    tx
+  )
+
+  await teamRepo.setMemberPermissions(membership.id, member.permissions, tx)
+}
+
+const inviteNewUser = async (
   team: TeamWithMemberCount,
   member: InviteMemberInput,
   inviterId: string
-) => {
-  const [inviter, existingUser] = await Promise.all([
-    userRepo.findById(inviterId),
-    userRepo.findByEmail(member.email)
-  ])
-
-  if (!inviter) {
-    throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
-  if (existingUser) {
-    throw new AppError(ErrorCode.EmailAlreadyInUse)
-  }
-
-  const { member: newMember, token } = await db.transaction(async tx => {
+) =>
+  db.transaction(async tx => {
     const newUser = await userRepo.create(
       {
         firstName: member.firstName,
@@ -70,18 +123,7 @@ export const inviteMember = async (
       tx
     )
 
-    const membership = await teamRepo.createMember(
-      {
-        userId: newUser.id,
-        teamId: team.id,
-        position: member.position,
-        status: MembershipStatus.Pending,
-        invitedBy: inviterId
-      },
-      tx
-    )
-
-    await teamRepo.setMemberPermissions(membership.id, member.permissions, tx)
+    await addPendingMember(newUser.id, team, member, inviterId, tx)
 
     await rbacRepo.setUserPermissions(
       newUser.id,
@@ -89,37 +131,58 @@ export const inviteMember = async (
       tx
     )
 
-    const token = await issueInviteToken(
-      newUser.id,
-      { kind: InviteKind.Member, teamId: team.id },
-      tx
-    )
+    const token = await issueTeamInviteToken(newUser.id, team.id, tx)
 
-    return {
-      member: {
-        id: newUser.id,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        email: newUser.email,
-        status: newUser.status,
-        position: member.position ?? null,
-        invitedBy: inviterId,
-        joinedAt: newUser.createdAt
-      },
-      token
-    }
+    return { user: newUser, token }
   })
 
-  void emailService.send(
-    new UserInviteEmailMessageBuilder(newMember.email, {
-      firstName: newMember.firstName,
-      inviteUrl: buildInviteUrl(Role.User, token),
-      inviterName: inviter.firstName,
-      teamName: team.name
-    })
-  )
+// The account keeps its own name and user-level permissions
+const inviteExistingUser = async (
+  user: User,
+  team: TeamWithMemberCount,
+  member: InviteMemberInput,
+  inviterId: string
+) => {
+  if (!canBeInvited(user)) {
+    throw new AppError(ErrorCode.EmailAlreadyInUse)
+  }
 
-  return { member: newMember }
+  if (await teamRepo.findMember(team.id, user.id)) {
+    throw new AppError(ErrorCode.Conflict, 'User is already a team member')
+  }
+
+  return db.transaction(async tx => {
+    await addPendingMember(user.id, team, member, inviterId, tx)
+
+    const token = needsInviteToken(user)
+      ? await issueTeamInviteToken(user.id, team.id, tx)
+      : undefined
+
+    return { user, token }
+  })
+}
+
+export const inviteMember = async (
+  team: TeamWithMemberCount,
+  member: InviteMemberInput,
+  inviterId: string
+) => {
+  const [inviter, existingUser] = await Promise.all([
+    userRepo.findById(inviterId),
+    userRepo.findByEmail(member.email)
+  ])
+
+  if (!inviter) {
+    throw new AppError(ErrorCode.NotFound, 'Inviter not found')
+  }
+
+  const { user, token } = existingUser
+    ? await inviteExistingUser(existingUser, team, member, inviterId)
+    : await inviteNewUser(team, member, inviterId)
+
+  sendInviteEmail(user, inviter, team, token)
+
+  return { member: await teamRepo.findMember(team.id, user.id) }
 }
 
 export const resendMemberInvite = async (
@@ -127,12 +190,6 @@ export const resendMemberInvite = async (
   member: TeamMemberDetails,
   inviterId: string
 ) => {
-  const inviter = await userRepo.findById(inviterId)
-
-  if (!inviter) {
-    throw new AppError(ErrorCode.NotFound, 'Inviter not found')
-  }
-
   if (member.status !== MembershipStatus.Pending) {
     throw new AppError(
       ErrorCode.BadRequest,
@@ -140,19 +197,24 @@ export const resendMemberInvite = async (
     )
   }
 
-  const token = await issueInviteToken(member.id, {
-    kind: InviteKind.Member,
-    teamId: team.id
-  })
+  const [inviter, user] = await Promise.all([
+    userRepo.findById(inviterId),
+    userRepo.findById(member.id)
+  ])
 
-  void emailService.send(
-    new UserInviteEmailMessageBuilder(member.email, {
-      firstName: member.firstName,
-      inviteUrl: buildInviteUrl(Role.User, token),
-      inviterName: inviter.firstName,
-      teamName: team.name
-    })
-  )
+  if (!inviter) {
+    throw new AppError(ErrorCode.NotFound, 'Inviter not found')
+  }
+
+  if (!user) {
+    throw new AppError(ErrorCode.NotFound, 'Member not found')
+  }
+
+  const token = needsInviteToken(user)
+    ? await issueTeamInviteToken(user.id, team.id)
+    : undefined
+
+  sendInviteEmail(user, inviter, team, token)
 
   return { success: true }
 }

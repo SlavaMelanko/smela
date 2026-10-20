@@ -12,10 +12,16 @@ import type {
   userRepo
 } from '@/data'
 
-import { ModuleMocker, testUuids } from '@/__tests__'
-import { AppError, ErrorCode } from '@/errors'
+import {
+  buildTeamMember,
+  buildUser,
+  createTransactionMock,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
+import { env } from '@/env'
+import { ErrorCode } from '@/errors'
 import { InviteKind, TokenType } from '@/security/token'
-import { UserInviteEmailMessageBuilder } from '@/services/email'
 import {
   getUserDefaultPermissions,
   MembershipStatus,
@@ -31,21 +37,44 @@ import {
 
 const { TEAM_1, USER_1, USER_2 } = testUuids
 
+const buildTestTeam = (): TeamWithMemberCount => ({
+  id: TEAM_1,
+  name: 'Acme Corp',
+  website: 'https://acme.com',
+  description: 'A test team',
+  createdBy: null,
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+  memberCount: 5
+})
+
+const buildInviter = () =>
+  buildUser({ id: USER_2, firstName: 'Admin', status: UserStatus.Active })
+
+const buildPendingMember = (): TeamMemberDetails => ({
+  ...buildTeamMember(USER_1),
+  status: MembershipStatus.Pending
+})
+
+const INVITE_TOKEN_ISSUE = {
+  userId: USER_1,
+  type: TokenType.UserInvite,
+  tokenHash: expect.any(String),
+  expiresAt: expect.any(Date),
+  metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
+}
+
+const readSentEmail = (send: any): unknown => send.mock.calls[0][0].data
+
 describe('inviteMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
   let mockTeam: TeamWithMemberCount
-  let mockInviter: User
-  let mockTeamRepoFindById: any
-  let mockUserRepoFindByEmail: any
-  let mockUserRepoFindById: any
-  let mockUserRepoCreate: any
+  let mockUserRepo: any
   let mockAuthRepoCreate: any
-  let mockTeamRepoCreateMember: any
-  let mockTeamRepoSetMemberPermissions: any
+  let mockTeamRepo: any
   let mockTokenRepoIssue: any
   let mockRbacSet: any
-  let mockTransaction: any
   let mockEmailService: any
 
   const inviteParams = {
@@ -53,80 +82,45 @@ describe('inviteMember', () => {
     lastName: 'Doe',
     email: 'john@example.com',
     position: 'Developer',
-    permissions: {
-      users: { view: true, manage: false },
-      admins: { view: false, manage: false },
-      teams: { view: true, manage: true }
-    }
+    permissions: { teams: { view: true, manage: true } }
   }
 
   beforeEach(async () => {
-    mockTeam = {
-      id: TEAM_1,
-      name: 'Acme Corp',
-      website: 'https://acme.com',
-      description: 'A test team',
-      createdBy: null,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
-      memberCount: 5
-    }
+    mockTeam = buildTestTeam()
 
-    mockInviter = {
-      id: USER_2,
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
-      status: UserStatus.Active,
-      role: Role.Admin,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
-
-    mockTeamRepoFindById = mock(async () => mockTeam)
-    mockUserRepoFindByEmail = mock(async () => undefined)
-    mockUserRepoFindById = mock(async () => mockInviter)
-    mockUserRepoCreate = mock(async () => ({
-      id: USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: MembershipStatus.Pending,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }))
+    mockUserRepo = {
+      findByEmail: mock(async (): Promise<User | undefined> => undefined),
+      findById: mock(async (): Promise<User | undefined> => buildInviter()),
+      create: mock(async () =>
+        buildUser({ id: USER_1, status: UserStatus.Pending })
+      )
+    } satisfies Partial<typeof userRepo>
     mockAuthRepoCreate = mock(async () => {})
-    mockTeamRepoCreateMember = mock(async () => ({
-      id: 1,
-      userId: USER_1,
-      teamId: TEAM_1,
-      position: 'Developer',
-      invitedBy: USER_2,
-      joinedAt: new Date('2024-01-01')
-    }))
-    mockTeamRepoSetMemberPermissions = mock(async () => {})
+    mockTeamRepo = {
+      findMember: mock(async (): Promise<TeamMemberDetails | undefined> =>
+        buildPendingMember()
+      ),
+      createMember: mock(async () => ({
+        id: testUuids.MEMBERSHIP_1,
+        userId: USER_1,
+        teamId: TEAM_1,
+        position: 'Developer',
+        status: MembershipStatus.Pending,
+        invitedBy: USER_2,
+        joinedAt: new Date('2024-01-01'),
+        lastActiveAt: new Date('2024-01-01')
+      })),
+      setMemberPermissions: mock(async () => {})
+    } satisfies Partial<typeof teamRepo>
     mockTokenRepoIssue = mock(async () => {})
     mockRbacSet = mock(async () => {})
-    mockTransaction = mock(
-      async <T>(callback: (tx: unknown) => Promise<T>): Promise<T> => {
-        return callback({})
-      }
-    )
     mockEmailService = {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
 
     await moduleMocker.mock('@/data', () => ({
-      teamRepo: {
-        findById: mockTeamRepoFindById,
-        createMember: mockTeamRepoCreateMember,
-        setMemberPermissions: mockTeamRepoSetMemberPermissions
-      } satisfies Partial<typeof teamRepo>,
-      userRepo: {
-        findByEmail: mockUserRepoFindByEmail,
-        findById: mockUserRepoFindById,
-        create: mockUserRepoCreate
-      } satisfies Partial<typeof userRepo>,
+      teamRepo: mockTeamRepo,
+      userRepo: mockUserRepo,
       authRepo: { create: mockAuthRepoCreate } satisfies Partial<
         typeof authRepo
       >,
@@ -136,7 +130,7 @@ describe('inviteMember', () => {
       rbacRepo: { setUserPermissions: mockRbacSet } satisfies Partial<
         typeof rbacRepo
       >,
-      db: { transaction: mockTransaction } satisfies Partial<typeof db>
+      db: createTransactionMock()
     }))
 
     await moduleMocker.mock('@/services/email', () => ({
@@ -148,107 +142,178 @@ describe('inviteMember', () => {
     await moduleMocker.clear()
   })
 
-  it('throws EmailAlreadyInUse when email already exists', async () => {
-    mockUserRepoFindByEmail.mockImplementation(async () => ({
-      id: 'existing-user',
-      email: 'john@example.com'
-    }))
+  describe('new email', () => {
+    // The membership doesn't exist before the invite, only after it
+    beforeEach(() => {
+      mockTeamRepo.findMember.mockImplementation(async () =>
+        buildPendingMember()
+      )
+    })
 
-    expect(inviteMember(mockTeam, inviteParams, USER_2)).rejects.toThrow(
-      AppError
-    )
-    expect(inviteMember(mockTeam, inviteParams, USER_2)).rejects.toMatchObject({
-      code: ErrorCode.EmailAlreadyInUse
+    it('creates a pending account with default user permissions', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockUserRepo.create).toHaveBeenCalledWith(
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          status: UserStatus.Pending
+        },
+        expect.anything()
+      )
+      expect(mockAuthRepoCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: USER_1,
+          passwordHash: expect.any(String)
+        }),
+        expect.anything()
+      )
+      expect(mockRbacSet).toHaveBeenCalledWith(
+        USER_1,
+        getUserDefaultPermissions(),
+        expect.anything()
+      )
+    })
+
+    it('adds a pending membership with the granted permissions', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
+        {
+          userId: USER_1,
+          teamId: TEAM_1,
+          position: 'Developer',
+          status: MembershipStatus.Pending,
+          invitedBy: USER_2
+        },
+        expect.anything()
+      )
+      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+        testUuids.MEMBERSHIP_1,
+        inviteParams.permissions,
+        expect.anything()
+      )
+    })
+
+    it('emails an accept-invite link with a team invite token', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockTokenRepoIssue).toHaveBeenCalledWith(
+        USER_1,
+        INVITE_TOKEN_ISSUE,
+        expect.anything()
+      )
+      expect(readSentEmail(mockEmailService.send)).toMatchObject({
+        inviteUrl: expect.stringContaining(
+          `${env.FE_USER_URL}/accept-invite?token=`
+        ),
+        hasAccount: false
+      })
+    })
+
+    it('returns the pending member', async () => {
+      const result = await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockTeamRepo.findMember).toHaveBeenCalledWith(TEAM_1, USER_1)
+      expect(result.member?.status).toBe(MembershipStatus.Pending)
     })
   })
 
-  it('creates user with pending status', async () => {
-    await inviteMember(mockTeam, inviteParams, USER_2)
+  describe('existing account', () => {
+    const existingUser = buildUser({ id: USER_1, firstName: 'Johnny' })
 
-    expect(mockUserRepoCreate).toHaveBeenCalledWith(
-      {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
+    beforeEach(() => {
+      mockUserRepo.findByEmail.mockImplementation(async () => existingUser)
+      mockTeamRepo.findMember
+        .mockImplementationOnce(async () => undefined)
+        .mockImplementation(async () => buildPendingMember())
+    })
+
+    it('adds a pending membership without touching the account', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: USER_1,
+          status: MembershipStatus.Pending
+        }),
+        expect.anything()
+      )
+      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+        testUuids.MEMBERSHIP_1,
+        inviteParams.permissions,
+        expect.anything()
+      )
+      expect(mockUserRepo.create).not.toHaveBeenCalled()
+      expect(mockAuthRepoCreate).not.toHaveBeenCalled()
+      expect(mockRbacSet).not.toHaveBeenCalled()
+    })
+
+    it('emails an in-app link without a token', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(mockTokenRepoIssue).not.toHaveBeenCalled()
+      expect(readSentEmail(mockEmailService.send)).toMatchObject({
+        firstName: 'Johnny',
+        inviteUrl: env.FE_USER_URL,
+        hasAccount: true
+      })
+    })
+
+    it('issues a team invite token when the account is still pending', async () => {
+      mockUserRepo.findByEmail.mockImplementation(async () => ({
+        ...existingUser,
         status: UserStatus.Pending
-      },
-      expect.anything()
-    )
-  })
+      }))
 
-  it('adds user to team as a pending member with invitedBy', async () => {
-    await inviteMember(mockTeam, inviteParams, USER_2)
+      await inviteMember(mockTeam, inviteParams, USER_2)
 
-    expect(mockTeamRepoCreateMember).toHaveBeenCalledWith(
-      {
-        userId: USER_1,
-        teamId: TEAM_1,
-        position: 'Developer',
-        status: MembershipStatus.Pending,
-        invitedBy: USER_2
-      },
-      expect.anything()
-    )
-  })
+      expect(mockTokenRepoIssue).toHaveBeenCalledWith(
+        USER_1,
+        INVITE_TOKEN_ISSUE,
+        expect.anything()
+      )
+      expect(readSentEmail(mockEmailService.send)).toMatchObject({
+        hasAccount: false
+      })
+    })
 
-  it('grants requested permissions on membership and default ones on user', async () => {
-    await inviteMember(mockTeam, inviteParams, USER_2)
+    it('throws Conflict without changes when the user is already in the team', async () => {
+      mockTeamRepo.findMember.mockReset()
+      mockTeamRepo.findMember.mockImplementation(async () =>
+        buildTeamMember(USER_1)
+      )
 
-    expect(mockTeamRepoSetMemberPermissions).toHaveBeenCalledWith(
-      1,
-      inviteParams.permissions,
-      expect.anything()
-    )
-    expect(mockRbacSet).toHaveBeenCalledWith(
-      USER_1,
-      getUserDefaultPermissions(),
-      expect.anything()
-    )
-  })
+      const error = await inviteMember(mockTeam, inviteParams, USER_2).catch(
+        (error: unknown) => error
+      )
 
-  it('stores a random password hash and issues an invite token', async () => {
-    await inviteMember(mockTeam, inviteParams, USER_2)
+      expect(error).toMatchObject({ code: ErrorCode.Conflict })
+      expect(mockTeamRepo.createMember).not.toHaveBeenCalled()
+      expect(mockEmailService.send).not.toHaveBeenCalled()
+    })
 
-    expect(mockAuthRepoCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        userId: USER_1,
-        passwordHash: expect.any(String)
-      }),
-      expect.anything()
-    )
-    expect(mockTokenRepoIssue).toHaveBeenCalledWith(
-      USER_1,
-      {
-        userId: USER_1,
-        type: TokenType.UserInvite,
-        tokenHash: expect.any(String),
-        expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
-      },
-      expect.anything()
-    )
-  })
+    const notInvitable = [
+      { name: 'an admin', user: { role: Role.Admin } },
+      { name: 'an archived user', user: { status: UserStatus.Archived } },
+      { name: 'a suspended user', user: { status: UserStatus.Suspended } }
+    ]
 
-  it('sends invite email', async () => {
-    await inviteMember(mockTeam, inviteParams, USER_2)
+    notInvitable.forEach(({ name, user }) => {
+      it(`throws EmailAlreadyInUse without changes for ${name}`, async () => {
+        mockUserRepo.findByEmail.mockImplementation(async () => ({
+          ...existingUser,
+          ...user
+        }))
 
-    expect(mockEmailService.send).toHaveBeenCalledWith(
-      expect.any(UserInviteEmailMessageBuilder)
-    )
-  })
+        const error = await inviteMember(mockTeam, inviteParams, USER_2).catch(
+          (error: unknown) => error
+        )
 
-  it('returns member data with team details', async () => {
-    const result = await inviteMember(mockTeam, inviteParams, USER_2)
-
-    expect(result.member).toEqual({
-      id: USER_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: UserStatus.Pending,
-      position: 'Developer',
-      invitedBy: USER_2,
-      joinedAt: expect.any(Date)
+        expect(error).toMatchObject({ code: ErrorCode.EmailAlreadyInUse })
+        expect(mockTeamRepo.createMember).not.toHaveBeenCalled()
+      })
     })
   })
 })
@@ -258,50 +323,19 @@ describe('resendMemberInvite', () => {
 
   let mockTeam: TeamWithMemberCount
   let mockTargetMember: TeamMemberDetails
-  let mockInviter: User
+  let mockMemberAccount: User
   let mockUserRepoFindById: any
   let mockTokenRepoIssue: any
   let mockEmailService: any
 
   beforeEach(async () => {
-    mockTeam = {
-      id: TEAM_1,
-      name: 'Acme Corp',
-      website: 'https://acme.com',
-      description: 'A test team',
-      createdBy: null,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
-      memberCount: 5
-    }
+    mockTeam = buildTestTeam()
+    mockTargetMember = buildPendingMember()
+    mockMemberAccount = buildUser({ id: USER_1, status: UserStatus.Pending })
 
-    mockTargetMember = {
-      id: USER_1,
-      membershipId: testUuids.MEMBERSHIP_1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      status: MembershipStatus.Pending,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01'),
-      lastActive: null,
-      position: 'Developer',
-      inviter: null,
-      joinedAt: new Date('2024-01-01')
-    }
-
-    mockInviter = {
-      id: USER_2,
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
-      status: UserStatus.Active,
-      role: Role.Admin,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
-    }
-
-    mockUserRepoFindById = mock(async () => mockInviter)
+    mockUserRepoFindById = mock(async (id: string) =>
+      id === USER_2 ? buildInviter() : mockMemberAccount
+    )
     mockTokenRepoIssue = mock(async () => {})
     mockEmailService = {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
@@ -330,9 +364,6 @@ describe('resendMemberInvite', () => {
 
     expect(
       resendMemberInvite(mockTeam, mockTargetMember, USER_2)
-    ).rejects.toThrow(AppError)
-    expect(
-      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
     ).rejects.toMatchObject({
       code: ErrorCode.BadRequest,
       message: 'Member has already accepted invitation'
@@ -340,11 +371,10 @@ describe('resendMemberInvite', () => {
   })
 
   it('throws NotFound when inviter is missing', async () => {
-    mockUserRepoFindById.mockImplementation(async () => undefined)
+    mockUserRepoFindById.mockImplementation(async (id: string) =>
+      id === USER_2 ? undefined : mockMemberAccount
+    )
 
-    expect(
-      resendMemberInvite(mockTeam, mockTargetMember, USER_2)
-    ).rejects.toThrow(AppError)
     expect(
       resendMemberInvite(mockTeam, mockTargetMember, USER_2)
     ).rejects.toMatchObject({
@@ -353,34 +383,30 @@ describe('resendMemberInvite', () => {
     })
   })
 
-  it('issues new token', async () => {
-    await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
+  it('issues a new team invite token for a pending account', async () => {
+    const result = await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
     expect(mockTokenRepoIssue).toHaveBeenCalledWith(
       USER_1,
-      {
-        userId: USER_1,
-        type: TokenType.UserInvite,
-        tokenHash: expect.any(String),
-        expiresAt: expect.any(Date),
-        metadata: { kind: InviteKind.Member, teamId: TEAM_1 }
-      },
+      INVITE_TOKEN_ISSUE,
       undefined
     )
+    expect(readSentEmail(mockEmailService.send)).toMatchObject({
+      hasAccount: false
+    })
+    expect(result).toEqual({ success: true })
   })
 
-  it('sends invite email with current inviter name', async () => {
+  it('emails an in-app link without a token for an existing account', async () => {
+    mockMemberAccount = buildUser({ id: USER_1, status: UserStatus.Verified })
+
     await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
 
-    expect(mockEmailService.send).toHaveBeenCalledWith(
-      expect.any(UserInviteEmailMessageBuilder)
-    )
-  })
-
-  it('returns success true', async () => {
-    const result = await resendMemberInvite(mockTeam, mockTargetMember, USER_2)
-
-    expect(result).toEqual({ success: true })
+    expect(mockTokenRepoIssue).not.toHaveBeenCalled()
+    expect(readSentEmail(mockEmailService.send)).toMatchObject({
+      inviteUrl: env.FE_USER_URL,
+      hasAccount: true
+    })
   })
 })
 

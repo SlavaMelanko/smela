@@ -1,6 +1,7 @@
 export { emailService } from './email-service'
 
 export {
+  buildAppUrl,
   buildInviteUrl,
   buildResetPasswordUrl,
   buildVerificationUrl

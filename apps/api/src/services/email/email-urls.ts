@@ -12,3 +12,6 @@ export const buildResetPasswordUrl = (role: Role, token: string) =>
 
 export const buildInviteUrl = (role: Role, token: string) =>
   `${getFeBaseUrl(role)}/accept-invite?token=${token}`
+
+// Signed-in users accept team invites in the app, so the link needs no token
+export const buildAppUrl = (role: Role) => getFeBaseUrl(role)
