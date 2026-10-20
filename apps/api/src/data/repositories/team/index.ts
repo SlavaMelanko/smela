@@ -2,7 +2,7 @@ import {
   createTeam,
   createTeamMember,
   deleteTeamMember,
-  markTeamMemberActive,
+  markTeamMemberLastActive,
   setTeamMemberPermissions,
   updateTeam,
   updateTeamMember
@@ -34,7 +34,7 @@ const teamQueries = {
 const memberMutations = {
   createMember: createTeamMember,
   deleteMember: deleteTeamMember,
-  markMemberActive: markTeamMemberActive,
+  markMemberLastActive: markTeamMemberLastActive,
   setMemberPermissions: setTeamMemberPermissions,
   updateMember: updateTeamMember
 }

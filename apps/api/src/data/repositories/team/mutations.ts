@@ -105,7 +105,7 @@ export const updateTeamMember = async (
 }
 
 // Returns undefined when the user is not a member of the team
-export const markTeamMemberActive = async (
+export const markTeamMemberLastActive = async (
   userId: string,
   teamId: string,
   tx?: Database

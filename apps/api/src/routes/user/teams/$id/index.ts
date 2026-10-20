@@ -45,7 +45,7 @@ teamByIdRoute.patch(
   }
 )
 
-// Membership is checked by the update itself, so no team-access guard
+// No requireTeamAccess: markMemberLastActive only matches the caller's own membership row
 teamByIdRoute.post('/switch', validateParams(teamIdParamsSchema), async c => {
   const { id: userId } = c.get('user')
   const { teamId } = c.req.valid('param')

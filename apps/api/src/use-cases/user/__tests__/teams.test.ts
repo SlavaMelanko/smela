@@ -130,7 +130,7 @@ describe('switchTeam', () => {
 
   beforeEach(async () => {
     mockTeamRepo = {
-      markMemberActive: mock(async (): Promise<TeamMember | undefined> => ({
+      markMemberLastActive: mock(async (): Promise<TeamMember | undefined> => ({
         id: MEMBERSHIP_2,
         userId: USER_1,
         teamId: TEAM_2,
@@ -170,7 +170,10 @@ describe('switchTeam', () => {
   it('makes the team active and returns it with all teams', async () => {
     const result = await switchTeam(USER_1, TEAM_2)
 
-    expect(mockTeamRepo.markMemberActive).toHaveBeenCalledWith(USER_1, TEAM_2)
+    expect(mockTeamRepo.markMemberLastActive).toHaveBeenCalledWith(
+      USER_1,
+      TEAM_2
+    )
     expect(result).toEqual({
       team: {
         id: TEAM_2,
@@ -186,7 +189,7 @@ describe('switchTeam', () => {
   })
 
   it('throws Forbidden when user is not a team member', async () => {
-    mockTeamRepo.markMemberActive.mockImplementation(async () => undefined)
+    mockTeamRepo.markMemberLastActive.mockImplementation(async () => undefined)
 
     expect(switchTeam(USER_1, TEAM_2)).rejects.toMatchObject({
       code: ErrorCode.Forbidden

@@ -44,7 +44,7 @@ export const updateTeam = async (teamId: string, updates: UpdateTeamInput) => {
 }
 
 export const switchTeam = async (userId: string, teamId: string) => {
-  const membership = await teamRepo.markMemberActive(userId, teamId)
+  const membership = await teamRepo.markMemberLastActive(userId, teamId)
 
   if (!membership) {
     throw new AppError(ErrorCode.Forbidden, 'Access denied to team')
