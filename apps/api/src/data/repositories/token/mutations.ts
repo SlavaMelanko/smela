@@ -1,8 +1,6 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 
-import type { TokenType } from '@/security/token'
-
-import { TokenStatus } from '@/security/token'
+import { TokenStatus, TokenType } from '@/security/token'
 
 import type { Database } from '../../clients'
 import type { CreateTokenInput, UpdateTokenInput } from './types'
@@ -26,6 +24,27 @@ export const deprecateOldTokens = async (
         eq(tokensTable.type, tokenType),
         isNull(tokensTable.usedAt),
         eq(tokensTable.status, TokenStatus.Pending)
+      )
+    )
+}
+
+// Leaves the user's invites to other teams usable
+export const deprecateTeamInviteTokens = async (
+  userId: string,
+  teamId: string,
+  tx?: Database
+) => {
+  const executor = tx || db
+
+  await executor
+    .update(tokensTable)
+    .set({ status: TokenStatus.Deprecated })
+    .where(
+      and(
+        eq(tokensTable.userId, userId),
+        eq(tokensTable.type, TokenType.UserInvite),
+        eq(tokensTable.status, TokenStatus.Pending),
+        sql`${tokensTable.metadata}->>'teamId' = ${teamId}`
       )
     )
 }
