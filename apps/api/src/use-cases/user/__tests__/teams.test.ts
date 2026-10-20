@@ -71,7 +71,7 @@ describe('createTeam', () => {
       {}
     )
     expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
-      { userId: USER_1, teamId: TEAM_1 },
+      { userId: USER_1, teamId: TEAM_1, status: MembershipStatus.Active },
       {}
     )
     expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(

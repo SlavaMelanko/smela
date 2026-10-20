@@ -22,7 +22,14 @@ import { faker } from '@faker-js/faker'
 import { and, eq } from 'drizzle-orm'
 
 import { hashPassword } from '@/security/password'
-import { Action, AuthProvider, Resource, Role, UserStatus } from '@/types'
+import {
+  Action,
+  AuthProvider,
+  MembershipStatus,
+  Resource,
+  Role,
+  UserStatus
+} from '@/types'
 
 import { db } from '../clients'
 import {
@@ -176,7 +183,8 @@ const seedFakeTeams = async (userIds: string[]) => {
         members.map(userId => ({
           userId,
           teamId: team.id,
-          position: faker.person.jobTitle()
+          position: faker.person.jobTitle(),
+          status: MembershipStatus.Active
         }))
       )
       .returning({ id: teamMembersTable.id })

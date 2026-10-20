@@ -1,5 +1,5 @@
 {
-  "id": "ef4d436b-98d9-4aee-87f3-1d249f6f946d",
+  "id": "fb854ae6-46a1-4f2f-9764-79869c7fcf1c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -529,7 +529,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'active'"
+          "default": "'pending'"
         },
         "invited_by": {
           "name": "invited_by",

@@ -56,7 +56,7 @@ export const teamMembersTable = pgTable(
     // Pending until the invited user accepts. A pending membership grants nothing
     status: membershipStatusEnum('status')
       .notNull()
-      .default(MembershipStatus.Active)
+      .default(MembershipStatus.Pending)
       .$type<MembershipStatus>(),
     invitedBy: uuid('invited_by').references(() => usersTable.id, {
       onDelete: 'set null'

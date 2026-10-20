@@ -77,7 +77,7 @@ CREATE TABLE "team_members" (
 	"user_id" uuid NOT NULL,
 	"team_id" uuid NOT NULL,
 	"position" varchar(100),
-	"status" "membership_status" DEFAULT 'active' NOT NULL,
+	"status" "membership_status" DEFAULT 'pending' NOT NULL,
 	"invited_by" uuid,
 	"joined_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_active_at" timestamp with time zone DEFAULT now() NOT NULL
