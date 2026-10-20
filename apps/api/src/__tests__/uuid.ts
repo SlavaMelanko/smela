@@ -68,6 +68,7 @@ export const testUuids = {
   // Teams (c0c0 = team type)
   TEAM_1: '00000000-0000-4000-c0c0-000000000001',
   TEAM_2: '00000000-0000-4000-c0c0-000000000002',
+  TEAM_3: '00000000-0000-4000-c0c0-000000000003',
 
   // Memberships (8d0d = membership type)
   MEMBERSHIP_1: '00000000-0000-4000-8d0d-000000000001',

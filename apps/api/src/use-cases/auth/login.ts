@@ -42,7 +42,7 @@ export const logInWithEmail = async (
     throw new AppError(ErrorCode.InvalidCredentials)
   }
 
-  const [{ team, teams }, permissions] = await Promise.all([
+  const [userTeams, permissions] = await Promise.all([
     resolveUserTeams(user.id),
     resolvePermissionList(user.id)
   ])
@@ -54,7 +54,7 @@ export const logInWithEmail = async (
   )
 
   return {
-    data: { user, team, teams, permissions, accessToken },
+    data: { user, ...userTeams, permissions, accessToken },
     refreshToken
   }
 }

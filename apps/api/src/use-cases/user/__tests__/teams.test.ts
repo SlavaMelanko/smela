@@ -12,9 +12,15 @@ import {
   Resource
 } from '@/types'
 
-import { createTeam, switchTeam, updateTeam } from '../teams'
+import {
+  acceptTeamInvite,
+  createTeam,
+  declineTeamInvite,
+  switchTeam,
+  updateTeam
+} from '../teams'
 
-const { MEMBERSHIP_1, MEMBERSHIP_2, TEAM_1, TEAM_2, USER_1 } = testUuids
+const { MEMBERSHIP_1, MEMBERSHIP_2, TEAM_1, TEAM_2, USER_1, USER_2 } = testUuids
 
 describe('createTeam', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -161,6 +167,7 @@ describe('switchTeam', () => {
           position: 'Developer'
         }
       ]),
+      findUserInvites: mock(async () => []),
       findMemberPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -192,7 +199,8 @@ describe('switchTeam', () => {
       teams: [
         { id: TEAM_2, name: 'Globex', position: null },
         { id: TEAM_1, name: 'Acme', position: 'Developer' }
-      ]
+      ],
+      invites: []
     })
   })
 
@@ -201,6 +209,83 @@ describe('switchTeam', () => {
 
     expect(switchTeam(USER_1, TEAM_2)).rejects.toMatchObject({
       code: ErrorCode.Forbidden
+    })
+  })
+})
+
+describe('team invites', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  const membership: TeamMember = {
+    id: MEMBERSHIP_1,
+    userId: USER_1,
+    teamId: TEAM_1,
+    position: null,
+    status: MembershipStatus.Active,
+    invitedBy: USER_2,
+    joinedAt: new Date('2024-01-02'),
+    lastActiveAt: new Date('2024-01-02')
+  }
+
+  let mockTeamRepo: any
+
+  beforeEach(async () => {
+    mockTeamRepo = {
+      activateMember: mock(
+        async (): Promise<TeamMember | undefined> => membership
+      ),
+      deletePendingMember: mock(
+        async (): Promise<TeamMember | undefined> => membership
+      ),
+      findUserTeams: mock(async () => []),
+      findUserInvites: mock(async () => []),
+      findMemberPermissions: mock(async () => [])
+    } satisfies Partial<typeof teamRepo>
+
+    await moduleMocker.mock('@/data', () => ({
+      teamRepo: mockTeamRepo
+    }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  it('accepts the invite and returns the refreshed teams', async () => {
+    mockTeamRepo.findUserTeams.mockImplementation(async () => [
+      { id: TEAM_1, membershipId: MEMBERSHIP_1, name: 'Acme', position: null }
+    ])
+
+    const result = await acceptTeamInvite(USER_1, TEAM_1)
+
+    expect(mockTeamRepo.activateMember).toHaveBeenCalledWith(USER_1, TEAM_1)
+    expect(result.team?.id).toBe(TEAM_1)
+    expect(result.invites).toEqual([])
+  })
+
+  it('declines the invite and returns the refreshed teams', async () => {
+    const result = await declineTeamInvite(USER_1, TEAM_1)
+
+    expect(mockTeamRepo.deletePendingMember).toHaveBeenCalledWith(
+      USER_1,
+      TEAM_1
+    )
+    expect(result).toEqual({ team: undefined, teams: [], invites: [] })
+  })
+
+  it('throws NotFound when there is no pending invite to accept', async () => {
+    mockTeamRepo.activateMember.mockImplementation(async () => undefined)
+
+    expect(acceptTeamInvite(USER_1, TEAM_1)).rejects.toMatchObject({
+      code: ErrorCode.NotFound
+    })
+  })
+
+  it('throws NotFound when there is no pending invite to decline', async () => {
+    mockTeamRepo.deletePendingMember.mockImplementation(async () => undefined)
+
+    expect(declineTeamInvite(USER_1, TEAM_1)).rejects.toMatchObject({
+      code: ErrorCode.NotFound
     })
   })
 })

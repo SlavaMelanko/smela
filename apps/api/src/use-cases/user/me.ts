@@ -15,7 +15,7 @@ const prepareValidUpdates = (updates: UpdateUserInput): UpdateUserInput => {
 }
 
 export const getUser = async (userId: string) => {
-  const [user, { team, teams }, permissions] = await Promise.all([
+  const [user, userTeams, permissions] = await Promise.all([
     userRepo.findById(userId),
     resolveUserTeams(userId),
     resolvePermissionList(userId)
@@ -27,7 +27,7 @@ export const getUser = async (userId: string) => {
     throw new AppError(ErrorCode.InternalError)
   }
 
-  return { user, team, teams, permissions }
+  return { user, ...userTeams, permissions }
 }
 
 export const changePassword = async (
@@ -69,7 +69,7 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
     return getUser(userId)
   }
 
-  const [user, { team, teams }, permissions] = await Promise.all([
+  const [user, userTeams, permissions] = await Promise.all([
     userRepo.update(userId, {
       ...validUpdates,
       updatedAt: new Date()
@@ -78,5 +78,5 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
     resolvePermissionList(userId)
   ])
 
-  return { user, team, teams, permissions }
+  return { user, ...userTeams, permissions }
 }

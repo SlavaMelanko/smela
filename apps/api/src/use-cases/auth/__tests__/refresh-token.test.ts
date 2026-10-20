@@ -14,7 +14,8 @@ import type {
   teamRepo,
   User,
   userRepo,
-  UserTeamInfo
+  UserTeamInfo,
+  UserTeamInvite
 } from '@/data'
 
 import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
@@ -87,7 +88,8 @@ describe('refreshAuthTokens', () => {
       userRepo: mockUserRepo,
       refreshTokenRepo: mockRefreshTokenRepo,
       teamRepo: {
-        findUserTeams: mock(async (): Promise<UserTeamInfo[]> => [])
+        findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
+        findUserInvites: mock(async (): Promise<UserTeamInvite[]> => [])
       } satisfies Partial<typeof teamRepo>
     }))
 

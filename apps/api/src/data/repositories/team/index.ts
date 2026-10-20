@@ -2,6 +2,7 @@ import {
   activateTeamMember,
   createTeam,
   createTeamMember,
+  deletePendingTeamMember,
   deleteTeamMember,
   markTeamMemberLastActive,
   setTeamMemberPermissions,
@@ -14,6 +15,7 @@ import {
   findTeamMember,
   findTeamMemberPermissions,
   findTeamMembers,
+  findUserInvites,
   findUserTeams,
   searchTeams
 } from './queries'
@@ -28,6 +30,7 @@ const teamMutations = {
 const teamQueries = {
   find: findTeam,
   findById: findTeamById,
+  findUserInvites,
   findUserTeams,
   search: searchTeams
 }
@@ -36,6 +39,7 @@ const memberMutations = {
   activateMember: activateTeamMember,
   createMember: createTeamMember,
   deleteMember: deleteTeamMember,
+  deletePendingMember: deletePendingTeamMember,
   markMemberLastActive: markTeamMemberLastActive,
   setMemberPermissions: setTeamMemberPermissions,
   updateMember: updateTeamMember

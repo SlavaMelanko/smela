@@ -153,6 +153,28 @@ export const activateTeamMember = async (
   return membership
 }
 
+// Returns undefined when there is no pending membership
+export const deletePendingTeamMember = async (
+  userId: string,
+  teamId: string,
+  tx?: Database
+): Promise<TeamMember | undefined> => {
+  const executor = tx || db
+
+  const [membership] = await executor
+    .delete(teamMembersTable)
+    .where(
+      and(
+        eq(teamMembersTable.userId, userId),
+        eq(teamMembersTable.teamId, teamId),
+        eq(teamMembersTable.status, MembershipStatus.Pending)
+      )
+    )
+    .returning()
+
+  return membership
+}
+
 export const deleteTeamMember = async (
   userId: string,
   teamId: string,
