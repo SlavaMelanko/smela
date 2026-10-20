@@ -12,6 +12,7 @@ export const content: UserInviteContent = {
     `${inviterName || 'Admin'} invited you to join the ${teamName || DEFAULT_TEAM} team.`,
   ctaInstruction:
     'Click the link below to accept the invite and finish setting up your account:',
+  signInCtaInstruction: 'Sign in to accept the invite:',
   ctaText: 'Accept invite',
   expiryNotice: 'This link expires in 24 hours for security reasons.',
   signature: (companyName: string) => ({

@@ -58,4 +58,24 @@ describe('UserInviteEmailRenderer', () => {
     expect(result.html).toContain('Admin')
     expect(result.html).toContain(INVITE_URL)
   })
+
+  it('asks an existing account to sign in, without a link expiry', async () => {
+    const result = await renderer.render(
+      { firstName: 'John', inviteUrl: 'https://example.com', hasAccount: true },
+      { company }
+    )
+
+    expect(result.html).toContain('Sign in to accept the invite')
+    expect(result.html).not.toContain('expires')
+  })
+
+  it('asks a new account to finish setup and warns about the link expiry', async () => {
+    const result = await renderer.render(
+      { firstName: 'John', inviteUrl: INVITE_URL },
+      { company }
+    )
+
+    expect(result.html).toContain('finish setting up your account')
+    expect(result.html).toContain('expires')
+  })
 })

@@ -12,6 +12,8 @@ import { renderEmail } from './helper'
 export interface UserInviteEmailData {
   firstName: string
   inviteUrl: string
+  // An existing account accepts in the app, with no token link to expire
+  hasAccount?: boolean
   inviterName?: string
   teamName?: string
 }

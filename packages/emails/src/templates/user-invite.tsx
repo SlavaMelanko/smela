@@ -17,6 +17,7 @@ interface Props {
   data: {
     firstName: string
     inviteUrl: string
+    hasAccount?: boolean
     inviterName?: string
     teamName?: string
   }
@@ -33,7 +34,7 @@ const UserInviteEmail = ({
   company,
   socialLinks
 }: Props) => {
-  const { firstName, inviteUrl, inviterName, teamName } = data
+  const { firstName, inviteUrl, hasAccount, inviterName, teamName } = data
 
   return (
     <BaseEmail
@@ -47,13 +48,17 @@ const UserInviteEmail = ({
 
       <Text style={s.text.body}>{c.body(inviterName, teamName)}</Text>
 
-      <Text style={s.text.body}>{c.ctaInstruction}</Text>
+      <Text style={s.text.body}>
+        {hasAccount ? c.signInCtaInstruction : c.ctaInstruction}
+      </Text>
 
       <Link href={inviteUrl} style={s.link}>
         {c.ctaText}
       </Link>
 
-      <Text style={s.text.detail}>{`• ${c.expiryNotice}`}</Text>
+      {!hasAccount && (
+        <Text style={s.text.detail}>{`• ${c.expiryNotice}`}</Text>
+      )}
 
       <Signature styles={s} signature={c.signature(company.name)} />
     </BaseEmail>
