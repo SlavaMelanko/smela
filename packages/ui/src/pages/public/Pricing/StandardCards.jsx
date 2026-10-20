@@ -103,7 +103,7 @@ export const StandardCards = () => {
           text: t('features.rollover')
         },
         {
-          icon: <UserPlus className='size-6 text-green-500' />,
+          icon: <UserPlus className='size-6 text-success' />,
           text: t('features.dedicatedManager')
         }
       ],

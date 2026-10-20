@@ -11,7 +11,7 @@ import { Bell, Calendar, Info, X } from 'lucide-react'
 
 const iconMap = {
   important: <Info className='size-5 text-blue-500' />,
-  event: <Calendar className='size-5 text-green-500' />,
+  event: <Calendar className='size-5 text-success' />,
   info: <Bell className='size-5 text-orange-500' />
 }
 
