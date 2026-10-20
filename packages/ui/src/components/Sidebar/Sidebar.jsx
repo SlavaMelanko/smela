@@ -33,7 +33,15 @@ const formatBadge = count => {
   return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
 }
 
-export const Sidebar = ({ items, teams, onTeamChange, onCreateTeam }) => {
+export const Sidebar = ({
+  items,
+  teams,
+  invites,
+  onTeamChange,
+  onCreateTeam,
+  onAcceptInvite,
+  onDeclineInvite
+}) => {
   const { t } = useLocale()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -130,8 +138,11 @@ export const Sidebar = ({ items, teams, onTeamChange, onCreateTeam }) => {
         {teams && (
           <TeamSwitcher
             teams={teams}
+            invites={invites}
             onTeamChange={onTeamChange}
             onCreateTeam={onCreateTeam}
+            onAcceptInvite={onAcceptInvite}
+            onDeclineInvite={onDeclineInvite}
           />
         )}
         <Copyright />

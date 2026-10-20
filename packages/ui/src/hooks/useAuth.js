@@ -18,20 +18,16 @@ export const authKeys = {
   invitation: token => [...authKeys.all(), 'invitation', token]
 }
 
+// The access token lives in storage only, so it never reaches the query cache
 const cacheAuthResponse = (queryClient, data) => {
-  accessTokenStorage.set(data.accessToken)
+  const { accessToken, ...session } = data
 
-  if (data?.user) {
-    const { user, team, teams, permissions } = data
+  accessTokenStorage.set(accessToken)
 
-    queryClient.setQueryData(authKeys.user(), {
-      user,
-      team,
-      teams,
-      permissions
-    })
+  if (session.user) {
+    queryClient.setQueryData(authKeys.user(), session)
 
-    setErrorTrackerUser(user)
+    setErrorTrackerUser(session.user)
   } else {
     // No user in response, fetch from /me endpoint
     queryClient.invalidateQueries({ queryKey: authKeys.user() })
@@ -61,6 +57,7 @@ export const useCurrentUser = (options = {}) => {
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
     teams: query.data?.teams ?? [],
+    invites: query.data?.invites ?? [],
     permissions,
     isAuthenticated: !!query.data?.user,
     can: p => permissions.includes(p),

@@ -126,6 +126,25 @@ describe('TeamSwitcher', () => {
     expect(globalThis.mockNavigate).not.toHaveBeenCalled()
   })
 
+  it('does not switch to the team that is already active', async () => {
+    const user = userEvent.setup()
+    const onTeamChange = vi.fn()
+
+    renderWithProviders(
+      <TeamSwitcher
+        teams={[{ id: 'engineering', name: 'Engineering' }]}
+        onTeamChange={onTeamChange}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Switch team' }))
+    await user.click(
+      await screen.findByRole('menuitemradio', { name: /Engineering/ })
+    )
+
+    expect(onTeamChange).not.toHaveBeenCalled()
+  })
+
   it('calls the create action without switching teams or navigating', async () => {
     const user = userEvent.setup()
     const onCreateTeam = vi.fn()
@@ -161,5 +180,81 @@ describe('TeamSwitcher', () => {
     expect(
       await screen.findByRole('menuitem', { name: 'Create team' })
     ).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  describe('invitations', () => {
+    const invites = [
+      {
+        id: 'marketing',
+        name: 'Marketing',
+        inviter: { firstName: 'Jane', lastName: 'Doe' }
+      }
+    ]
+
+    it('keeps the menu reachable with invites but no team yet', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<TeamSwitcher teams={[]} invites={invites} />)
+
+      expect(screen.getByText('No team yet')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Switch team' }))
+
+      const menu = await screen.findByRole('menu')
+
+      expect(within(menu).getByText('Invitations')).toBeInTheDocument()
+      expect(within(menu).getByText('From Jane Doe')).toBeInTheDocument()
+      expect(within(menu).queryByRole('menuitemradio')).not.toBeInTheDocument()
+    })
+
+    it('accepts an invite through its callback', async () => {
+      const user = userEvent.setup()
+      const onAcceptInvite = vi.fn()
+      const onDeclineInvite = vi.fn()
+
+      renderWithProviders(
+        <TeamSwitcher
+          teams={[{ id: 'engineering', name: 'Engineering' }]}
+          invites={invites}
+          onAcceptInvite={onAcceptInvite}
+          onDeclineInvite={onDeclineInvite}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Switch team' }))
+      await user.click(
+        await screen.findByRole('menuitem', {
+          name: 'Accept invitation to Marketing'
+        })
+      )
+
+      expect(onAcceptInvite).toHaveBeenCalledWith('marketing')
+      expect(onDeclineInvite).not.toHaveBeenCalled()
+    })
+
+    it('declines an invite through its callback', async () => {
+      const user = userEvent.setup()
+      const onAcceptInvite = vi.fn()
+      const onDeclineInvite = vi.fn()
+
+      renderWithProviders(
+        <TeamSwitcher
+          teams={[]}
+          invites={invites}
+          onAcceptInvite={onAcceptInvite}
+          onDeclineInvite={onDeclineInvite}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Switch team' }))
+      await user.click(
+        await screen.findByRole('menuitem', {
+          name: 'Decline invitation to Marketing'
+        })
+      )
+
+      expect(onDeclineInvite).toHaveBeenCalledWith('marketing')
+      expect(onAcceptInvite).not.toHaveBeenCalled()
+    })
   })
 })
