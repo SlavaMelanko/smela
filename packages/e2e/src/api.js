@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 export const waitForApiCall = async (page, options, timeout = 30000) => {
   const { path, status, method, validateResponse, validateRequest } = options
@@ -57,4 +57,19 @@ export const waitForApiCalls = async (page, optionsArray, timeout = 30000) => {
   return Promise.all(
     optionsArray.map(options => waitForApiCall(page, options, timeout))
   )
+}
+
+export const createAuthenticatedRequest = (request, accessToken) => {
+  return async (path, { method = 'GET', data, status = 200 } = {}) => {
+    const url = new URL(path, process.env.VITE_BE_BASE_URL).href
+    const response = await request.fetch(url, {
+      method,
+      data,
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+
+    expect(response.status(), `${method} ${path}`).toBe(status)
+
+    return response.json()
+  }
 }

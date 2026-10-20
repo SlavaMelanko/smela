@@ -10,6 +10,7 @@ import {
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { ChevronDown, Plus } from 'lucide-react'
+import { useId } from 'react'
 
 import { EmptyState } from './EmptyState'
 import { InviteList } from './InviteList'
@@ -88,12 +89,19 @@ const TeamList = ({ teams, onTeamChange }) => {
 }
 
 // Pending invites take over the chevron, since accepting them happens inside the menu
-const TriggerIcon = ({ hasInvites }) =>
-  hasInvites ? (
-    <span className='size-3 rounded-full bg-destructive' />
+const TriggerIcon = ({ hasInvites, descriptionId }) => {
+  const { t } = useLocale()
+
+  return hasInvites ? (
+    <span className='size-3 rounded-full bg-destructive'>
+      <span id={descriptionId} className='sr-only'>
+        {t('team.invites.pending')}
+      </span>
+    </span>
   ) : (
     <ChevronDown className='size-4' />
   )
+}
 
 export const TeamSwitcher = ({
   teams = [],
@@ -104,6 +112,7 @@ export const TeamSwitcher = ({
   onDeclineInvite
 }) => {
   const { t } = useLocale()
+  const descriptionId = useId()
   const [team] = teams
   const hasInvites = invites.length > 0
 
@@ -122,9 +131,10 @@ export const TeamSwitcher = ({
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t('team.switch')}
+          aria-describedby={hasInvites ? descriptionId : undefined}
           className='flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
         >
-          <TriggerIcon hasInvites={hasInvites} />
+          <TriggerIcon hasInvites={hasInvites} descriptionId={descriptionId} />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align='end'

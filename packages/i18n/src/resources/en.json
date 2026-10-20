@@ -463,6 +463,7 @@
       "accept": "Accept invitation to {{name}}",
       "decline": "Decline invitation to {{name}}",
       "from": "From {{name}}",
+      "pending": "You have pending invitations",
       "title": "Invitations"
     },
     "members": {

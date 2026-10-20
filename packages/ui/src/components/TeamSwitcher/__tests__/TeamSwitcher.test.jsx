@@ -5,6 +5,34 @@ import { renderWithProviders } from '@ui/tests'
 import { TeamSwitcher } from '../TeamSwitcher'
 
 describe('TeamSwitcher', () => {
+  it.each([
+    { hasTeam: true, hasInvite: false, description: '' },
+    {
+      hasTeam: false,
+      hasInvite: true,
+      description: 'You have pending invitations'
+    },
+    {
+      hasTeam: true,
+      hasInvite: true,
+      description: 'You have pending invitations'
+    }
+  ])(
+    'describes the trigger as "$description" when hasTeam=$hasTeam and hasInvite=$hasInvite',
+    ({ hasTeam, hasInvite, description }) => {
+      renderWithProviders(
+        <TeamSwitcher
+          teams={hasTeam ? [{ id: 'design', name: 'Design' }] : []}
+          invites={hasInvite ? [{ id: 'marketing', name: 'Marketing' }] : []}
+        />
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Switch team' })
+      ).toHaveAccessibleDescription(description)
+    }
+  )
+
   it('shows the no-team state with creation disabled until a callback is provided', () => {
     renderWithProviders(<TeamSwitcher teams={[]} />)
 
