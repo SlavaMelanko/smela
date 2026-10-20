@@ -126,6 +126,25 @@ describe('TeamSwitcher', () => {
     expect(globalThis.mockNavigate).not.toHaveBeenCalled()
   })
 
+  it('does not switch to the team that is already active', async () => {
+    const user = userEvent.setup()
+    const onTeamChange = vi.fn()
+
+    renderWithProviders(
+      <TeamSwitcher
+        teams={[{ id: 'engineering', name: 'Engineering' }]}
+        onTeamChange={onTeamChange}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Switch team' }))
+    await user.click(
+      await screen.findByRole('menuitemradio', { name: /Engineering/ })
+    )
+
+    expect(onTeamChange).not.toHaveBeenCalled()
+  })
+
   it('calls the create action without switching teams or navigating', async () => {
     const user = userEvent.setup()
     const onCreateTeam = vi.fn()

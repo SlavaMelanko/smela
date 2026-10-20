@@ -64,8 +64,15 @@ const CreateTeamItem = ({ onCreateTeam }) => {
 const TeamList = ({ teams, onTeamChange }) => {
   const [activeTeam] = teams
 
+  // The menu reports a click on the checked item as a change too
+  const selectTeam = teamId => {
+    if (teamId !== activeTeam.id) {
+      onTeamChange?.(teamId)
+    }
+  }
+
   return (
-    <DropdownMenuRadioGroup value={activeTeam.id} onValueChange={onTeamChange}>
+    <DropdownMenuRadioGroup value={activeTeam.id} onValueChange={selectTeam}>
       {teams.map(team => (
         <DropdownMenuRadioItem
           key={team.id}
@@ -80,10 +87,13 @@ const TeamList = ({ teams, onTeamChange }) => {
   )
 }
 
-// Pending invites dot the trigger, since accepting them happens inside the menu
-const InvitesIndicator = () => (
-  <span className='absolute top-1/2 right-2 size-2 -translate-y-1/2 rounded-full bg-destructive' />
-)
+// Pending invites take over the chevron, since accepting them happens inside the menu
+const TriggerIcon = ({ hasInvites }) =>
+  hasInvites ? (
+    <span className='size-3 rounded-full bg-destructive' />
+  ) : (
+    <ChevronDown className='size-4' />
+  )
 
 export const TeamSwitcher = ({
   teams = [],
@@ -112,10 +122,9 @@ export const TeamSwitcher = ({
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t('team.switch')}
-          className='relative flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
+          className='flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
         >
-          <ChevronDown className='size-4' />
-          {hasInvites && <InvitesIndicator />}
+          <TriggerIcon hasInvites={hasInvites} />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align='end'
