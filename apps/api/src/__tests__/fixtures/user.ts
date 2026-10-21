@@ -6,6 +6,7 @@ import { testUuids } from '../uuid'
 
 export const buildUser = (overrides: Partial<User> = {}): User => ({
   id: testUuids.USER_1,
+  nickname: 'John',
   firstName: 'John',
   lastName: 'Doe',
   email: 'john@example.com',

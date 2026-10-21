@@ -15,12 +15,12 @@ signupRoute.post(
   validateBody(signupBodySchema),
   verifyCaptcha(),
   async c => {
-    const { firstName, lastName, email, password, preferences } =
+    const { nickname, firstName, lastName, email, password, preferences } =
       c.req.valid('json')
     const deviceInfo = getDeviceInfo(c)
 
     const result = await signUpWithEmail(
-      { firstName, lastName, email, password },
+      { nickname, firstName, lastName, email, password },
       deviceInfo,
       preferences
     )

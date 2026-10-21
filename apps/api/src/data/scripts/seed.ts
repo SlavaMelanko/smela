@@ -284,6 +284,7 @@ const seedSystemUsers = async () => {
     const [createdUser] = await db
       .insert(usersTable)
       .values({
+        nickname: user.firstName,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -375,6 +376,7 @@ const seedTestUsers = async (teamId: string) => {
     const [createdUser] = await db
       .insert(usersTable)
       .values({
+        nickname: user.firstName,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -432,6 +434,7 @@ const seedGoogleUsers = async () => {
     const [createdUser] = await db
       .insert(usersTable)
       .values({
+        nickname: user.firstName,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,

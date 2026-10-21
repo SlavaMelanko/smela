@@ -21,6 +21,7 @@ describe('searchUsers', () => {
       users: [
         {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@example.com',

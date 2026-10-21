@@ -492,6 +492,7 @@ test.describe('User: Existing account invitations', () => {
       expect.objectContaining({
         id: inviter.team.id,
         inviter: {
+          nickname: inviter.credentials.firstName,
           firstName: inviter.credentials.firstName,
           lastName: inviter.credentials.lastName
         }
@@ -602,6 +603,8 @@ test.describe('User: Existing account invitations', () => {
 
     // Preserve the verified account and its existing team, with no invitation remaining
     expect(body.user.id).toBe(invitee.user.id)
+    expect(body.user.nickname).toBe(invitee.credentials.firstName)
+
     expect(body.user.status).toBe('verified')
     expect(body.team.id).toBe(invitee.team.id)
     expect(body.teams.map(team => team.id)).toEqual([invitee.team.id])
@@ -643,6 +646,8 @@ test.describe('User: Pending account invitations', () => {
       t
     )
 
+    expect(firstMember.nickname).toBe(invitee.firstName)
+    expect(secondMember.nickname).toBe(firstMember.nickname)
     expect(secondMember.id).toBe(firstMember.id)
     const secondEmail = await emailService.waitForInvitationEmail(
       invitee.email,
@@ -679,6 +684,8 @@ test.describe('User: Pending account invitations', () => {
     const { body } = await acceptPromise
 
     // Verify the account, join the second team, and keep the first invitation pending
+    expect(body.user.nickname).toBe(invitee.firstName)
+
     expect(body.user.status).toBe('verified')
     expect(body.team.id).toBe(secondInviter.team.id)
     expect(body.teams.map(team => team.id)).toEqual([secondInviter.team.id])

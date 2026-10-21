@@ -47,6 +47,7 @@ export const updateUser = async (
     .with(updatedCte)
     .select({
       id: updatedCte.id,
+      nickname: updatedCte.nickname,
       firstName: updatedCte.firstName,
       lastName: updatedCte.lastName,
       email: updatedCte.email,

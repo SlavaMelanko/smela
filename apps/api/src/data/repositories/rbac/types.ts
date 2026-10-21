@@ -26,6 +26,7 @@ export type ActivePermissionRow = Pick<
 
 export interface Inviter {
   id: string
-  firstName: string
+  nickname: string
+  firstName: string | null
   lastName: string | null
 }

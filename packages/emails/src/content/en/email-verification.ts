@@ -3,7 +3,7 @@ import type EmailVerificationContent from '../email-verification'
 export const content: EmailVerificationContent = {
   subject: 'Verify your email',
   previewText: (companyName: string) => `Confirm your email for ${companyName}`,
-  greeting: (firstName?: string) => `Hi ${firstName || 'there'},`,
+  greeting: (nickname?: string) => `Hi ${nickname || 'there'},`,
   body: 'Click the link below to verify your email address:',
   ctaText: 'Verify email address',
   expiryNotice: 'This link expires in 24 hours for security reasons.',

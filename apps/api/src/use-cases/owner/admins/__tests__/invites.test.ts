@@ -38,6 +38,7 @@ describe('inviteAdmin', () => {
   beforeEach(async () => {
     mockAdmin = {
       id: testUuids.ADMIN_1,
+      nickname: 'New',
       firstName: 'New',
       lastName: 'Admin',
       email: 'newadmin@example.com',
@@ -101,6 +102,7 @@ describe('inviteAdmin', () => {
 
     expect(mockUserCreate).toHaveBeenCalledWith(
       {
+        nickname: 'New',
         firstName: 'New',
         lastName: 'Admin',
         email: 'newadmin@example.com',
@@ -163,6 +165,7 @@ describe('resendAdminInvite', () => {
   beforeEach(async () => {
     mockAdmin = {
       id: testUuids.ADMIN_1,
+      nickname: 'Admin',
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
@@ -174,6 +177,7 @@ describe('resendAdminInvite', () => {
 
     mockInviter = {
       id: testUuids.OWNER_1,
+      nickname: 'Owner',
       firstName: 'Owner',
       lastName: 'User',
       email: 'owner@example.com',
@@ -329,6 +333,7 @@ describe('cancelAdminInvite', () => {
   beforeEach(async () => {
     mockAdmin = {
       id: testUuids.ADMIN_1,
+      nickname: 'Admin',
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',

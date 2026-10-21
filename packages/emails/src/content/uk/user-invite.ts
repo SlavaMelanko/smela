@@ -7,7 +7,7 @@ export const content: UserInviteContent = {
     `Вас запрошено до ${teamName || DEFAULT_TEAM}`,
   previewText: (teamName?: string) =>
     `Вас запрошено до ${teamName || DEFAULT_TEAM}`,
-  greeting: (firstName?: string) => `Вітаю ${firstName || 'друже'},`,
+  greeting: (nickname?: string) => `Вітаю ${nickname || 'друже'},`,
   body: (inviterName?: string, teamName?: string) =>
     `${inviterName || 'Адмін'} запросив вас приєднатися до команди ${teamName || DEFAULT_TEAM}.`,
   ctaInstruction:

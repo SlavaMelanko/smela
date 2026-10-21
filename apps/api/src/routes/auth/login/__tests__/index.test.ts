@@ -32,6 +32,7 @@ describe('auth /login', () => {
       data: {
         user: {
           id: testUuids.USER_1,
+          nickname: 'Test',
           firstName: 'Test',
           lastName: 'User',
           email: 'test@example.com',
@@ -94,6 +95,7 @@ describe('auth /login', () => {
       expect(data).toEqual({
         user: {
           id: testUuids.USER_1,
+          nickname: 'Test',
           firstName: 'Test',
           lastName: 'User',
           email: 'test@example.com',

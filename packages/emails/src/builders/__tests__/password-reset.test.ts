@@ -22,7 +22,7 @@ describe('PasswordResetEmailMessageBuilder', () => {
     const senderProfileResolver = buildSenderProfileResolver(senderProfile)
 
     const builder = new PasswordResetEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       resetUrl: 'https://example.com/reset-password?token=xyz789'
     })
 
@@ -39,7 +39,7 @@ describe('PasswordResetEmailMessageBuilder', () => {
 
   it('builds an email message addressed to the given recipient with the resolved sender', async () => {
     const builder = new PasswordResetEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       resetUrl: 'https://example.com/reset-password?token=xyz789'
     })
 

@@ -69,6 +69,7 @@ export const findInviters = async (
     .select({
       userId: userRoleTable.userId,
       inviterId: usersTable.id,
+      nickname: usersTable.nickname,
       firstName: usersTable.firstName,
       lastName: usersTable.lastName
     })
@@ -81,6 +82,7 @@ export const findInviters = async (
       r.userId,
       {
         id: r.inviterId,
+        nickname: r.nickname,
         firstName: r.firstName,
         lastName: r.lastName
       }

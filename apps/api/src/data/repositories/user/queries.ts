@@ -20,6 +20,7 @@ const selectUserBase = (executor: Database) =>
   executor
     .select({
       id: usersTable.id,
+      nickname: usersTable.nickname,
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
@@ -37,6 +38,7 @@ const selectUserExtended = (executor: Database) => {
   return executor
     .select({
       id: usersTable.id,
+      nickname: usersTable.nickname,
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
@@ -124,7 +126,7 @@ const buildWhereConditions = ({ search, roles, statuses }: SearchParams) => {
   if (search && search.length > 0) {
     // Use concatenated expression to leverage GIN index (idx_users_search_trgm)
     conditions.push(
-      sql`(${usersTable.id}::text || ' ' || ${usersTable.firstName} || ' ' || COALESCE(${usersTable.lastName}, '') || ' ' || ${usersTable.email}) ILIKE ${`%${search}%`}`
+      sql`(${usersTable.id}::text || ' ' || ${usersTable.nickname} || ' ' || COALESCE(${usersTable.firstName}, '') || ' ' || COALESCE(${usersTable.lastName}, '') || ' ' || ${usersTable.email}) ILIKE ${`%${search}%`}`
     )
   }
 

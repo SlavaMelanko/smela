@@ -5,11 +5,16 @@ import {
   fillUpdatePasswordFormAndSubmit,
   logOut
 } from '@smela/e2e/actions'
-import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
+import {
+  createAuthenticatedRequest,
+  waitForApiCall,
+  waitForApiCalls
+} from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
   ACCEPT_INVITE_PATH,
+  LOGIN_PATH,
   OWNER_ADMINS_PATH,
   UPDATE_PASSWORD_PATH
 } from '@smela/ui/services/backend/paths'
@@ -137,7 +142,9 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     ])
 
     await fillAdminInviteFormAndSubmit(page, newAdmin, t)
-    await apiPromises
+    const [created] = await apiPromises
+
+    expect(created.body.admin.nickname).toBe(newAdmin.firstName)
 
     // Verify success toast
     await expect(page.getByText(t.invite.send.success)).toBeVisible()
@@ -191,7 +198,9 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     })
 
     await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
-    await apiPromise
+    const { body } = await apiPromise
+
+    expect(body.user.nickname).toBe(newAdmin.firstName)
 
     // Verify success toast
     await expect(page.getByText(t.invite.accept.success)).toBeVisible()
@@ -366,4 +375,80 @@ test.describe('Owner: Admins Page Error Handling', () => {
 
     await expect(page.getByRole('cell')).toHaveCount(0)
   })
+})
+
+test('Owner: nickname search and optional real names persist through admin updates', async ({
+  page,
+  login
+}) => {
+  const loginPromise = waitForApiCall(page, {
+    path: LOGIN_PATH,
+    method: 'POST',
+    status: HttpStatus.OK
+  })
+
+  await login(ownerCredentials)
+  const { body } = await loginPromise
+  const api = createAuthenticatedRequest(page.request, body.accessToken)
+  const email = generateEmailAddress({ prefix: 'nicknameadmin' })
+
+  await api(OWNER_ADMINS_PATH, {
+    method: 'POST',
+    data: { email, permissions: { users: { view: true } } },
+    status: HttpStatus.BAD_REQUEST
+  })
+
+  const { admin } = await api(OWNER_ADMINS_PATH, {
+    method: 'POST',
+    data: {
+      firstName: 'Nickname',
+      email,
+      permissions: { users: { view: true } }
+    },
+    status: HttpStatus.CREATED
+  })
+
+  expect(admin.nickname).toBe('Nickname')
+
+  const path = `${OWNER_ADMINS_PATH}/${admin.id}`
+  const nickname = `Label ${admin.id}`
+  const updated = await api(path, {
+    method: 'PATCH',
+    data: { nickname: `  ${nickname}  `, firstName: null, lastName: null }
+  })
+
+  expect(updated.admin).toMatchObject({
+    nickname,
+    firstName: null,
+    lastName: null
+  })
+
+  expect((await api(path)).admin.nickname).toBe(nickname)
+
+  for (const search of [nickname, email, admin.id]) {
+    const results = await api(
+      `${OWNER_ADMINS_PATH}?search=${encodeURIComponent(search)}`
+    )
+
+    expect(results.admins).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: admin.id, nickname })
+      ])
+    )
+  }
+
+  const renamed = await api(path, {
+    method: 'PATCH',
+    data: { firstName: 'Renamed', lastName: 'Administrator' }
+  })
+
+  expect(renamed.admin.nickname).toBe(nickname)
+
+  for (const search of ['Renamed', 'Administrator']) {
+    const results = await api(`${OWNER_ADMINS_PATH}?search=${search}`)
+
+    expect(results.admins).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: admin.id })])
+    )
+  }
 })

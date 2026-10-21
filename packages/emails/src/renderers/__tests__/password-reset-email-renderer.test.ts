@@ -13,10 +13,10 @@ const RESET_URL = 'https://example.com/reset-password?token=xyz789'
 testRendererContract<PasswordResetEmailData>({
   name: 'Password reset',
   renderer,
-  data: { firstName: 'John', resetUrl: RESET_URL },
+  data: { nickname: 'John', resetUrl: RESET_URL },
   url: RESET_URL,
   otherData: {
-    firstName: 'Alice',
+    nickname: 'Alice',
     resetUrl: 'https://example.com/reset-password?token=other'
   },
   englishSubject: /password|reset|recovery|forgot/,
@@ -31,7 +31,7 @@ describe('PasswordResetEmailRenderer', () => {
       'https://example.com/reset-password?token=very-long-reset-token-that-might-be-used-in-production-environments-with-secure-random-generation-xyz789abc123'
 
     const result = await renderer.render(
-      { firstName: 'John', resetUrl },
+      { nickname: 'John', resetUrl },
       { company }
     )
 

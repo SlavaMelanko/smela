@@ -10,7 +10,7 @@ import { UserInviteEmail } from '../templates'
 import { renderEmail } from './helper'
 
 export interface UserInviteEmailData {
-  firstName: string
+  nickname: string
   inviteUrl: string
   // An existing account accepts in the app, with no token link to expire
   hasAccount?: boolean

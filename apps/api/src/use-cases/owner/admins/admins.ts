@@ -48,8 +48,9 @@ export const getAdmin = async (adminId: string) => {
 }
 
 export interface UpdateAdminInput {
-  firstName?: string
-  lastName?: string
+  nickname?: string
+  firstName?: string | null
+  lastName?: string | null
   status?: UserStatus
 }
 

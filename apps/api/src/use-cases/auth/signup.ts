@@ -12,20 +12,23 @@ import {
 } from '@/services/email'
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
+import { resolveNickname } from '../resolve-nickname'
 import { resolvePermissionList } from '../resolve-permissions'
 import { createAuthTokens, issueOneTimeToken } from '../tokens'
 
-const createNewUser = async (
-  firstName: string,
-  lastName: string | undefined,
-  email: string,
-  password: string
-) => {
+const createNewUser = async ({
+  nickname,
+  firstName,
+  lastName,
+  email,
+  password
+}: SignupInput) => {
   const hashedPassword = await hashPassword(password)
 
   return db.transaction(async tx => {
     const newUser = await userRepo.create(
       {
+        nickname: resolveNickname(email, nickname, firstName),
         firstName,
         lastName,
         email,
@@ -61,14 +64,15 @@ const createNewUser = async (
 }
 
 export interface SignupInput {
-  firstName: string
-  lastName?: string
+  nickname?: string
+  firstName?: string | null
+  lastName?: string | null
   email: string
   password: string
 }
 
 export const signUpWithEmail = async (
-  { firstName, lastName, email, password }: SignupInput,
+  { nickname, firstName, lastName, email, password }: SignupInput,
   deviceInfo: DeviceInfo,
   preferences?: UserPreferences
 ) => {
@@ -80,18 +84,19 @@ export const signUpWithEmail = async (
   }
 
   // Create new user, verification token, etc. in a single transaction
-  const { newUser, verificationToken } = await createNewUser(
+  const { newUser, verificationToken } = await createNewUser({
+    nickname,
     firstName,
     lastName,
     email,
     password
-  )
+  })
 
   void emailService.send(
     new VerificationEmailMessageBuilder(
       newUser.email,
       {
-        firstName: newUser.firstName,
+        nickname: newUser.nickname,
         verificationUrl: buildVerificationUrl(verificationToken)
       },
       preferences

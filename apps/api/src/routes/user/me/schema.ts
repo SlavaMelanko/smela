@@ -4,6 +4,7 @@ import { rules } from '@/routes/rules'
 
 export const updateProfileSchema = z
   .object({
+    nickname: rules.user.nickname.optional(),
     firstName: rules.user.firstName.optional(),
     lastName: rules.user.lastName.optional()
   })

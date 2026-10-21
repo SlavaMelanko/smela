@@ -23,7 +23,7 @@ describe('requestPasswordReset', () => {
   let mockEmailService: any
 
   beforeEach(async () => {
-    mockUser = buildUser()
+    mockUser = buildUser({ nickname: 'Nickname label', firstName: null })
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
@@ -70,6 +70,9 @@ describe('requestPasswordReset', () => {
       expect.any(PasswordResetEmailMessageBuilder)
     )
     expect(mockEmailService.send).toHaveBeenCalledTimes(1)
+    expect(mockEmailService.send.mock.calls[0][0].data.nickname).toBe(
+      'Nickname label'
+    )
     const { resetUrl } = mockEmailService.send.mock.calls[0][0].data
     const rawToken = new URL(resetUrl).searchParams.get('token')!
     expect(resetUrl).toBe(buildResetPasswordUrl(mockUser.role, rawToken))

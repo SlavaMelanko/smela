@@ -22,6 +22,7 @@ describe('getAdmins', () => {
       users: [
         {
           id: testUuids.ADMIN_1,
+          nickname: 'Admin',
           firstName: 'Admin',
           lastName: 'User',
           email: 'admin@example.com',
@@ -86,6 +87,7 @@ describe('getAdmins', () => {
   it('includes invite info when available', async () => {
     const inviteInfo = {
       id: testUuids.OWNER_1,
+      nickname: 'Owner',
       firstName: 'Owner',
       lastName: 'User'
     }
@@ -110,6 +112,7 @@ describe('getAdmin', () => {
   beforeEach(async () => {
     mockAdmin = {
       id: testUuids.ADMIN_1,
+      nickname: 'Admin',
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
@@ -148,6 +151,7 @@ describe('getAdmin', () => {
   it('includes invite info when available', async () => {
     const inviteInfo = {
       id: testUuids.OWNER_1,
+      nickname: 'Owner',
       firstName: 'Owner',
       lastName: 'User'
     }

@@ -7,7 +7,7 @@ export const content: UserInviteContent = {
     `You're invited to ${teamName || DEFAULT_TEAM}`,
   previewText: (teamName?: string) =>
     `You're invited to ${teamName || DEFAULT_TEAM}`,
-  greeting: (firstName?: string) => `Hi ${firstName || 'there'},`,
+  greeting: (nickname?: string) => `Hi ${nickname || 'there'},`,
   body: (inviterName?: string, teamName?: string) =>
     `${inviterName || 'Admin'} invited you to join the ${teamName || DEFAULT_TEAM} team.`,
   ctaInstruction:

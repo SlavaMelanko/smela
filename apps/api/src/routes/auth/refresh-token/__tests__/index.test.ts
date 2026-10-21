@@ -28,6 +28,7 @@ describe('auth /refresh-token', () => {
       data: {
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',

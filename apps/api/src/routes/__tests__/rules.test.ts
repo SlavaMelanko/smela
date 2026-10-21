@@ -118,3 +118,48 @@ describe('rules.permissions', () => {
     ).toThrow()
   })
 })
+
+describe('rules.user.nickname', () => {
+  it('trims Unicode labels without requiring uniqueness or handle syntax', () => {
+    expect(rules.user.nickname.parse('  Слава 🌻  ')).toBe('Слава 🌻')
+  })
+
+  it('rejects empty, null, whitespace-only, and overlong nicknames', () => {
+    for (const value of ['', null, '   ', 'a'.repeat(51)]) {
+      expect(rules.user.nickname.safeParse(value).success).toBe(false)
+    }
+  })
+
+  it('accepts the minimum and maximum lengths', () => {
+    expect(rules.user.nickname.parse('A')).toBe('A')
+    expect(rules.user.nickname.parse('a'.repeat(50))).toHaveLength(50)
+  })
+})
+
+describe('rules.user.firstName', () => {
+  it('normalizes and validates exactly like lastName', () => {
+    for (const value of [
+      undefined,
+      null,
+      '',
+      '  ',
+      ' A ',
+      'a'.repeat(50),
+      'a'.repeat(51)
+    ]) {
+      const firstName = rules.user.firstName.optional().safeParse(value)
+      const lastName = rules.user.lastName.optional().safeParse(value)
+      expect(firstName.success).toBe(lastName.success)
+      if (firstName.success && lastName.success) {
+        expect(firstName.data).toBe(lastName.data)
+      }
+    }
+  })
+
+  it('keeps admin creation names required', () => {
+    for (const value of [undefined, null, '', '  ']) {
+      expect(rules.user.requiredFirstName.safeParse(value).success).toBe(false)
+    }
+    expect(rules.user.requiredFirstName.parse(' Slava ')).toBe('Slava')
+  })
+})

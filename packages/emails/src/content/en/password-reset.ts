@@ -4,7 +4,7 @@ export const content: PasswordResetEmailContent = {
   subject: 'Reset your password',
   previewText: (companyName: string) =>
     `Reset your password for ${companyName} account`,
-  greeting: (firstName?: string) => `Hi ${firstName || 'there'},`,
+  greeting: (nickname?: string) => `Hi ${nickname || 'there'},`,
   body: 'We received a request to reset your password. Click the link below to set a new password:',
   ctaText: 'Reset password',
   expiryNotice: 'This link expires in 1 hour for security reasons.',

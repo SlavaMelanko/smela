@@ -157,10 +157,38 @@ describe('google-oauth', () => {
     expect(mockTeamRepo.findUserTeams).toHaveBeenCalledWith(mockUser.id)
   })
 
+  it('preserves the nickname of an existing Google user', async () => {
+    mockUser.nickname = 'Custom label'
+    const result = await logInOrSignUpWithGoogle(
+      mockGoogleProfile,
+      mockDeviceInfo
+    )
+
+    expect(result.data.user.nickname).toBe('Custom label')
+    expect(mockUserRepo.create).not.toHaveBeenCalled()
+    expect(mockUserRepo.update).not.toHaveBeenCalled()
+  })
+
   describe('when Google user has no account', () => {
     beforeEach(() => {
       mockAuthRepo.findByProvider.mockImplementation(async () => null)
       mockUserRepo.findByEmail.mockImplementation(async () => null)
+    })
+
+    it('uses the email prefix when Google omits firstName', async () => {
+      await logInOrSignUpWithGoogle(
+        {
+          ...mockGoogleProfile,
+          email: 'slava+google@example.com',
+          firstName: undefined
+        },
+        mockDeviceInfo
+      )
+
+      expect(mockUserRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ nickname: 'slava', firstName: undefined }),
+        expect.anything()
+      )
     })
 
     it('creates user and Google auth record in a transaction', async () => {
@@ -169,6 +197,7 @@ describe('google-oauth', () => {
       expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         {
+          nickname: mockGoogleProfile.firstName,
           firstName: mockGoogleProfile.firstName,
           lastName: mockGoogleProfile.lastName,
           email: mockGoogleProfile.email,

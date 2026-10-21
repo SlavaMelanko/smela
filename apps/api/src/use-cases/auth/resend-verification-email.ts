@@ -30,7 +30,7 @@ export const resendVerificationEmail = async (
       new VerificationEmailMessageBuilder(
         user.email,
         {
-          firstName: user.firstName,
+          nickname: user.nickname,
           verificationUrl: buildVerificationUrl(token)
         },
         preferences

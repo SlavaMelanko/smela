@@ -131,6 +131,7 @@ export const findTeamMembers = async (
     .select({
       id: teamMembersTable.userId,
       membershipId: teamMembersTable.id,
+      nickname: usersTable.nickname,
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
@@ -146,6 +147,7 @@ export const findTeamMembers = async (
       joinedAt: teamMembersTable.joinedAt,
       inviter: {
         id: invitersTable.id,
+        nickname: invitersTable.nickname,
         firstName: invitersTable.firstName,
         lastName: invitersTable.lastName
       }
@@ -208,6 +210,7 @@ export const findUserInvites = async (
       id: teamsTable.id,
       name: teamsTable.name,
       inviter: {
+        nickname: invitersTable.nickname,
         firstName: invitersTable.firstName,
         lastName: invitersTable.lastName
       }

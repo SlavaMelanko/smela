@@ -38,8 +38,9 @@ export const getUser = async (userId: string) => {
 }
 
 export interface UpdateUserInput {
-  firstName?: string
-  lastName?: string
+  nickname?: string
+  firstName?: string | null
+  lastName?: string | null
   status?: UserStatus
 }
 

@@ -22,7 +22,11 @@ describe('resendVerificationEmail', () => {
   let mockEmailService: any
 
   beforeEach(async () => {
-    mockUser = buildUser({ status: UserStatus.New })
+    mockUser = buildUser({
+      nickname: 'Nickname label',
+      firstName: null,
+      status: UserStatus.New
+    })
 
     mockUserRepo = {
       findByEmail: mock(async () => mockUser)
@@ -74,6 +78,9 @@ describe('resendVerificationEmail', () => {
       expect.any(VerificationEmailMessageBuilder)
     )
     expect(mockEmailService.send).toHaveBeenCalledTimes(1)
+    expect(mockEmailService.send.mock.calls[0][0].data.nickname).toBe(
+      'Nickname label'
+    )
     const { verificationUrl } = mockEmailService.send.mock.calls[0][0].data
     const rawToken = new URL(verificationUrl).searchParams.get('token')!
     expect(verificationUrl).toBe(buildVerificationUrl(rawToken))

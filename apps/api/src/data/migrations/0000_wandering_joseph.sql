@@ -108,7 +108,8 @@ CREATE TABLE "tokens" (
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY NOT NULL,
-	"first_name" varchar(100) NOT NULL,
+	"nickname" varchar(50) NOT NULL,
+	"first_name" varchar(100),
 	"last_name" varchar(100),
 	"email" varchar(255) NOT NULL,
 	"status" "status" DEFAULT 'new' NOT NULL,

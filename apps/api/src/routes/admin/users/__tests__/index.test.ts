@@ -25,6 +25,7 @@ describe('admin /users', () => {
     mockUsers = [
       {
         id: testUuids.USER_1,
+        nickname: 'John',
         firstName: 'John',
         lastName: 'Doe',
         email: 'john@example.com',
@@ -35,6 +36,7 @@ describe('admin /users', () => {
       },
       {
         id: testUuids.USER_2,
+        nickname: 'Jane',
         firstName: 'Jane',
         lastName: 'Smith',
         email: 'jane@example.com',
@@ -83,6 +85,7 @@ describe('admin /users', () => {
         users: [
           {
             id: testUuids.USER_1,
+            nickname: 'John',
             firstName: 'John',
             lastName: 'Doe',
             email: 'john@example.com',
@@ -93,6 +96,7 @@ describe('admin /users', () => {
           },
           {
             id: testUuids.USER_2,
+            nickname: 'Jane',
             firstName: 'Jane',
             lastName: 'Smith',
             email: 'jane@example.com',

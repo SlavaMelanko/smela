@@ -12,11 +12,12 @@ import {
 } from '@/services/email'
 import { AuthProvider, Role, UserStatus } from '@/types'
 
+import { resolveNickname } from '../../resolve-nickname'
 import { issueInviteToken } from '../../tokens'
 
 export interface InviteAdminInput {
   firstName: string
-  lastName?: string
+  lastName?: string | null
   email: string
   permissions: PermissionsInput
 }
@@ -43,6 +44,7 @@ export const inviteAdmin = async (
   const { admin: newAdmin, token } = await db.transaction(async tx => {
     const newAdmin = await userRepo.create(
       {
+        nickname: resolveNickname(admin.email, admin.firstName),
         firstName: admin.firstName,
         lastName: admin.lastName,
         email: admin.email,
@@ -86,9 +88,9 @@ export const inviteAdmin = async (
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(newAdmin.email, {
-      firstName: newAdmin.firstName,
+      nickname: newAdmin.nickname,
       inviteUrl: buildInviteUrl(Role.Admin, token),
-      inviterName: inviter.firstName,
+      inviterName: inviter.nickname,
       teamName: env.COMPANY_NAME
     })
   )
@@ -123,9 +125,9 @@ export const resendAdminInvite = async (adminId: string, inviterId: string) => {
 
   void emailService.send(
     new UserInviteEmailMessageBuilder(admin.email, {
-      firstName: admin.firstName,
+      nickname: admin.nickname,
       inviteUrl: buildInviteUrl(Role.Admin, token),
-      inviterName: inviter.firstName,
+      inviterName: inviter.nickname,
       teamName: env.COMPANY_NAME
     })
   )

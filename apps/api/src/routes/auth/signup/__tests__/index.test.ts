@@ -49,6 +49,7 @@ describe('auth /signup', () => {
       data: {
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',
@@ -100,6 +101,7 @@ describe('auth /signup', () => {
       expect(data).toEqual({
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',
@@ -139,9 +141,28 @@ describe('auth /signup', () => {
       )
     })
 
+    it('accepts nickname without first or last name', async () => {
+      const {
+        firstName: _firstName,
+        lastName: _lastName,
+        ...payload
+      } = validPayload
+      const res = await post(app, SIGNUP_URL, {
+        ...payload,
+        nickname: '  Слава  '
+      })
+
+      expect(res.status).toBe(HttpStatus.CREATED)
+      expect(mockSignUpWithEmail).toHaveBeenCalledWith(
+        { nickname: 'Слава', email: payload.email, password: payload.password },
+        deviceInfo,
+        undefined
+      )
+    })
+
     it('rejects invalid field formats', async () => {
       const invalidData = [
-        { ...validPayload, firstName: '' },
+        { ...validPayload, nickname: '' },
         { ...validPayload, email: 'invalid' },
         ...WEAK_PASSWORDS.map(password => ({ ...validPayload, password }))
       ]
@@ -158,7 +179,6 @@ describe('auth /signup', () => {
     it('rejects missing required fields', async () => {
       const { firstName, lastName, email, password, captcha } = validPayload
       const incompleteRequests = [
-        { lastName, email, password, captcha },
         { firstName, password, captcha },
         { firstName, lastName, email, captcha },
         { captcha },

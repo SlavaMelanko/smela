@@ -1,7 +1,7 @@
 export default interface PasswordResetEmailContent {
   subject: string
   previewText: (companyName: string) => string
-  greeting: (firstName?: string) => string
+  greeting: (nickname?: string) => string
   body: string
   ctaText: string
   disclaimer: string

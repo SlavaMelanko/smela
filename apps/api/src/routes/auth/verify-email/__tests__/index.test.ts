@@ -27,6 +27,7 @@ describe('auth /verify-email', () => {
       data: {
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@example.com',
@@ -63,6 +64,7 @@ describe('auth /verify-email', () => {
       expect(data).toEqual({
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@example.com',

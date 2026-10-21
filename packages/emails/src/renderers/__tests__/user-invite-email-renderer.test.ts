@@ -14,14 +14,14 @@ testRendererContract<UserInviteEmailData>({
   name: 'User invite',
   renderer,
   data: {
-    firstName: 'John',
+    nickname: 'John',
     inviteUrl: INVITE_URL,
     inviterName: 'Jane',
     teamName: 'Acme'
   },
   url: INVITE_URL,
   otherData: {
-    firstName: 'Alice',
+    nickname: 'Alice',
     inviteUrl: 'https://example.com/accept-invite?token=other',
     inviterName: 'Jane',
     teamName: 'Acme'
@@ -36,7 +36,7 @@ describe('UserInviteEmailRenderer', () => {
   it('puts the team name in the subject and the inviter in the body', async () => {
     const result = await renderer.render(
       {
-        firstName: 'John',
+        nickname: 'John',
         inviteUrl: INVITE_URL,
         inviterName: 'Jane',
         teamName: 'Acme'
@@ -50,7 +50,7 @@ describe('UserInviteEmailRenderer', () => {
 
   it('falls back to generic wording without an inviter or team name', async () => {
     const result = await renderer.render(
-      { firstName: 'John', inviteUrl: INVITE_URL },
+      { nickname: 'John', inviteUrl: INVITE_URL },
       { company }
     )
 
@@ -61,7 +61,7 @@ describe('UserInviteEmailRenderer', () => {
 
   it('asks an existing account to sign in, without a link expiry', async () => {
     const result = await renderer.render(
-      { firstName: 'John', inviteUrl: 'https://example.com', hasAccount: true },
+      { nickname: 'John', inviteUrl: 'https://example.com', hasAccount: true },
       { company }
     )
 
@@ -71,7 +71,7 @@ describe('UserInviteEmailRenderer', () => {
 
   it('asks a new account to finish setup and warns about the link expiry', async () => {
     const result = await renderer.render(
-      { firstName: 'John', inviteUrl: INVITE_URL },
+      { nickname: 'John', inviteUrl: INVITE_URL },
       { company }
     )
 

@@ -18,6 +18,7 @@ export type TeamMember = TeamMemberRecord
 
 export interface TeamMemberInviter {
   id: string | null
+  nickname: string | null
   firstName: string | null
   lastName: string | null
 }
@@ -25,7 +26,8 @@ export interface TeamMemberInviter {
 export interface TeamMemberDetails {
   id: string
   membershipId: string
-  firstName: string
+  nickname: string
+  firstName: string | null
   lastName: string | null
   email: string
   status: MembershipStatus
@@ -52,6 +54,7 @@ export interface UserTeamInvite {
   id: string
   name: string
   inviter: {
+    nickname: string | null
     firstName: string | null
     lastName: string | null
   } | null

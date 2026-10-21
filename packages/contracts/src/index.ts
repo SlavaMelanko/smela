@@ -2,6 +2,7 @@ export {
   DescriptionConstraint,
   EmailConstraint,
   NameConstraint,
+  NicknameConstraint,
   PasswordConstraint,
   PositionConstraint,
   SvgConstraint,
