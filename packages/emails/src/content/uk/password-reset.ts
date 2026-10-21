@@ -4,7 +4,7 @@ export const content: PasswordResetEmailContent = {
   subject: 'Скинути пароль',
   previewText: (companyName: string) =>
     `Скинути пароль для облікового запису ${companyName}`,
-  greeting: (nickname?: string) => `Вітаю ${nickname || 'дорогий користувач'},`,
+  greeting: (nickname?: string) => `Вітаю ${nickname || 'пане'},`,
   body: 'Ми отримали запит на скидання вашого пароля. Перейдіть за посиланням нижче, щоб встановити новий пароль:',
   ctaText: 'Скинути пароль',
   expiryNotice: 'З міркувань безпеки це посилання дійсне протягом 1 години.',
