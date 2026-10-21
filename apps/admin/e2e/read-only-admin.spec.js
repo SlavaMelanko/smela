@@ -62,7 +62,11 @@ test.describe('Read-Only Admin: Users', () => {
     await page.getByRole('row').nth(1).click()
 
     // Profile tab: fields must be read-only, Save button hidden
-    for (const label of [t.firstName.label, t.lastName.label]) {
+    for (const label of [
+      t.nickname.label,
+      t.firstName.label,
+      t.lastName.label
+    ]) {
       await expect(page.getByLabel(label)).toHaveAttribute('readonly', '')
     }
 

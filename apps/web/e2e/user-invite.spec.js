@@ -492,9 +492,9 @@ test.describe('User: Existing account invitations', () => {
       expect.objectContaining({
         id: inviter.team.id,
         inviter: {
-          nickname: inviter.credentials.firstName,
-          firstName: inviter.credentials.firstName,
-          lastName: inviter.credentials.lastName
+          nickname: inviter.credentials.nickname,
+          firstName: null,
+          lastName: null
         }
       })
     ])
@@ -603,7 +603,7 @@ test.describe('User: Existing account invitations', () => {
 
     // Preserve the verified account and its existing team, with no invitation remaining
     expect(body.user.id).toBe(invitee.user.id)
-    expect(body.user.nickname).toBe(invitee.credentials.firstName)
+    expect(body.user.nickname).toBe(invitee.credentials.nickname)
 
     expect(body.user.status).toBe('verified')
     expect(body.team.id).toBe(invitee.team.id)

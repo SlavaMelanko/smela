@@ -11,8 +11,7 @@ const renderForm = (onSubmit = vi.fn()) => {
   renderWithProviders(<SignupForm onSubmit={onSubmit} />)
 
   return {
-    firstNameInput: screen.getByLabelText(en.firstName.label, { exact: false }),
-    lastNameInput: screen.getByLabelText(en.lastName.label, { exact: false }),
+    nicknameInput: screen.getByLabelText(en.nickname.label, { exact: false }),
     emailInput: screen.getByLabelText(en.email.label, { exact: false }),
     passwordInput: screen.getByLabelText(en.password.label.default, {
       exact: false,
@@ -30,20 +29,17 @@ describe('Signup Form', () => {
   })
 
   it('renders all fields with required indicators', () => {
-    const { firstNameInput, lastNameInput, emailInput, passwordInput } =
-      renderForm()
+    const { nicknameInput, emailInput, passwordInput } = renderForm()
 
-    expect(firstNameInput).toBeInTheDocument()
-    expect(lastNameInput).toBeInTheDocument()
+    expect(nicknameInput).toBeInTheDocument()
     expect(emailInput).toBeInTheDocument()
     expect(passwordInput).toBeInTheDocument()
 
-    // Required fields have asterisk, optional fields don't
-    const firstNameLabel = screen.getByText(en.firstName.label)
-    const lastNameLabel = screen.getByText(en.lastName.label)
+    expect(screen.queryByText(en.firstName.label)).not.toBeInTheDocument()
+    expect(screen.queryByText(en.lastName.label)).not.toBeInTheDocument()
+    const nicknameLabel = screen.getByText(en.nickname.label)
 
-    expect(within(firstNameLabel).getByText('*')).toBeInTheDocument()
-    expect(within(lastNameLabel).queryByText('*')).not.toBeInTheDocument()
+    expect(within(nicknameLabel).getByText('*')).toBeInTheDocument()
   })
 
   it('shows validation errors for invalid input', async () => {
@@ -61,46 +57,34 @@ describe('Signup Form', () => {
 
   it('submits form with valid data', async () => {
     const onSubmitMock = vi.fn()
-    const {
-      firstNameInput,
-      lastNameInput,
-      emailInput,
-      passwordInput,
-      submitButton
-    } = renderForm(onSubmitMock)
+    const { nicknameInput, emailInput, passwordInput, submitButton } =
+      renderForm(onSubmitMock)
 
-    await user.type(firstNameInput, td.firstName.ok)
-    await user.type(lastNameInput, td.lastName.ok)
+    await user.type(nicknameInput, '  Слава 🌻  ')
     await user.type(emailInput, td.email.ok)
     await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
-        firstName: td.firstName.ok,
-        lastName: td.lastName.ok,
+        nickname: 'Слава 🌻',
         email: td.email.ok,
         password: td.password.strong
       })
     })
   })
 
-  it('submits without optional lastName', async () => {
-    const onSubmitMock = vi.fn()
-    const { firstNameInput, emailInput, passwordInput, submitButton } =
-      renderForm(onSubmitMock)
+  it('requires nickname', async () => {
+    const onSubmit = vi.fn()
+    const { emailInput, passwordInput, submitButton } = renderForm(onSubmit)
 
-    await user.type(firstNameInput, td.firstName.ok)
     await user.type(emailInput, td.email.ok)
     await user.type(passwordInput, td.password.strong)
     await user.click(submitButton)
+    expect(
+      await screen.findByText(en.nickname.error.required)
+    ).toBeInTheDocument()
 
-    await waitFor(() => {
-      expect(onSubmitMock).toHaveBeenCalledWith({
-        firstName: td.firstName.ok,
-        email: td.email.ok,
-        password: td.password.strong
-      })
-    })
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })

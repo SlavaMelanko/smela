@@ -8,6 +8,7 @@ const en = resources.en.translation
 import { FieldName, UserInfoForm } from '..'
 
 const mockUser = {
+  nickname: 'Johnny',
   firstName: 'John',
   lastName: 'Doe',
   status: UserStatus.Active,
@@ -30,6 +31,7 @@ const renderForm = ({
   )
 
   return {
+    nicknameInput: screen.getByLabelText(en.nickname.label, { exact: false }),
     firstNameInput: screen.getByLabelText(en.firstName.label, { exact: false }),
     lastNameInput: screen.getByLabelText(en.lastName.label, { exact: false }),
     saveButton: screen.queryByRole('button', { name: en.save })
@@ -63,26 +65,52 @@ describe('UserInfoForm', () => {
     expect(lastNameInput).toHaveValue(mockUser.lastName)
   })
 
-  it('shows required error when firstName is cleared on submit', async () => {
-    const { saveButton } = renderForm({ user: mockUser })
-
-    const firstNameInput = screen.getByLabelText(en.firstName.label, {
-      exact: false
+  it('submits null for cleared first and last names', async () => {
+    const onSubmit = vi.fn()
+    const { firstNameInput, lastNameInput, saveButton } = renderForm({
+      user: mockUser,
+      onSubmit
     })
 
-    // Clear makes form dirty so save becomes enabled
     await user.clear(firstNameInput)
+    await user.clear(lastNameInput)
     await user.click(saveButton)
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        {
+          nickname: 'Johnny',
+          firstName: null,
+          lastName: null,
+          status: UserStatus.Active
+        },
+        expect.anything()
+      )
+    )
+  })
 
-    await waitFor(() => {
-      expect(screen.getByText(en.firstName.error.required)).toBeInTheDocument()
+  it('requires nickname when editing', async () => {
+    const onSubmit = vi.fn()
+    const { nicknameInput, saveButton } = renderForm({
+      user: mockUser,
+      onSubmit
     })
+
+    await user.clear(nicknameInput)
+    await user.click(saveButton)
+    expect(
+      await screen.findByText(en.nickname.error.required)
+    ).toBeInTheDocument()
+
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it('blocks submission without selecting status', async () => {
     const onSubmit = vi.fn()
-    const { firstNameInput, saveButton } = renderForm({ onSubmit })
+    const { nicknameInput, firstNameInput, saveButton } = renderForm({
+      onSubmit
+    })
 
+    await user.type(nicknameInput, 'Jane')
     await user.type(firstNameInput, 'John')
     await user.click(saveButton)
 
@@ -94,8 +122,11 @@ describe('UserInfoForm', () => {
 
   it('calls onSubmit with correct data after filling fields and selecting status', async () => {
     const onSubmit = vi.fn()
-    const { firstNameInput, saveButton } = renderForm({ onSubmit })
+    const { nicknameInput, firstNameInput, saveButton } = renderForm({
+      onSubmit
+    })
 
+    await user.type(nicknameInput, 'Jane')
     await user.type(firstNameInput, 'Jane')
 
     // The StatusDropdown trigger is the first button (before the save button)

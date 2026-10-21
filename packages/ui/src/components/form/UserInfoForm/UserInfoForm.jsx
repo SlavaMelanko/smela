@@ -61,9 +61,22 @@ export const UserInfoForm = ({
       <FormFields>
         <FormRow>
           <FormField
+            label={t('nickname.label')}
+            name={FieldName.NICKNAME}
+            error={errors[FieldName.NICKNAME]}
+          >
+            <Input
+              {...register(FieldName.NICKNAME)}
+              readOnly={!canManageUsers}
+            />
+          </FormField>
+        </FormRow>
+        <FormRow>
+          <FormField
             label={t('firstName.label')}
             name={FieldName.FIRST_NAME}
             error={errors[FieldName.FIRST_NAME]}
+            optional
           >
             <Input
               {...register(FieldName.FIRST_NAME)}

@@ -64,7 +64,7 @@ const createNewUser = async ({
 }
 
 export interface SignupInput {
-  nickname?: string
+  nickname: string
   firstName?: string | null
   lastName?: string | null
   email: string

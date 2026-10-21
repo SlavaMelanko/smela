@@ -121,7 +121,7 @@
   "firstName": {
     "error": {
       "max": "First name can't be longer than 50 characters.",
-      "min": "First name must be at least 2 characters.",
+      "min": "First name must be at least 1 character.",
       "required": "First name is required."
     },
     "label": "First name"
@@ -185,7 +185,7 @@
   "lastName": {
     "error": {
       "max": "Last name can't be longer than 50 characters.",
-      "min": "Last name must be at least 2 characters.",
+      "min": "Last name must be at least 1 character.",
       "required": "Last name is required."
     },
     "label": "Last name"
@@ -208,6 +208,14 @@
       "required": "Name is required."
     },
     "label": "Name"
+  },
+  "nickname": {
+    "error": {
+      "max": "Nickname can't be longer than 50 characters.",
+      "min": "Nickname must be at least 1 character.",
+      "required": "Nickname is required."
+    },
+    "label": "Nickname"
   },
   "noNewNotifications": "No new notifications.",
   "notifications": "Notifications",

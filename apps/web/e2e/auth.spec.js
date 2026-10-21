@@ -6,11 +6,7 @@ import {
   fillSignupFormAndSubmit,
   logOut
 } from '@smela/e2e/actions'
-import {
-  createAuthenticatedRequest,
-  waitForApiCall,
-  waitForApiCalls
-} from '@smela/e2e/api'
+import { waitForApiCall, waitForApiCalls } from '@smela/e2e/api'
 import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import { Role, UserStatus } from '@smela/ui/lib/types'
@@ -35,13 +31,11 @@ import { expect, test } from './config/fixtures'
 test.describe.serial('Authentication: User Lifecycle', () => {
   // Credentials for a user created during the signup test.
   // Subsequent tests (login, password reset) depend on this user.
-  const firstName = faker.person.firstName()
-  const lastName = faker.person.lastName()
+  const nickname = faker.person.firstName()
 
   const user = {
-    firstName,
-    lastName,
-    email: generateEmailAddress({ prefix: firstName }),
+    nickname,
+    email: generateEmailAddress({ prefix: nickname }),
     initialPassword: process.env.VITE_E2E_USER_PASSWORD,
     newPassword: process.env.VITE_E2E_STRONG_PASSWORD
   }
@@ -62,8 +56,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
     await fillSignupFormAndSubmit(
       page,
       {
-        firstName: user.firstName,
-        lastName: user.lastName,
+        nickname: user.nickname,
         email: user.email,
         password: user.initialPassword
       },
@@ -72,7 +65,7 @@ test.describe.serial('Authentication: User Lifecycle', () => {
 
     const { body } = await apiPromise
 
-    expect(body.user.nickname).toBe(user.firstName)
+    expect(body.user.nickname).toBe(user.nickname)
 
     await page.waitForURL(/email-confirmation/)
 
@@ -90,12 +83,12 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             return false
           }
 
-          const { firstName: fn, lastName: ln, email, status, role } = b.user
+          const { nickname: actualNickname, email, status, role } = b.user
 
           return (
-            b.user.nickname === user.firstName &&
-            fn === user.firstName &&
-            ln === user.lastName &&
+            b.user.firstName === null &&
+            b.user.lastName === null &&
+            actualNickname === user.nickname &&
             email === user.email &&
             status === UserStatus.New &&
             role === Role.User
@@ -110,12 +103,12 @@ test.describe.serial('Authentication: User Lifecycle', () => {
             return false
           }
 
-          const { firstName: fn, lastName: ln, email, status, role } = b.user
+          const { nickname: actualNickname, email, status, role } = b.user
 
           return (
-            b.user.nickname === user.firstName &&
-            fn === user.firstName &&
-            ln === user.lastName &&
+            b.user.firstName === null &&
+            b.user.lastName === null &&
+            actualNickname === user.nickname &&
             email === user.email &&
             status === UserStatus.Verified &&
             role === Role.User
@@ -215,18 +208,17 @@ test.describe('Authentication: General', () => {
   test('signup: validates required fields', async ({ page, t }) => {
     await page.goto('/signup')
 
-    const { firstNameInput, lastNameInput, emailInput, passwordInput } =
+    const { nicknameInput, emailInput, passwordInput } =
       await fillSignupFormAndSubmit(
         page,
-        { firstName: '', lastName: '', email: '', password: '' },
+        { nickname: '', email: '', password: '' },
         t
       )
 
-    await expect(page.getByText(t.firstName.error.required)).toBeVisible()
-    await expect(firstNameInput).toHaveClass(/border-destructive/)
-
-    await expect(page.getByText(t.lastName.error.required)).toHaveCount(0)
-    await expect(lastNameInput).not.toHaveClass(/border-destructive/)
+    await expect(page.getByText(t.nickname.error.required)).toBeVisible()
+    await expect(nicknameInput).toHaveClass(/border-destructive/)
+    await expect(page.getByLabel(t.firstName.label)).toHaveCount(0)
+    await expect(page.getByLabel(t.lastName.label)).toHaveCount(0)
 
     await expect(page.getByText(t.email.error.required)).toBeVisible()
     await expect(emailInput).toHaveClass(/border-destructive/)
@@ -246,8 +238,7 @@ test.describe('Authentication: General', () => {
     await fillSignupFormAndSubmit(
       page,
       {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        nickname: faker.person.firstName(),
         email: process.env.VITE_E2E_USER_EMAIL,
         password: process.env.VITE_E2E_USER_PASSWORD
       },
@@ -268,9 +259,8 @@ test.describe('Authentication: General', () => {
   }) => {
     await page.goto('/signup')
 
-    const firstName = faker.person.firstName()
-    const lastName = faker.person.lastName()
-    const testEmail = generateEmailAddress({ prefix: firstName })
+    const nickname = faker.person.firstName()
+    const testEmail = generateEmailAddress({ prefix: nickname })
 
     let signupCaptchaToken = null
 
@@ -291,11 +281,10 @@ test.describe('Authentication: General', () => {
           return false
         }
 
-        const { firstName: fn, lastName: ln, email, status, role } = body.user
+        const { nickname: actualNickname, email, status, role } = body.user
 
         return (
-          fn === firstName &&
-          ln === lastName &&
+          actualNickname === nickname &&
           email === testEmail &&
           status === UserStatus.New &&
           role === Role.User
@@ -306,8 +295,7 @@ test.describe('Authentication: General', () => {
     await fillSignupFormAndSubmit(
       page,
       {
-        firstName,
-        lastName,
+        nickname,
         email: testEmail,
         password: process.env.VITE_E2E_USER_PASSWORD
       },
@@ -388,9 +376,8 @@ test.describe('Authentication: General', () => {
   }) => {
     await page.goto('/signup')
 
-    const firstName = faker.person.firstName()
-    const lastName = faker.person.lastName()
-    const testEmail = generateEmailAddress({ prefix: firstName })
+    const nickname = faker.person.firstName()
+    const testEmail = generateEmailAddress({ prefix: nickname })
 
     const apiPromise = waitForApiCall(page, {
       path: SIGNUP_PATH,
@@ -400,8 +387,7 @@ test.describe('Authentication: General', () => {
     await fillSignupFormAndSubmit(
       page,
       {
-        firstName,
-        lastName,
+        nickname,
         email: testEmail,
         password: process.env.VITE_E2E_USER_PASSWORD
       },
@@ -666,8 +652,7 @@ test.describe('Authentication: Google OAuth', () => {
     await fillSignupFormAndSubmit(
       page,
       {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        nickname: faker.person.firstName(),
         email: process.env.VITE_E2E_USER_GOOGLE_EMAIL,
         password: process.env.VITE_E2E_USER_PASSWORD
       },
@@ -746,85 +731,114 @@ test.describe('Authentication: Google OAuth', () => {
   })
 })
 
-test.describe('Authentication: Backend nickname compatibility', () => {
-  for (const nickname of [undefined, 'Слава 🌻']) {
-    test(`persists ${nickname ? 'an explicit Unicode nickname' : 'the email prefix fallback'} without real names`, async ({
-      page,
-      t
-    }) => {
-      const email = generateEmailAddress({ prefix: 'nickname' })
-      const expectedNickname =
-        nickname ?? email.split('@')[0].split('+')[0].slice(0, 50)
+test('Authentication: signs up with a nickname and edits profile names through the form', async ({
+  page,
+  t,
+  emailService
+}) => {
+  const email = generateEmailAddress({ prefix: 'nickname' })
 
-      await page.route(`**${SIGNUP_PATH}`, async route => {
-        const payload = route.request().postDataJSON()
+  await page.goto('/signup')
+  const signupPromise = waitForApiCall(page, {
+    path: SIGNUP_PATH,
+    method: 'POST',
+    status: HttpStatus.CREATED,
+    validateRequest: body =>
+      body.nickname === 'Слава 🌻' &&
+      !('firstName' in body) &&
+      !('lastName' in body)
+  })
 
-        delete payload.firstName
-        delete payload.lastName
-        await route.continue({
-          postData: JSON.stringify({
-            ...payload,
-            ...(nickname && { nickname: `  ${nickname}  ` })
-          })
-        })
-      })
+  await fillSignupFormAndSubmit(
+    page,
+    {
+      nickname: '  Слава 🌻  ',
+      email,
+      password: process.env.VITE_E2E_USER_PASSWORD
+    },
+    t
+  )
 
-      await page.goto('/signup')
-      const signupPromise = waitForApiCall(page, {
-        path: SIGNUP_PATH,
-        method: 'POST',
-        status: HttpStatus.CREATED
-      })
+  const { body } = await signupPromise
 
-      await fillSignupFormAndSubmit(
-        page,
-        {
-          firstName: 'Compatibility',
-          lastName: '',
-          email,
-          password: process.env.VITE_E2E_USER_PASSWORD
-        },
-        t
-      )
+  expect(body.user).toMatchObject({
+    nickname: 'Слава 🌻',
+    firstName: null,
+    lastName: null
+  })
 
-      const { body } = await signupPromise
+  const { link } = await emailService.waitForVerificationEmail(email)
 
-      expect(body.user.nickname).toBe(expectedNickname)
-      expect(body.user.firstName).toBeNull()
-      expect(body.user.lastName).toBeNull()
+  await page.goto(link)
+  await page.waitForURL('/home')
+  await page.goto('/profile')
 
-      const api = createAuthenticatedRequest(page.request, body.accessToken)
-      const profile = await api(ME_PATH)
+  const nickname = page.getByLabel(t.nickname.label)
+  const firstName = page.getByLabel(t.firstName.label)
+  const lastName = page.getByLabel(t.lastName.label)
+  const save = page.getByRole('button', { name: t.save, exact: true })
 
-      expect(profile.user.nickname).toBe(expectedNickname)
+  await expect(nickname).toHaveValue('Слава 🌻')
+  await expect(firstName).toHaveValue('')
+  await expect(lastName).toHaveValue('')
 
-      await api(ME_PATH, {
-        method: 'PATCH',
-        data: { firstName: 'Changed', lastName: 'Name' }
-      })
+  await nickname.fill('   ')
+  await save.click()
+  await expect(page.getByText(t.nickname.error.required)).toBeVisible()
+  await nickname.fill('x'.repeat(51))
+  await save.click()
+  await expect(page.getByText(t.nickname.error.max)).toBeVisible()
+  await nickname.fill('  Updated 🌻  ')
+  await firstName.fill('A'.repeat(51))
+  await lastName.fill('B'.repeat(51))
+  await save.click()
+  await expect(page.getByText(t.firstName.error.max)).toBeVisible()
+  await expect(page.getByText(t.lastName.error.max)).toBeVisible()
+  await firstName.fill('Changed')
+  await lastName.fill('Name')
 
-      const cleared = await api(ME_PATH, {
-        method: 'PATCH',
-        data: { firstName: null, lastName: null }
-      })
+  const updatedPromise = waitForApiCall(page, {
+    path: ME_PATH,
+    method: 'PATCH',
+    status: HttpStatus.OK
+  })
 
-      expect(cleared.user.firstName).toBeNull()
-      expect(cleared.user.lastName).toBeNull()
-      expect(cleared.user.nickname).toBe(expectedNickname)
+  await save.click()
+  const { body: updated } = await updatedPromise
 
-      const renamed = await api(ME_PATH, {
-        method: 'PATCH',
-        data: { nickname: '  Updated label  ' }
-      })
+  expect(updated.user).toMatchObject({
+    nickname: 'Updated 🌻',
+    firstName: 'Changed',
+    lastName: 'Name'
+  })
 
-      expect(renamed.user.nickname).toBe('Updated label')
-      await api(ME_PATH, {
-        method: 'PATCH',
-        data: { nickname: '   ' },
-        status: HttpStatus.BAD_REQUEST
-      })
+  await page.reload()
+  await expect(firstName).toHaveValue('Changed')
+  await expect(nickname).toHaveValue('Updated 🌻')
 
-      expect((await api(ME_PATH)).user.nickname).toBe('Updated label')
-    })
-  }
+  await firstName.fill('  ')
+  await lastName.fill('')
+  const clearedPromise = waitForApiCall(page, {
+    path: ME_PATH,
+    method: 'PATCH',
+    status: HttpStatus.OK,
+    validateRequest: body =>
+      body.firstName === null &&
+      body.lastName === null &&
+      body.nickname === 'Updated 🌻'
+  })
+
+  await save.click()
+  const { body: cleared } = await clearedPromise
+
+  expect(cleared.user).toMatchObject({
+    nickname: 'Updated 🌻',
+    firstName: null,
+    lastName: null
+  })
+
+  await page.reload()
+  await expect(firstName).toHaveValue('')
+  await expect(lastName).toHaveValue('')
+  await expect(nickname).toHaveValue('Updated 🌻')
 })

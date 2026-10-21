@@ -25,6 +25,7 @@ describe('auth /signup', () => {
   const SIGNUP_URL = '/api/v1/auth/signup'
 
   const signupInput = {
+    nickname: 'John',
     firstName: 'John',
     lastName: 'Doe',
     email: 'test@example.com',
@@ -177,10 +178,12 @@ describe('auth /signup', () => {
     })
 
     it('rejects missing required fields', async () => {
-      const { firstName, lastName, email, password, captcha } = validPayload
+      const { nickname, firstName, lastName, email, password, captcha } =
+        validPayload
       const incompleteRequests = [
-        { firstName, password, captcha },
-        { firstName, lastName, email, captcha },
+        { nickname, firstName, password, captcha },
+        { nickname, firstName, lastName, email, captcha },
+        { email, password, captcha },
         { captcha },
         {}
       ]

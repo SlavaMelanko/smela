@@ -109,12 +109,14 @@ describe('user /me', () => {
   describe('PATCH /me', () => {
     it('updates user profile successfully', async () => {
       const res = await patch(app, ME_URL, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: 'Smith'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: 'Smith'
       })
@@ -126,21 +128,26 @@ describe('user /me', () => {
     })
 
     it('allows clearing first and last names', async () => {
-      const res = await patch(app, ME_URL, { firstName: null, lastName: null })
+      const res = await patch(app, ME_URL, {
+        nickname: 'John',
+        firstName: null,
+        lastName: null
+      })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        nickname: 'John',
         firstName: null,
         lastName: null
       })
     })
 
-    it('allows clearing firstName with null without requiring nickname', async () => {
-      const res = await patch(app, ME_URL, { firstName: null })
+    it('allows partial updates without nickname', async () => {
+      const res = await patch(app, ME_URL, { lastName: 'Smith' })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
-        firstName: null
+        lastName: 'Smith'
       })
     })
 
@@ -153,15 +160,19 @@ describe('user /me', () => {
       })
     })
 
-    it('rejects clearing nickname', async () => {
-      const res = await patch(app, ME_URL, { nickname: '' })
+    it.each([null, '', '   '])(
+      'rejects clearing nickname with %p',
+      async nickname => {
+        const res = await patch(app, ME_URL, { nickname })
 
-      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
-      expect(mockUpdateUser).not.toHaveBeenCalled()
-    })
+        expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+        expect(mockUpdateUser).not.toHaveBeenCalled()
+      }
+    )
 
     it('trims strings and reject whitespace-only values', async () => {
       const res = await patch(app, ME_URL, {
+        nickname: 'John',
         firstName: '   ',
         lastName: 'Smith'
       })
@@ -172,12 +183,14 @@ describe('user /me', () => {
 
     it('trims valid strings at validation layer', async () => {
       const res = await patch(app, ME_URL, {
+        nickname: 'John',
         firstName: '  Jane  ',
         lastName: '  Smith  '
       })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: 'Smith'
       })
@@ -185,12 +198,14 @@ describe('user /me', () => {
 
     it('keeps null lastName as null', async () => {
       const res = await patch(app, ME_URL, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: null
       })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: null
       })
@@ -202,6 +217,7 @@ describe('user /me', () => {
       })
 
       const res = await patch(app, ME_URL, {
+        nickname: 'John',
         firstName: 'Jane',
         lastName: 'Smith'
       })
