@@ -17,8 +17,8 @@ export const updateTeamMemberBodySchema = z
     member: z
       .object({
         nickname: rules.user.nickname.optional(),
-        firstName: rules.user.firstName.optional(),
-        lastName: rules.user.lastName.optional()
+        firstName: rules.user.name.nullish(),
+        lastName: rules.user.name.nullish()
       })
       .optional()
   })

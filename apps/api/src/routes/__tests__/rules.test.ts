@@ -136,30 +136,17 @@ describe('rules.user.nickname', () => {
   })
 })
 
-describe('rules.user.firstName', () => {
-  it('normalizes and validates exactly like lastName', () => {
-    for (const value of [
-      undefined,
-      null,
-      '',
-      '  ',
-      ' A ',
-      'a'.repeat(50),
-      'a'.repeat(51)
-    ]) {
-      const firstName = rules.user.firstName.optional().safeParse(value)
-      const lastName = rules.user.lastName.optional().safeParse(value)
-      expect(firstName.success).toBe(lastName.success)
-      if (firstName.success && lastName.success) {
-        expect(firstName.data).toBe(lastName.data)
-      }
+describe('rules.user.name', () => {
+  it('is required by default and trims valid names', () => {
+    for (const value of [undefined, null, '', '  ', 'a'.repeat(51)]) {
+      expect(rules.user.name.safeParse(value).success).toBe(false)
     }
+    expect(rules.user.name.parse(' Slava ')).toBe('Slava')
   })
 
-  it('keeps admin creation names required', () => {
-    for (const value of [undefined, null, '', '  ']) {
-      expect(rules.user.requiredFirstName.safeParse(value).success).toBe(false)
-    }
-    expect(rules.user.requiredFirstName.parse(' Slava ')).toBe('Slava')
+  it('allows clearing with null only when consumers opt in with nullish', () => {
+    expect(rules.user.name.nullish().parse(null)).toBeNull()
+    expect(rules.user.name.nullish().parse(undefined)).toBeUndefined()
+    expect(rules.user.name.nullish().safeParse('').success).toBe(false)
   })
 })

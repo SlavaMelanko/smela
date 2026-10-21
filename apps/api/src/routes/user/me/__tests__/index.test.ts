@@ -126,7 +126,7 @@ describe('user /me', () => {
     })
 
     it('allows clearing first and last names', async () => {
-      const res = await patch(app, ME_URL, { firstName: '', lastName: '' })
+      const res = await patch(app, ME_URL, { firstName: null, lastName: null })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {

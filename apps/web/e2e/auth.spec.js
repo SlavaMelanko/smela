@@ -805,7 +805,7 @@ test.describe('Authentication: Backend nickname compatibility', () => {
 
       const cleared = await api(ME_PATH, {
         method: 'PATCH',
-        data: { firstName: null, lastName: '' }
+        data: { firstName: null, lastName: null }
       })
 
       expect(cleared.user.firstName).toBeNull()

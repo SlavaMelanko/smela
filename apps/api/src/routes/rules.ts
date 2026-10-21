@@ -35,18 +35,6 @@ const displayName = z
   .min(NameConstraint.MIN_LENGTH)
   .max(NameConstraint.MAX_LENGTH)
 
-// Normalizes '' → null so "no name" has one representation, valid string → trimmed
-// undefined means "don't touch the field"
-const optionalName = z.preprocess(
-  val => (val === '' ? null : val),
-  z
-    .string()
-    .trim()
-    .min(NameConstraint.MIN_LENGTH)
-    .max(NameConstraint.MAX_LENGTH)
-    .nullable()
-)
-
 const description = z.string().trim().max(DescriptionConstraint.MAX_LENGTH)
 
 const httpsUrl = z
@@ -74,9 +62,9 @@ export const rules = {
       .trim()
       .min(NicknameConstraint.MIN_LENGTH)
       .max(NicknameConstraint.MAX_LENGTH),
-    firstName: optionalName,
-    lastName: optionalName,
-    requiredFirstName: displayName,
+    // Required by default: consumers add .optional() to allow omitting
+    // and .nullish() to also allow clearing
+    name: displayName,
 
     role: z.enum(Role),
     status: z.enum(UserStatus)
