@@ -21,7 +21,7 @@ const socialLinks: SocialLink[] = [
 interface ContractCase<T> {
   name: string
   renderer: EmailRenderer<T>
-  // Data whose firstName is 'John' and whose url field holds `url`
+  // Data whose nickname is 'John' and whose url field holds `url`
   data: T
   url: string
   // Builds the same email for another recipient, to prove data does not leak
@@ -108,7 +108,7 @@ export const testRendererContract = <T>({
 
     it('keeps non-ASCII names intact', async () => {
       const result = await renderer.render(
-        { ...data, firstName: 'José María' },
+        { ...data, nickname: 'José María' },
         { company }
       )
 

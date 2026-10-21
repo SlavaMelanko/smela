@@ -4,8 +4,9 @@ import { rules } from '@/routes/rules'
 
 export const signupBodySchema = z
   .object({
-    firstName: rules.user.firstName,
-    lastName: rules.user.lastName.optional(),
+    nickname: rules.user.nickname.optional(),
+    firstName: rules.user.name.optional(),
+    lastName: rules.user.name.optional(),
     email: rules.user.email,
     password: rules.user.password,
     captcha: z

@@ -10,7 +10,7 @@ import { EmailVerificationEmail } from '../templates'
 import { renderEmail } from './helper'
 
 export interface EmailVerificationEmailData {
-  firstName: string
+  nickname: string
   verificationUrl: string
 }
 

@@ -49,7 +49,12 @@ const buildTestTeam = (): TeamWithMemberCount => ({
 })
 
 const buildInviter = () =>
-  buildUser({ id: USER_2, firstName: 'Admin', status: UserStatus.Active })
+  buildUser({
+    id: USER_2,
+    nickname: 'Admin',
+    firstName: 'Admin',
+    status: UserStatus.Active
+  })
 
 const buildPendingMember = (): TeamMemberDetails => ({
   ...buildTeamMember(USER_1),
@@ -155,6 +160,7 @@ describe('inviteMember', () => {
 
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         {
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@example.com',
@@ -172,6 +178,26 @@ describe('inviteMember', () => {
       expect(mockRbacSet).toHaveBeenCalledWith(
         USER_1,
         getUserDefaultPermissions(),
+        expect.anything()
+      )
+    })
+
+    it('defaults nickname to the email prefix when names are omitted', async () => {
+      await inviteMember(
+        mockTeam,
+        {
+          email: 'nickname+invite@example.com',
+          permissions: inviteParams.permissions
+        },
+        USER_2
+      )
+
+      expect(mockUserRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          nickname: 'nickname',
+          firstName: undefined,
+          lastName: undefined
+        }),
         expect.anything()
       )
     })
@@ -221,7 +247,11 @@ describe('inviteMember', () => {
   })
 
   describe('existing account', () => {
-    const existingUser = buildUser({ id: USER_1, firstName: 'Johnny' })
+    const existingUser = buildUser({
+      id: USER_1,
+      nickname: 'JohnnyLabel',
+      firstName: 'Johnny'
+    })
 
     beforeEach(() => {
       mockUserRepo.findByEmail.mockImplementation(async () => existingUser)
@@ -255,7 +285,7 @@ describe('inviteMember', () => {
 
       expect(mockTokenRepoIssue).not.toHaveBeenCalled()
       expect(readSentEmail(mockEmailService.send)).toMatchObject({
-        firstName: 'Johnny',
+        nickname: 'JohnnyLabel',
         inviteUrl: env.FE_USER_URL,
         hasAccount: true
       })
@@ -423,6 +453,7 @@ describe('cancelMemberInvite', () => {
     mockTargetMember = {
       id: USER_1,
       membershipId: testUuids.MEMBERSHIP_1,
+      nickname: 'John',
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',

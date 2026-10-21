@@ -1,7 +1,7 @@
 export default interface UserInviteContent {
   subject: (teamName?: string) => string
   previewText: (inviterName?: string, teamName?: string) => string
-  greeting: (firstName?: string) => string
+  greeting: (nickname?: string) => string
   body: (inviterName?: string, teamName?: string) => string
   ctaInstruction: string
   signInCtaInstruction: string

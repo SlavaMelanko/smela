@@ -44,6 +44,7 @@ describe('owner /admins/:adminId', () => {
   beforeEach(async () => {
     mockAdmin = {
       id: testUuids.ADMIN_1,
+      nickname: 'Admin',
       firstName: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',

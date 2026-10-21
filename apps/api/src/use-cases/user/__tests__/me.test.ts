@@ -301,25 +301,24 @@ describe('me', () => {
       expect(mockUserRepo.findById).toHaveBeenCalledWith(testUuids.USER_1)
     })
 
-    it('allows clearing lastName with empty string', async () => {
-      // lastName: '' is valid (clears the field)
+    it('allows clearing lastName with null', async () => {
       const result = await updateUser(testUuids.USER_1, {
         firstName: 'Jane',
-        lastName: ''
+        lastName: null
       })
 
       expect(result.user.firstName).toBe('Jane')
-      expect(result.user.lastName).toBe('')
+      expect(result.user.lastName).toBeNull()
       expect(result.team).toBeUndefined()
       expect(mockUserRepo.update).toHaveBeenCalledWith(testUuids.USER_1, {
         firstName: 'Jane',
-        lastName: '',
+        lastName: null,
         updatedAt: expect.any(Date)
       })
     })
 
     it('filters out only undefined values', async () => {
-      // undefined = don't touch, empty string = include
+      // undefined = don't touch, null = include
       const result = await updateUser(testUuids.USER_1, {
         firstName: undefined,
         lastName: 'Smith'

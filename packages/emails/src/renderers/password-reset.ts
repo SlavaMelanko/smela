@@ -10,7 +10,7 @@ import { PasswordResetEmail } from '../templates'
 import { renderEmail } from './helper'
 
 export interface PasswordResetEmailData {
-  firstName: string
+  nickname: string
   resetUrl: string
 }
 

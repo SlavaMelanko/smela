@@ -30,7 +30,7 @@ export const requestPasswordReset = async (
       new PasswordResetEmailMessageBuilder(
         user.email,
         {
-          firstName: user.firstName,
+          nickname: user.nickname,
           resetUrl: buildResetPasswordUrl(user.role, token)
         },
         preferences

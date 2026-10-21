@@ -8,8 +8,9 @@ export const adminIdParamsSchema = z.object({
 
 export const updateAdminBodySchema = z
   .object({
-    firstName: rules.user.firstName.optional(),
-    lastName: rules.user.lastName.optional(),
+    nickname: rules.user.nickname.optional(),
+    firstName: rules.user.name.nullish(),
+    lastName: rules.user.name.nullish(),
     status: rules.user.status.optional()
   })
   .strict()

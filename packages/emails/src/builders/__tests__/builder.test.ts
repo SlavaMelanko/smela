@@ -6,7 +6,7 @@ import { describe, expect, it } from 'bun:test'
 import { EmailMessageBuilder } from '../builder'
 
 class TestEmailMessageBuilder extends EmailMessageBuilder<{
-  firstName: string
+  nickname: string
 }> {
   async build(): Promise<EmailMessage> {
     return {
@@ -26,7 +26,7 @@ class TestEmailMessageBuilder extends EmailMessageBuilder<{
 describe('EmailMessageBuilder', () => {
   it('falls back to English/light theme when no preferences are given', () => {
     const builder = new TestEmailMessageBuilder('user@example.com', {
-      firstName: 'John'
+      nickname: 'John'
     })
 
     expect(builder.getResolvedPreferences()).toEqual({
@@ -38,7 +38,7 @@ describe('EmailMessageBuilder', () => {
   it('merges partial preferences over the defaults', () => {
     const builder = new TestEmailMessageBuilder(
       'user@example.com',
-      { firstName: 'John' },
+      { nickname: 'John' },
       { theme: 'dark' } as UserPreferences
     )
 
@@ -52,7 +52,7 @@ describe('EmailMessageBuilder', () => {
     const preferences: UserPreferences = { locale: 'uk', theme: 'dark' }
     const builder = new TestEmailMessageBuilder(
       'user@example.com',
-      { firstName: 'John' },
+      { nickname: 'John' },
       preferences
     )
 

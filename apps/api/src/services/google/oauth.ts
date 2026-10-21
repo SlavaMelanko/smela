@@ -10,7 +10,7 @@ const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 export interface GoogleProfile {
   id: string
   email: string
-  firstName: string
+  firstName?: string
   lastName?: string
 }
 
@@ -36,7 +36,7 @@ const googleTokenSchema = z.object({
 const googleUserInfoSchema = z.object({
   sub: z.string(), // stable unique identifier per OpenID Connect spec
   email: z.email(),
-  given_name: z.string(),
+  given_name: z.string().optional(),
   family_name: z.string().optional(),
   email_verified: z.boolean()
 })

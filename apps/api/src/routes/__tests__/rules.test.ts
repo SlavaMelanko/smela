@@ -118,3 +118,35 @@ describe('rules.permissions', () => {
     ).toThrow()
   })
 })
+
+describe('rules.user.nickname', () => {
+  it('trims Unicode labels without requiring uniqueness or handle syntax', () => {
+    expect(rules.user.nickname.parse('  Слава 🌻  ')).toBe('Слава 🌻')
+  })
+
+  it('rejects empty, null, whitespace-only, and overlong nicknames', () => {
+    for (const value of ['', null, '   ', 'a'.repeat(51)]) {
+      expect(rules.user.nickname.safeParse(value).success).toBe(false)
+    }
+  })
+
+  it('accepts the minimum and maximum lengths', () => {
+    expect(rules.user.nickname.parse('A')).toBe('A')
+    expect(rules.user.nickname.parse('a'.repeat(50))).toHaveLength(50)
+  })
+})
+
+describe('rules.user.name', () => {
+  it('is required by default and trims valid names', () => {
+    for (const value of [undefined, null, '', '  ', 'a'.repeat(51)]) {
+      expect(rules.user.name.safeParse(value).success).toBe(false)
+    }
+    expect(rules.user.name.parse(' Slava ')).toBe('Slava')
+  })
+
+  it('allows clearing with null only when consumers opt in with nullish', () => {
+    expect(rules.user.name.nullish().parse(null)).toBeNull()
+    expect(rules.user.name.nullish().parse(undefined)).toBeUndefined()
+    expect(rules.user.name.nullish().safeParse('').success).toBe(false)
+  })
+})

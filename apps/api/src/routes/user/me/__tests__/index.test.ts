@@ -35,6 +35,7 @@ describe('user /me', () => {
   beforeEach(async () => {
     mockFullUser = {
       id: testUuids.USER_1,
+      nickname: 'John',
       firstName: 'John',
       lastName: 'Doe',
       email: 'test@example.com',
@@ -80,6 +81,7 @@ describe('user /me', () => {
       expect(data).toEqual({
         user: {
           id: testUuids.USER_1,
+          nickname: 'John',
           firstName: 'John',
           lastName: 'Doe',
           email: 'test@example.com',
@@ -123,8 +125,36 @@ describe('user /me', () => {
       expect(data.user).not.toHaveProperty('tokenVersion')
     })
 
-    it('rejects empty strings', async () => {
-      const res = await patch(app, ME_URL, { firstName: '', lastName: '' })
+    it('allows clearing first and last names', async () => {
+      const res = await patch(app, ME_URL, { firstName: null, lastName: null })
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        firstName: null,
+        lastName: null
+      })
+    })
+
+    it('allows clearing firstName with null without requiring nickname', async () => {
+      const res = await patch(app, ME_URL, { firstName: null })
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        firstName: null
+      })
+    })
+
+    it('accepts a trimmed nickname as a partial update', async () => {
+      const res = await patch(app, ME_URL, { nickname: '  New label  ' })
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
+        nickname: 'New label'
+      })
+    })
+
+    it('rejects clearing nickname', async () => {
+      const res = await patch(app, ME_URL, { nickname: '' })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateUser).not.toHaveBeenCalled()
@@ -153,7 +183,7 @@ describe('user /me', () => {
       })
     })
 
-    it('normalizes null lastName to empty string', async () => {
+    it('keeps null lastName as null', async () => {
       const res = await patch(app, ME_URL, {
         firstName: 'Jane',
         lastName: null
@@ -162,7 +192,7 @@ describe('user /me', () => {
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateUser).toHaveBeenCalledWith(testUuids.USER_1, {
         firstName: 'Jane',
-        lastName: ''
+        lastName: null
       })
     })
 

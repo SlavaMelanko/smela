@@ -32,7 +32,7 @@ describe('resolveUserTeams', () => {
         {
           id: testUuids.TEAM_3,
           name: 'Initech',
-          inviter: { firstName: 'Alice', lastName: null }
+          inviter: { nickname: 'Alice', firstName: 'Alice', lastName: null }
         }
       ]),
       findMemberPermissions: mock(async () => [
@@ -58,7 +58,7 @@ describe('resolveUserTeams', () => {
         {
           id: testUuids.TEAM_3,
           name: 'Initech',
-          inviter: { firstName: 'Alice', lastName: null }
+          inviter: { nickname: 'Alice', firstName: 'Alice', lastName: null }
         }
       ]
     })
@@ -87,7 +87,7 @@ describe('resolveUserTeams', () => {
         {
           id: testUuids.TEAM_3,
           name: 'Initech',
-          inviter: { firstName: 'Alice', lastName: null }
+          inviter: { nickname: 'Alice', firstName: 'Alice', lastName: null }
         }
       ]
     })

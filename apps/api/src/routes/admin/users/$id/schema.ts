@@ -8,8 +8,9 @@ export const userIdParamsSchema = z.object({
 
 export const updateUserBodySchema = z
   .object({
-    firstName: rules.user.firstName.optional(),
-    lastName: rules.user.lastName.optional(),
+    nickname: rules.user.nickname.optional(),
+    firstName: rules.user.name.nullish(),
+    lastName: rules.user.name.nullish(),
     status: rules.user.status.optional()
   })
   .strict()

@@ -5,6 +5,7 @@ import {
   EmailConstraint,
   isHttpsUrl,
   NameConstraint,
+  NicknameConstraint,
   PasswordConstraint,
   PositionConstraint,
   SvgConstraint,
@@ -56,26 +57,14 @@ export const rules = {
           'Minimum eight characters, at least one letter, one number and one special character'
       }),
 
-    // Required for signup, add .optional() for updates
-    firstName: z
+    nickname: z
       .string()
       .trim()
-      .min(NameConstraint.MIN_LENGTH)
-      .max(NameConstraint.MAX_LENGTH),
-
-    // Normalizes null/'' → "", valid string → trimmed
-    // undefined means "don't touch the field"
-    lastName: z.preprocess(
-      val => (val === null || val === '' ? '' : val),
-      z.union([
-        z.literal(''),
-        z
-          .string()
-          .trim()
-          .min(NameConstraint.MIN_LENGTH)
-          .max(NameConstraint.MAX_LENGTH)
-      ])
-    ),
+      .min(NicknameConstraint.MIN_LENGTH)
+      .max(NicknameConstraint.MAX_LENGTH),
+    // Required by default: consumers add .optional() to allow omitting
+    // and .nullish() to also allow clearing
+    name: displayName,
 
     role: z.enum(Role),
     status: z.enum(UserStatus)

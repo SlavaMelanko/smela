@@ -5,6 +5,11 @@ export const NameConstraint = {
   MAX_LENGTH: 50
 }
 
+export const NicknameConstraint = {
+  MIN_LENGTH: 1,
+  MAX_LENGTH: 50
+}
+
 // Job title / team position — no minimum, matching api's actual rule
 export const PositionConstraint = {
   MAX_LENGTH: 100

@@ -22,7 +22,7 @@ describe('VerificationEmailMessageBuilder', () => {
     const senderProfileResolver = buildSenderProfileResolver(senderProfile)
 
     const builder = new VerificationEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       verificationUrl: 'https://example.com/verify-email?token=abc123'
     })
 
@@ -39,7 +39,7 @@ describe('VerificationEmailMessageBuilder', () => {
 
   it('builds an email message addressed to the given recipient with the resolved sender', async () => {
     const builder = new VerificationEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       verificationUrl: 'https://example.com/verify-email?token=abc123'
     })
 

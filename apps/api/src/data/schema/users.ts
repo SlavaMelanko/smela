@@ -1,3 +1,4 @@
+import { NicknameConstraint } from '@smela/contracts'
 import { sql } from 'drizzle-orm'
 import { pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 
@@ -11,7 +12,10 @@ export const usersTable = pgTable('users', {
   id: uuid('id')
     .primaryKey()
     .$defaultFn(() => sql`uuidv7()`),
-  firstName: varchar('first_name', { length: 100 }).notNull(),
+  nickname: varchar('nickname', {
+    length: NicknameConstraint.MAX_LENGTH
+  }).notNull(),
+  firstName: varchar('first_name', { length: 100 }),
   lastName: varchar('last_name', { length: 100 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   status: statusEnum('status')

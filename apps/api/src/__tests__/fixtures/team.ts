@@ -26,6 +26,7 @@ export const buildTeam = (
 export const buildTeamMember = (id: string): TeamMemberDetails => ({
   id,
   membershipId: testUuids.MEMBERSHIP_1,
+  nickname: 'Alice',
   firstName: 'Alice',
   lastName: null,
   email: 'alice@example.com',

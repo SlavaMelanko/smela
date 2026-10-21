@@ -15,7 +15,8 @@ export interface UpdateTeamMemberInput {
     position?: string | null
   }
   member?: {
-    firstName?: string
+    nickname?: string
+    firstName?: string | null
     lastName?: string | null
   }
 }

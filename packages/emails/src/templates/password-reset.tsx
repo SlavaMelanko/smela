@@ -15,7 +15,7 @@ import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
-    firstName: string
+    nickname: string
     resetUrl: string
   }
   content: PasswordResetEmailContent
@@ -31,7 +31,7 @@ const PasswordResetEmail = ({
   company,
   socialLinks
 }: Props) => {
-  const { firstName, resetUrl } = data
+  const { nickname, resetUrl } = data
 
   return (
     <BaseEmail
@@ -41,7 +41,7 @@ const PasswordResetEmail = ({
       company={company}
       socialLinks={socialLinks}
     >
-      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
+      <Text style={s.text.body}>{c.greeting(nickname)}</Text>
 
       <Text style={s.text.body}>{c.body}</Text>
 
@@ -62,7 +62,7 @@ const PasswordResetEmail = ({
 
 PasswordResetEmail.PreviewProps = {
   data: {
-    firstName: 'Jason',
+    nickname: 'Jason',
     resetUrl: `http://localhost:5173/reset-password?token=eb6a0c90a8e75d4c9d5a93def2911d7b`
   },
   content: getContent('en').passwordReset,

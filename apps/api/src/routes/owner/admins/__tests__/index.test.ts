@@ -42,6 +42,7 @@ describe('owner /admins', () => {
     mockAdmins = [
       {
         id: testUuids.ADMIN_1,
+        nickname: 'Admin',
         firstName: 'Admin',
         lastName: 'User',
         email: 'admin@example.com',

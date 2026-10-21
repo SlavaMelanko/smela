@@ -15,7 +15,7 @@ import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
-    firstName: string
+    nickname: string
     verificationUrl: string
   }
   content: EmailVerificationContent
@@ -31,7 +31,7 @@ const EmailVerificationEmail = ({
   company,
   socialLinks
 }: Props) => {
-  const { firstName, verificationUrl } = data
+  const { nickname, verificationUrl } = data
 
   return (
     <BaseEmail
@@ -41,7 +41,7 @@ const EmailVerificationEmail = ({
       company={company}
       socialLinks={socialLinks}
     >
-      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
+      <Text style={s.text.body}>{c.greeting(nickname)}</Text>
 
       <Text style={s.text.body}>{c.body}</Text>
 
@@ -62,7 +62,7 @@ const EmailVerificationEmail = ({
 
 EmailVerificationEmail.PreviewProps = {
   data: {
-    firstName: 'Jason',
+    nickname: 'Jason',
     verificationUrl: `http://localhost:5173/auth/verify-email?token=eb6a0c90a8e75d4c9d5a93def2911d7b`
   },
   content: getContent('uk').emailVerification,

@@ -13,10 +13,10 @@ const VERIFICATION_URL = 'https://example.com/verify?token=abc123'
 testRendererContract<EmailVerificationEmailData>({
   name: 'Email verification',
   renderer,
-  data: { firstName: 'John', verificationUrl: VERIFICATION_URL },
+  data: { nickname: 'John', verificationUrl: VERIFICATION_URL },
   url: VERIFICATION_URL,
   otherData: {
-    firstName: 'Alice',
+    nickname: 'Alice',
     verificationUrl: 'https://example.com/verify?token=other'
   },
   englishSubject: /verify|email|account/,
@@ -31,7 +31,7 @@ describe('EmailVerificationEmailRenderer', () => {
       'https://example.com/verify?token=very-long-token-that-might-be-used-in-production-environments-with-secure-random-generation-abc123def456'
 
     const result = await renderer.render(
-      { firstName: 'John', verificationUrl },
+      { nickname: 'John', verificationUrl },
       { company }
     )
 

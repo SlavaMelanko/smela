@@ -15,7 +15,7 @@ import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
-    firstName: string
+    nickname: string
     inviteUrl: string
     hasAccount?: boolean
     inviterName?: string
@@ -34,7 +34,7 @@ const UserInviteEmail = ({
   company,
   socialLinks
 }: Props) => {
-  const { firstName, inviteUrl, hasAccount, inviterName, teamName } = data
+  const { nickname, inviteUrl, hasAccount, inviterName, teamName } = data
 
   return (
     <BaseEmail
@@ -44,7 +44,7 @@ const UserInviteEmail = ({
       company={company}
       socialLinks={socialLinks}
     >
-      <Text style={s.text.body}>{c.greeting(firstName)}</Text>
+      <Text style={s.text.body}>{c.greeting(nickname)}</Text>
 
       <Text style={s.text.body}>{c.body(inviterName, teamName)}</Text>
 
@@ -67,7 +67,7 @@ const UserInviteEmail = ({
 
 UserInviteEmail.PreviewProps = {
   data: {
-    firstName: 'Jason',
+    nickname: 'Jason',
     inviteUrl: `http://localhost:5173/accept-invite?token=eb6a0c90a8e75d4c9d5a93def2911d7b`,
     inviterName: 'Alice',
     teamName: 'Acme Inc'

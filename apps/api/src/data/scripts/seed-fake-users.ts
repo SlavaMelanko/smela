@@ -67,6 +67,7 @@ const generateUser = (index: number) => {
   const lastNamePart = lastName ? sanitizeForEmail(lastName) : 'user'
 
   return {
+    nickname: firstName,
     firstName,
     lastName,
     email: `${sanitizeForEmail(firstName)}.${lastNamePart}+${index}@test.local`,

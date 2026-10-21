@@ -22,7 +22,7 @@ describe('UserInviteEmailMessageBuilder', () => {
     const senderProfileResolver = buildSenderProfileResolver(senderProfile)
 
     const builder = new UserInviteEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123',
       inviterName: 'Jane',
       teamName: 'Acme'
@@ -41,7 +41,7 @@ describe('UserInviteEmailMessageBuilder', () => {
 
   it('builds an email message addressed to the given recipient with the resolved sender', async () => {
     const builder = new UserInviteEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123',
       inviterName: 'Jane',
       teamName: 'Acme'
@@ -62,7 +62,7 @@ describe('UserInviteEmailMessageBuilder', () => {
 
   it('builds without the optional inviterName and teamName', async () => {
     const builder = new UserInviteEmailMessageBuilder('user@example.com', {
-      firstName: 'John',
+      nickname: 'John',
       inviteUrl: 'https://example.com/accept-invite?token=abc123'
     })
 

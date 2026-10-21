@@ -61,6 +61,7 @@ describe('signUpWithEmail', () => {
 
     mockNewUser = {
       id: testUuids.USER_1,
+      nickname: 'John',
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -124,6 +125,7 @@ describe('signUpWithEmail', () => {
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
+        nickname: mockSignupParams.firstName,
         firstName: mockSignupParams.firstName,
         lastName: mockSignupParams.lastName,
         email: mockSignupParams.email,
@@ -175,8 +177,12 @@ describe('signUpWithEmail', () => {
   })
 
   it('sends email verification email with verification token', async () => {
+    mockNewUser.nickname = 'Different label'
     await signUpWithEmail(mockSignupParams, mockDeviceInfo)
 
+    expect(mockEmailService.send.mock.calls[0][0].data.nickname).toBe(
+      'Different label'
+    )
     expect(mockEmailService.send).toHaveBeenCalledWith(
       expect.any(VerificationEmailMessageBuilder)
     )
@@ -253,6 +259,7 @@ describe('signUpWithEmail', () => {
   it('throws EmailAlreadyInUse when email is already in use', async () => {
     const existingUser = {
       id: testUuids.USER_2,
+      nickname: 'Jane',
       firstName: 'Jane',
       lastName: 'Smith',
       email: 'john@example.com',
@@ -365,6 +372,7 @@ describe('signUpWithEmail', () => {
     expect(mockUserRepo.findByEmail).toHaveBeenCalledWith(uppercaseEmail)
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
+        nickname: mockSignupParams.firstName,
         firstName: mockSignupParams.firstName,
         lastName: mockSignupParams.lastName,
         email: uppercaseEmail,
@@ -393,6 +401,7 @@ describe('signUpWithEmail', () => {
 
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
+        nickname: 'Al',
         firstName: 'Al',
         lastName: 'Bo',
         email: mockSignupParams.email,
@@ -440,6 +449,7 @@ describe('signUpWithEmail', () => {
 
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
+        nickname: longFirstName.slice(0, 50),
         firstName: longFirstName,
         lastName: longLastName,
         email: mockSignupParams.email,

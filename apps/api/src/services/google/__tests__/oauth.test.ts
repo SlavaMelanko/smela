@@ -73,6 +73,19 @@ describe('oauth', () => {
       })
     })
 
+    it('accepts a verified Google profile without given_name', async () => {
+      const { given_name: _givenName, ...withoutFirstName } = userInfoResponse
+      mockResponses(
+        Response.json(tokenResponse),
+        Response.json(withoutFirstName)
+      )
+
+      const profile = await exchangeCodeForProfile('auth-code')
+
+      expect(profile.firstName).toBeUndefined()
+      expect(profile.email).toBe(userInfoResponse.email)
+    })
+
     const failures = [
       {
         name: 'token exchange fails',

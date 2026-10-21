@@ -26,11 +26,13 @@ import {
   UserStatus
 } from '@/types'
 
+import { resolveNickname } from '../resolve-nickname'
 import { issueInviteToken } from '../tokens'
 
 export interface InviteMemberInput {
-  firstName: string
-  lastName?: string
+  nickname?: string
+  firstName?: string | null
+  lastName?: string | null
   email: string
   position?: string
   permissions: PermissionsInput
@@ -38,7 +40,7 @@ export interface InviteMemberInput {
 
 interface Invitee {
   email: string
-  firstName: string
+  nickname: string
 }
 
 // A pending account never set a password, so it still needs the token link.
@@ -63,12 +65,12 @@ const sendInviteEmail = (
 ) =>
   void emailService.send(
     new UserInviteEmailMessageBuilder(invitee.email, {
-      firstName: invitee.firstName,
+      nickname: invitee.nickname,
       inviteUrl: token
         ? buildInviteUrl(Role.User, token)
         : buildAppUrl(Role.User),
       hasAccount: !token,
-      inviterName: inviter.firstName,
+      inviterName: inviter.nickname,
       teamName: team.name
     })
   )
@@ -102,6 +104,11 @@ const inviteNewUser = async (
   db.transaction(async tx => {
     const newUser = await userRepo.create(
       {
+        nickname: resolveNickname(
+          member.email,
+          member.nickname,
+          member.firstName
+        ),
         firstName: member.firstName,
         lastName: member.lastName,
         email: member.email,

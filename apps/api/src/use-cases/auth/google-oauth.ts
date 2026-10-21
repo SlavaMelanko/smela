@@ -4,6 +4,7 @@ import { authRepo, db, rbacRepo, userRepo } from '@/data'
 import { exchangeCodeForProfile } from '@/services/google'
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
+import { resolveNickname } from '../resolve-nickname'
 import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeams } from '../resolve-team'
 import { createAuthTokens } from '../tokens'
@@ -11,7 +12,7 @@ import { createAuthTokens } from '../tokens'
 interface GoogleOAuthInput {
   googleId: string
   email: string
-  firstName: string
+  firstName?: string
   lastName?: string
 }
 
@@ -38,7 +39,13 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
     // Linking keeps existing permissions, only new users get defaults
     if (!user) {
       user = await userRepo.create(
-        { firstName, lastName, email, status: UserStatus.Verified },
+        {
+          nickname: resolveNickname(email, firstName),
+          firstName,
+          lastName,
+          email,
+          status: UserStatus.Verified
+        },
         tx
       )
 
