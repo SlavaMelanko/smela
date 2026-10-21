@@ -27,20 +27,11 @@ export const SignupForm = ({ isLoading, onSubmit }) => {
     <FormRoot onSubmit={handleSubmit(data => onSubmit(data))}>
       <FormFields>
         <FormField
-          label={t('firstName.label')}
-          name={FieldName.FIRST_NAME}
-          error={errors[FieldName.FIRST_NAME]}
+          label={t('nickname.label')}
+          name={FieldName.NICKNAME}
+          error={errors[FieldName.NICKNAME]}
         >
-          <Input {...register(FieldName.FIRST_NAME)} />
-        </FormField>
-
-        <FormField
-          label={t('lastName.label')}
-          name={FieldName.LAST_NAME}
-          error={errors[FieldName.LAST_NAME]}
-          optional
-        >
-          <Input {...register(FieldName.LAST_NAME)} />
+          <Input {...register(FieldName.NICKNAME)} />
         </FormField>
 
         <FormField

@@ -34,7 +34,8 @@ export const TeamMemberPage = () => {
     refetch
   } = useTeamMember(myTeam?.id, id, {
     ...userTeamQueryOptions,
-    initialData: state?.member ? { member: state.member } : undefined
+    initialData: state?.member ? { member: state.member } : undefined,
+    initialDataUpdatedAt: 0
   })
 
   const isOwnProfile = me?.id === id

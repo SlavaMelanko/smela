@@ -49,6 +49,7 @@ describe('signUpWithEmail', () => {
 
   beforeEach(async () => {
     mockSignupParams = {
+      nickname: 'John',
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -401,7 +402,7 @@ describe('signUpWithEmail', () => {
 
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
-        nickname: 'Al',
+        nickname: mockSignupParams.nickname,
         firstName: 'Al',
         lastName: 'Bo',
         email: mockSignupParams.email,
@@ -449,7 +450,7 @@ describe('signUpWithEmail', () => {
 
     expect(mockUserRepo.create).toHaveBeenCalledWith(
       {
-        nickname: longFirstName.slice(0, 50),
+        nickname: mockSignupParams.nickname,
         firstName: longFirstName,
         lastName: longLastName,
         email: mockSignupParams.email,

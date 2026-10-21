@@ -3,6 +3,7 @@ export {
   EmailConstraint,
   isHttpsUrl,
   NameConstraint,
+  NicknameConstraint,
   PasswordConstraint,
   PositionConstraint,
   SvgConstraint,

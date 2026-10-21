@@ -452,3 +452,63 @@ test('Owner: nickname search and optional real names persist through admin updat
     )
   }
 })
+
+test('Owner: edits nickname and clears real names through the admin form', async ({
+  page,
+  t,
+  login
+}) => {
+  const loginPromise = waitForApiCall(page, {
+    path: LOGIN_PATH,
+    method: 'POST',
+    status: HttpStatus.OK
+  })
+
+  await login(ownerCredentials)
+  const { body } = await loginPromise
+  const api = createAuthenticatedRequest(page.request, body.accessToken)
+  const { admin } = await api(OWNER_ADMINS_PATH, {
+    method: 'POST',
+    data: {
+      firstName: 'Editable',
+      lastName: 'Admin',
+      email: generateEmailAddress({ prefix: 'editadmin' }),
+      permissions: { users: { view: true } }
+    },
+    status: HttpStatus.CREATED
+  })
+  const path = `${OWNER_ADMINS_PATH}/${admin.id}`
+
+  await page.goto(`/admins/${admin.id}`)
+  const nickname = page.getByLabel(t.nickname.label)
+  const firstName = page.getByLabel(t.firstName.label)
+  const lastName = page.getByLabel(t.lastName.label)
+
+  await expect(nickname).toHaveValue('Editable')
+  await nickname.fill('  Адмін 🌻  ')
+  await firstName.fill('')
+  await lastName.fill('')
+  const updatedPromise = waitForApiCall(page, {
+    path,
+    method: 'PATCH',
+    status: HttpStatus.OK,
+    validateRequest: body =>
+      body.nickname === 'Адмін 🌻' &&
+      body.firstName === null &&
+      body.lastName === null
+  })
+
+  await page.getByRole('button', { name: t.save, exact: true }).click()
+  const { body: updated } = await updatedPromise
+
+  expect(updated.admin).toMatchObject({
+    nickname: 'Адмін 🌻',
+    firstName: null,
+    lastName: null
+  })
+
+  await page.reload()
+  await expect(nickname).toHaveValue('Адмін 🌻')
+  await expect(firstName).toHaveValue('')
+  await expect(lastName).toHaveValue('')
+})

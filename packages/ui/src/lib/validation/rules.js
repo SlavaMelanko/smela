@@ -8,6 +8,7 @@ import {
   EmailConstraint,
   isHttpsUrl,
   NameConstraint,
+  NicknameConstraint,
   PasswordConstraint,
   PositionConstraint,
   SvgConstraint,
@@ -22,6 +23,23 @@ const optionalStr = () =>
     .trim()
     .transform(v => v || undefined)
     .pipe(z.string().optional())
+
+export const nickname = requiredStr('nickname.error.required')
+  .min(NicknameConstraint.MIN_LENGTH, 'nickname.error.min')
+  .max(NicknameConstraint.MAX_LENGTH, 'nickname.error.max')
+
+export const optionalName = field =>
+  z
+    .string()
+    .trim()
+    .transform(value => value || null)
+    .pipe(
+      z
+        .string()
+        .min(NameConstraint.MIN_LENGTH, `${field}.error.min`)
+        .max(NameConstraint.MAX_LENGTH, `${field}.error.max`)
+        .nullable()
+    )
 
 export const firstName = requiredStr('firstName.error.required')
   .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')

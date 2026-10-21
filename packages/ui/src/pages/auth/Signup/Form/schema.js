@@ -1,22 +1,19 @@
 import { createResolver, rules } from '@ui/lib/validation'
 
 export const FieldName = {
-  FIRST_NAME: 'firstName',
-  LAST_NAME: 'lastName',
+  NICKNAME: 'nickname',
   EMAIL: 'email',
   PASSWORD: 'password'
 }
 
 export const getDefaultValues = () => ({
-  [FieldName.FIRST_NAME]: '',
-  [FieldName.LAST_NAME]: '',
+  [FieldName.NICKNAME]: '',
   [FieldName.EMAIL]: '',
   [FieldName.PASSWORD]: ''
 })
 
 export const resolver = createResolver({
-  [FieldName.FIRST_NAME]: rules.firstName,
-  [FieldName.LAST_NAME]: rules.lastName.optional,
+  [FieldName.NICKNAME]: rules.nickname,
   [FieldName.EMAIL]: rules.email.new,
   [FieldName.PASSWORD]: rules.password.new
 })

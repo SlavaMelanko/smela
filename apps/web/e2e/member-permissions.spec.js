@@ -198,6 +198,27 @@ test.describe.serial('User: Member Permissions', () => {
 
     await expect(page.getByText(t.changesSaved)).toBeVisible()
 
+    await page.getByLabel(t.firstName.label).fill('')
+    await page.getByLabel(t.lastName.label).fill('')
+    const clearPromise = waitForApiCall(page, {
+      path: TEAM_MEMBER_PATH.replace(':teamId', teamId).replace(
+        ':memberId',
+        readOnlyMemberId
+      ),
+      method: 'PATCH',
+      status: HttpStatus.OK,
+      validateRequest: body =>
+        body.member.firstName === null && body.member.lastName === null
+    })
+
+    await page.getByRole('button', { name: t.save }).click()
+    const { body: cleared } = await clearPromise
+
+    expect(cleared.member).toMatchObject({ firstName: null, lastName: null })
+    await page.reload()
+    await expect(page.getByLabel(t.firstName.label)).toHaveValue('')
+    await expect(page.getByLabel(t.lastName.label)).toHaveValue('')
+
     // Navigate to alyce96's row — Save button must not be present
     await page.goto('/team/members')
 

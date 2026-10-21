@@ -15,6 +15,7 @@ import {
 import { test as base } from './fixtures'
 
 export const createInvitee = () => ({
+  nickname: faker.person.firstName(),
   firstName: faker.person.firstName(),
   lastName: faker.person.lastName(),
   email: generateEmailAddress({
