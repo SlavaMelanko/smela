@@ -139,13 +139,10 @@ test.describe.serial('User: Team Members', () => {
   let teamId
   let invitedMemberId
 
-  const firstName = faker.person.firstName()
-  const lastName = faker.person.lastName()
+  const nickname = faker.person.firstName()
 
   const newMember = {
-    firstName,
-    lastName,
-    email: generateEmailAddress({ prefix: firstName }),
+    email: generateEmailAddress({ prefix: nickname }),
     password: process.env.VITE_E2E_USER_PASSWORD,
     position: faker.person.jobTitle()
   }
@@ -254,7 +251,12 @@ test.describe.serial('User: Team Members', () => {
       {
         path: TEAM_MEMBERS_PATH.replace(':teamId', teamId),
         method: 'POST',
-        status: HttpStatus.CREATED
+        status: HttpStatus.CREATED,
+        validateRequest: body =>
+          body.email === newMember.email &&
+          body.position === newMember.position &&
+          !('firstName' in body) &&
+          !('lastName' in body)
       },
       {
         path: TEAM_PATH.replace(':teamId', teamId),
@@ -268,6 +270,8 @@ test.describe.serial('User: Team Members', () => {
       }
     ])
 
+    await expect(page.getByLabel(t.firstName.label)).toHaveCount(0)
+    await expect(page.getByLabel(t.lastName.label)).toHaveCount(0)
     await fillMemberInviteFormAndSubmit(page, newMember, t)
     const [{ body: createdMember }] = await apiPromises
 
@@ -646,7 +650,9 @@ test.describe('User: Pending account invitations', () => {
       t
     )
 
-    expect(firstMember.nickname).toBe(invitee.firstName)
+    // A new account gets the email prefix as a placeholder until acceptance
+    expect(firstMember.nickname).toBe(invitee.email.split('@')[0].split('+')[0])
+
     expect(secondMember.nickname).toBe(firstMember.nickname)
     expect(secondMember.id).toBe(firstMember.id)
     const secondEmail = await emailService.waitForInvitationEmail(
@@ -680,11 +686,12 @@ test.describe('User: Pending account invitations', () => {
       status: HttpStatus.OK
     })
 
-    await fillAcceptInviteFormAndSubmit(page, invitee.password, t)
+    await expect(page.getByLabel(t.nickname.label)).toHaveValue('')
+    await fillAcceptInviteFormAndSubmit(page, invitee, t)
     const { body } = await acceptPromise
 
     // Verify the account, join the second team, and keep the first invitation pending
-    expect(body.user.nickname).toBe(invitee.firstName)
+    expect(body.user.nickname).toBe(invitee.nickname)
 
     expect(body.user.status).toBe('verified')
     expect(body.team.id).toBe(secondInviter.team.id)

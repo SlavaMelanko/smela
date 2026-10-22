@@ -24,12 +24,13 @@ const optionalStr = () =>
     .transform(v => v || undefined)
     .pipe(z.string().optional())
 
-export const nickname = requiredStr('nickname.error.required')
-  .min(NicknameConstraint.MIN_LENGTH, 'nickname.error.min')
-  .max(NicknameConstraint.MAX_LENGTH, 'nickname.error.max')
+const name = field => ({
+  required: requiredStr(`${field}.error.required`)
+    .min(NameConstraint.MIN_LENGTH, `${field}.error.min`)
+    .max(NameConstraint.MAX_LENGTH, `${field}.error.max`),
 
-export const optionalName = field =>
-  z
+  // Empty input becomes null so edit forms can clear the name
+  optional: z
     .string()
     .trim()
     .transform(value => value || null)
@@ -40,27 +41,15 @@ export const optionalName = field =>
         .max(NameConstraint.MAX_LENGTH, `${field}.error.max`)
         .nullable()
     )
+})
 
-export const firstName = requiredStr('firstName.error.required')
-  .min(NameConstraint.MIN_LENGTH, 'firstName.error.min')
-  .max(NameConstraint.MAX_LENGTH, 'firstName.error.max')
+export const nickname = requiredStr('nickname.error.required')
+  .min(NicknameConstraint.MIN_LENGTH, 'nickname.error.min')
+  .max(NicknameConstraint.MAX_LENGTH, 'nickname.error.max')
 
-export const lastName = {
-  required: requiredStr('lastName.error.required')
-    .min(NameConstraint.MIN_LENGTH, 'lastName.error.min')
-    .max(NameConstraint.MAX_LENGTH, 'lastName.error.max'),
+export const firstName = name('firstName')
 
-  // Optional version - validates when provided but not required
-  optional: optionalStr()
-    .refine(
-      value => !value || value.length >= NameConstraint.MIN_LENGTH,
-      'lastName.error.min'
-    )
-    .refine(
-      value => !value || value.length <= NameConstraint.MAX_LENGTH,
-      'lastName.error.max'
-    )
-}
+export const lastName = name('lastName')
 
 export const email = {
   new: requiredStr('email.error.required')

@@ -1,3 +1,5 @@
+import { InviteKind } from '@smela/contracts'
+
 export enum TokenType {
   EmailVerification = 'email_verification',
   PasswordReset = 'password_reset',
@@ -5,10 +7,7 @@ export enum TokenType {
   UserInvite = 'user_invite'
 }
 
-export enum InviteKind {
-  Admin = 'admin',
-  Member = 'member'
-}
+export { InviteKind }
 
 export type InviteMetadata =
   { kind: InviteKind.Admin } | { kind: InviteKind.Member; teamId: string }

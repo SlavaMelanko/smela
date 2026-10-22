@@ -19,6 +19,7 @@ import {
 export interface AcceptInviteInput {
   token: string
   password: string
+  nickname?: string
 }
 
 // The invite link proves the email like the verification link does.
@@ -42,7 +43,7 @@ const joinInvitedTeam = async (
 }
 
 export const acceptInvite = async (
-  { token, password }: AcceptInviteInput,
+  { token, password, nickname }: AcceptInviteInput,
   deviceInfo: DeviceInfo
 ) => {
   const validatedToken = await validateOneTimeToken(token, TokenType.UserInvite)
@@ -68,7 +69,7 @@ export const acceptInvite = async (
 
     return userRepo.update(
       validatedToken.userId,
-      { status: resolveAcceptedStatus(metadata.kind) },
+      { status: resolveAcceptedStatus(metadata.kind), nickname },
       tx
     )
   })

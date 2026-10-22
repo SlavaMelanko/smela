@@ -15,13 +15,21 @@ export const getDefaultValues = () => ({
   [FieldName.POSITION]: ''
 })
 
-export const resolver = createResolver({
-  [FieldName.FIRST_NAME]: rules.firstName,
+const fieldRules = {
+  [FieldName.FIRST_NAME]: rules.firstName.required,
   [FieldName.LAST_NAME]: rules.lastName.optional,
   [FieldName.EMAIL]: rules.email.new,
   [FieldName.POSITION]: rules.position,
   [FieldName.PERMISSIONS]: rules.permissions
-})
+}
+
+// Validate only visible fields, so a hidden required field can't block submit
+export const createInviteResolver = fields =>
+  createResolver(
+    Object.fromEntries(
+      Object.entries(fieldRules).filter(([name]) => fields[name])
+    )
+  )
 
 export const defaultFields = Object.fromEntries(
   Object.values(FieldName).map(name => [name, true])

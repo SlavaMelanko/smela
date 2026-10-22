@@ -23,8 +23,8 @@ export const getValues = ({ nickname, firstName, lastName, status }) => ({
 
 export const resolver = createResolver({
   [FieldName.NICKNAME]: rules.nickname,
-  [FieldName.FIRST_NAME]: rules.optionalName('firstName'),
-  [FieldName.LAST_NAME]: rules.optionalName('lastName'),
+  [FieldName.FIRST_NAME]: rules.firstName.optional,
+  [FieldName.LAST_NAME]: rules.lastName.optional,
   [FieldName.STATUS]: rules.status
 })
 

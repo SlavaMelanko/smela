@@ -8,9 +8,6 @@ export const teamIdParamsSchema = z.object({
 
 export const inviteMemberBodySchema = z
   .object({
-    nickname: rules.user.nickname.optional(),
-    firstName: rules.user.name.optional(),
-    lastName: rules.user.name.optional(),
     email: rules.user.email,
     position: rules.team.position.optional(),
     permissions: rules.permissions

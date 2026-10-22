@@ -14,10 +14,10 @@ acceptInviteRoute.post(
   '/accept-invite',
   validateBody(acceptInviteBodySchema),
   async c => {
-    const { token, password } = c.req.valid('json')
+    const { token, password, nickname } = c.req.valid('json')
     const deviceInfo = getDeviceInfo(c)
 
-    const result = await acceptInvite({ token, password }, deviceInfo)
+    const result = await acceptInvite({ token, password, nickname }, deviceInfo)
 
     setRefreshCookie(c, result.refreshToken)
 

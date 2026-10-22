@@ -1,4 +1,4 @@
-import { InviteForm } from '@ui/components/form'
+import { FieldName, InviteForm } from '@ui/components/form/InviteForm'
 import { DialogBody, DialogHeader, DialogTitle } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useTeamMemberDefaultPermissions } from '@ui/hooks/useTeam'
@@ -29,6 +29,10 @@ export const CreateMemberDialog = ({
           onSubmit={onSubmit}
           defaultPermissions={permissions}
           isPermissionsLoading={isPermissionsLoading}
+          formFields={{
+            [FieldName.FIRST_NAME]: false,
+            [FieldName.LAST_NAME]: false
+          }}
         />
       </DialogBody>
     </>

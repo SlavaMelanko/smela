@@ -209,6 +209,23 @@ describe('acceptInvite', () => {
     )
   })
 
+  it('replaces the placeholder nickname with the one chosen on acceptance', async () => {
+    mockTokenRepo.findByHash.mockImplementation(async () =>
+      buildTokenRecord(MEMBER_INVITE_TOKEN)
+    )
+
+    await acceptInvite(
+      { token: RAW_TOKEN, password: mockPassword, nickname: 'Johnny' },
+      mockDeviceInfo
+    )
+
+    expect(mockUserRepo.update).toHaveBeenCalledWith(
+      mockTokenRecord.userId,
+      { status: UserStatus.Verified, nickname: 'Johnny' },
+      {}
+    )
+  })
+
   it('throws TokenDeprecated without activating the user when the membership is no longer pending', async () => {
     mockTokenRepo.findByHash.mockImplementation(async () =>
       buildTokenRecord(MEMBER_INVITE_TOKEN)
