@@ -559,11 +559,46 @@ test.describe('User: Existing account invitations', () => {
     expect(accepted.invites).toEqual([])
 
     await expectActiveTeam(invitee.page, inviter.team, t)
-    await invitee.api(buildPath(TEAM_PATH, { teamId: inviter.team.id }))
+
+    // The inviter created the team, so both refs point to the same active teammate
+    const teammate = {
+      id: inviter.user.id,
+      nickname: inviter.credentials.nickname
+    }
+    const { team } = await invitee.api(
+      buildPath(TEAM_PATH, { teamId: inviter.team.id })
+    )
+
+    expect(team.creator).toEqual(teammate)
+
+    const { member } = await invitee.api(
+      buildPath(TEAM_MEMBER_PATH, {
+        teamId: inviter.team.id,
+        memberId: invitee.user.id
+      })
+    )
+
+    expect(member.inviter).toEqual(teammate)
 
     // Keep the accepted team active after reloading, with no invitation remaining
     await invitee.page.reload()
     await expectActiveTeam(invitee.page, inviter.team, t)
+
+    // Created by and Invited by both link to the inviter's member page
+    await invitee.page.goto(`/team/members/${invitee.user.id}`)
+    await invitee.page.getByRole('tab', { name: t.membership }).click()
+
+    await expect(invitee.page.getByText(t.createdBy)).toBeVisible()
+    await expect(invitee.page.getByText(t.invitedBy)).toBeVisible()
+
+    const teammateLinks = invitee.page.getByRole('link', {
+      name: teammate.nickname,
+      exact: true
+    })
+
+    await expect(teammateLinks).toHaveCount(2)
+    await teammateLinks.first().click()
+    await invitee.page.waitForURL(`/team/members/${teammate.id}`)
   })
 
   test('declining removes only the invitation', async ({ teamActors, t }) => {

@@ -27,6 +27,7 @@ import {
 } from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
 import { expandPermissions } from '../rbac'
+import { createTeammateRef, toTeammateRef } from './teammate-ref'
 
 const buildWhereConditions = ({ ids, search }: TeamSearchParams) => {
   const conditions = []
@@ -62,25 +63,36 @@ export const searchTeams = async (
     WHERE ${teamMembersTable.teamId} = ${sql.raw('"teams"."id"')}
   )`
 
-  const [teams, countResult] = await Promise.all([
-    executor
-      .select({
-        id: teamsTable.id,
-        name: teamsTable.name,
-        website: teamsTable.website,
-        description: teamsTable.description,
-        createdBy: teamsTable.createdBy,
-        createdAt: teamsTable.createdAt,
-        updatedAt: teamsTable.updatedAt,
-        memberCount: memberCountSubquery
-      })
-      .from(teamsTable)
+  const creator = createTeammateRef('creators')
+
+  const teamsQuery = executor
+    .select({
+      id: teamsTable.id,
+      name: teamsTable.name,
+      website: teamsTable.website,
+      description: teamsTable.description,
+      createdAt: teamsTable.createdAt,
+      updatedAt: teamsTable.updatedAt,
+      memberCount: memberCountSubquery,
+      creator: creator.fields
+    })
+    .from(teamsTable)
+    .$dynamic()
+
+  const [rows, countResult] = await Promise.all([
+    creator
+      .join(teamsQuery, teamsTable.createdBy, teamsTable.id)
       .where(whereClause)
       .orderBy(desc(teamsTable.createdAt))
       .limit(pagination.limit)
       .offset(calcOffset(pagination)),
     executor.select({ value: count() }).from(teamsTable).where(whereClause)
   ])
+
+  const teams = rows.map(row => ({
+    ...row,
+    creator: toTeammateRef(row.creator)
+  }))
 
   return {
     teams,
@@ -120,14 +132,14 @@ export const findTeamMembers = async (
   tx?: Database
 ): Promise<TeamMemberDetails[]> => {
   const executor = tx || db
-  const invitersTable = alias(usersTable, 'inviters')
+  const inviter = createTeammateRef('inviters')
 
   const whereConditions = [eq(teamMembersTable.teamId, teamId)]
   if (userId) {
     whereConditions.push(eq(teamMembersTable.userId, userId))
   }
 
-  const rows = await executor
+  const membersQuery = executor
     .select({
       id: teamMembersTable.userId,
       membershipId: teamMembersTable.id,
@@ -145,20 +157,18 @@ export const findTeamMembers = async (
       )`,
       position: teamMembersTable.position,
       joinedAt: teamMembersTable.joinedAt,
-      inviter: {
-        id: invitersTable.id,
-        nickname: invitersTable.nickname,
-        firstName: invitersTable.firstName,
-        lastName: invitersTable.lastName
-      }
+      inviter: inviter.fields
     })
     .from(teamMembersTable)
     .innerJoin(usersTable, eq(teamMembersTable.userId, usersTable.id))
-    .leftJoin(invitersTable, eq(teamMembersTable.invitedBy, invitersTable.id))
+    .$dynamic()
+
+  const rows = await inviter
+    .join(membersQuery, teamMembersTable.invitedBy, teamMembersTable.teamId)
     .where(and(...whereConditions))
     .orderBy(desc(teamMembersTable.joinedAt))
 
-  return rows
+  return rows.map(row => ({ ...row, inviter: toTeammateRef(row.inviter) }))
 }
 
 export const findTeamMember = async (

@@ -16,11 +16,10 @@ export type CreateTeamMemberInput = typeof teamMembersTable.$inferInsert
 export type Team = TeamRecord
 export type TeamMember = TeamMemberRecord
 
-export interface TeamMemberInviter {
+// A null nickname means an admin. A null id means the user is not an active teammate
+export interface TeammateRef {
   id: string | null
   nickname: string | null
-  firstName: string | null
-  lastName: string | null
 }
 
 export interface TeamMemberDetails {
@@ -35,12 +34,13 @@ export interface TeamMemberDetails {
   updatedAt: Date
   lastActive: Date | null
   position: string | null
-  inviter: TeamMemberInviter | null
+  inviter: TeammateRef | null
   joinedAt: Date | null
 }
 
-export type TeamWithMemberCount = Team & {
+export type TeamWithMemberCount = Omit<Team, 'createdBy'> & {
   memberCount: number
+  creator: TeammateRef | null
 }
 
 export interface UserTeamInfo {

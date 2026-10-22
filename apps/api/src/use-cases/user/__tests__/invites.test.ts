@@ -42,7 +42,7 @@ const buildTestTeam = (): TeamWithMemberCount => ({
   name: 'Acme Corp',
   website: 'https://acme.com',
   description: 'A test team',
-  createdBy: null,
+  creator: null,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
   memberCount: 5

@@ -49,6 +49,7 @@
   },
   "copyright": "© {{year}} {{companyName}}",
   "createdAt": "Created at",
+  "createdBy": "Created by",
   "description": {
     "error": {
       "max": "Description can't exceed 500 characters."
@@ -147,7 +148,10 @@
   "invite": {
     "accept": {
       "cta": "Join",
-      "description": "Set your password to join the team.",
+      "description": {
+        "admin": "Set your password to join the team.",
+        "member": "Set your nickname and password to join the team."
+      },
       "error": "Failed to accept invitation. The link may have expired.",
       "success": "Welcome! Your account is ready.",
       "title": "You're invited to",
@@ -356,6 +360,7 @@
     "description": "Configure system-level settings.",
     "title": "System"
   },
+  "systemAdmin": "System admin",
   "table": {
     "column": "Column",
     "column_plural": "Columns",

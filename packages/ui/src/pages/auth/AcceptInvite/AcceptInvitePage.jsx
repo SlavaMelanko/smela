@@ -65,7 +65,9 @@ export const AcceptInvitePage = () => {
           {t('invite.accept.title')}
           {formatTeamName(data.teamName || env.APP_NAME)}
         </AuthTitle>
-        <AuthDescription>{t('invite.accept.description')}</AuthDescription>
+        <AuthDescription>
+          {t(`invite.accept.description.${data.kind}`)}
+        </AuthDescription>
       </AuthHeader>
 
       <AcceptInviteForm

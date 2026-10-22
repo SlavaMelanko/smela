@@ -43,8 +43,9 @@ export const getColumns = (t, formatDate, meId) => {
     {
       accessorKey: 'invitedBy',
       header: label('invitedBy'),
-      accessorFn: row => row.inviter?.nickname,
-      cell: info => info.getValue() ?? '',
+      // A null nickname on an existing inviter means an admin
+      accessorFn: row =>
+        row.inviter ? (row.inviter.nickname ?? t('systemAdmin')) : '',
       hidden: true
     },
     {
