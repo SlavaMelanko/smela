@@ -321,6 +321,7 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     await page
       .getByRole('button', { name: t.profile.label, exact: true })
       .click()
+
     await page.getByRole('menuitem', { name: t.profile.title }).click()
 
     await page.waitForURL('**/profile*')
