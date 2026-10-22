@@ -291,55 +291,6 @@
     },
     "label": "Position"
   },
-  "pricing": {
-    "cta": "Sign up now",
-    "custom": {
-      "cta": "Create plan",
-      "note": "Build your perfect plan. The more you use, the less you pay.",
-      "title": "Your plan"
-    },
-    "discount": {
-      "label": "-{{percent}}% Off"
-    },
-    "enterprise": {
-      "cta": "Contact us",
-      "msg": "Haven't found a plan that meets your needs? We can help."
-    },
-    "faq": {
-      "items": [
-        {
-          "answer": "Yes, you can cancel or change your plan anytime. Changes take effect in the next billing period.",
-          "question": "Can I cancel or change my plan?"
-        }
-      ],
-      "title": "FAQ"
-    },
-    "features": {
-      "cancelAnytime": "Cancel your subscription at any time",
-      "dedicatedManager": "Dedicated account manager for fast issue resolution",
-      "emailSupport": "Support via email",
-      "premiumSupport": "24/7 premium support",
-      "rollover": "Unused bandwidth rolls over to the next month"
-    },
-    "plans": {
-      "custom": "Custom",
-      "free": "Free",
-      "max": "Max",
-      "pro": "Pro"
-    },
-    "subtitle": "Whether standard, custom, or enterprise — you decide.",
-    "summary": {
-      "includedFeatures": "Included features",
-      "price": "Price",
-      "selected": "Selected",
-      "total": "Total price"
-    },
-    "title": "Find your best plan",
-    "type": {
-      "enterprise": "Enterprise",
-      "standard": "Standard"
-    }
-  },
   "processing": "Processing...",
   "profile": {
     "label": "Profile",
@@ -507,14 +458,6 @@
     "terms": "Terms"
   },
   "tryAgain": "Try again",
-  "unit": {
-    "traffic": {
-      "gb": "GB",
-      "kb": "KB",
-      "mb": "MB",
-      "tb": "TB"
-    }
-  },
   "updatedAt": "Updated at",
   "url": {
     "error": {

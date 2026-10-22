@@ -1,1 +1,0 @@
-export { PricingSlider } from './PricingSlider'
