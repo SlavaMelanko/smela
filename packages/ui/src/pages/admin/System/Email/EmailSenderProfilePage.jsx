@@ -24,7 +24,8 @@ export const EmailSenderProfilePage = () => {
   } = useEmailSenderProfile(profile, {
     initialData: state?.senderProfile
       ? { senderProfile: state.senderProfile }
-      : undefined
+      : undefined,
+    initialDataUpdatedAt: 0
   })
 
   if (isError) {
