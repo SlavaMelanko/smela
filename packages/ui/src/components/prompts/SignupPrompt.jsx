@@ -9,7 +9,7 @@ export const SignupPrompt = ({ size = 'sm' }) => {
   return (
     <Prompt size={size}>
       <span>{t('doNotHaveAccount')}</span>
-      <Link size={size} to='/pricing'>
+      <Link size={size} to='/signup'>
         {t('signUp')}
       </Link>
     </Prompt>

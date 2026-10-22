@@ -7,7 +7,6 @@ import {
   CreateMemberDialog,
   CreateSocialLinkDialog,
   CreateTeamDialog,
-  PricingSliderDialog,
   RemoveTeamMemberDialog
 } from '.'
 
@@ -94,15 +93,6 @@ export const CreateAdmin = {
   render: ({ size }) => (
     <DialogWrapper size={size}>
       <CreateAdminDialog onClose={noop} onSubmit={noop} />
-    </DialogWrapper>
-  )
-}
-
-export const PricingSlider = {
-  args: { size: 'lg' },
-  render: ({ size }) => (
-    <DialogWrapper size={size}>
-      <PricingSliderDialog onComplete={noop} onClose={noop} />
     </DialogWrapper>
   )
 }

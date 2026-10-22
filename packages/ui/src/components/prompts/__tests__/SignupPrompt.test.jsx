@@ -12,7 +12,7 @@ describe('SignupPrompt', () => {
     expect(screen.getByText(en.doNotHaveAccount)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: en.signUp })).toHaveAttribute(
       'href',
-      '/pricing'
+      '/signup'
     )
   })
 

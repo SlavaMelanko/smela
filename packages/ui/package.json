@@ -17,7 +17,6 @@
     "./pages/errors": "./src/pages/errors/index.js",
     "./pages/legal": "./src/pages/legal/index.js",
     "./pages/owner": "./src/pages/owner/index.js",
-    "./pages/public": "./src/pages/public/index.js",
     "./pages/user": "./src/pages/user/index.js",
     "./routes": "./src/routes/index.js",
     "./services": "./src/services/index.js",

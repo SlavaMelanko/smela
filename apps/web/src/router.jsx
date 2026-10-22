@@ -14,7 +14,6 @@ import {
   NetworkErrorPage,
   NotFoundErrorPage
 } from '@smela/ui/pages/errors'
-import { PricingPage } from '@smela/ui/pages/public'
 import {
   HomePage,
   ProfilePage,
@@ -34,10 +33,7 @@ export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     errorElement: <ErrorBoundary />,
-    children: [
-      { path: '/', element: <RootRedirect /> },
-      { path: 'pricing', element: <PricingPage /> }
-    ]
+    children: [{ path: '/', element: <RootRedirect /> }]
   },
   {
     element: (
