@@ -39,8 +39,15 @@ export interface TeamMemberDetails {
   joinedAt: Date | null
 }
 
-export type TeamWithMemberCount = Team & {
+// A null nickname means an admin created the team. A null id means the creator is not an active teammate
+export interface TeamCreator {
+  id: string | null
+  nickname: string | null
+}
+
+export type TeamWithMemberCount = Omit<Team, 'createdBy'> & {
   memberCount: number
+  creator: TeamCreator | null
 }
 
 export interface UserTeamInfo {

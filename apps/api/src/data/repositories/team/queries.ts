@@ -1,7 +1,7 @@
 import { and, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
-import { MembershipStatus } from '@/types'
+import { MembershipStatus, Role } from '@/types'
 
 import type { Database } from '../../clients'
 import type { PaginationParams } from '../pagination'
@@ -23,6 +23,7 @@ import {
   teamMemberPermissionsTable,
   teamMembersTable,
   teamsTable,
+  userRoleTable,
   usersTable
 } from '../../schema'
 import { buildPagination, calcOffset } from '../pagination'
@@ -62,25 +63,67 @@ export const searchTeams = async (
     WHERE ${teamMembersTable.teamId} = ${sql.raw('"teams"."id"')}
   )`
 
-  const [teams, countResult] = await Promise.all([
+  const creatorsTable = alias(usersTable, 'creators')
+  const creatorRolesTable = alias(userRoleTable, 'creator_roles')
+  const creatorMembershipsTable = alias(teamMembersTable, 'creator_memberships')
+
+  // Admins stay anonymous to team members: no nickname, no id
+  const isAdminCreator = inArray(creatorRolesTable.role, [
+    Role.Admin,
+    Role.Owner
+  ])
+  // Only an active teammate gets an id, so the profile link never leads to a 404
+  const isActiveTeammate = eq(
+    creatorMembershipsTable.status,
+    MembershipStatus.Active
+  )
+
+  const [rows, countResult] = await Promise.all([
     executor
       .select({
         id: teamsTable.id,
         name: teamsTable.name,
         website: teamsTable.website,
         description: teamsTable.description,
-        createdBy: teamsTable.createdBy,
         createdAt: teamsTable.createdAt,
         updatedAt: teamsTable.updatedAt,
-        memberCount: memberCountSubquery
+        memberCount: memberCountSubquery,
+        hasCreator: sql<boolean>`${creatorsTable.id} IS NOT NULL`,
+        creatorId: sql<string | null>`CASE
+          WHEN ${isAdminCreator} THEN NULL
+          WHEN ${isActiveTeammate} THEN ${creatorsTable.id}
+        END`,
+        creatorNickname: sql<string | null>`CASE
+          WHEN ${isAdminCreator} THEN NULL
+          ELSE ${creatorsTable.nickname}
+        END`
       })
       .from(teamsTable)
+      .leftJoin(creatorsTable, eq(teamsTable.createdBy, creatorsTable.id))
+      .leftJoin(
+        creatorRolesTable,
+        eq(creatorRolesTable.userId, creatorsTable.id)
+      )
+      .leftJoin(
+        creatorMembershipsTable,
+        and(
+          eq(creatorMembershipsTable.teamId, teamsTable.id),
+          eq(creatorMembershipsTable.userId, creatorsTable.id)
+        )
+      )
       .where(whereClause)
       .orderBy(desc(teamsTable.createdAt))
       .limit(pagination.limit)
       .offset(calcOffset(pagination)),
     executor.select({ value: count() }).from(teamsTable).where(whereClause)
   ])
+
+  const teams = rows.map(
+    ({ hasCreator, creatorId, creatorNickname, ...team }) => ({
+      ...team,
+      creator: hasCreator ? { id: creatorId, nickname: creatorNickname } : null
+    })
+  )
 
   return {
     teams,
