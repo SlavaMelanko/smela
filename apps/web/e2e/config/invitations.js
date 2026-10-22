@@ -75,8 +75,8 @@ export const test = base.extend({
           method: 'POST',
           status: HttpStatus.CREATED,
           data: {
-            name: `E2E ${crypto.randomUUID()}`,
-            website: 'https://example.com'
+            name: faker.company.name(),
+            website: faker.internet.url()
           }
         })
 
