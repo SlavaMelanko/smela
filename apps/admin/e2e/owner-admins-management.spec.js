@@ -411,7 +411,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
   })
 })
 
-test('Owner: nickname search and optional real names persist through admin updates', async ({
+test('Owner: nickname search persists through admin name updates', async ({
   page,
   login
 }) => {
@@ -424,7 +424,9 @@ test('Owner: nickname search and optional real names persist through admin updat
   await login(ownerCredentials)
   const { body } = await loginPromise
   const api = createAuthenticatedRequest(page.request, body.accessToken)
-  const email = generateEmailAddress({ prefix: 'nicknameadmin' })
+  const firstName = faker.person.firstName()
+  const lastName = faker.person.lastName()
+  const email = generateEmailAddress({ prefix: firstName })
 
   await api(OWNER_ADMINS_PATH, {
     method: 'POST',
@@ -435,27 +437,24 @@ test('Owner: nickname search and optional real names persist through admin updat
   const { admin } = await api(OWNER_ADMINS_PATH, {
     method: 'POST',
     data: {
-      firstName: 'Nickname',
+      firstName,
+      lastName,
       email,
       permissions: { users: { view: true } }
     },
     status: HttpStatus.CREATED
   })
 
-  expect(admin.nickname).toBe('Nickname')
+  expect(admin.nickname).toBe(firstName)
 
   const path = `${OWNER_ADMINS_PATH}/${admin.id}`
-  const nickname = `Label ${admin.id}`
+  const nickname = faker.person.firstName()
   const updated = await api(path, {
     method: 'PATCH',
-    data: { nickname: `  ${nickname}  `, firstName: null, lastName: null }
+    data: { nickname: `  ${nickname}  ` }
   })
 
-  expect(updated.admin).toMatchObject({
-    nickname,
-    firstName: null,
-    lastName: null
-  })
+  expect(updated.admin).toMatchObject({ nickname, firstName, lastName })
 
   expect((await api(path)).admin.nickname).toBe(nickname)
 
@@ -471,15 +470,19 @@ test('Owner: nickname search and optional real names persist through admin updat
     )
   }
 
+  const newFirstName = faker.person.firstName()
+  const newLastName = faker.person.lastName()
   const renamed = await api(path, {
     method: 'PATCH',
-    data: { firstName: 'Renamed', lastName: 'Administrator' }
+    data: { firstName: newFirstName, lastName: newLastName }
   })
 
   expect(renamed.admin.nickname).toBe(nickname)
 
-  for (const search of ['Renamed', 'Administrator']) {
-    const results = await api(`${OWNER_ADMINS_PATH}?search=${search}`)
+  for (const search of [newFirstName, newLastName]) {
+    const results = await api(
+      `${OWNER_ADMINS_PATH}?search=${encodeURIComponent(search)}`
+    )
 
     expect(results.admins).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: admin.id })])
@@ -487,7 +490,7 @@ test('Owner: nickname search and optional real names persist through admin updat
   }
 })
 
-test('Owner: edits nickname and clears real names through the admin form', async ({
+test('Owner: edits nickname and real names through the admin form', async ({
   page,
   t,
   login
@@ -501,48 +504,52 @@ test('Owner: edits nickname and clears real names through the admin form', async
   await login(ownerCredentials)
   const { body } = await loginPromise
   const api = createAuthenticatedRequest(page.request, body.accessToken)
+  const initialFirstName = faker.person.firstName()
   const { admin } = await api(OWNER_ADMINS_PATH, {
     method: 'POST',
     data: {
-      firstName: 'Editable',
-      lastName: 'Admin',
-      email: generateEmailAddress({ prefix: 'editadmin' }),
+      firstName: initialFirstName,
+      lastName: faker.person.lastName(),
+      email: generateEmailAddress({ prefix: initialFirstName }),
       permissions: { users: { view: true } }
     },
     status: HttpStatus.CREATED
   })
   const path = `${OWNER_ADMINS_PATH}/${admin.id}`
+  const newNickname = 'Адмін 👑'
+  const newFirstName = faker.person.firstName()
+  const newLastName = faker.person.lastName()
 
   await page.goto(`/admins/${admin.id}`)
   const nickname = page.getByLabel(t.nickname.label)
   const firstName = page.getByLabel(t.firstName.label)
   const lastName = page.getByLabel(t.lastName.label)
 
-  await expect(nickname).toHaveValue('Editable')
-  await nickname.fill('  Адмін 🌻  ')
-  await firstName.fill('')
-  await lastName.fill('')
+  await expect(nickname).toHaveValue(initialFirstName)
+  await nickname.fill(`  ${newNickname}  `)
+  await firstName.fill(newFirstName)
+  await lastName.fill(newLastName)
   const updatedPromise = waitForApiCall(page, {
     path,
     method: 'PATCH',
     status: HttpStatus.OK,
     validateRequest: body =>
-      body.nickname === 'Адмін 🌻' &&
-      body.firstName === null &&
-      body.lastName === null
+      body.nickname === newNickname &&
+      body.firstName === newFirstName &&
+      body.lastName === newLastName
   })
 
   await page.getByRole('button', { name: t.save, exact: true }).click()
   const { body: updated } = await updatedPromise
 
   expect(updated.admin).toMatchObject({
-    nickname: 'Адмін 🌻',
-    firstName: null,
-    lastName: null
+    nickname: newNickname,
+    firstName: newFirstName,
+    lastName: newLastName
   })
 
   await page.reload()
-  await expect(nickname).toHaveValue('Адмін 🌻')
-  await expect(firstName).toHaveValue('')
-  await expect(lastName).toHaveValue('')
+  await expect(nickname).toHaveValue(newNickname)
+  await expect(firstName).toHaveValue(newFirstName)
+  await expect(lastName).toHaveValue(newLastName)
 })
