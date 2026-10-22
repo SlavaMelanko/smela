@@ -15,7 +15,7 @@ import { previewSocialLinks } from './components/footer/preview-social-links'
 
 interface Props {
   data: {
-    nickname: string
+    nickname?: string
     inviteUrl: string
     hasAccount?: boolean
     inviterName?: string

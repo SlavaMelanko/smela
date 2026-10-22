@@ -502,7 +502,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"token\": \"a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12\",\n    \"password\": \"{{initial_password}}\"\n}\n",
+              "raw": "{\n    \"token\": \"a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12\",\n    \"password\": \"{{initial_password}}\",\n    \"nickname\": \"Slava\"\n}\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -770,7 +770,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"Slava\",\n    \"lastName\": \"Melanko\",\n    \"email\": \"{{user_email}}\",\n    \"permissions\": {\n        \"users\": {\n            \"view\": true,\n            \"manage\": true\n        },\n        \"teams\": {\n            \"view\": true,\n            \"manage\": true\n        }\n    }\n}",
+              "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"permissions\": {\n        \"users\": {\n            \"view\": true,\n            \"manage\": true\n        },\n        \"teams\": {\n            \"view\": true,\n            \"manage\": true\n        }\n    }\n}",
               "options": {
                 "raw": {
                   "language": "json"

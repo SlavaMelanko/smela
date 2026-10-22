@@ -11,7 +11,7 @@ export const getAdminsQuerySchema = z.object({
 export const createAdminBodySchema = z
   .object({
     firstName: rules.user.name,
-    lastName: rules.user.name.optional(),
+    lastName: rules.user.name.nullish(),
     email: rules.user.email,
     permissions: rules.permissions
   })

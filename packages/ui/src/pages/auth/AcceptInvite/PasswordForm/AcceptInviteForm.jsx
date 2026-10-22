@@ -5,12 +5,21 @@ import {
   SubmitButton
 } from '@ui/components/form'
 import { PasswordInput } from '@ui/components/inputs'
+import { Input } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useForm } from 'react-hook-form'
 
-import { FieldName, getDefaultValues, resolver } from './schema'
+import {
+  createAcceptInviteResolver,
+  FieldName,
+  getDefaultValues
+} from './schema'
 
-export const AcceptInviteForm = ({ isLoading, onSubmit }) => {
+export const AcceptInviteForm = ({
+  isLoading,
+  onSubmit,
+  withNickname = false
+}) => {
   const { t } = useLocale()
 
   const {
@@ -18,13 +27,23 @@ export const AcceptInviteForm = ({ isLoading, onSubmit }) => {
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm({
-    resolver,
+    resolver: createAcceptInviteResolver(withNickname),
     defaultValues: getDefaultValues()
   })
 
   return (
     <FormRoot onSubmit={handleSubmit(data => onSubmit(data))}>
       <FormFields>
+        {withNickname && (
+          <FormField
+            label={t('nickname.label')}
+            name={FieldName.NICKNAME}
+            error={errors[FieldName.NICKNAME]}
+          >
+            <Input {...register(FieldName.NICKNAME)} />
+          </FormField>
+        )}
+
         <FormField
           label={t('password.label.default')}
           name={FieldName.NEW_PASSWORD}

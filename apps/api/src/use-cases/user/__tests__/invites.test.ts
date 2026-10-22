@@ -83,8 +83,6 @@ describe('inviteMember', () => {
   let mockEmailService: any
 
   const inviteParams = {
-    firstName: 'John',
-    lastName: 'Doe',
     email: 'john@example.com',
     position: 'Developer',
     permissions: { teams: { view: true, manage: true } }
@@ -160,9 +158,7 @@ describe('inviteMember', () => {
 
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         {
-          nickname: 'John',
-          firstName: 'John',
-          lastName: 'Doe',
+          nickname: 'john',
           email: 'john@example.com',
           status: UserStatus.Pending
         },
@@ -182,7 +178,7 @@ describe('inviteMember', () => {
       )
     })
 
-    it('defaults nickname to the email prefix when names are omitted', async () => {
+    it('uses the email prefix as a placeholder nickname', async () => {
       await inviteMember(
         mockTeam,
         {
@@ -193,11 +189,7 @@ describe('inviteMember', () => {
       )
 
       expect(mockUserRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nickname: 'nickname',
-          firstName: undefined,
-          lastName: undefined
-        }),
+        expect.objectContaining({ nickname: 'nickname' }),
         expect.anything()
       )
     })
@@ -236,6 +228,15 @@ describe('inviteMember', () => {
         ),
         hasAccount: false
       })
+    })
+
+    it('greets with the fallback instead of the placeholder nickname', async () => {
+      await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(readSentEmail(mockEmailService.send)).toHaveProperty(
+        'nickname',
+        undefined
+      )
     })
 
     it('returns the pending member', async () => {

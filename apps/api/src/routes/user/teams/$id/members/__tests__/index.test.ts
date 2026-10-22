@@ -119,7 +119,6 @@ describe('user /teams/:teamId/members', () => {
 
   describe('POST /teams/:teamId/members', () => {
     const body = {
-      firstName: 'Bob',
       email: 'bob@example.com',
       permissions: { teams: { view: true } }
     }
@@ -130,10 +129,7 @@ describe('user /teams/:teamId/members', () => {
       expect(res.status).toBe(HttpStatus.CREATED)
       expect(mockInviteMember).toHaveBeenCalledWith(
         mockTeam,
-        expect.objectContaining({
-          firstName: 'Bob',
-          email: 'bob@example.com'
-        }),
+        expect.objectContaining({ email: 'bob@example.com' }),
         testUuids.USER_1
       )
 
@@ -147,6 +143,16 @@ describe('user /teams/:teamId/members', () => {
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockInviteMember).not.toHaveBeenCalled()
     })
+
+    it.each(['nickname', 'firstName', 'lastName'])(
+      'rejects the %s field',
+      async field => {
+        const res = await post(app, MEMBERS_URL, { ...body, [field]: 'Bob' })
+
+        expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+        expect(mockInviteMember).not.toHaveBeenCalled()
+      }
+    )
 
     it('returns 403 when membership lacks manage permission', async () => {
       mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])

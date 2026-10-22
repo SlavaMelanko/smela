@@ -5,3 +5,4 @@ export {
   userActiveStatuses,
   UserStatus
 } from './userStatus'
+export { InviteKind } from '@smela/contracts'

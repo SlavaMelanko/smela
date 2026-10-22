@@ -12,7 +12,12 @@ import { useLocale } from '@ui/hooks/useLocale'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { defaultFields, FieldName, getDefaultValues, resolver } from './schema'
+import {
+  createInviteResolver,
+  defaultFields,
+  FieldName,
+  getDefaultValues
+} from './schema'
 
 export const InviteForm = ({
   isPermissionsLoading,
@@ -30,7 +35,7 @@ export const InviteForm = ({
     reset,
     formState: { errors, isSubmitting }
   } = useForm({
-    resolver,
+    resolver: createInviteResolver(fields),
     defaultValues: getDefaultValues()
   })
 
@@ -49,22 +54,26 @@ export const InviteForm = ({
     <FormRoot onSubmit={handleSubmit(submit)}>
       <FormGroup legend={t('personalDetails')}>
         <FormFields>
-          <FormField
-            label={t('firstName.label')}
-            name={FieldName.FIRST_NAME}
-            error={errors[FieldName.FIRST_NAME]}
-          >
-            <Input {...register(FieldName.FIRST_NAME)} />
-          </FormField>
+          {fields[FieldName.FIRST_NAME] && (
+            <FormField
+              label={t('firstName.label')}
+              name={FieldName.FIRST_NAME}
+              error={errors[FieldName.FIRST_NAME]}
+            >
+              <Input {...register(FieldName.FIRST_NAME)} />
+            </FormField>
+          )}
 
-          <FormField
-            label={t('lastName.label')}
-            name={FieldName.LAST_NAME}
-            error={errors[FieldName.LAST_NAME]}
-            optional
-          >
-            <Input {...register(FieldName.LAST_NAME)} />
-          </FormField>
+          {fields[FieldName.LAST_NAME] && (
+            <FormField
+              label={t('lastName.label')}
+              name={FieldName.LAST_NAME}
+              error={errors[FieldName.LAST_NAME]}
+              optional
+            >
+              <Input {...register(FieldName.LAST_NAME)} />
+            </FormField>
+          )}
 
           <FormField
             label={t('email.label')}

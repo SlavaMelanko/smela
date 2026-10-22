@@ -197,7 +197,13 @@ test.describe.serial('Owner: Invite admin with full access', () => {
       }
     })
 
-    await fillAcceptInviteFormAndSubmit(page, newAdmin.password, t)
+    await expect(page.getByLabel(t.nickname.label)).toHaveCount(0)
+    await fillAcceptInviteFormAndSubmit(
+      page,
+      { password: newAdmin.password },
+      t
+    )
+
     const { body } = await apiPromise
 
     expect(body.user.nickname).toBe(newAdmin.firstName)

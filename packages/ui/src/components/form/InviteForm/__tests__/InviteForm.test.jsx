@@ -21,8 +21,10 @@ const renderForm = ({ onSubmit = vi.fn(), formFields } = {}) => {
   )
 
   return {
-    firstNameInput: screen.getByLabelText(en.firstName.label, { exact: false }),
-    lastNameInput: screen.getByLabelText(en.lastName.label, { exact: false }),
+    firstNameInput: screen.queryByLabelText(en.firstName.label, {
+      exact: false
+    }),
+    lastNameInput: screen.queryByLabelText(en.lastName.label, { exact: false }),
     emailInput: screen.getByLabelText(en.email.label, { exact: false }),
     positionInput: screen.queryByLabelText(en.position.label, { exact: false }),
     submitButton: screen.getByRole('button', { name: en.invite.send.cta }),
@@ -50,6 +52,15 @@ describe('InviteForm', () => {
       })
 
       expect(positionInput).not.toBeInTheDocument()
+    })
+
+    it('hides name fields when formFields hides them', () => {
+      const { firstNameInput, lastNameInput } = renderForm({
+        formFields: { firstName: false, lastName: false }
+      })
+
+      expect(firstNameInput).not.toBeInTheDocument()
+      expect(lastNameInput).not.toBeInTheDocument()
     })
 
     it('shows permissions section by default', () => {
@@ -136,6 +147,33 @@ describe('InviteForm', () => {
       expect(submittedData).toMatchObject({
         firstName: 'John',
         email: 'john@example.com'
+      })
+    })
+  })
+
+  describe('member invite without names', () => {
+    it('submits email and position without requiring a first name', async () => {
+      const onSubmit = vi.fn()
+      const { emailInput, positionInput, submitButton } = renderForm({
+        onSubmit,
+        formFields: { firstName: false, lastName: false }
+      })
+
+      await user.type(emailInput, 'john@example.com')
+      await user.type(positionInput, 'Developer')
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled()
+      })
+
+      const submittedData = onSubmit.mock.calls[0][0]
+
+      expect(submittedData).not.toHaveProperty('firstName')
+      expect(submittedData).not.toHaveProperty('lastName')
+      expect(submittedData).toMatchObject({
+        email: 'john@example.com',
+        position: 'Developer'
       })
     })
   })

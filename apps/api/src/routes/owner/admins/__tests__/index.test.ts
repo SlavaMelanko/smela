@@ -174,6 +174,16 @@ describe('owner /admins', () => {
       })
     })
 
+    it('accepts an empty last name as null', async () => {
+      const res = await post(app, ADMINS_URL, { ...body, lastName: null })
+
+      expect(res.status).toBe(HttpStatus.CREATED)
+      expect(mockInviteAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({ lastName: null }),
+        testUuids.OWNER_1
+      )
+    })
+
     it('rejects unknown body fields', async () => {
       const res = await post(app, ADMINS_URL, { ...body, hacker: true })
 

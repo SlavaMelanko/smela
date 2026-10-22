@@ -27,13 +27,11 @@ test.describe.serial('User: Member Permissions', () => {
   let teamId
   let readOnlyMemberId
 
-  const firstName = faker.person.firstName()
-  const lastName = faker.person.lastName()
+  const nickname = faker.person.firstName()
 
   const readOnlyMember = {
-    firstName,
-    lastName,
-    email: generateEmailAddress({ prefix: firstName }),
+    nickname,
+    email: generateEmailAddress({ prefix: nickname }),
     password: process.env.VITE_E2E_STRONG_PASSWORD,
     position: faker.person.jobTitle()
   }
@@ -141,9 +139,11 @@ test.describe.serial('User: Member Permissions', () => {
       status: HttpStatus.OK
     })
 
-    await fillAcceptInviteFormAndSubmit(page, readOnlyMember.password, t)
+    await fillAcceptInviteFormAndSubmit(page, readOnlyMember, t)
 
     const { body } = await acceptPromise
+
+    expect(body.user.nickname).toBe(readOnlyMember.nickname)
 
     // Team permissions live on the membership, not on the user
     expect(body.team.permissions).toEqual(['view:teams'])

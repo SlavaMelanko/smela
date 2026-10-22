@@ -5,6 +5,7 @@ import { useNavigate } from '@ui/hooks/useRouter'
 import { useToast } from '@ui/hooks/useToast'
 import { useUrlParams } from '@ui/hooks/useUrlParams'
 import env from '@ui/lib/env'
+import { InviteKind } from '@ui/lib/types'
 import { useEffect } from 'react'
 
 import { AuthDescription, AuthHeader, AuthRoot, AuthTitle } from '../Auth'
@@ -36,7 +37,7 @@ export const AcceptInvitePage = () => {
 
   const handleAcceptInvite = data => {
     acceptInvite(
-      { token, password: data.newPassword },
+      { token, password: data.newPassword, nickname: data.nickname },
       {
         onSuccess: () => {
           showSuccessToast(t('invite.accept.success'))
@@ -67,7 +68,11 @@ export const AcceptInvitePage = () => {
         <AuthDescription>{t('invite.accept.description')}</AuthDescription>
       </AuthHeader>
 
-      <AcceptInviteForm isLoading={isPending} onSubmit={handleAcceptInvite} />
+      <AcceptInviteForm
+        isLoading={isPending}
+        onSubmit={handleAcceptInvite}
+        withNickname={data.kind === InviteKind.Member}
+      />
     </AuthRoot>
   )
 }

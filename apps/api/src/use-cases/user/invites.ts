@@ -30,9 +30,6 @@ import { resolveNickname } from '../resolve-nickname'
 import { issueInviteToken } from '../tokens'
 
 export interface InviteMemberInput {
-  nickname?: string
-  firstName?: string | null
-  lastName?: string | null
   email: string
   position?: string
   permissions: PermissionsInput
@@ -65,7 +62,9 @@ const sendInviteEmail = (
 ) =>
   void emailService.send(
     new UserInviteEmailMessageBuilder(invitee.email, {
-      nickname: invitee.nickname,
+      // A token means the account hasn't been accepted yet, so its nickname is
+      // still the email-prefix placeholder. Let the greeting fall back instead
+      nickname: token ? undefined : invitee.nickname,
       inviteUrl: token
         ? buildInviteUrl(Role.User, token)
         : buildAppUrl(Role.User),
@@ -104,13 +103,8 @@ const inviteNewUser = async (
   db.transaction(async tx => {
     const newUser = await userRepo.create(
       {
-        nickname: resolveNickname(
-          member.email,
-          member.nickname,
-          member.firstName
-        ),
-        firstName: member.firstName,
-        lastName: member.lastName,
+        // Placeholder until the invitee picks a nickname when accepting
+        nickname: resolveNickname(member.email),
         email: member.email,
         status: UserStatus.Pending
       },

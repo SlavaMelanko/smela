@@ -73,6 +73,29 @@ describe('auth /accept-invite', () => {
       expect(cookies).toContain('refresh-token')
     })
 
+    it('passes a trimmed nickname to the use case', async () => {
+      const res = await post(app, ACCEPT_INVITE_URL, {
+        ...validPayload,
+        nickname: '  Слава 🌻  '
+      })
+
+      expect(res.status).toBe(HttpStatus.OK)
+      expect(mockAcceptInvite).toHaveBeenCalledWith(
+        { ...validPayload, nickname: 'Слава 🌻' },
+        { ipAddress: null, userAgent: null }
+      )
+    })
+
+    it.each([null, '', '   '])('rejects nickname %p', async nickname => {
+      const res = await post(app, ACCEPT_INVITE_URL, {
+        ...validPayload,
+        nickname
+      })
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockAcceptInvite).not.toHaveBeenCalled()
+    })
+
     it('returns error status when use case throws', async () => {
       mockAcceptInvite.mockImplementationOnce(() => {
         throw new Error('Accept invite failed')
