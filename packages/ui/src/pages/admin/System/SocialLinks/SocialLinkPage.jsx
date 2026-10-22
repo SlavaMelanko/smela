@@ -28,7 +28,7 @@ export const SocialLinkPage = () => {
     initialData: state?.socialLink
       ? { socialLink: state.socialLink }
       : undefined,
-    initialDataUpdatedAt: state?.socialLink ? 0 : undefined
+    initialDataUpdatedAt: 0
   })
 
   if (isError) {

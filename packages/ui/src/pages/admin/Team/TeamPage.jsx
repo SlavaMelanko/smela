@@ -36,7 +36,8 @@ export const TeamPage = () => {
     error,
     refetch
   } = useTeam(teamId, {
-    initialData: state?.team ? { team: state.team } : undefined
+    initialData: state?.team ? { team: state.team } : undefined,
+    initialDataUpdatedAt: 0
   })
 
   if (isError) {

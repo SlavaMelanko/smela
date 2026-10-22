@@ -33,7 +33,8 @@ export const UserPage = () => {
     error,
     refetch
   } = useUser(id, {
-    initialData: state?.user ? { user: state.user } : undefined
+    initialData: state?.user ? { user: state.user } : undefined,
+    initialDataUpdatedAt: 0
   })
 
   const canViewTeams = can('view:teams')
