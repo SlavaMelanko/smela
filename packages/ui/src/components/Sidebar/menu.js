@@ -3,7 +3,6 @@ import {
   Cog,
   Home,
   LayoutDashboard,
-  MapPinCheckInside,
   ShieldCheck,
   User,
   Users
@@ -14,15 +13,6 @@ export const getUserMenuItems = () => [
     title: 'sidebar.home',
     url: '/home',
     icon: Home
-  },
-  {
-    title: 'sidebar.proxies',
-    icon: MapPinCheckInside,
-    items: [
-      { title: 'sidebar.residential', url: '/proxies/residential' },
-      { title: 'sidebar.isp', url: '/proxies/isp' },
-      { title: 'sidebar.serpApi', url: '/proxies/serp-api' }
-    ]
   },
   {
     title: 'sidebar.documentation',

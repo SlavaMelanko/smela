@@ -1,4 +1,4 @@
-import { BookOpen, Home, MapPinCheckInside, Users } from 'lucide-react'
+import { BookOpen, Bot, Home, Users } from 'lucide-react'
 
 import { Sidebar } from '.'
 
@@ -7,7 +7,7 @@ export default {
   component: Sidebar,
   parameters: {
     layout: 'fullscreen',
-    initialPath: '/proxies/residential'
+    initialPath: '/ai-agents/chatgpt'
   },
   decorators: [
     Story => (
@@ -23,11 +23,12 @@ export const AllFeatures = {
     items: [
       { title: 'sidebar.home', url: '/home', icon: Home },
       {
-        title: 'sidebar.proxies',
-        icon: MapPinCheckInside,
+        title: 'AI agents',
+        icon: Bot,
         items: [
-          { title: 'sidebar.residential', url: '/proxies/residential' },
-          { title: 'sidebar.isp', url: '/proxies/isp' }
+          { title: 'ChatGPT', url: '/ai-agents/chatgpt' },
+          { title: 'Claude Code', url: '/ai-agents/claude-code' },
+          { title: 'Copilot', url: '/ai-agents/copilot' }
         ]
       },
       { title: 'sidebar.users', url: '/users', icon: Users, badge: 5 },
