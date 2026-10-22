@@ -240,7 +240,7 @@ const seedSystemUsers = async () => {
       }
     },
     {
-      firstName: 'Slava',
+      firstName: 'System',
       lastName: 'Admin',
       email: 'admin@smela.me',
       password: SEED_USER_PASSWORD,

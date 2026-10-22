@@ -5,6 +5,7 @@ import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
   buildPath,
+  ME_PATH,
   SIGNUP_PATH,
   TEAM_MEMBER_PATH,
   TEAM_MEMBERS_PATH,
@@ -14,15 +15,18 @@ import {
 
 import { test as base } from './fixtures'
 
-export const createInvitee = () => ({
-  nickname: faker.person.firstName(),
-  email: generateEmailAddress({
-    prefix: 'invite',
-    suffix: crypto.randomUUID()
-  }),
-  password: process.env.VITE_E2E_STRONG_PASSWORD,
-  position: faker.person.jobTitle()
-})
+const REAL_NAME_PROBABILITY = 0.25
+
+export const createInvitee = () => {
+  const nickname = faker.person.firstName()
+
+  return {
+    nickname,
+    email: generateEmailAddress({ prefix: nickname }),
+    password: process.env.VITE_E2E_STRONG_PASSWORD,
+    position: faker.person.jobTitle()
+  }
+}
 
 export const test = base.extend({
   teamActors: async ({ browser, baseURL, t, emailService }, use) => {
@@ -65,7 +69,19 @@ export const test = base.extend({
           context.request,
           body.accessToken
         )
-        const { user } = body
+        // Most users keep only a nickname, so the tables show a realistic mix
+        const hasRealName = faker.datatype.boolean({
+          probability: REAL_NAME_PROBABILITY
+        })
+        const { user } = hasRealName
+          ? await api(ME_PATH, {
+              method: 'PATCH',
+              data: {
+                firstName: faker.person.firstName(),
+                lastName: faker.person.lastName()
+              }
+            })
+          : body
 
         const actor = { page, credentials, user, api }
 
@@ -75,8 +91,8 @@ export const test = base.extend({
           method: 'POST',
           status: HttpStatus.CREATED,
           data: {
-            name: `E2E ${crypto.randomUUID()}`,
-            website: 'https://example.com'
+            name: faker.company.name(),
+            website: faker.internet.url()
           }
         })
 
