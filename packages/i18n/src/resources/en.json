@@ -307,10 +307,6 @@
     "dashboard": "Dashboard",
     "documentation": "Documentation",
     "home": "Home",
-    "isp": "ISP",
-    "proxies": "Proxies",
-    "residential": "Residential",
-    "serpApi": "SERP API",
     "system": "System",
     "teams": "Teams",
     "users": "Users"
