@@ -12,7 +12,7 @@ export const MembershipSection = ({
   team,
   teamLink,
   creator,
-  creatorLink,
+  getMemberLink,
   update,
   isUpdating,
   canManageTeams = false
@@ -39,7 +39,7 @@ export const MembershipSection = ({
         team={team}
         teamLink={teamLink}
         creator={creator}
-        creatorLink={creatorLink}
+        getMemberLink={getMemberLink}
         isSubmitting={isUpdating}
         onSubmit={handleUpdate}
         canManageTeams={canManageTeams}

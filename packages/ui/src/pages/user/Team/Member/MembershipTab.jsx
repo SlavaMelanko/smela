@@ -23,7 +23,7 @@ export const MembershipTab = ({ team, member, canManageTeams = false }) => {
       team={team}
       teamLink='/team/general'
       creator={creator}
-      creatorLink={creator?.id && `/team/members/${creator.id}`}
+      getMemberLink={id => `/team/members/${id}`}
       update={update}
       isUpdating={isUpdating}
       canManageTeams={canManageTeams}

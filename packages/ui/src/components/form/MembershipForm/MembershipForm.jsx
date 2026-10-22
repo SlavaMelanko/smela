@@ -18,13 +18,16 @@ import { useForm } from 'react-hook-form'
 
 import { FieldName, getDefaultValues, getValues, resolver } from './schema'
 
-const TeamCreator = ({ creator, link }) => {
+// The API hides admins' nicknames and gives an id only to active teammates
+const Teammate = ({ teammate, getMemberLink }) => {
   const { t } = useLocale()
+  const name = teammate.nickname ?? t('systemAdmin')
 
-  // The API hides the nickname when an admin created the team
-  const name = creator.nickname ?? t('systemAdmin')
-
-  return link ? <Link to={link}>{name}</Link> : name
+  return teammate.id ? (
+    <Link to={getMemberLink(teammate.id)}>{name}</Link>
+  ) : (
+    name
+  )
 }
 
 export const MembershipForm = ({
@@ -32,7 +35,7 @@ export const MembershipForm = ({
   team,
   teamLink,
   creator,
-  creatorLink,
+  getMemberLink,
   isSubmitting,
   onSubmit,
   canManageTeams = false
@@ -68,7 +71,7 @@ export const MembershipForm = ({
           {creator && (
             <FormField label={t('createdBy')} optional>
               <FormReadOnly>
-                <TeamCreator creator={creator} link={creatorLink} />
+                <Teammate teammate={creator} getMemberLink={getMemberLink} />
               </FormReadOnly>
             </FormField>
           )}
@@ -86,19 +89,24 @@ export const MembershipForm = ({
               readOnly={!canManageTeams}
             />
           </FormField>
+        </FormRow>
+
+        <FormRow forceColumns>
+          {member?.inviter && (
+            <FormField label={t('invitedBy')} optional>
+              <FormReadOnly>
+                <Teammate
+                  teammate={member.inviter}
+                  getMemberLink={getMemberLink}
+                />
+              </FormReadOnly>
+            </FormField>
+          )}
 
           <FormField label={t('joinedAt')} optional>
             <FormReadOnly>{formatDate(member?.joinedAt)}</FormReadOnly>
           </FormField>
         </FormRow>
-
-        {member?.inviter && (
-          <FormRow forceColumns>
-            <FormField label={t('invitedBy')} optional>
-              <FormReadOnly>{member.inviter.nickname}</FormReadOnly>
-            </FormField>
-          </FormRow>
-        )}
 
         {canManageTeams && (
           <FormActions isDirty={isDirty}>

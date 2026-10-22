@@ -70,7 +70,24 @@ export const UserInfoForm = ({
               readOnly={!canManageUsers}
             />
           </FormField>
+
+          {fields[FieldName.STATUS] && (
+            <FormController
+              name={FieldName.STATUS}
+              label={t('status.name')}
+              control={control}
+              render={({ field, id }) => (
+                <StatusDropdown
+                  id={id}
+                  value={field.value}
+                  onChange={field.onChange}
+                  readOnly={!canManageUsers}
+                />
+              )}
+            />
+          )}
         </FormRow>
+
         <FormRow>
           <FormField
             label={t('firstName.label')}
@@ -96,24 +113,6 @@ export const UserInfoForm = ({
             />
           </FormField>
         </FormRow>
-
-        {fields[FieldName.STATUS] && (
-          <FormRow>
-            <FormController
-              name={FieldName.STATUS}
-              label={t('status.name')}
-              control={control}
-              render={({ field, id }) => (
-                <StatusDropdown
-                  id={id}
-                  value={field.value}
-                  onChange={field.onChange}
-                  readOnly={!canManageUsers}
-                />
-              )}
-            />
-          </FormRow>
-        )}
 
         <FormRow forceColumns>
           <FormField name='createdAt' label={t('createdAt')} optional>
