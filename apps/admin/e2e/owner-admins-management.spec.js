@@ -48,6 +48,31 @@ test.describe('Owner: Admins Page', () => {
 
     await expect(columnsButton).toBeVisible()
 
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.fullName })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.nickname })
+    ).toHaveCount(0)
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.email })
+    ).toBeVisible()
+
+    await columnsButton.click()
+    await page
+      .getByRole('menuitemcheckbox', {
+        name: t.table.users.nickname,
+        exact: true
+      })
+      .click()
+
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.nickname })
+    ).toBeVisible()
+
     // ID column is hidden by default — header should not exist yet
     await expect(
       page.getByRole('columnheader', { name: t.table.users.id })
@@ -85,7 +110,7 @@ test.describe('Owner: Admins Page', () => {
     await expect(headers).toHaveCount(await cells.count())
   })
 
-  test('search filters the admins table', async ({ page, login }) => {
+  test('search filters the admins table', async ({ page, t, login }) => {
     await login(ownerCredentials)
 
     const apiPromise = waitForApiCall(page, {
@@ -96,7 +121,7 @@ test.describe('Owner: Admins Page', () => {
     await page.goto('/admins')
     await apiPromise
 
-    const searchInput = page.getByRole('searchbox', { name: 'Search' })
+    const searchInput = page.getByRole('searchbox', { name: t.searchBy.users })
 
     await searchInput.fill('admin')
 
@@ -293,7 +318,10 @@ test.describe.serial('Owner: Invite admin with full access', () => {
     await login({ email: newAdmin.email, password: newAdmin.password })
 
     // Open profile menu and navigate to Profile
-    await page.getByRole('button', { name: 'Profile menu' }).click()
+    await page
+      .getByRole('button', { name: t.profile.label, exact: true })
+      .click()
+
     await page.getByRole('menuitem', { name: t.profile.title }).click()
 
     await page.waitForURL('**/profile*')
@@ -376,7 +404,7 @@ test.describe('Owner: Admins Page Error Handling', () => {
 
     // Verify table header is visible but no data rows exist
     await expect(
-      page.getByRole('columnheader', { name: t.table.users.name })
+      page.getByRole('columnheader', { name: t.table.users.fullName })
     ).toBeVisible()
 
     await expect(page.getByRole('cell')).toHaveCount(0)

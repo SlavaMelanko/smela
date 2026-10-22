@@ -1,7 +1,6 @@
 import { LastActiveBadge, YouBadge } from '@ui/components/badges'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useLocale } from '@ui/hooks/useLocale'
-import { getFullName } from '@ui/lib/format/user'
 
 import {
   PageHeader,
@@ -36,7 +35,7 @@ export const UserPageHeader = ({ user }) => {
         <PageHeaderIcon icon={getRoleIcon(user?.role)} />
         <PageHeaderContent>
           <PageHeaderTitle>
-            {getFullName(user)}
+            {user?.nickname}
             {isMe && <YouBadge className='text-lg' />}
           </PageHeaderTitle>
           <PageHeaderEmail email={user?.email} />

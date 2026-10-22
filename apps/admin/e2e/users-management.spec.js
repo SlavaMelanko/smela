@@ -73,6 +73,49 @@ test('Admin: edits a user nickname and clears real names through the form', asyn
     await expect(nickname).toHaveValue('Користувач 🌻')
     await expect(firstName).toHaveValue('')
     await expect(lastName).toHaveValue('')
+    await expect(
+      page.getByRole('heading', { name: 'Користувач 🌻', exact: true })
+    ).toBeVisible()
+
+    await page.goto('/users')
+    await page.getByRole('searchbox', { name: t.searchBy.users }).fill(email)
+    const row = page.getByRole('row', { name: new RegExp(email) })
+
+    await expect(
+      row.getByRole('cell', { name: 'Користувач 🌻', exact: true })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.email })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.nickname })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.fullName })
+    ).toHaveCount(0)
+
+    await page.getByRole('button', { name: t.table.column_plural }).click()
+    await page
+      .getByRole('menuitemcheckbox', {
+        name: t.table.users.fullName,
+        exact: true
+      })
+      .click()
+
+    await page.keyboard.press('Escape')
+    const headers = await page.getByRole('columnheader').allTextContents()
+    const fullNameIndex = headers.findIndex(label =>
+      label.includes(t.table.users.fullName)
+    )
+
+    await expect(row.getByRole('cell').nth(fullNameIndex)).toHaveText('')
+    await page.reload()
+    await expect(
+      page.getByRole('columnheader', { name: t.table.users.fullName })
+    ).toBeVisible()
   } finally {
     await api(path, {
       method: 'PATCH',

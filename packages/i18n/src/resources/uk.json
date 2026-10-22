@@ -430,11 +430,12 @@
     "filter_plural": "Фільтри",
     "members": {
       "email": "Email",
+      "fullName": "Повне ім'я",
       "id": "ID",
       "invitedBy": "$t(invitedBy)",
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
-      "name": "Ім'я",
+      "nickname": "Нікнейм",
       "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
@@ -456,11 +457,12 @@
     "users": {
       "createdAt": "$t(createdAt)",
       "email": "Email",
+      "fullName": "Повне ім'я",
       "id": "ID",
       "invitedAt": "$t(invitedAt)",
       "invitedBy": "$t(invitedBy)",
       "lastActive": "$t(lastActive.label)",
-      "name": "Ім'я",
+      "nickname": "Нікнейм",
       "status": "$t(status.name)",
       "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"

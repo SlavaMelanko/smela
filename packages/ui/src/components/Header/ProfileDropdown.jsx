@@ -10,7 +10,7 @@ import { useLocale } from '@ui/hooks/useLocale'
 
 import { UserAvatar } from './UserAvatar'
 
-export const ProfileDropdown = ({ firstName, status, menu }) => {
+export const ProfileDropdown = ({ nickname, status, menu }) => {
   const { t } = useLocale()
 
   return (
@@ -21,11 +21,11 @@ export const ProfileDropdown = ({ firstName, status, menu }) => {
             variant='ghost'
             size='icon'
             className='rounded-full'
-            aria-label='Profile menu'
+            aria-label={t('profile.label')}
           />
         }
       >
-        <UserAvatar firstName={firstName} status={status} />
+        <UserAvatar nickname={nickname} status={status} />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end'>

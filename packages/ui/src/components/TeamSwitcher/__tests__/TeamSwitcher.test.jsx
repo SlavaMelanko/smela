@@ -215,7 +215,7 @@ describe('TeamSwitcher', () => {
       {
         id: 'marketing',
         name: 'Marketing',
-        inviter: { firstName: 'Jane', lastName: 'Doe' }
+        inviter: { nickname: 'Janey', firstName: null, lastName: null }
       }
     ]
 
@@ -231,7 +231,7 @@ describe('TeamSwitcher', () => {
       const menu = await screen.findByRole('menu')
 
       expect(within(menu).getByText('Invitations')).toBeInTheDocument()
-      expect(within(menu).getByText('From Jane Doe')).toBeInTheDocument()
+      expect(within(menu).getByText('From Janey')).toBeInTheDocument()
       expect(within(menu).queryByRole('menuitemradio')).not.toBeInTheDocument()
     })
 

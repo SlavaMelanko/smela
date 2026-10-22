@@ -12,8 +12,8 @@ export const getColumns = (t, formatDate, meId) => {
       hidden: true
     },
     {
-      accessorKey: 'name',
-      header: label('name'),
+      accessorKey: 'fullName',
+      header: label('fullName'),
       accessorFn: row => getFullName(row),
       cell: info => (
         <>
@@ -22,6 +22,11 @@ export const getColumns = (t, formatDate, meId) => {
         </>
       ),
       sortFn: 'alphanumeric'
+    },
+    {
+      accessorKey: 'nickname',
+      header: label('nickname'),
+      hidden: true
     },
     {
       accessorKey: 'email',
@@ -35,7 +40,7 @@ export const getColumns = (t, formatDate, meId) => {
     {
       accessorKey: 'invitedBy',
       header: label('invitedBy'),
-      accessorFn: row => getFullName(row?.inviter),
+      accessorFn: row => row.inviter?.nickname,
       cell: info => info.getValue() ?? '',
       hidden: true
     },

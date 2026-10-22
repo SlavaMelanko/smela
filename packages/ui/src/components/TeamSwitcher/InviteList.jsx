@@ -6,12 +6,9 @@ import {
 import { useLocale } from '@ui/hooks/useLocale'
 import { Check, X } from 'lucide-react'
 
-const formatInviter = inviter =>
-  [inviter?.firstName, inviter?.lastName].filter(Boolean).join(' ')
-
 const InviteItem = ({ invite, onAccept, onDecline }) => {
   const { t } = useLocale()
-  const inviterName = formatInviter(invite.inviter)
+  const inviterName = invite.inviter?.nickname
 
   return (
     <div className='flex items-center gap-2 py-1 pl-2'>

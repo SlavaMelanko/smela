@@ -18,7 +18,7 @@ const invites = [
   {
     id: 'marketing',
     name: 'Marketing',
-    inviter: { firstName: 'Jane', lastName: 'Doe' }
+    inviter: { nickname: 'Janey', firstName: null, lastName: null }
   },
   { id: 'sales', name: 'Sales', inviter: null }
 ]

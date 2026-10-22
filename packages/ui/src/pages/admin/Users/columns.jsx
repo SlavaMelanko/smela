@@ -12,11 +12,15 @@ export const getColumns = (t, formatDate) => {
       hidden: true
     },
     {
-      accessorKey: 'name',
-      header: label('name'),
-      accessorFn: row => getFullName(row),
-      cell: info => getFullName(info.row.original),
+      accessorKey: 'nickname',
+      header: label('nickname'),
       sortFn: 'alphanumeric'
+    },
+    {
+      accessorKey: 'fullName',
+      header: label('fullName'),
+      accessorFn: row => getFullName(row),
+      hidden: true
     },
     {
       accessorKey: 'email',
