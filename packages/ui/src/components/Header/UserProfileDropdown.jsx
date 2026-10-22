@@ -42,7 +42,7 @@ export const UserProfileDropdown = ({ user }) => {
 
   return (
     <ProfileDropdown
-      firstName={user?.firstName}
+      nickname={user?.nickname}
       status={user?.status}
       menu={menu}
     />

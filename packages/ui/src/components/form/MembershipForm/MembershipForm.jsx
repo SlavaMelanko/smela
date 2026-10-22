@@ -13,7 +13,6 @@ import {
 import { Link } from '@ui/components/links'
 import { Input } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
-import { getFullName } from '@ui/lib/format'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -75,7 +74,7 @@ export const MembershipForm = ({
 
           {member?.inviter && (
             <FormField label={t('invitedBy')} optional>
-              <FormReadOnly>{getFullName(member?.inviter)}</FormReadOnly>
+              <FormReadOnly>{member?.inviter?.nickname}</FormReadOnly>
             </FormField>
           )}
         </FormRow>

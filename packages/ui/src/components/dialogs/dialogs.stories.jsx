@@ -36,7 +36,7 @@ export const RemoveTeamMember = {
   render: ({ size }) => (
     <DialogWrapper size={size}>
       <RemoveTeamMemberDialog
-        member={{ firstName: 'John', lastName: 'Doe' }}
+        member={{ nickname: 'Johnny', firstName: 'John', lastName: 'Doe' }}
         onClose={noop}
         onConfirm={noop}
       />

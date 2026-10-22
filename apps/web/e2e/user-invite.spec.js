@@ -179,6 +179,31 @@ test.describe.serial('User: Team Members', () => {
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
     await membersPromise
 
+    await expect(
+      page.getByRole('columnheader', { name: t.table.members.nickname })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.members.email })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('columnheader', { name: t.table.members.fullName })
+    ).toHaveCount(0)
+
+    await page.getByRole('button', { name: t.table.column_plural }).click()
+    await page
+      .getByRole('menuitemcheckbox', {
+        name: t.table.members.fullName,
+        exact: true
+      })
+      .click()
+
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('columnheader', { name: t.table.members.fullName })
+    ).toBeVisible()
+
     // Invite button is available
     await expect(page.getByRole('button', { name: t.invite.cta })).toBeVisible()
 
@@ -515,6 +540,13 @@ test.describe('User: Existing account invitations', () => {
     expect(new URL(link).searchParams.has('token')).toBe(false)
     await invitee.page.goto(link)
     await openInvites(invitee.page, inviter.team, t)
+    await expect(
+      invitee.page.getByText(
+        t.team.invites.from.replace('{{name}}', inviter.credentials.nickname),
+        { exact: true }
+      )
+    ).toBeVisible()
+
     const accepted = await acceptInvite(invitee.page, inviter.team, t)
 
     // Make the accepted team active and keep the existing team

@@ -13,8 +13,8 @@ const supportCredentials = {
 // The seeded team that test members are linked to
 const teamWithMembers = process.env.VITE_E2E_TEAM_WITH_MEMBERS
 
-const searchAndOpen = async (page, query) => {
-  await page.getByRole('searchbox', { name: 'Search' }).fill(query)
+const searchAndOpen = async (page, t, query) => {
+  await page.getByRole('searchbox', { name: t.searchBy.teams }).fill(query)
   await expect(page.getByRole('row')).toHaveCount(2) // header + 1 result
   await page.getByRole('row').nth(1).click()
 }
@@ -84,7 +84,7 @@ test.describe('Read-Only Admin: Users', () => {
   }) => {
     // Navigate via the team members list to get a user with a membership
     await page.goto('/teams')
-    await searchAndOpen(page, teamWithMembers)
+    await searchAndOpen(page, t, teamWithMembers)
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)
@@ -193,7 +193,7 @@ test.describe('Read-Only Admin: Teams', () => {
     t
   }) => {
     await page.goto('/teams')
-    await searchAndOpen(page, teamWithMembers)
+    await searchAndOpen(page, t, teamWithMembers)
     await page.getByRole('tab', { name: t.team.tabs.members.label }).click()
 
     const memberRow = page.getByRole('row').nth(1)

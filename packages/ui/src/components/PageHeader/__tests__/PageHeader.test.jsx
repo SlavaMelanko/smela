@@ -15,6 +15,7 @@ vi.mock('@ui/hooks/useAuth', async () => ({
 
 const ME = {
   id: '1',
+  nickname: 'Ali',
   firstName: 'Alice',
   lastName: 'Smith',
   email: 'alice@example.com',
@@ -22,8 +23,9 @@ const ME = {
 }
 const OTHER = {
   id: '2',
-  firstName: 'Bob',
-  lastName: 'Jones',
+  nickname: 'Bobby',
+  firstName: null,
+  lastName: null,
   email: 'bob@example.com',
   role: 'member'
 }
@@ -51,7 +53,7 @@ describe('UserPageHeader', () => {
   it('displays user name and email', () => {
     renderWithProviders(<UserPageHeader user={OTHER} />)
 
-    expect(screen.getByText('Bob Jones')).toBeInTheDocument()
+    expect(screen.getByText('Bobby')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: OTHER.email })).toBeInTheDocument()
   })
 

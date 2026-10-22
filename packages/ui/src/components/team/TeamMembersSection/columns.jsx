@@ -12,15 +12,20 @@ export const getColumns = (t, formatDate, meId) => {
       hidden: true
     },
     {
-      accessorKey: 'name',
-      header: label('name'),
-      accessorFn: row => getFullName(row),
+      accessorKey: 'nickname',
+      header: label('nickname'),
       cell: info => (
         <>
           {info.getValue()}
           {info.row.original.id === meId && <YouBadge />}
         </>
       )
+    },
+    {
+      accessorKey: 'fullName',
+      header: label('fullName'),
+      accessorFn: row => getFullName(row),
+      hidden: true
     },
     {
       accessorKey: 'email',
@@ -38,7 +43,7 @@ export const getColumns = (t, formatDate, meId) => {
     {
       accessorKey: 'invitedBy',
       header: label('invitedBy'),
-      accessorFn: row => getFullName(row?.inviter),
+      accessorFn: row => row.inviter?.nickname,
       cell: info => info.getValue() ?? '',
       hidden: true
     },

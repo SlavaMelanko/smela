@@ -1,5 +1,3 @@
-import { getFullName } from '@ui/lib/format/user'
-
 import {
   PageHeader,
   PageHeaderContent,
@@ -15,7 +13,7 @@ export const ProfilePageHeader = ({ user }) => (
     <PageHeaderGroup>
       <PageHeaderIcon icon={getRoleIcon(user?.role)} />
       <PageHeaderContent>
-        <PageHeaderTitle>{getFullName(user)}</PageHeaderTitle>
+        <PageHeaderTitle>{user?.nickname}</PageHeaderTitle>
         <PageHeaderEmail email={user?.email} />
       </PageHeaderContent>
     </PageHeaderGroup>

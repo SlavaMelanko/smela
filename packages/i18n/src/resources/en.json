@@ -424,11 +424,12 @@
     "filter_plural": "Filters",
     "members": {
       "email": "Email",
+      "fullName": "Full name",
       "id": "ID",
       "invitedBy": "$t(invitedBy)",
       "joinedAt": "$t(joinedAt)",
       "lastActive": "$t(lastActive.label)",
-      "name": "Name",
+      "nickname": "Nickname",
       "position": "$t(position.label)",
       "status": "$t(status.name)"
     },
@@ -450,11 +451,12 @@
     "users": {
       "createdAt": "$t(createdAt)",
       "email": "Email",
+      "fullName": "Full name",
       "id": "ID",
       "invitedAt": "$t(invitedAt)",
       "invitedBy": "$t(invitedBy)",
       "lastActive": "$t(lastActive.label)",
-      "name": "Name",
+      "nickname": "Nickname",
       "status": "$t(status.name)",
       "team": "$t(team.name.label2)",
       "updatedAt": "$t(updatedAt)"

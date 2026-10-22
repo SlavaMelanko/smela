@@ -16,7 +16,6 @@ export const SearchInput = ({
       type='search'
       placeholder={placeholder}
       autoComplete='on'
-      aria-label='Search'
       value={value}
       onChange={e => onChange?.(e.target.value)}
       leftIcon={<Search className='size-4' />}

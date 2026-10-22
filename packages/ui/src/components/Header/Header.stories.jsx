@@ -42,6 +42,7 @@ export const Default = {
       isSuccess: true,
       user: {
         id: 'usr_12345',
+        nickname: 'Johnny',
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@example.com',

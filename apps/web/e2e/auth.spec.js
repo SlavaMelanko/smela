@@ -779,6 +779,14 @@ test('Authentication: signs up with a nickname and edits profile names through t
   const save = page.getByRole('button', { name: t.save, exact: true })
 
   await expect(nickname).toHaveValue('Слава 🌻')
+  await expect(
+    page.getByRole('heading', { name: 'Слава 🌻', exact: true })
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('button', { name: t.profile.label, exact: true })
+  ).toHaveText('С')
+
   await expect(firstName).toHaveValue('')
   await expect(lastName).toHaveValue('')
 
@@ -815,6 +823,13 @@ test('Authentication: signs up with a nickname and edits profile names through t
   await page.reload()
   await expect(firstName).toHaveValue('Changed')
   await expect(nickname).toHaveValue('Updated 🌻')
+  await expect(
+    page.getByRole('heading', { name: 'Updated 🌻', exact: true })
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('button', { name: t.profile.label, exact: true })
+  ).toHaveText('U')
 
   await firstName.fill('  ')
   await lastName.fill('')

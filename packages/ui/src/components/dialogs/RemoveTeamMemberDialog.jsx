@@ -7,7 +7,6 @@ import {
   DialogTitle
 } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
-import { getFullName } from '@ui/lib/format'
 
 export const RemoveTeamMemberDialog = ({ onClose, onConfirm, member }) => {
   const { t } = useLocale()
@@ -19,7 +18,7 @@ export const RemoveTeamMemberDialog = ({ onClose, onConfirm, member }) => {
       </DialogHeader>
       <DialogBody>
         <DialogDescription>
-          {t('team.members.remove.description', { name: getFullName(member) })}
+          {t('team.members.remove.description', { name: member?.nickname })}
         </DialogDescription>
         <DialogControls>
           <Button variant='outline' onClick={onClose}>
