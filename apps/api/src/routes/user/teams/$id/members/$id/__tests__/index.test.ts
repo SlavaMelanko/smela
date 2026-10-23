@@ -61,7 +61,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
     ])
 
     await moduleMocker.mock('@/use-cases/resolve-permissions', () => ({
-      resolveMemberPermissionList: mockTeamPermissions
+      resolveMembershipPermissionList: mockTeamPermissions
     }))
 
     mockUpdateTeamMember = mock(async () => ({

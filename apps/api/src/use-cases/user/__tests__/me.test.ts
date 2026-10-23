@@ -54,7 +54,7 @@ describe('me', () => {
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
-      findMemberPermissions: mock(async () => [
+      findMembershipPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
     } satisfies Partial<typeof teamRepo>

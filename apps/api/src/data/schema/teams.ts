@@ -40,8 +40,8 @@ export const teamsTable = pgTable('teams', {
     .defaultNow()
 })
 
-export const teamMembersTable = pgTable(
-  'team_members',
+export const membershipsTable = pgTable(
+  'memberships',
   {
     id: uuid('id')
       .primaryKey()
@@ -70,20 +70,20 @@ export const teamMembersTable = pgTable(
       .defaultNow()
   },
   table => [
-    uniqueIndex('unique_team_member').on(table.userId, table.teamId),
-    index('team_members_team_index').on(table.teamId)
+    uniqueIndex('unique_membership').on(table.userId, table.teamId),
+    index('memberships_team_index').on(table.teamId)
   ]
 )
 
-export const teamMemberPermissionsTable = pgTable(
-  'team_member_permissions',
+export const membershipPermissionsTable = pgTable(
+  'membership_permissions',
   {
-    memberId: uuid('member_id')
+    membershipId: uuid('membership_id')
       .notNull()
-      .references(() => teamMembersTable.id, { onDelete: 'cascade' }),
+      .references(() => membershipsTable.id, { onDelete: 'cascade' }),
     permissionId: integer('permission_id')
       .notNull()
       .references(() => permissionsTable.id, { onDelete: 'cascade' })
   },
-  table => [primaryKey({ columns: [table.memberId, table.permissionId] })]
+  table => [primaryKey({ columns: [table.membershipId, table.permissionId] })]
 )

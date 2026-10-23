@@ -446,12 +446,12 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.team_member_permissions": {
-      "name": "team_member_permissions",
+    "public.membership_permissions": {
+      "name": "membership_permissions",
       "schema": "",
       "columns": {
-        "member_id": {
-          "name": "member_id",
+        "membership_id": {
+          "name": "membership_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -465,18 +465,18 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "team_member_permissions_member_id_team_members_id_fk": {
-          "name": "team_member_permissions_member_id_team_members_id_fk",
-          "tableFrom": "team_member_permissions",
-          "tableTo": "team_members",
-          "columnsFrom": ["member_id"],
+        "membership_permissions_membership_id_memberships_id_fk": {
+          "name": "membership_permissions_membership_id_memberships_id_fk",
+          "tableFrom": "membership_permissions",
+          "tableTo": "memberships",
+          "columnsFrom": ["membership_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "team_member_permissions_permission_id_permissions_id_fk": {
-          "name": "team_member_permissions_permission_id_permissions_id_fk",
-          "tableFrom": "team_member_permissions",
+        "membership_permissions_permission_id_permissions_id_fk": {
+          "name": "membership_permissions_permission_id_permissions_id_fk",
+          "tableFrom": "membership_permissions",
           "tableTo": "permissions",
           "columnsFrom": ["permission_id"],
           "columnsTo": ["id"],
@@ -485,9 +485,9 @@
         }
       },
       "compositePrimaryKeys": {
-        "team_member_permissions_member_id_permission_id_pk": {
-          "name": "team_member_permissions_member_id_permission_id_pk",
-          "columns": ["member_id", "permission_id"]
+        "membership_permissions_membership_id_permission_id_pk": {
+          "name": "membership_permissions_membership_id_permission_id_pk",
+          "columns": ["membership_id", "permission_id"]
         }
       },
       "uniqueConstraints": {},
@@ -495,8 +495,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.team_members": {
-      "name": "team_members",
+    "public.memberships": {
+      "name": "memberships",
       "schema": "",
       "columns": {
         "id": {
@@ -553,8 +553,8 @@
         }
       },
       "indexes": {
-        "unique_team_member": {
-          "name": "unique_team_member",
+        "unique_membership": {
+          "name": "unique_membership",
           "columns": [
             {
               "expression": "user_id",
@@ -574,8 +574,8 @@
           "method": "btree",
           "with": {}
         },
-        "team_members_team_index": {
-          "name": "team_members_team_index",
+        "memberships_team_index": {
+          "name": "memberships_team_index",
           "columns": [
             {
               "expression": "team_id",
@@ -591,27 +591,27 @@
         }
       },
       "foreignKeys": {
-        "team_members_user_id_users_id_fk": {
-          "name": "team_members_user_id_users_id_fk",
-          "tableFrom": "team_members",
+        "memberships_user_id_users_id_fk": {
+          "name": "memberships_user_id_users_id_fk",
+          "tableFrom": "memberships",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "team_members_team_id_teams_id_fk": {
-          "name": "team_members_team_id_teams_id_fk",
-          "tableFrom": "team_members",
+        "memberships_team_id_teams_id_fk": {
+          "name": "memberships_team_id_teams_id_fk",
+          "tableFrom": "memberships",
           "tableTo": "teams",
           "columnsFrom": ["team_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "team_members_invited_by_users_id_fk": {
-          "name": "team_members_invited_by_users_id_fk",
-          "tableFrom": "team_members",
+        "memberships_invited_by_users_id_fk": {
+          "name": "memberships_invited_by_users_id_fk",
+          "tableFrom": "memberships",
           "tableTo": "users",
           "columnsFrom": ["invited_by"],
           "columnsTo": ["id"],

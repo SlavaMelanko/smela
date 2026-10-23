@@ -16,16 +16,16 @@ const { TEAM_1, USER_1 } = testUuids
 describe('removeTeamMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  let mockTeamRepoDeleteMember: any
+  let mockTeamRepoDeleteMembership: any
   let mockUserRepoUpdate: any
 
   beforeEach(async () => {
-    mockTeamRepoDeleteMember = mock(async () => {})
+    mockTeamRepoDeleteMembership = mock(async () => {})
     mockUserRepoUpdate = mock(async () => {})
 
     await moduleMocker.mock('@/data', () => ({
       teamRepo: {
-        deleteMember: mockTeamRepoDeleteMember
+        deleteMembership: mockTeamRepoDeleteMembership
       } satisfies Partial<typeof teamRepo>,
       userRepo: { update: mockUserRepoUpdate } satisfies Partial<
         typeof userRepo
@@ -40,7 +40,7 @@ describe('removeTeamMember', () => {
   it('deletes the membership and keeps the user account untouched', async () => {
     const result = await removeTeamMember(TEAM_1, USER_1)
 
-    expect(mockTeamRepoDeleteMember).toHaveBeenCalledWith(USER_1, TEAM_1)
+    expect(mockTeamRepoDeleteMembership).toHaveBeenCalledWith(USER_1, TEAM_1)
     expect(mockUserRepoUpdate).not.toHaveBeenCalled()
     expect(result).toEqual({ success: true })
   })
@@ -54,11 +54,11 @@ describe('team member permissions', () => {
 
   beforeEach(async () => {
     mockTeamRepo = {
-      findMemberPermissions: mock(async () => [
+      findMembershipPermissions: mock(async () => [
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Teams }
       ]),
-      setMemberPermissions: mock(async () => {})
+      setMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -74,7 +74,7 @@ describe('team member permissions', () => {
     it('merges membership permissions into the member baseline', async () => {
       const result = await getTeamMemberPermissions(MEMBERSHIP_ID)
 
-      expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.findMembershipPermissions).toHaveBeenCalledWith(
         MEMBERSHIP_ID
       )
       expect(result).toEqual({
@@ -93,7 +93,7 @@ describe('team member permissions', () => {
     it('writes permissions to membership', async () => {
       await updateTeamMemberPermissions(MEMBERSHIP_ID, permissions)
 
-      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
         MEMBERSHIP_ID,
         permissions
       )

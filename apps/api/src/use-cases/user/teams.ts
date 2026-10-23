@@ -20,12 +20,12 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
   const team = await db.transaction(async tx => {
     const newTeam = await teamRepo.create({ ...input, createdBy: userId }, tx)
 
-    const membership = await teamRepo.createMember(
+    const membership = await teamRepo.createMembership(
       { userId, teamId: newTeam.id, status: MembershipStatus.Active },
       tx
     )
 
-    await teamRepo.setMemberPermissions(
+    await teamRepo.setMembershipPermissions(
       membership.id,
       getMemberFullPermissions(),
       tx
@@ -44,7 +44,7 @@ export const updateTeam = async (teamId: string, updates: UpdateTeamInput) => {
 }
 
 export const acceptTeamInvite = async (userId: string, teamId: string) => {
-  const membership = await teamRepo.activateMember(userId, teamId)
+  const membership = await teamRepo.activateMembership(userId, teamId)
 
   if (!membership) {
     throw new AppError(ErrorCode.NotFound, 'Invite not found')
@@ -54,7 +54,7 @@ export const acceptTeamInvite = async (userId: string, teamId: string) => {
 }
 
 export const declineTeamInvite = async (userId: string, teamId: string) => {
-  const membership = await teamRepo.deletePendingMember(userId, teamId)
+  const membership = await teamRepo.deletePendingMembership(userId, teamId)
 
   if (!membership) {
     throw new AppError(ErrorCode.NotFound, 'Invite not found')
@@ -64,7 +64,7 @@ export const declineTeamInvite = async (userId: string, teamId: string) => {
 }
 
 export const switchTeam = async (userId: string, teamId: string) => {
-  const membership = await teamRepo.markMemberLastActive(userId, teamId)
+  const membership = await teamRepo.markMembershipLastActive(userId, teamId)
 
   if (!membership) {
     throw new AppError(ErrorCode.Forbidden, 'Access denied to team')

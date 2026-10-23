@@ -8,7 +8,7 @@ import type { SearchParams, SearchResult, User } from './types'
 
 import { db } from '../../clients'
 import {
-  teamMembersTable,
+  membershipsTable,
   teamsTable,
   userRoleTable,
   usersTable
@@ -49,9 +49,9 @@ const selectUserExtended = (executor: Database) => {
       role: sql<Role>`COALESCE(${userRoleTable.role}, ${Role.User})`,
       team: sql<{ id: string; name: string } | null>`(
         SELECT JSON_BUILD_OBJECT('id', t.id, 'name', t.name)
-        FROM ${teamMembersTable} tm
-        JOIN ${teamsTable} t ON t.id = tm.team_id
-        WHERE tm.user_id = ${sql.raw('"users"."id"')}
+        FROM ${membershipsTable} m
+        JOIN ${teamsTable} t ON t.id = m.team_id
+        WHERE m.user_id = ${sql.raw('"users"."id"')}
         LIMIT 1
       )`
     })

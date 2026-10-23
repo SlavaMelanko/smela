@@ -34,9 +34,9 @@ import {
 import { db } from '../clients'
 import {
   authTable,
+  membershipPermissionsTable,
+  membershipsTable,
   permissionsTable,
-  teamMemberPermissionsTable,
-  teamMembersTable,
   teamsTable,
   usersTable
 } from '../schema'
@@ -179,7 +179,7 @@ const seedFakeTeams = async (userIds: string[]) => {
       .returning({ id: teamsTable.id })
 
     const insertedMembers = await db
-      .insert(teamMembersTable)
+      .insert(membershipsTable)
       .values(
         members.map(userId => ({
           userId,
@@ -188,12 +188,12 @@ const seedFakeTeams = async (userIds: string[]) => {
           status: MembershipStatus.Active
         }))
       )
-      .returning({ id: teamMembersTable.id })
+      .returning({ id: membershipsTable.id })
 
     // First member acts as the creator with full access, the rest can view
-    await db.insert(teamMemberPermissionsTable).values(
+    await db.insert(membershipPermissionsTable).values(
       insertedMembers.map(({ id }, index) => ({
-        memberId: id,
+        membershipId: id,
         permissionId: index === 0 ? manageTeamsId : viewTeamsId
       }))
     )

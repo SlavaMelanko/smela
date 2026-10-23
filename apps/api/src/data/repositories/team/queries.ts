@@ -18,10 +18,10 @@ import type {
 
 import { db } from '../../clients'
 import {
+  membershipPermissionsTable,
+  membershipsTable,
   permissionsTable,
   refreshTokensTable,
-  teamMemberPermissionsTable,
-  teamMembersTable,
   teamsTable,
   usersTable
 } from '../../schema'
@@ -56,11 +56,11 @@ export const searchTeams = async (
   const whereClause = buildWhereConditions(filters)
 
   // Correlated subquery — executes once per returned row,
-  // hits team_members_team_index exactly N times (N = page size)
+  // hits memberships_team_index exactly N times (N = page size)
   const memberCountSubquery = sql<number>`(
     SELECT COUNT(*)::int
-    FROM ${teamMembersTable}
-    WHERE ${teamMembersTable.teamId} = ${sql.raw('"teams"."id"')}
+    FROM ${membershipsTable}
+    WHERE ${membershipsTable.teamId} = ${sql.raw('"teams"."id"')}
   )`
 
   const creator = createTeammateRef('creators')
@@ -134,39 +134,39 @@ export const findTeamMembers = async (
   const executor = tx || db
   const inviter = createTeammateRef('inviters')
 
-  const whereConditions = [eq(teamMembersTable.teamId, teamId)]
+  const whereConditions = [eq(membershipsTable.teamId, teamId)]
   if (userId) {
-    whereConditions.push(eq(teamMembersTable.userId, userId))
+    whereConditions.push(eq(membershipsTable.userId, userId))
   }
 
   const membersQuery = executor
     .select({
-      id: teamMembersTable.userId,
-      membershipId: teamMembersTable.id,
+      id: membershipsTable.userId,
+      membershipId: membershipsTable.id,
       nickname: usersTable.nickname,
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       email: usersTable.email,
-      status: teamMembersTable.status,
+      status: membershipsTable.status,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
       lastActive: sql<Date | null>`(
         SELECT MAX(${refreshTokensTable.createdAt})
         FROM ${refreshTokensTable}
-        WHERE ${refreshTokensTable.userId} = ${teamMembersTable.userId}
+        WHERE ${refreshTokensTable.userId} = ${membershipsTable.userId}
       )`,
-      position: teamMembersTable.position,
-      joinedAt: teamMembersTable.joinedAt,
+      position: membershipsTable.position,
+      joinedAt: membershipsTable.joinedAt,
       inviter: inviter.fields
     })
-    .from(teamMembersTable)
-    .innerJoin(usersTable, eq(teamMembersTable.userId, usersTable.id))
+    .from(membershipsTable)
+    .innerJoin(usersTable, eq(membershipsTable.userId, usersTable.id))
     .$dynamic()
 
   const rows = await inviter
-    .join(membersQuery, teamMembersTable.invitedBy, teamMembersTable.teamId)
+    .join(membersQuery, membershipsTable.invitedBy, membershipsTable.teamId)
     .where(and(...whereConditions))
-    .orderBy(desc(teamMembersTable.joinedAt))
+    .orderBy(desc(membershipsTable.joinedAt))
 
   return rows.map(row => ({ ...row, inviter: toTeammateRef(row.inviter) }))
 }
@@ -192,19 +192,19 @@ export const findUserTeams = async (
   return executor
     .select({
       id: teamsTable.id,
-      membershipId: teamMembersTable.id,
+      membershipId: membershipsTable.id,
       name: teamsTable.name,
-      position: teamMembersTable.position
+      position: membershipsTable.position
     })
-    .from(teamMembersTable)
-    .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
+    .from(membershipsTable)
+    .innerJoin(teamsTable, eq(membershipsTable.teamId, teamsTable.id))
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.status, MembershipStatus.Active)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.status, MembershipStatus.Active)
       )
     )
-    .orderBy(desc(teamMembersTable.lastActiveAt))
+    .orderBy(desc(membershipsTable.lastActiveAt))
 }
 
 // Pending memberships, newest invite first. Until accepted, joinedAt holds the invite time
@@ -225,19 +225,19 @@ export const findUserInvites = async (
         lastName: invitersTable.lastName
       }
     })
-    .from(teamMembersTable)
-    .innerJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id))
-    .leftJoin(invitersTable, eq(teamMembersTable.invitedBy, invitersTable.id))
+    .from(membershipsTable)
+    .innerJoin(teamsTable, eq(membershipsTable.teamId, teamsTable.id))
+    .leftJoin(invitersTable, eq(membershipsTable.invitedBy, invitersTable.id))
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.status, MembershipStatus.Pending)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.status, MembershipStatus.Pending)
       )
     )
-    .orderBy(desc(teamMembersTable.joinedAt))
+    .orderBy(desc(membershipsTable.joinedAt))
 }
 
-export const findTeamMemberPermissions = async (
+export const findMembershipPermissions = async (
   membershipId: string,
   tx?: Database
 ): Promise<ActivePermissionRow[]> => {
@@ -246,12 +246,12 @@ export const findTeamMemberPermissions = async (
       action: permissionsTable.action,
       resource: permissionsTable.resource
     })
-    .from(teamMemberPermissionsTable)
+    .from(membershipPermissionsTable)
     .innerJoin(
       permissionsTable,
-      eq(permissionsTable.id, teamMemberPermissionsTable.permissionId)
+      eq(permissionsTable.id, membershipPermissionsTable.permissionId)
     )
-    .where(eq(teamMemberPermissionsTable.memberId, membershipId))
+    .where(eq(membershipPermissionsTable.membershipId, membershipId))
 
   return expandPermissions(rows)
 }
