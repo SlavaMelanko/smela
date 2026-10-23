@@ -1,6 +1,6 @@
 import { teamRepo } from '@/data'
 
-import { resolveMemberPermissionList } from './resolve-permissions'
+import { resolveMembershipPermissionList } from './resolve-permissions'
 
 // The active team comes with its permissions. The rest feed the team switcher,
 // and invites are the teams the user hasn't joined yet
@@ -17,7 +17,7 @@ export const resolveUserTeams = async (userId: string) => {
     return { team: undefined, teams, invites }
   }
 
-  const permissions = await resolveMemberPermissionList(active.membershipId)
+  const permissions = await resolveMembershipPermissionList(active.membershipId)
 
   return { team: { ...teams[0], permissions }, teams, invites }
 }

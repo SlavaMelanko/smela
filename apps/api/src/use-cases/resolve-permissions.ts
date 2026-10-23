@@ -17,10 +17,10 @@ export const resolvePermissionList = async (
   return permissions.length > 0 ? permissions : undefined
 }
 
-export const resolveMemberPermissionList = async (
+export const resolveMembershipPermissionList = async (
   membershipId: string
 ): Promise<Permission[]> => {
-  const rows = await teamRepo.findMemberPermissions(membershipId)
+  const rows = await teamRepo.findMembershipPermissions(membershipId)
 
   return toPermissionList(rows)
 }
@@ -69,11 +69,11 @@ export const resolvePermissionMap = async (
   return toPermissionMap(rows, baseline)
 }
 
-export const resolveMemberPermissionMap = async (
+export const resolveMembershipPermissionMap = async (
   membershipId: string,
   baseline?: PermissionMap
 ): Promise<PermissionMap> => {
-  const rows = await teamRepo.findMemberPermissions(membershipId)
+  const rows = await teamRepo.findMembershipPermissions(membershipId)
 
   return toPermissionMap(rows, baseline)
 }

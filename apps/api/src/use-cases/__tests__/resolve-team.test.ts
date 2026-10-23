@@ -35,7 +35,7 @@ describe('resolveUserTeams', () => {
           inviter: { nickname: 'Alice', firstName: 'Alice', lastName: null }
         }
       ]),
-      findMemberPermissions: mock(async () => [
+      findMembershipPermissions: mock(async () => [
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Teams }
       ])
@@ -62,14 +62,14 @@ describe('resolveUserTeams', () => {
         }
       ]
     })
-    expect(mockTeamRepo.findMemberPermissions).not.toHaveBeenCalled()
+    expect(mockTeamRepo.findMembershipPermissions).not.toHaveBeenCalled()
   })
 
   it('returns the first team as active with its permissions and all teams without membership ids', async () => {
     const result = await resolveUserTeams(testUuids.USER_1)
 
-    expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledTimes(1)
-    expect(mockTeamRepo.findMemberPermissions).toHaveBeenCalledWith(
+    expect(mockTeamRepo.findMembershipPermissions).toHaveBeenCalledTimes(1)
+    expect(mockTeamRepo.findMembershipPermissions).toHaveBeenCalledWith(
       testUuids.MEMBERSHIP_2
     )
     expect(result).toEqual({

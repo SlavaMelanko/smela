@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { Team, TeamMember, teamRepo } from '@/data'
+import type { Membership, Team, teamRepo } from '@/data'
 
 import { ModuleMocker, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
@@ -43,7 +43,7 @@ describe('createTeam', () => {
 
     mockTeamRepo = {
       create: mock(async () => mockTeam),
-      createMember: mock(async () => ({
+      createMembership: mock(async () => ({
         id: testUuids.MEMBERSHIP_1,
         userId: USER_1,
         teamId: TEAM_1,
@@ -53,7 +53,7 @@ describe('createTeam', () => {
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-01')
       })),
-      setMemberPermissions: mock(async () => {})
+      setMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
 
     const transaction = async <T>(callback: (tx: unknown) => Promise<T>) =>
@@ -76,11 +76,11 @@ describe('createTeam', () => {
       { ...input, createdBy: USER_1 },
       {}
     )
-    expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
+    expect(mockTeamRepo.createMembership).toHaveBeenCalledWith(
       { userId: USER_1, teamId: TEAM_1, status: MembershipStatus.Active },
       {}
     )
-    expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+    expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
       testUuids.MEMBERSHIP_1,
       getMemberFullPermissions(),
       {}
@@ -143,16 +143,18 @@ describe('switchTeam', () => {
 
   beforeEach(async () => {
     mockTeamRepo = {
-      markMemberLastActive: mock(async (): Promise<TeamMember | undefined> => ({
-        id: MEMBERSHIP_2,
-        userId: USER_1,
-        teamId: TEAM_2,
-        position: null,
-        status: MembershipStatus.Active,
-        invitedBy: null,
-        joinedAt: new Date('2024-01-01'),
-        lastActiveAt: new Date('2024-01-02')
-      })),
+      markMembershipLastActive: mock(
+        async (): Promise<Membership | undefined> => ({
+          id: MEMBERSHIP_2,
+          userId: USER_1,
+          teamId: TEAM_2,
+          position: null,
+          status: MembershipStatus.Active,
+          invitedBy: null,
+          joinedAt: new Date('2024-01-01'),
+          lastActiveAt: new Date('2024-01-02')
+        })
+      ),
       findUserTeams: mock(async () => [
         {
           id: TEAM_2,
@@ -168,7 +170,7 @@ describe('switchTeam', () => {
         }
       ]),
       findUserInvites: mock(async () => []),
-      findMemberPermissions: mock(async () => [
+      findMembershipPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Teams }
       ])
     } satisfies Partial<typeof teamRepo>
@@ -185,7 +187,7 @@ describe('switchTeam', () => {
   it('makes the team active and returns it with all teams', async () => {
     const result = await switchTeam(USER_1, TEAM_2)
 
-    expect(mockTeamRepo.markMemberLastActive).toHaveBeenCalledWith(
+    expect(mockTeamRepo.markMembershipLastActive).toHaveBeenCalledWith(
       USER_1,
       TEAM_2
     )
@@ -205,7 +207,9 @@ describe('switchTeam', () => {
   })
 
   it('throws Forbidden when user is not a team member', async () => {
-    mockTeamRepo.markMemberLastActive.mockImplementation(async () => undefined)
+    mockTeamRepo.markMembershipLastActive.mockImplementation(
+      async () => undefined
+    )
 
     expect(switchTeam(USER_1, TEAM_2)).rejects.toMatchObject({
       code: ErrorCode.Forbidden
@@ -216,7 +220,7 @@ describe('switchTeam', () => {
 describe('team invites', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
 
-  const membership: TeamMember = {
+  const membership: Membership = {
     id: MEMBERSHIP_1,
     userId: USER_1,
     teamId: TEAM_1,
@@ -231,15 +235,15 @@ describe('team invites', () => {
 
   beforeEach(async () => {
     mockTeamRepo = {
-      activateMember: mock(
-        async (): Promise<TeamMember | undefined> => membership
+      activateMembership: mock(
+        async (): Promise<Membership | undefined> => membership
       ),
-      deletePendingMember: mock(
-        async (): Promise<TeamMember | undefined> => membership
+      deletePendingMembership: mock(
+        async (): Promise<Membership | undefined> => membership
       ),
       findUserTeams: mock(async () => []),
       findUserInvites: mock(async () => []),
-      findMemberPermissions: mock(async () => [])
+      findMembershipPermissions: mock(async () => [])
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
@@ -258,7 +262,7 @@ describe('team invites', () => {
 
     const result = await acceptTeamInvite(USER_1, TEAM_1)
 
-    expect(mockTeamRepo.activateMember).toHaveBeenCalledWith(USER_1, TEAM_1)
+    expect(mockTeamRepo.activateMembership).toHaveBeenCalledWith(USER_1, TEAM_1)
     expect(result.team?.id).toBe(TEAM_1)
     expect(result.invites).toEqual([])
   })
@@ -266,7 +270,7 @@ describe('team invites', () => {
   it('declines the invite and returns the refreshed teams', async () => {
     const result = await declineTeamInvite(USER_1, TEAM_1)
 
-    expect(mockTeamRepo.deletePendingMember).toHaveBeenCalledWith(
+    expect(mockTeamRepo.deletePendingMembership).toHaveBeenCalledWith(
       USER_1,
       TEAM_1
     )
@@ -274,7 +278,7 @@ describe('team invites', () => {
   })
 
   it('throws NotFound when there is no pending invite to accept', async () => {
-    mockTeamRepo.activateMember.mockImplementation(async () => undefined)
+    mockTeamRepo.activateMembership.mockImplementation(async () => undefined)
 
     expect(acceptTeamInvite(USER_1, TEAM_1)).rejects.toMatchObject({
       code: ErrorCode.NotFound
@@ -282,7 +286,9 @@ describe('team invites', () => {
   })
 
   it('throws NotFound when there is no pending invite to decline', async () => {
-    mockTeamRepo.deletePendingMember.mockImplementation(async () => undefined)
+    mockTeamRepo.deletePendingMembership.mockImplementation(
+      async () => undefined
+    )
 
     expect(declineTeamInvite(USER_1, TEAM_1)).rejects.toMatchObject({
       code: ErrorCode.NotFound

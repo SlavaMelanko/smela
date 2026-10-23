@@ -9,7 +9,7 @@ import type { Permission } from '@/types'
 import { teamRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { isAdmin, MembershipStatus } from '@/types'
-import { resolveMemberPermissionList } from '@/use-cases/resolve-permissions'
+import { resolveMembershipPermissionList } from '@/use-cases/resolve-permissions'
 
 /**
  * Team access middleware - ensures user has access to the team and holds the permission.
@@ -85,7 +85,7 @@ const handleUserAccess = async (
   }
 
   const { membershipId } = c.get('currentUser')!
-  c.set('teamPermissions', await resolveMemberPermissionList(membershipId))
+  c.set('teamPermissions', await resolveMembershipPermissionList(membershipId))
 }
 
 export const requireTeamAccess = (

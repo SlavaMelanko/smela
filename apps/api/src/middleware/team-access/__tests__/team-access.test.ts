@@ -13,7 +13,9 @@ import { requireTeamAccess } from '../team-access'
 
 const mockTeamRepoFind = mock()
 const mockTeamRepoFindMember = mock()
-const mockResolveMemberPermissionList = mock(async () => [Permission.ViewTeams])
+const mockResolveMembershipPermissionList = mock(async () => [
+  Permission.ViewTeams
+])
 
 void mock.module('@/data', () => ({
   teamRepo: {
@@ -23,7 +25,7 @@ void mock.module('@/data', () => ({
 }))
 
 void mock.module('@/use-cases/resolve-permissions', () => ({
-  resolveMemberPermissionList: mockResolveMemberPermissionList
+  resolveMembershipPermissionList: mockResolveMembershipPermissionList
 }))
 
 // Claims grant both permissions so admins pass, while proving regular users
@@ -79,7 +81,7 @@ describe('requireTeamAccess', () => {
   beforeEach(() => {
     mockTeamRepoFind.mockClear()
     mockTeamRepoFindMember.mockClear()
-    mockResolveMemberPermissionList.mockClear()
+    mockResolveMembershipPermissionList.mockClear()
 
     // Default: team exists
     mockTeamRepoFind.mockImplementation(async () => ({
@@ -137,7 +139,7 @@ describe('requireTeamAccess', () => {
       `/teams/${testUuids.TEAM_1}`
     )
 
-    expect(mockResolveMemberPermissionList).toHaveBeenCalledWith(
+    expect(mockResolveMembershipPermissionList).toHaveBeenCalledWith(
       testUuids.MEMBERSHIP_2
     )
     expect((await res.json()).teamPermissions).toEqual([Permission.ViewTeams])
@@ -148,7 +150,7 @@ describe('requireTeamAccess', () => {
       `/teams/${testUuids.TEAM_1}`
     )
 
-    expect(mockResolveMemberPermissionList).not.toHaveBeenCalled()
+    expect(mockResolveMembershipPermissionList).not.toHaveBeenCalled()
     expect((await res.json()).teamPermissions).toEqual(claims)
   })
 
@@ -175,7 +177,7 @@ describe('requireTeamAccess', () => {
     )
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
-    expect(mockResolveMemberPermissionList).not.toHaveBeenCalled()
+    expect(mockResolveMembershipPermissionList).not.toHaveBeenCalled()
   })
 
   it('allows user on member routes when both user and target are team members', async () => {
@@ -302,7 +304,7 @@ describe('requireTeamAccess', () => {
     })
 
     it('allows user when membership grants the permission', async () => {
-      mockResolveMemberPermissionList.mockImplementationOnce(async () => [
+      mockResolveMembershipPermissionList.mockImplementationOnce(async () => [
         Permission.ManageTeams
       ])
 

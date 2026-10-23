@@ -35,9 +35,9 @@ import { rbacRepo, teamRepo } from '../repositories'
 import {
   authTable,
   emailSenderProfilesTable,
+  membershipsTable,
   permissionsTable,
   socialLinksTable,
-  teamMembersTable,
   teamsTable,
   userRoleTable,
   usersTable
@@ -347,20 +347,20 @@ const seedTestUsers = async (teamId: string) => {
       // Ensure user is linked to team
       const [existingLink] = await db
         .select()
-        .from(teamMembersTable)
-        .where(eq(teamMembersTable.userId, existingUser.id))
+        .from(membershipsTable)
+        .where(eq(membershipsTable.userId, existingUser.id))
 
       if (existingLink) {
         console.log(`✅ user ${user.email} already exists`)
       } else {
-        const membership = await teamRepo.createMember({
+        const membership = await teamRepo.createMembership({
           userId: existingUser.id,
           teamId,
           position: user.position,
           status: user.membershipStatus
         })
 
-        await teamRepo.setMemberPermissions(
+        await teamRepo.setMembershipPermissions(
           membership.id,
           user.memberPermissions
         )
@@ -391,7 +391,7 @@ const seedTestUsers = async (teamId: string) => {
       passwordHash: hashedPassword
     })
 
-    const membership = await teamRepo.createMember({
+    const membership = await teamRepo.createMembership({
       userId: createdUser.id,
       teamId,
       position: user.position,
@@ -399,7 +399,10 @@ const seedTestUsers = async (teamId: string) => {
     })
 
     await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
-    await teamRepo.setMemberPermissions(membership.id, user.memberPermissions)
+    await teamRepo.setMembershipPermissions(
+      membership.id,
+      user.memberPermissions
+    )
 
     console.log(`✅ user ${user.email} seeded and linked to team`)
   }

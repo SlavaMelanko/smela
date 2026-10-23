@@ -7,17 +7,17 @@ import { MembershipStatus } from '@/types'
 
 import type { Database } from '../../clients'
 import type {
+  CreateMembershipInput,
   CreateTeamInput,
-  CreateTeamMemberInput,
+  Membership,
   Team,
-  TeamMember,
   UpdateTeamInput
 } from './types'
 
 import { db } from '../../clients'
 import {
-  teamMemberPermissionsTable,
-  teamMembersTable,
+  membershipPermissionsTable,
+  membershipsTable,
   teamsTable
 } from '../../schema'
 import { rbacRepo, splitPermissions } from '../rbac'
@@ -57,14 +57,14 @@ export const updateTeam = async (
   return team
 }
 
-export const createTeamMember = async (
-  input: CreateTeamMemberInput,
+export const createMembership = async (
+  input: CreateMembershipInput,
   tx?: Database
-): Promise<TeamMember> => {
+): Promise<Membership> => {
   const executor = tx || db
 
   const [membership] = await executor
-    .insert(teamMembersTable)
+    .insert(membershipsTable)
     .values(input)
     .returning()
 
@@ -75,25 +75,25 @@ export const createTeamMember = async (
   return membership
 }
 
-export interface UpdateTeamMemberInput {
+export interface UpdateMembershipInput {
   position?: string | null
 }
 
-export const updateTeamMember = async (
+export const updateMembership = async (
   userId: string,
   teamId: string,
-  updates: UpdateTeamMemberInput,
+  updates: UpdateMembershipInput,
   tx?: Database
-): Promise<TeamMember> => {
+): Promise<Membership> => {
   const executor = tx || db
 
   const [membership] = await executor
-    .update(teamMembersTable)
+    .update(membershipsTable)
     .set(updates)
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.teamId, teamId)
       )
     )
     .returning()
@@ -106,21 +106,21 @@ export const updateTeamMember = async (
 }
 
 // Returns undefined when the user is not an active member of the team
-export const markTeamMemberLastActive = async (
+export const markMembershipLastActive = async (
   userId: string,
   teamId: string,
   tx?: Database
-): Promise<TeamMember | undefined> => {
+): Promise<Membership | undefined> => {
   const executor = tx || db
 
   const [membership] = await executor
-    .update(teamMembersTable)
+    .update(membershipsTable)
     .set({ lastActiveAt: new Date() })
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId),
-        eq(teamMembersTable.status, MembershipStatus.Active)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.teamId, teamId),
+        eq(membershipsTable.status, MembershipStatus.Active)
       )
     )
     .returning()
@@ -129,23 +129,23 @@ export const markTeamMemberLastActive = async (
 }
 
 // Accepting makes the team active. Returns undefined when there is no pending membership
-export const activateTeamMember = async (
+export const activateMembership = async (
   userId: string,
   teamId: string,
   tx?: Database
-): Promise<TeamMember | undefined> => {
+): Promise<Membership | undefined> => {
   const executor = tx || db
 
   const now = new Date()
 
   const [membership] = await executor
-    .update(teamMembersTable)
+    .update(membershipsTable)
     .set({ status: MembershipStatus.Active, joinedAt: now, lastActiveAt: now })
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId),
-        eq(teamMembersTable.status, MembershipStatus.Pending)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.teamId, teamId),
+        eq(membershipsTable.status, MembershipStatus.Pending)
       )
     )
     .returning()
@@ -154,20 +154,20 @@ export const activateTeamMember = async (
 }
 
 // Returns undefined when there is no pending membership
-export const deletePendingTeamMember = async (
+export const deletePendingMembership = async (
   userId: string,
   teamId: string,
   tx?: Database
-): Promise<TeamMember | undefined> => {
+): Promise<Membership | undefined> => {
   const executor = tx || db
 
   const [membership] = await executor
-    .delete(teamMembersTable)
+    .delete(membershipsTable)
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId),
-        eq(teamMembersTable.status, MembershipStatus.Pending)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.teamId, teamId),
+        eq(membershipsTable.status, MembershipStatus.Pending)
       )
     )
     .returning()
@@ -175,7 +175,7 @@ export const deletePendingTeamMember = async (
   return membership
 }
 
-export const deleteTeamMember = async (
+export const deleteMembership = async (
   userId: string,
   teamId: string,
   tx?: Database
@@ -183,16 +183,16 @@ export const deleteTeamMember = async (
   const executor = tx || db
 
   await executor
-    .delete(teamMembersTable)
+    .delete(membershipsTable)
     .where(
       and(
-        eq(teamMembersTable.userId, userId),
-        eq(teamMembersTable.teamId, teamId)
+        eq(membershipsTable.userId, userId),
+        eq(membershipsTable.teamId, teamId)
       )
     )
 }
 
-export const setTeamMemberPermissions = async (
+export const setMembershipPermissions = async (
   membershipId: string,
   permissions: PermissionsInput,
   tx?: Database
@@ -207,10 +207,8 @@ export const setTeamMemberPermissions = async (
     }
 
     await executor
-      .insert(teamMemberPermissionsTable)
-      .values(
-        grantIds.map(permissionId => ({ memberId: membershipId, permissionId }))
-      )
+      .insert(membershipPermissionsTable)
+      .values(grantIds.map(permissionId => ({ membershipId, permissionId })))
       .onConflictDoNothing()
   }
 
@@ -220,11 +218,11 @@ export const setTeamMemberPermissions = async (
     }
 
     await executor
-      .delete(teamMemberPermissionsTable)
+      .delete(membershipPermissionsTable)
       .where(
         and(
-          eq(teamMemberPermissionsTable.memberId, membershipId),
-          inArray(teamMemberPermissionsTable.permissionId, revokeIds)
+          eq(membershipPermissionsTable.membershipId, membershipId),
+          inArray(membershipPermissionsTable.permissionId, revokeIds)
         )
       )
   }

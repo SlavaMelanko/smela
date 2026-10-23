@@ -55,7 +55,7 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
     ])
 
     await moduleMocker.mock('@/use-cases/resolve-permissions', () => ({
-      resolveMemberPermissionList: mockTeamPermissions
+      resolveMembershipPermissionList: mockTeamPermissions
     }))
 
     mockPermissions = {

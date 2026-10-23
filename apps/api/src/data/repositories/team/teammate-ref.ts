@@ -7,7 +7,7 @@ import { MembershipStatus, Role } from '@/types'
 
 import type { TeammateRef } from './types'
 
-import { teamMembersTable, userRoleTable, usersTable } from '../../schema'
+import { membershipsTable, userRoleTable, usersTable } from '../../schema'
 
 /**
  * Exposes a user related to a team (creator, inviter) without leaking admins.
@@ -17,7 +17,7 @@ import { teamMembersTable, userRoleTable, usersTable } from '../../schema'
 export const createTeammateRef = (name: string) => {
   const users = alias(usersTable, name)
   const roles = alias(userRoleTable, `${name}_roles`)
-  const memberships = alias(teamMembersTable, `${name}_memberships`)
+  const memberships = alias(membershipsTable, `${name}_memberships`)
 
   const isAdmin = inArray(roles.role, [Role.Admin, Role.Owner])
   const isActiveTeammate = eq(memberships.status, MembershipStatus.Active)

@@ -81,7 +81,7 @@ const addPendingMember = async (
   inviterId: string,
   tx: Database
 ) => {
-  const membership = await teamRepo.createMember(
+  const membership = await teamRepo.createMembership(
     {
       userId,
       teamId: team.id,
@@ -92,7 +92,7 @@ const addPendingMember = async (
     tx
   )
 
-  await teamRepo.setMemberPermissions(membership.id, member.permissions, tx)
+  await teamRepo.setMembershipPermissions(membership.id, member.permissions, tx)
 }
 
 const inviteNewUser = async (
@@ -234,7 +234,7 @@ export const cancelMemberInvite = async (
 
   await db.transaction(async tx => {
     await tokenRepo.deprecateTeamInvites(member.id, teamId, tx)
-    await teamRepo.deleteMember(member.id, teamId, tx)
+    await teamRepo.deleteMembership(member.id, teamId, tx)
   })
 
   return { success: true }

@@ -55,7 +55,7 @@ describe('user /teams/:teamId/members', () => {
     ])
 
     await moduleMocker.mock('@/use-cases/resolve-permissions', () => ({
-      resolveMemberPermissionList: mockTeamPermissions
+      resolveMembershipPermissionList: mockTeamPermissions
     }))
 
     mockMembers = [{ id: testUuids.USER_1, firstName: 'Alice' }]

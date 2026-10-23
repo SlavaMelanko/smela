@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type {
   authRepo,
+  Membership,
   refreshTokenRepo,
-  TeamMember,
   teamRepo,
   TokenRecord,
   tokenRepo,
@@ -102,7 +102,7 @@ describe('acceptInvite', () => {
     mockTeamRepo = {
       findUserTeams: mock(async (): Promise<UserTeamInfo[]> => []),
       findUserInvites: mock(async (): Promise<UserTeamInvite[]> => []),
-      activateMember: mock(async (): Promise<TeamMember | undefined> => ({
+      activateMembership: mock(async (): Promise<Membership | undefined> => ({
         id: testUuids.MEMBERSHIP_1,
         userId: testUuids.ADMIN_1,
         teamId: testUuids.TEAM_1,
@@ -184,7 +184,7 @@ describe('acceptInvite', () => {
       mockDeviceInfo
     )
 
-    expect(mockTeamRepo.activateMember).not.toHaveBeenCalled()
+    expect(mockTeamRepo.activateMembership).not.toHaveBeenCalled()
   })
 
   it('sets an invited member to verified and activates the invited membership', async () => {
@@ -197,7 +197,7 @@ describe('acceptInvite', () => {
       mockDeviceInfo
     )
 
-    expect(mockTeamRepo.activateMember).toHaveBeenCalledWith(
+    expect(mockTeamRepo.activateMembership).toHaveBeenCalledWith(
       mockTokenRecord.userId,
       testUuids.TEAM_1,
       {}
@@ -230,7 +230,7 @@ describe('acceptInvite', () => {
     mockTokenRepo.findByHash.mockImplementation(async () =>
       buildTokenRecord(MEMBER_INVITE_TOKEN)
     )
-    mockTeamRepo.activateMember.mockImplementation(async () => undefined)
+    mockTeamRepo.activateMembership.mockImplementation(async () => undefined)
 
     const error = await acceptInvite(
       { token: RAW_TOKEN, password: mockPassword },

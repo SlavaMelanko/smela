@@ -103,7 +103,7 @@ describe('inviteMember', () => {
       findMember: mock(async (): Promise<TeamMemberDetails | undefined> =>
         buildPendingMember()
       ),
-      createMember: mock(async () => ({
+      createMembership: mock(async () => ({
         id: testUuids.MEMBERSHIP_1,
         userId: USER_1,
         teamId: TEAM_1,
@@ -113,7 +113,7 @@ describe('inviteMember', () => {
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-01')
       })),
-      setMemberPermissions: mock(async () => {})
+      setMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
     mockTokenRepoIssue = mock(async () => {})
     mockRbacSet = mock(async () => {})
@@ -197,7 +197,7 @@ describe('inviteMember', () => {
     it('adds a pending membership with the granted permissions', async () => {
       await inviteMember(mockTeam, inviteParams, USER_2)
 
-      expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
+      expect(mockTeamRepo.createMembership).toHaveBeenCalledWith(
         {
           userId: USER_1,
           teamId: TEAM_1,
@@ -207,7 +207,7 @@ describe('inviteMember', () => {
         },
         expect.anything()
       )
-      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
         testUuids.MEMBERSHIP_1,
         inviteParams.permissions,
         expect.anything()
@@ -264,14 +264,14 @@ describe('inviteMember', () => {
     it('adds a pending membership without touching the account', async () => {
       await inviteMember(mockTeam, inviteParams, USER_2)
 
-      expect(mockTeamRepo.createMember).toHaveBeenCalledWith(
+      expect(mockTeamRepo.createMembership).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: USER_1,
           status: MembershipStatus.Pending
         }),
         expect.anything()
       )
-      expect(mockTeamRepo.setMemberPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
         testUuids.MEMBERSHIP_1,
         inviteParams.permissions,
         expect.anything()
@@ -321,7 +321,7 @@ describe('inviteMember', () => {
       )
 
       expect(error).toMatchObject({ code: ErrorCode.Conflict })
-      expect(mockTeamRepo.createMember).not.toHaveBeenCalled()
+      expect(mockTeamRepo.createMembership).not.toHaveBeenCalled()
       expect(mockEmailService.send).not.toHaveBeenCalled()
     })
 
@@ -343,7 +343,7 @@ describe('inviteMember', () => {
         )
 
         expect(error).toMatchObject({ code: ErrorCode.EmailAlreadyInUse })
-        expect(mockTeamRepo.createMember).not.toHaveBeenCalled()
+        expect(mockTeamRepo.createMembership).not.toHaveBeenCalled()
       })
     })
   })
@@ -446,7 +446,7 @@ describe('cancelMemberInvite', () => {
 
   let mockTargetMember: TeamMemberDetails
   let mockDeprecateTeamInvites: any
-  let mockDeleteMember: any
+  let mockDeleteMembership: any
   let mockUserUpdate: any
   let mockTransaction: any
 
@@ -468,7 +468,7 @@ describe('cancelMemberInvite', () => {
     }
 
     mockDeprecateTeamInvites = mock(async () => {})
-    mockDeleteMember = mock(async () => {})
+    mockDeleteMembership = mock(async () => {})
     mockUserUpdate = mock(async () => {})
 
     mockTransaction = mock(
@@ -479,7 +479,7 @@ describe('cancelMemberInvite', () => {
 
     await moduleMocker.mock('@/data', () => ({
       userRepo: { update: mockUserUpdate } satisfies Partial<typeof userRepo>,
-      teamRepo: { deleteMember: mockDeleteMember } satisfies Partial<
+      teamRepo: { deleteMembership: mockDeleteMembership } satisfies Partial<
         typeof teamRepo
       >,
       tokenRepo: {
@@ -511,7 +511,7 @@ describe('cancelMemberInvite', () => {
       TEAM_1,
       expect.anything()
     )
-    expect(mockDeleteMember).toHaveBeenCalledWith(
+    expect(mockDeleteMembership).toHaveBeenCalledWith(
       USER_1,
       TEAM_1,
       expect.anything()

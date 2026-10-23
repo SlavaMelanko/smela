@@ -36,7 +36,11 @@ const joinInvitedTeam = async (
     return
   }
 
-  const membership = await teamRepo.activateMember(userId, metadata.teamId, tx)
+  const membership = await teamRepo.activateMembership(
+    userId,
+    metadata.teamId,
+    tx
+  )
   if (!membership) {
     throw new AppError(ErrorCode.TokenDeprecated, 'Invalid invite')
   }

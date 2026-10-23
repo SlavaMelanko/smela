@@ -43,7 +43,7 @@ teamByIdRoute.patch(
   }
 )
 
-// No requireTeamAccess: markMemberLastActive only matches the caller's own membership row
+// No requireTeamAccess: markMembershipLastActive only matches the caller's own membership row
 teamByIdRoute.post('/switch', validateParams(teamIdParamsSchema), async c => {
   const { id: userId } = c.get('user')
   const { teamId } = c.req.valid('param')

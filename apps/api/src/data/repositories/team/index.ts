@@ -1,19 +1,19 @@
 import {
-  activateTeamMember,
+  activateMembership,
+  createMembership,
   createTeam,
-  createTeamMember,
-  deletePendingTeamMember,
-  deleteTeamMember,
-  markTeamMemberLastActive,
-  setTeamMemberPermissions,
-  updateTeam,
-  updateTeamMember
+  deleteMembership,
+  deletePendingMembership,
+  markMembershipLastActive,
+  setMembershipPermissions,
+  updateMembership,
+  updateTeam
 } from './mutations'
 import {
+  findMembershipPermissions,
   findTeam,
   findTeamById,
   findTeamMember,
-  findTeamMemberPermissions,
   findTeamMembers,
   findUserInvites,
   findUserTeams,
@@ -35,25 +35,29 @@ const teamQueries = {
   search: searchTeams
 }
 
-const memberMutations = {
-  activateMember: activateTeamMember,
-  createMember: createTeamMember,
-  deleteMember: deleteTeamMember,
-  deletePendingMember: deletePendingTeamMember,
-  markMemberLastActive: markTeamMemberLastActive,
-  setMemberPermissions: setTeamMemberPermissions,
-  updateMember: updateTeamMember
+const membershipMutations = {
+  activateMembership,
+  createMembership,
+  deleteMembership,
+  deletePendingMembership,
+  markMembershipLastActive,
+  setMembershipPermissions,
+  updateMembership
+}
+
+const membershipQueries = {
+  findMembershipPermissions
 }
 
 const memberQueries = {
   findMember: findTeamMember,
-  findMemberPermissions: findTeamMemberPermissions,
   findMembers: findTeamMembers
 }
 
 export const teamRepo = {
   ...teamMutations,
   ...teamQueries,
-  ...memberMutations,
+  ...membershipMutations,
+  ...membershipQueries,
   ...memberQueries
 }
