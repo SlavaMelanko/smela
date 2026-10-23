@@ -5,7 +5,7 @@ import type { PaginatedResult } from '../pagination'
 
 // Database types
 export type TeamRecord = typeof teamsTable.$inferSelect
-export type MembershipRecord = typeof membershipsTable.$inferSelect
+export type Membership = typeof membershipsTable.$inferSelect
 
 // Input types for create / update / delete / etc
 export type CreateTeamInput = typeof teamsTable.$inferInsert
@@ -14,7 +14,6 @@ export type CreateMembershipInput = typeof membershipsTable.$inferInsert
 
 // Public-facing / API-return types
 export type Team = TeamRecord
-export type Membership = MembershipRecord
 
 // A null nickname means an admin. A null id means the user is not an active teammate
 export interface TeammateRef {
