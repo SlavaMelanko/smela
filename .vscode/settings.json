@@ -1,4 +1,15 @@
 {
   "editor.rulers": [100],
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "search.exclude": {
+    "**/*.lcov": true,
+    "**/.turbo": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/dist": true,
+    "**/html-report": true,
+    "**/playwright-report": true,
+    "**/test-results": true
+  },
+  "cSpell.words": ["anthropics", "smela"]
 }
