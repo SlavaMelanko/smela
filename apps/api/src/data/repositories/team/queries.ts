@@ -256,14 +256,15 @@ export const findMembershipPermissions = async (
   return expandPermissions(rows)
 }
 
-// Lock both records so creator protection and deletion use the same database state
-export const lockMembershipForRemoval = async (
+// Lock both records so creator protection and the following write use the same database state
+export const lockMembership = async (
   teamId: string,
   userId: string,
   tx: Database
 ) => {
   const [member] = await tx
     .select({
+      membershipId: membershipsTable.id,
       userId: membershipsTable.userId,
       status: membershipsTable.status,
       createdBy: teamsTable.createdBy
