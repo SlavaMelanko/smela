@@ -248,6 +248,17 @@ describe('user /teams/:teamId/members/:memberId', () => {
       expect(data).toEqual({ success: true })
     })
 
+    it('returns 403 when member removes themselves', async () => {
+      const res = await doRequest(
+        app,
+        `${MEMBERS_URL}/${testUuids.USER_1}`,
+        'DELETE'
+      )
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+      expect(mockRemoveTeamMember).not.toHaveBeenCalled()
+    })
+
     it('returns 403 when membership lacks manage permission', async () => {
       mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])
 
