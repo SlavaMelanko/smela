@@ -8,7 +8,7 @@ globalThis.PointerEvent = globalThis.Event
 
 import { PermissionsMatrix } from '../PermissionsMatrix'
 
-const TestWrapper = ({ initialPermissions }) => {
+const TestWrapper = ({ initialPermissions, readOnly }) => {
   const { control } = useForm({
     defaultValues: {
       permissions: initialPermissions
@@ -20,6 +20,7 @@ const TestWrapper = ({ initialPermissions }) => {
       control={control}
       permissions={initialPermissions}
       isLoading={false}
+      readOnly={readOnly}
     />
   )
 }
@@ -82,5 +83,22 @@ describe('PermissionsMatrix', () => {
     // Check that manage is automatically unchecked
     expect(viewSwitch).not.toBeChecked()
     expect(manageSwitch).not.toBeChecked()
+  })
+
+  test('should not toggle switches in read-only mode', async () => {
+    const user = userEvent.setup()
+
+    renderWithProviders(
+      <TestWrapper initialPermissions={mockPermissions} readOnly />
+    )
+
+    const manageSwitch = screen.getAllByLabelText('Manage')[0]
+    const viewSwitch = screen.getAllByLabelText('View')[1]
+
+    await user.click(manageSwitch)
+    await user.click(viewSwitch)
+
+    expect(manageSwitch).not.toBeChecked()
+    expect(viewSwitch).toBeChecked()
   })
 })

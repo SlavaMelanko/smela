@@ -6,6 +6,7 @@ import type { TeamWithMemberCount } from '@/data'
 
 import {
   buildTeam,
+  buildTeamMember,
   createTeamAccessRepoMock,
   createTestApp,
   get,
@@ -148,6 +149,25 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockUpdateTeamMemberPermissions).not.toHaveBeenCalled()
     })
+
+    it.each([testUuids.USER_1, testUuids.USER_1.toUpperCase()])(
+      'returns 403 when member edits own permissions using %s',
+      async memberId => {
+        mockTeamRepo.findMember.mockImplementation(
+          async (_teamId: string, userId: string) =>
+            buildTeamMember(userId.toLowerCase())
+        )
+
+        const res = await patch(
+          app,
+          `/api/v1/user/verified/teams/${TEST_TEAM_ID}/members/${memberId}/permissions`,
+          body
+        )
+
+        expect(res.status).toBe(HttpStatus.FORBIDDEN)
+        expect(mockUpdateTeamMemberPermissions).not.toHaveBeenCalled()
+      }
+    )
 
     it('returns 403 when membership lacks manage permission', async () => {
       mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])
