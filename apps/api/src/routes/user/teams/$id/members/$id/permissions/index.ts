@@ -37,16 +37,22 @@ teamMemberPermissionsRoute.patch(
   validateBody(updateMemberPermissionsBodySchema),
   requireTeamAccess(Permission.ManageTeams),
   async c => {
-    const { id: currentUserId } = c.get('user')
-    const { id: targetUserId, membershipId } = c.get('targetMember')!
+    const { id: currentUserId, role } = c.get('user')
+    const team = c.get('team')!
+    const targetMember = c.get('targetMember')!
     const { permissions } = c.req.valid('json')
 
     // Compare the DB-resolved ID so the guard holds even if param normalization changes
-    if (targetUserId === currentUserId) {
+    if (targetMember.id === currentUserId) {
       throw new AppError(ErrorCode.Forbidden, 'Cannot edit own permissions')
     }
 
-    const result = await updateTeamMemberPermissions(membershipId, permissions)
+    const result = await updateTeamMemberPermissions(
+      team,
+      targetMember,
+      role,
+      permissions
+    )
 
     return c.json(result, HttpStatus.OK)
   }

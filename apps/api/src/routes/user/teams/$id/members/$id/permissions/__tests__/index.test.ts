@@ -15,6 +15,7 @@ import {
   testUuids,
   withClaims
 } from '@/__tests__'
+import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
 import { Permission, Role } from '@/types'
 
@@ -132,10 +133,10 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateTeamMemberPermissions).toHaveBeenCalledWith(
-        testUuids.MEMBERSHIP_1,
-        {
-          teams: { view: true, manage: false }
-        }
+        mockTeam,
+        expect.objectContaining({ id: testUuids.USER_2 }),
+        Role.User,
+        { teams: { view: true, manage: false } }
       )
 
       const data = await res.json()
@@ -162,6 +163,19 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
         expect(mockUpdateTeamMemberPermissions).not.toHaveBeenCalled()
       }
     )
+
+    it('returns 403 when the use case rejects editing the creator', async () => {
+      mockUpdateTeamMemberPermissions.mockImplementation(async () => {
+        throw new AppError(
+          ErrorCode.Forbidden,
+          'Cannot edit the team creator permissions'
+        )
+      })
+
+      const res = await patch(app, PERMISSIONS_URL, body)
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    })
 
     it('returns 403 when membership lacks manage permission', async () => {
       mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])
