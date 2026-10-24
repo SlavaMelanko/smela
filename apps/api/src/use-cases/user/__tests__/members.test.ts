@@ -17,9 +17,22 @@ import {
   updateTeamMemberPermissions
 } from '../members'
 
-const { USER_1, USER_2 } = testUuids
+const { ADMIN_1, USER_1, USER_2, USER_3 } = testUuids
 
 const creatorTeam = buildTeam({ creator: { id: USER_1, nickname: 'Alice' } })
+
+// Admins and former members have no membership, so they can't be the edited member
+const teamsWithoutProtectedCreator = [
+  { kind: 'no creator', team: buildTeam() },
+  {
+    kind: 'an admin creator',
+    team: buildTeam({ creator: { id: ADMIN_1, nickname: 'Admin' } })
+  },
+  {
+    kind: 'a former member creator',
+    team: buildTeam({ creator: { id: USER_3, nickname: 'Carol' } })
+  }
+]
 
 describe('removeTeamMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -87,15 +100,18 @@ describe('removeTeamMember', () => {
     }
   )
 
-  it('allows removal when the team has no creator', async () => {
-    const result = await removeTeamMember(
-      buildTeam(),
-      buildTeamMember(USER_1),
-      Role.User
-    )
+  it.each(teamsWithoutProtectedCreator)(
+    'allows removal in a team with $kind',
+    async ({ team }) => {
+      const result = await removeTeamMember(
+        team,
+        buildTeamMember(USER_1),
+        Role.User
+      )
 
-    expect(result).toEqual({ success: true })
-  })
+      expect(result).toEqual({ success: true })
+    }
+  )
 
   it('does not protect a pending membership of the creator', async () => {
     const member = {
@@ -206,6 +222,23 @@ describe('team member permissions', () => {
         permissions
       )
     })
+
+    it.each(teamsWithoutProtectedCreator)(
+      'allows editing permissions in a team with $kind',
+      async ({ team }) => {
+        await updateTeamMemberPermissions(
+          team,
+          buildTeamMember(USER_1),
+          Role.User,
+          permissions
+        )
+
+        expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
+          MEMBERSHIP_ID,
+          permissions
+        )
+      }
+    )
 
     it.each([Role.Admin, Role.Owner])(
       'allows platform %s to edit the creator permissions',
