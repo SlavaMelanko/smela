@@ -6,6 +6,16 @@ import { AppError, ErrorCode } from '@/errors'
 import { getMemberBasePermissions, isAdmin, MembershipStatus } from '@/types'
 import { resolveMembershipPermissionMap } from '@/use-cases/resolve-permissions'
 
+// Platform admins bypass creator protection. Other members can't change the active creator
+const isProtectedCreator = (
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
+  role: Role
+) =>
+  !isAdmin(role) &&
+  member.status === MembershipStatus.Active &&
+  member.id === team.creator?.id
+
 export const getTeamMembers = async (teamId: string) => {
   const members = await teamRepo.findMembers(teamId)
 
@@ -54,34 +64,18 @@ export const getTeamMemberPermissions = async (membershipId: string) => {
   return { permissions }
 }
 
-// Platform admins bypass creator protection. Other members can't change the active creator
-const assertNotProtectedCreator = (
-  team: TeamWithMemberCount,
-  member: TeamMemberDetails,
-  actorRole: Role,
-  message: string
-) => {
-  if (
-    !isAdmin(actorRole) &&
-    member.status === MembershipStatus.Active &&
-    member.id === team.creator?.id
-  ) {
-    throw new AppError(ErrorCode.Forbidden, message)
-  }
-}
-
 export const updateTeamMemberPermissions = async (
   team: TeamWithMemberCount,
   member: TeamMemberDetails,
-  actorRole: Role,
+  role: Role,
   permissions: PermissionsInput
 ) => {
-  assertNotProtectedCreator(
-    team,
-    member,
-    actorRole,
-    'Cannot edit the team creator permissions'
-  )
+  if (isProtectedCreator(team, member, role)) {
+    throw new AppError(
+      ErrorCode.Forbidden,
+      'Cannot edit the team creator permissions'
+    )
+  }
 
   await teamRepo.setMembershipPermissions(member.membershipId, permissions)
 
@@ -92,14 +86,11 @@ export const updateTeamMemberPermissions = async (
 export const removeTeamMember = async (
   team: TeamWithMemberCount,
   member: TeamMemberDetails,
-  actorRole: Role
+  role: Role
 ) => {
-  assertNotProtectedCreator(
-    team,
-    member,
-    actorRole,
-    'Cannot remove the team creator'
-  )
+  if (isProtectedCreator(team, member, role)) {
+    throw new AppError(ErrorCode.Forbidden, 'Cannot remove the team creator')
+  }
 
   await teamRepo.deleteMembership(member.id, team.id)
 

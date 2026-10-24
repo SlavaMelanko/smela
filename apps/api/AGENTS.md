@@ -87,6 +87,7 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
 - **Imports**: `@/` path alias for src.
 - **Exports**: inline named exports (`export const`, `export class`,
   `export enum`); no `export default`.
+- **File order**: private helpers first, right after imports, then exports.
 - **Routes**: inline handlers in `index.ts` right after the path definition
   (Hono best practice); no `factory.createHandlers`.
 - **Route inputs to use cases**: pass IDs from `c.req.valid('param')` when the
