@@ -1,7 +1,8 @@
-import type { PermissionsInput } from '@/types'
+import type { PermissionsInput, Role } from '@/types'
 
-import { teamRepo, userRepo } from '@/data'
-import { getMemberBasePermissions } from '@/types'
+import { db, teamRepo, userRepo } from '@/data'
+import { AppError, ErrorCode } from '@/errors'
+import { getMemberBasePermissions, isAdmin, MembershipStatus } from '@/types'
 import { resolveMembershipPermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
@@ -62,8 +63,27 @@ export const updateTeamMemberPermissions = async (
 }
 
 // Removes only the membership. The account and other memberships stay intact
-export const removeTeamMember = async (teamId: string, memberId: string) => {
-  await teamRepo.deleteMembership(memberId, teamId)
+export const removeTeamMember = async (
+  teamId: string,
+  memberId: string,
+  actorRole: Role
+) => {
+  await db.transaction(async tx => {
+    const member = await teamRepo.lockMembershipForRemoval(teamId, memberId, tx)
+    if (!member) {
+      throw new AppError(ErrorCode.NotFound, 'Member not found')
+    }
+
+    if (
+      !isAdmin(actorRole) &&
+      member.status === MembershipStatus.Active &&
+      member.userId === member.createdBy
+    ) {
+      throw new AppError(ErrorCode.Forbidden, 'Cannot remove the team creator')
+    }
+
+    await teamRepo.deleteMembership(member.userId, teamId, tx)
+  })
 
   return { success: true }
 }

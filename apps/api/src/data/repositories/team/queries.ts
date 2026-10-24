@@ -255,3 +255,28 @@ export const findMembershipPermissions = async (
 
   return expandPermissions(rows)
 }
+
+// Lock both records so creator protection and deletion use the same database state
+export const lockMembershipForRemoval = async (
+  teamId: string,
+  userId: string,
+  tx: Database
+) => {
+  const [member] = await tx
+    .select({
+      userId: membershipsTable.userId,
+      status: membershipsTable.status,
+      createdBy: teamsTable.createdBy
+    })
+    .from(membershipsTable)
+    .innerJoin(teamsTable, eq(teamsTable.id, membershipsTable.teamId))
+    .where(
+      and(
+        eq(membershipsTable.teamId, teamId),
+        eq(membershipsTable.userId, userId)
+      )
+    )
+    .for('update', { of: [teamsTable, membershipsTable] })
+
+  return member
+}
