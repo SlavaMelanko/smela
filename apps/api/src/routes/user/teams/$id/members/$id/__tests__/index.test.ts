@@ -18,6 +18,7 @@ import {
   testUuids,
   withClaims
 } from '@/__tests__'
+import { AppError, ErrorCode } from '@/errors'
 import { HttpStatus } from '@/net/http'
 import { Permission, Role } from '@/types'
 
@@ -198,13 +199,49 @@ describe('user /teams/:teamId/members/:memberId', () => {
   })
 
   describe('DELETE /teams/:teamId/members/:memberId', () => {
+    it('returns 403 when the use case rejects creator removal', async () => {
+      mockRemoveTeamMember.mockImplementation(async () => {
+        throw new AppError(
+          ErrorCode.Forbidden,
+          'Cannot remove the team creator'
+        )
+      })
+
+      const res = await doRequest(app, MEMBER_URL, 'DELETE')
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+    })
+
+    it.each([Role.Admin, Role.Owner])(
+      'passes the authenticated %s role to removal',
+      async role => {
+        app = createTestApp('/api/v1/user/verified', teamsRoute, [
+          withClaims({
+            id: testUuids.USER_1,
+            role,
+            permissions: [Permission.ManageTeams]
+          })
+        ])
+
+        const res = await doRequest(app, MEMBER_URL, 'DELETE')
+
+        expect(res.status).toBe(HttpStatus.OK)
+        expect(mockRemoveTeamMember).toHaveBeenCalledWith(
+          mockTeam,
+          expect.objectContaining({ id: testUuids.USER_2 }),
+          role
+        )
+      }
+    )
+
     it('removes member and return OK status', async () => {
       const res = await doRequest(app, MEMBER_URL, 'DELETE')
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockRemoveTeamMember).toHaveBeenCalledWith(
-        TEST_TEAM_ID,
-        testUuids.USER_2
+        mockTeam,
+        expect.objectContaining({ id: testUuids.USER_2 }),
+        Role.User
       )
 
       const data = await res.json()

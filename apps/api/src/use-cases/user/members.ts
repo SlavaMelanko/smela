@@ -1,7 +1,9 @@
-import type { PermissionsInput } from '@/types'
+import type { TeamMemberDetails, TeamWithMemberCount } from '@/data'
+import type { PermissionsInput, Role } from '@/types'
 
 import { teamRepo, userRepo } from '@/data'
-import { getMemberBasePermissions } from '@/types'
+import { AppError, ErrorCode } from '@/errors'
+import { getMemberBasePermissions, isAdmin, MembershipStatus } from '@/types'
 import { resolveMembershipPermissionMap } from '@/use-cases/resolve-permissions'
 
 export const getTeamMembers = async (teamId: string) => {
@@ -52,18 +54,54 @@ export const getTeamMemberPermissions = async (membershipId: string) => {
   return { permissions }
 }
 
+// Platform admins bypass creator protection. Other members can't change the active creator
+const assertNotProtectedCreator = (
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
+  actorRole: Role,
+  message: string
+) => {
+  if (
+    !isAdmin(actorRole) &&
+    member.status === MembershipStatus.Active &&
+    member.id === team.creator?.id
+  ) {
+    throw new AppError(ErrorCode.Forbidden, message)
+  }
+}
+
 export const updateTeamMemberPermissions = async (
-  membershipId: string,
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
+  actorRole: Role,
   permissions: PermissionsInput
 ) => {
-  await teamRepo.setMembershipPermissions(membershipId, permissions)
+  assertNotProtectedCreator(
+    team,
+    member,
+    actorRole,
+    'Cannot edit the team creator permissions'
+  )
 
-  return getTeamMemberPermissions(membershipId)
+  await teamRepo.setMembershipPermissions(member.membershipId, permissions)
+
+  return getTeamMemberPermissions(member.membershipId)
 }
 
 // Removes only the membership. The account and other memberships stay intact
-export const removeTeamMember = async (teamId: string, memberId: string) => {
-  await teamRepo.deleteMembership(memberId, teamId)
+export const removeTeamMember = async (
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
+  actorRole: Role
+) => {
+  assertNotProtectedCreator(
+    team,
+    member,
+    actorRole,
+    'Cannot remove the team creator'
+  )
+
+  await teamRepo.deleteMembership(member.id, team.id)
 
   return { success: true }
 }
