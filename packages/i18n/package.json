@@ -26,6 +26,9 @@
     ],
     "src/resources/*.json": [
       "sort-json"
+    ],
+    "*.md": [
+      "prettier --ignore-unknown --write"
     ]
   },
   "peerDependencies": {
