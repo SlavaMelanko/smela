@@ -32,7 +32,8 @@ export const TeamMembersSection = ({
   teamId,
   onRowClick,
   queryOptions = {},
-  canManageTeams = false
+  canManageTeams = false,
+  protectedCreatorId
 }) => {
   const { t, formatDate } = useLocale()
   const { user: me } = useCurrentUser()
@@ -67,7 +68,8 @@ export const TeamMembersSection = ({
           createRemoveMemberItem(t, {
             handleRemoveMember,
             isDeleting,
-            meId: me?.id
+            meId: me?.id,
+            protectedCreatorId
           })
         ]
       : [])

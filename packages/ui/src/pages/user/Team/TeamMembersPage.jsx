@@ -14,6 +14,8 @@ export const TeamMembersPage = () => {
     <TeamMembersSection
       teamId={team.id}
       canManageTeams={canManageTeams}
+      // Platform admins can remove the creator, so only the user app protects them
+      protectedCreatorId={team.creator?.id}
       onRowClick={member =>
         navigate(`/team/members/${member.id}`, { state: { member } })
       }

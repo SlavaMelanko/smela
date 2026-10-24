@@ -63,7 +63,11 @@ teamsMemberByIdRoute.delete(
   async c => {
     const team = c.get('team')!
     const targetMember = c.get('targetMember')!
-    const { role } = c.get('user')
+    const { id: currentUserId, role } = c.get('user')
+
+    if (targetMember.id === currentUserId) {
+      throw new AppError(ErrorCode.Forbidden, 'Cannot remove yourself')
+    }
 
     const result = await removeTeamMember(team, targetMember, role)
 

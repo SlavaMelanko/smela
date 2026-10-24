@@ -13,7 +13,7 @@ import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useHashTab } from '@ui/hooks/useHashTab'
 import { useLocale } from '@ui/hooks/useLocale'
 import { Navigate, useLocation, useParams } from '@ui/hooks/useRouter'
-import { userTeamQueryOptions, useTeamMember } from '@ui/hooks/useTeam'
+import { userTeamQueryOptions, useTeam, useTeamMember } from '@ui/hooks/useTeam'
 
 import { MembershipTab } from './MembershipTab'
 import { PermissionsTab } from './PermissionsTab'
@@ -38,7 +38,10 @@ export const TeamMemberPage = () => {
     initialDataUpdatedAt: 0
   })
 
+  const { data: team } = useTeam(myTeam?.id, userTeamQueryOptions)
+
   const isOwnProfile = me?.id === id
+  const isCreator = team?.creator?.id === id
   const canViewTeams = canInTeam('view:teams')
   const canManageTeams = canInTeam('manage:teams')
 
@@ -90,7 +93,7 @@ export const TeamMemberPage = () => {
             <PermissionsTab
               memberId={id}
               teamId={myTeam.id}
-              canManageTeams={canManageTeams && !isOwnProfile}
+              canManageTeams={canManageTeams && !isOwnProfile && !isCreator}
             />
           </TabsContent>
         )}
