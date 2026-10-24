@@ -89,6 +89,12 @@ CSP, HSTS, and other security headers are configured per environment; CAPTCHA
   `export enum`); no `export default`.
 - **Routes**: inline handlers in `index.ts` right after the path definition
   (Hono best practice); no `factory.createHandlers`.
+- **Route inputs to use cases**: pass IDs from `c.req.valid('param')` when the
+  use case only writes by ID (`updateTeamMember(teamId, memberId, input)`). Pass
+  records already loaded by access middleware (`c.get('team')`,
+  `c.get('targetMember')`) when logic depends on stored state
+  (`removeTeamMember`, `resendMemberInvite`), so the use case doesn't query
+  them again.
 - **Style**: arrow functions, 2-space indent, no semicolons, single quotes,
   curly braces always.
 - **Naming**: camelCase for objects/arrays, SCREAMING_SNAKE_CASE for primitive
