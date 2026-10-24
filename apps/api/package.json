@@ -32,6 +32,9 @@
     ],
     "*.json": [
       "prettier --ignore-unknown --write"
+    ],
+    "*.md": [
+      "prettier --ignore-unknown --write"
     ]
   },
   "dependencies": {
