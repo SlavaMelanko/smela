@@ -66,7 +66,7 @@ const ActionToggle = ({ action, checked, onCheckedChange, disabled }) => {
 
 const LOCKED_VIEW_RESOURCES = new Set(['dashboard'])
 
-const PermissionRow = ({ resourceName, resourceData, control }) => {
+const PermissionRow = ({ resourceName, resourceData, control, readOnly }) => {
   const viewLocked = LOCKED_VIEW_RESOURCES.has(resourceName)
 
   const { field: viewField } = useController({
@@ -107,19 +107,25 @@ const PermissionRow = ({ resourceName, resourceData, control }) => {
         action='view'
         checked={viewField.value}
         onCheckedChange={handleViewChange}
-        disabled={viewLocked}
+        disabled={readOnly || viewLocked}
       />
 
       <ActionToggle
         action='manage'
         checked={manageField.value}
         onCheckedChange={handleManageChange}
+        disabled={readOnly}
       />
     </PermissionRoot>
   )
 }
 
-export const PermissionsMatrix = ({ control, permissions, isLoading }) => {
+export const PermissionsMatrix = ({
+  control,
+  permissions,
+  isLoading,
+  readOnly = false
+}) => {
   if (isLoading && !permissions) {
     return (
       <div className='flex justify-center'>
@@ -139,6 +145,7 @@ export const PermissionsMatrix = ({ control, permissions, isLoading }) => {
           resourceName={resource}
           resourceData={permissions[resource]}
           control={control}
+          readOnly={readOnly}
         />
       ))}
     </div>

@@ -49,6 +49,7 @@ export const PermissionsSection = ({
         control={control}
         permissions={permissions}
         isLoading={isLoading}
+        readOnly={!canManageAdmins}
       />
       {canManageAdmins && (
         <FormActions isDirty={isDirty}>
