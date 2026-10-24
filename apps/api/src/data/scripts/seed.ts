@@ -11,7 +11,7 @@
  */
 
 import { faker } from '@faker-js/faker'
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import type { PermissionsInput } from '@/types'
 
@@ -161,22 +161,30 @@ const seedSocialLinks = async () => {
   console.log(`✅ ${socialLinks.length} social links seeded`)
 }
 
+interface TeamCreator {
+  teamId: string
+  email: string
+}
+
 const seedTeams = async () => {
   const teams = [
     {
       name: faker.company.name(),
       website: faker.internet.url(),
-      description: faker.company.catchPhrase()
+      description: faker.company.catchPhrase(),
+      creatorEmail: 'admin@smela.me'
     },
     {
       // Fixed name so e2e tests can find the team its members are linked to
       name: 'Kemmer and Co',
       website: faker.internet.url(),
-      description: faker.company.catchPhrase()
+      description: faker.company.catchPhrase(),
+      creatorEmail: 'alyce96@gmail.com'
     }
   ]
 
   let secondTeamId: string | null = null
+  const teamCreators: TeamCreator[] = []
 
   for (let i = 0; i < teams.length; i++) {
     const team = teams[i]
@@ -188,6 +196,7 @@ const seedTeams = async () => {
 
     if (existingTeam) {
       console.log(`✅ ${team.name} team already exists`)
+      teamCreators.push({ teamId: existingTeam.id, email: team.creatorEmail })
       if (i === 1) {
         secondTeamId = existingTeam.id
       }
@@ -204,13 +213,32 @@ const seedTeams = async () => {
       .returning({ id: teamsTable.id })
 
     console.log(`✅ ${team.name} team seeded`)
+    teamCreators.push({ teamId: createdTeam.id, email: team.creatorEmail })
 
     if (i === 1) {
       secondTeamId = createdTeam.id
     }
   }
 
-  return secondTeamId!
+  return { teamId: secondTeamId!, teamCreators }
+}
+
+// Creators are users seeded after teams, so link them once both exist.
+// Fills only empty creators to keep reruns from overwriting real data
+const seedTeamCreators = async (teamCreators: TeamCreator[]) => {
+  for (const { teamId, email } of teamCreators) {
+    const [creator] = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+
+    await db
+      .update(teamsTable)
+      .set({ createdBy: creator.id })
+      .where(and(eq(teamsTable.id, teamId), isNull(teamsTable.createdBy)))
+  }
+
+  console.log(`✅ ${teamCreators.length} team creators linked`)
 }
 
 // System users (Owner, Admin) - no team linking
@@ -465,8 +493,9 @@ const seed = async () => {
   await seedSystemUsers()
 
   if (!isProdEnv()) {
-    const teamId = await seedTeams()
+    const { teamId, teamCreators } = await seedTeams()
     await seedTestUsers(teamId)
+    await seedTeamCreators(teamCreators)
     await seedGoogleUsers()
   }
 }
