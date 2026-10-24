@@ -193,6 +193,20 @@ describe('team member permissions', () => {
       expect(mockTeamRepo.setMembershipPermissions).not.toHaveBeenCalled()
     })
 
+    it('allows a member to edit a non-creator in a team with a creator', async () => {
+      await updateTeamMemberPermissions(
+        creatorTeam,
+        buildTeamMember(USER_2),
+        Role.User,
+        permissions
+      )
+
+      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
+        MEMBERSHIP_ID,
+        permissions
+      )
+    })
+
     it.each([Role.Admin, Role.Owner])(
       'allows platform %s to edit the creator permissions',
       async role => {
