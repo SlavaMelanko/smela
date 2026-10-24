@@ -41,7 +41,7 @@ teamMemberPermissionsRoute.patch(
     const { id: targetUserId, membershipId } = c.get('targetMember')!
     const { permissions } = c.req.valid('json')
 
-    // Compare the DB-resolved ID, since the URL may spell the UUID in a different case
+    // Compare the DB-resolved ID so the guard holds even if param normalization changes
     if (targetUserId === currentUserId) {
       throw new AppError(ErrorCode.Forbidden, 'Cannot edit own permissions')
     }

@@ -19,6 +19,9 @@ import { TOKEN_LENGTH } from '@/security/token'
 import { EmailSenderType } from '@/services/email'
 import { Resource, Role, UserStatus } from '@/types'
 
+// Postgres returns UUIDs in lowercase, so a lowercase input compares equal to stored IDs
+const uuid = z.uuid().transform(id => id.toLowerCase())
+
 const normalizeEmail = (email: string): string => email.trim().toLowerCase()
 
 const email = z
@@ -44,7 +47,7 @@ const httpsUrl = z
 
 export const rules = {
   user: {
-    id: z.uuid(),
+    id: uuid,
 
     email,
 
@@ -99,7 +102,7 @@ export const rules = {
   },
 
   team: {
-    id: z.uuid(),
+    id: uuid,
     name: displayName,
     website: httpsUrl,
     description,
@@ -115,7 +118,7 @@ export const rules = {
   },
 
   socialLink: {
-    id: z.uuid(),
+    id: uuid,
     name: displayName,
     url: httpsUrl,
     svg: z

@@ -1,14 +1,17 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Hono } from 'hono'
+import { z } from 'zod'
 
 import type { AppContext } from '@/context'
 
-import { testUuids } from '@/__tests__'
+import { TEST_TEAM_ID, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
+import { rules } from '@/routes/rules'
 import { MembershipStatus, Permission, Role, UserStatus } from '@/types'
 
+import { validateParams } from '../../validate-request'
 import { requireTeamAccess } from '../team-access'
 
 const mockTeamRepoFind = mock()
@@ -32,6 +35,11 @@ void mock.module('@/use-cases/resolve-permissions', () => ({
 // get team permissions from their membership instead
 const claims = [Permission.ViewTeams, Permission.ManageTeams]
 
+const teamParams = validateParams(z.object({ teamId: rules.team.id }))
+const memberParams = validateParams(
+  z.object({ teamId: rules.team.id, memberId: rules.user.id })
+)
+
 const makeApp = (role: Role, userId: string) => {
   const app = new Hono<AppContext>()
   app.onError(onError)
@@ -49,7 +57,7 @@ const makeApp = (role: Role, userId: string) => {
   })
 
   // Team-only routes
-  app.use('/teams/:teamId', requireTeamAccess(Permission.ViewTeams))
+  app.use('/teams/:teamId', teamParams, requireTeamAccess(Permission.ViewTeams))
   app.get('/teams/:teamId', c =>
     c.json({
       message: 'team success',
@@ -60,16 +68,19 @@ const makeApp = (role: Role, userId: string) => {
   // Member-specific routes
   app.get(
     '/teams/:teamId/members/:memberId',
+    memberParams,
     requireTeamAccess(Permission.ViewTeams),
     c => c.json({ message: 'member success' })
   )
   app.patch(
     '/teams/:teamId/members/:memberId',
+    memberParams,
     requireTeamAccess(Permission.ManageTeams),
     c => c.json({ message: 'member success' })
   )
   app.put(
     '/teams/:teamId/members/:memberId',
+    memberParams,
     requireTeamAccess(Permission.ManageTeams, { allowSelf: true }),
     c => c.json({ message: 'member success' })
   )
@@ -85,7 +96,7 @@ describe('requireTeamAccess', () => {
 
     // Default: team exists
     mockTeamRepoFind.mockImplementation(async () => ({
-      id: testUuids.TEAM_1,
+      id: TEST_TEAM_ID,
       name: 'Test Team',
       memberCount: 5
     }))
@@ -110,18 +121,18 @@ describe('requireTeamAccess', () => {
   it('allows user who is team member on team routes', async () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1,
+      teamId: TEST_TEAM_ID,
       status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(res.status).toBe(HttpStatus.OK)
-    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(TEST_TEAM_ID)
     expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
+      TEST_TEAM_ID,
       testUuids.USER_1
     )
     expect((await res.json()).message).toBe('team success')
@@ -131,12 +142,12 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       membershipId: testUuids.MEMBERSHIP_2,
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1,
+      teamId: TEST_TEAM_ID,
       status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(mockResolveMembershipPermissionList).toHaveBeenCalledWith(
@@ -147,7 +158,7 @@ describe('requireTeamAccess', () => {
 
   it('resolves admin team permissions from claims', async () => {
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(mockResolveMembershipPermissionList).not.toHaveBeenCalled()
@@ -158,7 +169,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => undefined)
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -173,7 +184,7 @@ describe('requireTeamAccess', () => {
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -188,17 +199,17 @@ describe('requireTeamAccess', () => {
     }))
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+      `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`
     )
 
     expect(res.status).toBe(HttpStatus.OK)
     expect(mockTeamRepoFindMember).toHaveBeenCalledTimes(2) // Parallel calls
     expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
+      TEST_TEAM_ID,
       testUuids.USER_1
     )
     expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
+      TEST_TEAM_ID,
       testUuids.USER_2
     )
   })
@@ -211,7 +222,7 @@ describe('requireTeamAccess', () => {
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+      `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`
     )
 
     expect(res.status).toBe(HttpStatus.FORBIDDEN)
@@ -226,7 +237,7 @@ describe('requireTeamAccess', () => {
     })
 
     const res = await makeApp(Role.User, testUuids.USER_1).request(
-      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`
+      `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`
     )
 
     expect(res.status).toBe(HttpStatus.NOT_FOUND)
@@ -235,29 +246,29 @@ describe('requireTeamAccess', () => {
 
   it('allows admin on team routes', async () => {
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(res.status).toBe(HttpStatus.OK)
-    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(TEST_TEAM_ID)
     expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
   })
 
   it('allows admin on member routes when member exists', async () => {
     mockTeamRepoFindMember.mockImplementation(async () => ({
       userId: testUuids.USER_1,
-      teamId: testUuids.TEAM_1,
+      teamId: TEST_TEAM_ID,
       status: MembershipStatus.Active
     }))
 
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+      `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_1}`
     )
 
     expect(res.status).toBe(HttpStatus.OK)
-    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(TEST_TEAM_ID)
     expect(mockTeamRepoFindMember).toHaveBeenCalledWith(
-      testUuids.TEAM_1,
+      TEST_TEAM_ID,
       testUuids.USER_1
     )
   })
@@ -266,7 +277,7 @@ describe('requireTeamAccess', () => {
     mockTeamRepoFindMember.mockImplementation(async () => undefined)
 
     const res = await makeApp(Role.Admin, testUuids.ADMIN_1).request(
-      `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`
+      `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_1}`
     )
 
     expect(res.status).toBe(HttpStatus.NOT_FOUND)
@@ -275,11 +286,11 @@ describe('requireTeamAccess', () => {
 
   it('allows owner access identical to admin', async () => {
     const res = await makeApp(Role.Owner, testUuids.OWNER_1).request(
-      `/teams/${testUuids.TEAM_1}`
+      `/teams/${TEST_TEAM_ID}`
     )
 
     expect(res.status).toBe(HttpStatus.OK)
-    expect(mockTeamRepoFind).toHaveBeenCalledWith(testUuids.TEAM_1)
+    expect(mockTeamRepoFind).toHaveBeenCalledWith(TEST_TEAM_ID)
     expect(mockTeamRepoFindMember).not.toHaveBeenCalled()
   })
 
@@ -295,7 +306,7 @@ describe('requireTeamAccess', () => {
 
     it('blocks user when only claims include the permission', async () => {
       const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`,
         { method: 'PATCH' }
       )
 
@@ -309,7 +320,7 @@ describe('requireTeamAccess', () => {
       ])
 
       const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`,
         { method: 'PATCH' }
       )
 
@@ -318,25 +329,28 @@ describe('requireTeamAccess', () => {
 
     it('blocks self access without allowSelf', async () => {
       const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`,
+        `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_1}`,
         { method: 'PATCH' }
       )
 
       expect(res.status).toBe(HttpStatus.FORBIDDEN)
     })
 
-    it('allows self access with allowSelf', async () => {
-      const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_1}`,
-        { method: 'PUT' }
-      )
+    it.each([testUuids.USER_1, testUuids.USER_1.toUpperCase()])(
+      'allows self access with allowSelf using %s',
+      async memberId => {
+        const res = await makeApp(Role.User, testUuids.USER_1).request(
+          `/teams/${TEST_TEAM_ID}/members/${memberId}`,
+          { method: 'PUT' }
+        )
 
-      expect(res.status).toBe(HttpStatus.OK)
-    })
+        expect(res.status).toBe(HttpStatus.OK)
+      }
+    )
 
     it('blocks other member access with allowSelf', async () => {
       const res = await makeApp(Role.User, testUuids.USER_1).request(
-        `/teams/${testUuids.TEAM_1}/members/${testUuids.USER_2}`,
+        `/teams/${TEST_TEAM_ID}/members/${testUuids.USER_2}`,
         { method: 'PUT' }
       )
 
