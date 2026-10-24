@@ -63,7 +63,8 @@ teamsMemberByIdRoute.delete(
   async c => {
     const { teamId, memberId } = c.req.valid('param')
 
-    const result = await removeTeamMember(teamId, memberId)
+    const { role } = c.get('user')
+    const result = await removeTeamMember(teamId, memberId, role)
 
     return c.json(result, HttpStatus.OK)
   }
