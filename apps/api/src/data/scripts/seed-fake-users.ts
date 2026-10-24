@@ -169,6 +169,7 @@ const seedFakeTeams = async (userIds: string[]) => {
     const [team] = await db
       .insert(teamsTable)
       .values({
+        createdBy: members[0],
         name: faker.company.name(),
         website: faker.internet.url(),
         description:
