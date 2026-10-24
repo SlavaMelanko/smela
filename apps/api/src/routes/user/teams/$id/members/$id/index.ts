@@ -61,10 +61,11 @@ teamsMemberByIdRoute.delete(
   validateParams(memberIdParamsSchema),
   requireTeamAccess(Permission.ManageTeams),
   async c => {
-    const { teamId, memberId } = c.req.valid('param')
-
+    const team = c.get('team')!
+    const targetMember = c.get('targetMember')!
     const { role } = c.get('user')
-    const result = await removeTeamMember(teamId, memberId, role)
+
+    const result = await removeTeamMember(team, targetMember, role)
 
     return c.json(result, HttpStatus.OK)
   }

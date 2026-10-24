@@ -227,8 +227,8 @@ describe('user /teams/:teamId/members/:memberId', () => {
 
         expect(res.status).toBe(HttpStatus.OK)
         expect(mockRemoveTeamMember).toHaveBeenCalledWith(
-          TEST_TEAM_ID,
-          testUuids.USER_2,
+          mockTeam,
+          expect.objectContaining({ id: testUuids.USER_2 }),
           role
         )
       }
@@ -239,8 +239,8 @@ describe('user /teams/:teamId/members/:memberId', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockRemoveTeamMember).toHaveBeenCalledWith(
-        TEST_TEAM_ID,
-        testUuids.USER_2,
+        mockTeam,
+        expect.objectContaining({ id: testUuids.USER_2 }),
         Role.User
       )
 

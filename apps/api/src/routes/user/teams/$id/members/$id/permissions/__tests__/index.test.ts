@@ -133,8 +133,8 @@ describe('user /teams/:teamId/members/:memberId/permissions', () => {
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockUpdateTeamMemberPermissions).toHaveBeenCalledWith(
-        TEST_TEAM_ID,
-        testUuids.USER_2,
+        mockTeam,
+        expect.objectContaining({ id: testUuids.USER_2 }),
         Role.User,
         { teams: { view: true, manage: false } }
       )
