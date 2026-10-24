@@ -9,19 +9,50 @@ import { generateEmailAddress } from '@smela/e2e/email'
 import { HttpStatus } from '@smela/ui/lib/net'
 import {
   ACCEPT_INVITE_PATH,
+  buildPath,
   CHECK_INVITE_PATH,
+  TEAM_ACCEPT_INVITE_PATH,
   TEAM_MEMBER_PATH,
+  TEAM_MEMBER_PERMISSIONS_PATH,
   TEAM_MEMBERS_DEFAULT_PERMISSIONS_PATH,
   TEAM_MEMBERS_PATH,
   TEAM_PATH
 } from '@smela/ui/services/backend/paths'
 
-import { expect, test } from './config/fixtures'
+import { expect } from './config/fixtures'
+import { test } from './config/invitations'
 
 const userCredentials = {
   email: process.env.VITE_E2E_USER_EMAIL,
   password: process.env.VITE_E2E_USER_PASSWORD
 }
+
+const fullTeamPermissions = { teams: { view: true, manage: true } }
+
+const openMemberTab = async (page, memberId, tabName) => {
+  await page.goto(`/team/members/${memberId}`)
+  await page.getByRole('tab', { name: tabName }).click()
+}
+
+const expectPermissionSwitches = async (page, { disabled }) => {
+  const switches = page.getByRole('switch')
+
+  await expect(switches).not.toHaveCount(0)
+
+  for (const toggle of await switches.all()) {
+    if (disabled) {
+      await expect(toggle).toBeDisabled()
+    } else {
+      await expect(toggle).toBeEnabled()
+    }
+  }
+}
+
+const memberPermissionsPath = (teamId, memberId) =>
+  buildPath(TEAM_MEMBER_PERMISSIONS_PATH, { teamId, memberId })
+
+const memberPath = (teamId, memberId) =>
+  buildPath(TEAM_MEMBER_PATH, { teamId, memberId })
 
 test.describe.serial('User: Member Permissions', () => {
   let teamId
@@ -320,5 +351,118 @@ test.describe.serial('User: Member Permissions', () => {
     ).toHaveText(expectedTabLabel)
 
     await logOut(page, t)
+  })
+})
+
+test.describe('User: Creator protection', () => {
+  test.setTimeout(120_000)
+
+  // The first actor creates the team; the second joins it as a full manager
+  test.beforeEach(async ({ teamActors }) => {
+    const [creator, manager] = teamActors
+
+    await creator.api(
+      buildPath(TEAM_MEMBERS_PATH, { teamId: creator.team.id }),
+      {
+        method: 'POST',
+        status: HttpStatus.CREATED,
+        data: {
+          email: manager.credentials.email,
+          permissions: fullTeamPermissions
+        }
+      }
+    )
+
+    await manager.api(
+      buildPath(TEAM_ACCEPT_INVITE_PATH, { teamId: creator.team.id }),
+      { method: 'POST' }
+    )
+
+    await manager.page.reload()
+  })
+
+  test('members cannot edit their own permissions or remove themselves', async ({
+    teamActors,
+    t
+  }) => {
+    const [creator, manager] = teamActors
+    const teamId = creator.team.id
+
+    for (const actor of [creator, manager]) {
+      await openMemberTab(actor.page, actor.user.id, t.permissions.name)
+      await expectPermissionSwitches(actor.page, { disabled: true })
+
+      await actor.api(memberPermissionsPath(teamId, actor.user.id), {
+        method: 'PATCH',
+        status: HttpStatus.FORBIDDEN,
+        data: { permissions: { teams: { view: true } } }
+      })
+    }
+
+    await manager.api(memberPath(teamId, manager.user.id), {
+      method: 'DELETE',
+      status: HttpStatus.FORBIDDEN
+    })
+  })
+
+  test('a manager cannot edit or remove the creator', async ({
+    teamActors,
+    t
+  }) => {
+    const [creator, manager] = teamActors
+    const { page } = manager
+    const teamId = creator.team.id
+
+    // Remove is hidden in the members table context menu
+    await page.goto('/team/members')
+    await page
+      .getByRole('row', { name: new RegExp(creator.credentials.email) })
+      .click({ button: 'right' })
+
+    await expect(
+      page.getByRole('menuitem', { name: t.contextMenu.open })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('menuitem', { name: t.contextMenu.remove })
+    ).toHaveCount(0)
+
+    await page.keyboard.press('Escape')
+
+    await openMemberTab(page, creator.user.id, t.membership)
+    await expect(
+      page.getByRole('button', { name: t.team.members.remove.cta })
+    ).toHaveCount(0)
+
+    await page.getByRole('tab', { name: t.permissions.name }).click()
+    await expectPermissionSwitches(page, { disabled: true })
+
+    // The API rejects the same actions sent directly
+    await manager.api(memberPermissionsPath(teamId, creator.user.id), {
+      method: 'PATCH',
+      status: HttpStatus.FORBIDDEN,
+      data: { permissions: { teams: { view: true } } }
+    })
+
+    await manager.api(memberPath(teamId, creator.user.id), {
+      method: 'DELETE',
+      status: HttpStatus.FORBIDDEN
+    })
+  })
+
+  test('the creator can still manage other members', async ({
+    teamActors,
+    t
+  }) => {
+    const [creator, manager] = teamActors
+    const { page } = creator
+
+    await openMemberTab(page, manager.user.id, t.membership)
+    await expect(
+      page.getByRole('button', { name: t.team.members.remove.cta })
+    ).toBeVisible()
+
+    await page.getByRole('tab', { name: t.permissions.name }).click()
+    await expectPermissionSwitches(page, { disabled: false })
   })
 })

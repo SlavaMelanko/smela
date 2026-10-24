@@ -121,13 +121,12 @@ export const test = base.extend({
           const { members } = await actor.api(
             buildPath(TEAM_MEMBERS_PATH, { teamId: actor.team.id })
           )
-          // Remove the creator last to retain manage access during cleanup
-          const orderedMembers = members.toSorted(
-            (a, b) =>
-              Number(a.id === actor.user.id) - Number(b.id === actor.user.id)
+          // The creator can't be removed, so the actor's own team keeps them
+          const otherMembers = members.filter(
+            member => member.id !== actor.user.id
           )
 
-          for (const member of orderedMembers) {
+          for (const member of otherMembers) {
             await actor.api(
               buildPath(TEAM_MEMBER_PATH, {
                 teamId: actor.team.id,
