@@ -17,7 +17,7 @@ import {
   findTeamMembers,
   findUserInvites,
   findUserTeams,
-  lockMembershipForRemoval,
+  lockMembership,
   searchTeams
 } from './queries'
 
@@ -47,7 +47,7 @@ const membershipMutations = {
 }
 
 const membershipQueries = {
-  lockMembershipForRemoval,
+  lockMembership,
   findMembershipPermissions
 }
 

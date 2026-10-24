@@ -1,3 +1,4 @@
+import type { Database } from '@/data'
 import type { PermissionsInput, Role } from '@/types'
 
 import { db, teamRepo, userRepo } from '@/data'
@@ -53,11 +54,53 @@ export const getTeamMemberPermissions = async (membershipId: string) => {
   return { permissions }
 }
 
+// Platform admins bypass creator protection. Other members can't change the active creator
+const lockChangeableMember = async (
+  teamId: string,
+  memberId: string,
+  actorRole: Role,
+  creatorError: string,
+  tx: Database
+) => {
+  const member = await teamRepo.lockMembership(teamId, memberId, tx)
+  if (!member) {
+    throw new AppError(ErrorCode.NotFound, 'Member not found')
+  }
+
+  if (
+    !isAdmin(actorRole) &&
+    member.status === MembershipStatus.Active &&
+    member.userId === member.createdBy
+  ) {
+    throw new AppError(ErrorCode.Forbidden, creatorError)
+  }
+
+  return member
+}
+
 export const updateTeamMemberPermissions = async (
-  membershipId: string,
+  teamId: string,
+  memberId: string,
+  actorRole: Role,
   permissions: PermissionsInput
 ) => {
-  await teamRepo.setMembershipPermissions(membershipId, permissions)
+  const membershipId = await db.transaction(async tx => {
+    const member = await lockChangeableMember(
+      teamId,
+      memberId,
+      actorRole,
+      'Cannot edit the team creator permissions',
+      tx
+    )
+
+    await teamRepo.setMembershipPermissions(
+      member.membershipId,
+      permissions,
+      tx
+    )
+
+    return member.membershipId
+  })
 
   return getTeamMemberPermissions(membershipId)
 }
@@ -69,18 +112,13 @@ export const removeTeamMember = async (
   actorRole: Role
 ) => {
   await db.transaction(async tx => {
-    const member = await teamRepo.lockMembershipForRemoval(teamId, memberId, tx)
-    if (!member) {
-      throw new AppError(ErrorCode.NotFound, 'Member not found')
-    }
-
-    if (
-      !isAdmin(actorRole) &&
-      member.status === MembershipStatus.Active &&
-      member.userId === member.createdBy
-    ) {
-      throw new AppError(ErrorCode.Forbidden, 'Cannot remove the team creator')
-    }
+    const member = await lockChangeableMember(
+      teamId,
+      memberId,
+      actorRole,
+      'Cannot remove the team creator',
+      tx
+    )
 
     await teamRepo.deleteMembership(member.userId, teamId, tx)
   })
