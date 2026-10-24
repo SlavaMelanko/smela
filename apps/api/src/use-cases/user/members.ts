@@ -1,7 +1,7 @@
-import type { Database } from '@/data'
+import type { TeamMemberDetails, TeamWithMemberCount } from '@/data'
 import type { PermissionsInput, Role } from '@/types'
 
-import { db, teamRepo, userRepo } from '@/data'
+import { teamRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { getMemberBasePermissions, isAdmin, MembershipStatus } from '@/types'
 import { resolveMembershipPermissionMap } from '@/use-cases/resolve-permissions'
@@ -55,73 +55,53 @@ export const getTeamMemberPermissions = async (membershipId: string) => {
 }
 
 // Platform admins bypass creator protection. Other members can't change the active creator
-const lockChangeableMember = async (
-  teamId: string,
-  memberId: string,
+const assertNotProtectedCreator = (
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
   actorRole: Role,
-  creatorError: string,
-  tx: Database
+  message: string
 ) => {
-  const member = await teamRepo.lockMembership(teamId, memberId, tx)
-  if (!member) {
-    throw new AppError(ErrorCode.NotFound, 'Member not found')
-  }
-
   if (
     !isAdmin(actorRole) &&
     member.status === MembershipStatus.Active &&
-    member.userId === member.createdBy
+    member.id === team.creator?.id
   ) {
-    throw new AppError(ErrorCode.Forbidden, creatorError)
+    throw new AppError(ErrorCode.Forbidden, message)
   }
-
-  return member
 }
 
 export const updateTeamMemberPermissions = async (
-  teamId: string,
-  memberId: string,
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
   actorRole: Role,
   permissions: PermissionsInput
 ) => {
-  const membershipId = await db.transaction(async tx => {
-    const member = await lockChangeableMember(
-      teamId,
-      memberId,
-      actorRole,
-      'Cannot edit the team creator permissions',
-      tx
-    )
+  assertNotProtectedCreator(
+    team,
+    member,
+    actorRole,
+    'Cannot edit the team creator permissions'
+  )
 
-    await teamRepo.setMembershipPermissions(
-      member.membershipId,
-      permissions,
-      tx
-    )
+  await teamRepo.setMembershipPermissions(member.membershipId, permissions)
 
-    return member.membershipId
-  })
-
-  return getTeamMemberPermissions(membershipId)
+  return getTeamMemberPermissions(member.membershipId)
 }
 
 // Removes only the membership. The account and other memberships stay intact
 export const removeTeamMember = async (
-  teamId: string,
-  memberId: string,
+  team: TeamWithMemberCount,
+  member: TeamMemberDetails,
   actorRole: Role
 ) => {
-  await db.transaction(async tx => {
-    const member = await lockChangeableMember(
-      teamId,
-      memberId,
-      actorRole,
-      'Cannot remove the team creator',
-      tx
-    )
+  assertNotProtectedCreator(
+    team,
+    member,
+    actorRole,
+    'Cannot remove the team creator'
+  )
 
-    await teamRepo.deleteMembership(member.userId, teamId, tx)
-  })
+  await teamRepo.deleteMembership(member.id, team.id)
 
   return { success: true }
 }

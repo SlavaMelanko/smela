@@ -2,7 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { teamRepo, userRepo } from '@/data'
 
-import { createTransactionMock, ModuleMocker, testUuids } from '@/__tests__'
+import {
+  buildTeam,
+  buildTeamMember,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { Action, MembershipStatus, Resource, Role } from '@/types'
 
@@ -12,27 +17,24 @@ import {
   updateTeamMemberPermissions
 } from '../members'
 
-const { TEAM_1, USER_1 } = testUuids
+const { USER_1, USER_2 } = testUuids
+
+const creatorTeam = buildTeam({ creator: { id: USER_1, nickname: 'Alice' } })
 
 describe('removeTeamMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
-  let mockTeamRepo: any
+
+  let mockTeamRepoDeleteMembership: any
   let mockUserRepoUpdate: any
 
   beforeEach(async () => {
-    mockTeamRepo = {
-      lockMembership: mock(async () => ({
-        membershipId: testUuids.MEMBERSHIP_1,
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy: testUuids.USER_2
-      })),
-      deleteMembership: mock(async () => {})
-    } satisfies Partial<typeof teamRepo>
+    mockTeamRepoDeleteMembership = mock(async () => {})
     mockUserRepoUpdate = mock(async () => {})
+
     await moduleMocker.mock('@/data', () => ({
-      db: createTransactionMock(),
-      teamRepo: mockTeamRepo,
+      teamRepo: {
+        deleteMembership: mockTeamRepoDeleteMembership
+      } satisfies Partial<typeof teamRepo>,
       userRepo: { update: mockUserRepoUpdate } satisfies Partial<
         typeof userRepo
       >
@@ -44,86 +46,66 @@ describe('removeTeamMember', () => {
   })
 
   it('deletes a non-creator membership and keeps the user account untouched', async () => {
-    const result = await removeTeamMember(TEAM_1, USER_1, Role.User)
-    expect(mockTeamRepo.lockMembership).toHaveBeenCalledWith(TEAM_1, USER_1, {})
-    expect(mockTeamRepo.deleteMembership).toHaveBeenCalledWith(
-      USER_1,
-      TEAM_1,
-      {}
+    const team = buildTeam({ creator: { id: USER_2, nickname: 'Bob' } })
+
+    const result = await removeTeamMember(
+      team,
+      buildTeamMember(USER_1),
+      Role.User
     )
+
+    expect(mockTeamRepoDeleteMembership).toHaveBeenCalledWith(USER_1, team.id)
     expect(mockUserRepoUpdate).not.toHaveBeenCalled()
     expect(result).toEqual({ success: true })
   })
 
-  it.each([USER_1, USER_1.toUpperCase()])(
-    'rejects removing the active creator using %s',
-    async memberId => {
-      mockTeamRepo.lockMembership.mockResolvedValue({
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy: USER_1
-      })
-      const error = await removeTeamMember(TEAM_1, memberId, Role.User).catch(
-        (err: unknown) => err
-      )
+  it('rejects removing the active creator', async () => {
+    const error = await removeTeamMember(
+      creatorTeam,
+      buildTeamMember(USER_1),
+      Role.User
+    ).catch((err: unknown) => err)
 
-      expect(error).toMatchObject({ code: ErrorCode.Forbidden })
-      expect(mockTeamRepo.deleteMembership).not.toHaveBeenCalled()
-    }
-  )
-
-  it.each([Role.Admin, Role.Owner])(
-    'preserves creator removal for platform %s',
-    async role => {
-      mockTeamRepo.lockMembership.mockResolvedValue({
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy: USER_1
-      })
-      expect(await removeTeamMember(TEAM_1, USER_1, role)).toEqual({
-        success: true
-      })
-      expect(mockTeamRepo.deleteMembership).toHaveBeenCalledWith(
-        USER_1,
-        TEAM_1,
-        {}
-      )
-    }
-  )
-
-  it.each([null, testUuids.USER_2])(
-    'allows removal when the creator is %s',
-    async createdBy => {
-      mockTeamRepo.lockMembership.mockResolvedValue({
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy
-      })
-      expect(await removeTeamMember(TEAM_1, USER_1, Role.User)).toEqual({
-        success: true
-      })
-    }
-  )
-
-  it('does not protect a pending membership matching createdBy', async () => {
-    mockTeamRepo.lockMembership.mockResolvedValue({
-      userId: USER_1,
-      status: MembershipStatus.Pending,
-      createdBy: USER_1
-    })
-    expect(await removeTeamMember(TEAM_1, USER_1, Role.User)).toEqual({
-      success: true
-    })
+    expect(error).toMatchObject({ code: ErrorCode.Forbidden })
+    expect(mockTeamRepoDeleteMembership).not.toHaveBeenCalled()
   })
 
-  it('returns NotFound if the membership disappeared before the transaction', async () => {
-    mockTeamRepo.lockMembership.mockResolvedValue(undefined)
-    const error = await removeTeamMember(TEAM_1, USER_1, Role.User).catch(
-      (err: unknown) => err
+  it.each([Role.Admin, Role.Owner])(
+    'allows platform %s to remove the creator',
+    async role => {
+      const result = await removeTeamMember(
+        creatorTeam,
+        buildTeamMember(USER_1),
+        role
+      )
+
+      expect(result).toEqual({ success: true })
+      expect(mockTeamRepoDeleteMembership).toHaveBeenCalledWith(
+        USER_1,
+        creatorTeam.id
+      )
+    }
+  )
+
+  it('allows removal when the team has no creator', async () => {
+    const result = await removeTeamMember(
+      buildTeam(),
+      buildTeamMember(USER_1),
+      Role.User
     )
 
-    expect(error).toMatchObject({ code: ErrorCode.NotFound })
-    expect(mockTeamRepo.deleteMembership).not.toHaveBeenCalled()
+    expect(result).toEqual({ success: true })
+  })
+
+  it('does not protect a pending membership of the creator', async () => {
+    const member = {
+      ...buildTeamMember(USER_1),
+      status: MembershipStatus.Pending
+    }
+
+    const result = await removeTeamMember(creatorTeam, member, Role.User)
+
+    expect(result).toEqual({ success: true })
   })
 })
 
@@ -139,17 +121,10 @@ describe('team member permissions', () => {
         { action: Action.Manage, resource: Resource.Teams },
         { action: Action.View, resource: Resource.Teams }
       ]),
-      setMembershipPermissions: mock(async () => {}),
-      lockMembership: mock(async () => ({
-        membershipId: MEMBERSHIP_ID,
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy: testUuids.USER_2
-      }))
+      setMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
 
     await moduleMocker.mock('@/data', () => ({
-      db: createTransactionMock(),
       teamRepo: mockTeamRepo
     }))
   })
@@ -179,19 +154,23 @@ describe('team member permissions', () => {
     }
 
     it('writes permissions to membership', async () => {
-      await updateTeamMemberPermissions(TEAM_1, USER_1, Role.User, permissions)
+      await updateTeamMemberPermissions(
+        buildTeam(),
+        buildTeamMember(USER_1),
+        Role.User,
+        permissions
+      )
 
       expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
         MEMBERSHIP_ID,
-        permissions,
-        {}
+        permissions
       )
     })
 
     it('returns updated membership permissions', async () => {
       const result = await updateTeamMemberPermissions(
-        TEAM_1,
-        USER_1,
+        buildTeam(),
+        buildTeamMember(USER_1),
         Role.User,
         permissions
       )
@@ -203,41 +182,30 @@ describe('team member permissions', () => {
     })
 
     it('rejects editing the active creator permissions', async () => {
-      mockTeamRepo.lockMembership.mockResolvedValue({
-        membershipId: MEMBERSHIP_ID,
-        userId: USER_1,
-        status: MembershipStatus.Active,
-        createdBy: USER_1
-      })
-
       const error = await updateTeamMemberPermissions(
-        TEAM_1,
-        USER_1,
+        creatorTeam,
+        buildTeamMember(USER_1),
         Role.User,
         permissions
       ).catch((err: unknown) => err)
 
       expect(error).toMatchObject({ code: ErrorCode.Forbidden })
-
       expect(mockTeamRepo.setMembershipPermissions).not.toHaveBeenCalled()
     })
 
     it.each([Role.Admin, Role.Owner])(
       'allows platform %s to edit the creator permissions',
       async role => {
-        mockTeamRepo.lockMembership.mockResolvedValue({
-          membershipId: MEMBERSHIP_ID,
-          userId: USER_1,
-          status: MembershipStatus.Active,
-          createdBy: USER_1
-        })
-
-        await updateTeamMemberPermissions(TEAM_1, USER_1, role, permissions)
+        await updateTeamMemberPermissions(
+          creatorTeam,
+          buildTeamMember(USER_1),
+          role,
+          permissions
+        )
 
         expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
           MEMBERSHIP_ID,
-          permissions,
-          {}
+          permissions
         )
       }
     )
