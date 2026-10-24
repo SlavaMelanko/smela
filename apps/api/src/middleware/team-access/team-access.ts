@@ -24,11 +24,15 @@ import { resolveMembershipPermissionList } from '@/use-cases/resolve-permissions
  * - Requires the permission in team permissions, unless allowSelf is set
  *   and the caller targets their own member record
  *
- * Note: teamId is already validated by validateParams middleware
+ * Note: reads params validated by validateParams middleware, which must run first
  */
 
 interface TeamAccessOptions {
   allowSelf?: boolean
+}
+
+interface TeamAccessInput {
+  out: { param: { teamId: string; memberId?: string } }
 }
 
 const handleAdminAccess = async (
@@ -92,9 +96,8 @@ export const requireTeamAccess = (
   permission: Permission,
   { allowSelf = false }: TeamAccessOptions = {}
 ) =>
-  createMiddleware<AppContext>(async (c, next) => {
-    const teamId = c.req.param('teamId')!
-    const memberId = c.req.param('memberId')
+  createMiddleware<AppContext, string, TeamAccessInput>(async (c, next) => {
+    const { teamId, memberId } = c.req.valid('param')
     const { id: currentUserId, role } = c.get('user')
 
     const team = await teamRepo.find(teamId)
