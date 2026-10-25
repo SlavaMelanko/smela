@@ -1,4 +1,3 @@
-import { BackButton } from '@ui/components/buttons'
 import { PageContent } from '@ui/components/PageContent'
 import { TeamPageHeader } from '@ui/components/PageHeader'
 import { Spinner } from '@ui/components/Spinner'
@@ -50,10 +49,7 @@ export const TeamPage = () => {
 
   return (
     <PageContent>
-      <div className='flex'>
-        <BackButton />
-      </div>
-      <TeamPageHeader name={team.name} website={team.website} />
+      <TeamPageHeader id={team.id} name={team.name} website={team.website} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getTeamTabs(team, t)} />
         <TabsContent value={TeamTab.GENERAL}>

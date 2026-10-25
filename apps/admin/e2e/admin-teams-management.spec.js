@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import {
+  copyIdAndVerify,
   fillTeamAddFormAndSubmit,
   logOut,
   updateTeamNameAndSubmit
@@ -96,6 +97,10 @@ test.describe.serial('Admin: Teams Management', () => {
 
     await page.getByRole('row', { name: new RegExp(newTeam.name) }).click()
     await detailPromise
+
+    await test.step('copies the team ID', async () => {
+      await copyIdAndVerify(page, { id: newTeam.id, label: t.team.copyId }, t)
+    })
 
     // Update the team name
     const editedName = `${newTeam.name} Edited`

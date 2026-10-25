@@ -1,4 +1,3 @@
-import { BackButton } from '@ui/components/buttons'
 import { PageContent } from '@ui/components/PageContent'
 import { EmailSenderProfilePageHeader } from '@ui/components/PageHeader'
 import { Spinner } from '@ui/components/Spinner'
@@ -38,9 +37,6 @@ export const EmailSenderProfilePage = () => {
 
   return (
     <PageContent>
-      <div className='flex'>
-        <BackButton />
-      </div>
       <EmailSenderProfilePageHeader
         name={senderProfile.name}
         email={senderProfile.email}

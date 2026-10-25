@@ -1,4 +1,3 @@
-import { BackButton } from '@ui/components/buttons'
 import { PageContent } from '@ui/components/PageContent'
 import { UserPageHeader } from '@ui/components/PageHeader'
 import {
@@ -57,9 +56,6 @@ export const UserPage = () => {
 
   return (
     <PageContent>
-      <div className='flex'>
-        <BackButton />
-      </div>
       <UserPageHeader user={user} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getUserTabs(hasUserMembership, canManageTeams, t)} />

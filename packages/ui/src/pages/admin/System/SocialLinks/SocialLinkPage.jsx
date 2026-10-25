@@ -1,4 +1,3 @@
-import { BackButton } from '@ui/components/buttons'
 import { PageContent } from '@ui/components/PageContent'
 import { SocialLinkPageHeader } from '@ui/components/PageHeader'
 import { Spinner } from '@ui/components/Spinner'
@@ -41,9 +40,6 @@ export const SocialLinkPage = () => {
 
   return (
     <PageContent>
-      <div className='flex'>
-        <BackButton />
-      </div>
       <SocialLinkPageHeader
         name={socialLink.name}
         url={socialLink.url}

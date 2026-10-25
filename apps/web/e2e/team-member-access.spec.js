@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import {
+  copyIdAndVerify,
   fillAcceptInviteFormAndSubmit,
   fillMemberInviteFormAndSubmit,
   logOut
@@ -82,6 +83,10 @@ test.describe.serial('User: Member Permissions', () => {
 
     teamId = teamDetailBody?.team?.id
     expect(teamId).toBeTruthy()
+
+    await test.step('copies the team ID', async () => {
+      await copyIdAndVerify(page, { id: teamId, label: t.team.copyId }, t)
+    })
 
     const membersPromise = waitForApiCall(page, {
       path: TEAM_MEMBERS_PATH.replace(':teamId', teamId),
@@ -182,6 +187,14 @@ test.describe.serial('User: Member Permissions', () => {
 
     // Navigate to own member detail to check permissions
     await page.goto(`/team/members/${readOnlyMemberId}`)
+
+    await test.step('copies the member ID', async () => {
+      await copyIdAndVerify(
+        page,
+        { id: readOnlyMemberId, label: t.user.copyId },
+        t
+      )
+    })
 
     // Permissions tab is hidden for non-managers — verify it is absent
     await expect(

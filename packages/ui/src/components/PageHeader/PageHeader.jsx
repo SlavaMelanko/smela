@@ -5,7 +5,7 @@ import { cn } from '@ui/lib/utils'
 import { Globe } from 'lucide-react'
 
 export const PageHeader = ({ children }) => (
-  <div className='flex items-end justify-between'>{children}</div>
+  <div className='flex items-center justify-between'>{children}</div>
 )
 
 export const PageHeaderGroup = ({ children, className }) => (
