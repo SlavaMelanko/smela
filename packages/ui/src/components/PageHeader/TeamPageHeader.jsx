@@ -1,3 +1,4 @@
+import { BackButton } from '@ui/components/buttons'
 import { useLocale } from '@ui/hooks/useLocale'
 import { Users } from 'lucide-react'
 
@@ -17,6 +18,7 @@ export const TeamPageHeader = ({ id, name, website }) => {
   return (
     <PageHeader>
       <PageHeaderGroup>
+        <BackButton />
         <PageHeaderIcon icon={Users} />
         <PageHeaderContent>
           <PageHeaderTitle>{name}</PageHeaderTitle>

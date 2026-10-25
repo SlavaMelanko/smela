@@ -8,9 +8,13 @@ export const BackButton = ({ to }) => {
   const { t } = useLocale()
 
   return (
-    <Button variant='ghost' onClick={() => navigate(to ?? -1)}>
-      <ChevronLeft className='size-4' />
-      {t('back')}
+    <Button
+      variant='ghost'
+      size='icon'
+      onClick={() => navigate(to ?? -1)}
+      aria-label={t('back')}
+    >
+      <ChevronLeft className='size-6' />
     </Button>
   )
 }

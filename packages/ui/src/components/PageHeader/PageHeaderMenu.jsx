@@ -24,7 +24,7 @@ export const PageHeaderMenu = ({ children }) => {
           />
         }
       >
-        <EllipsisVertical />
+        <EllipsisVertical className='size-6' />
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>{children}</DropdownMenuContent>
     </DropdownMenu>

@@ -1,3 +1,5 @@
+import { BackButton } from '@ui/components/buttons'
+
 import {
   PageHeader,
   PageHeaderContent,
@@ -10,6 +12,7 @@ import {
 export const SocialLinkPageHeader = ({ name, url, svg }) => (
   <PageHeader>
     <PageHeaderGroup>
+      <BackButton />
       <PageHeaderSvgIcon svg={svg} label={name} />
       <PageHeaderContent>
         <PageHeaderTitle>{name}</PageHeaderTitle>

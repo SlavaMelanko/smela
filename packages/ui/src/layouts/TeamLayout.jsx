@@ -1,4 +1,3 @@
-import { BackButton } from '@ui/components/buttons'
 import { PageContent } from '@ui/components/PageContent'
 import { TeamPageHeader } from '@ui/components/PageHeader'
 import { Spinner } from '@ui/components/Spinner'
@@ -45,9 +44,6 @@ export const TeamLayout = () => {
 
   return (
     <PageContent>
-      <div className='flex'>
-        <BackButton />
-      </div>
       <TeamPageHeader id={team.id} name={team.name} website={team.website} />
       <Tabs
         value={getActiveTab(location.pathname)}

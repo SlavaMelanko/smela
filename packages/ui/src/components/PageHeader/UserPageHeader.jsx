@@ -1,4 +1,5 @@
 import { LastActiveBadge, YouBadge } from '@ui/components/badges'
+import { BackButton } from '@ui/components/buttons'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useLocale } from '@ui/hooks/useLocale'
 
@@ -35,6 +36,7 @@ export const UserPageHeader = ({ user }) => {
   return (
     <PageHeader>
       <PageHeaderGroup>
+        <BackButton />
         <PageHeaderIcon icon={getRoleIcon(user?.role)} />
         <PageHeaderContent>
           <PageHeaderTitle>

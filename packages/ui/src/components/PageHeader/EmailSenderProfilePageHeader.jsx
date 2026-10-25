@@ -1,3 +1,4 @@
+import { BackButton } from '@ui/components/buttons'
 import { Mail } from 'lucide-react'
 
 import {
@@ -12,6 +13,7 @@ import {
 export const EmailSenderProfilePageHeader = ({ name, email }) => (
   <PageHeader>
     <PageHeaderGroup>
+      <BackButton />
       <PageHeaderIcon icon={Mail} />
       <PageHeaderContent>
         <PageHeaderTitle>{name}</PageHeaderTitle>
