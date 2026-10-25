@@ -1,5 +1,6 @@
 import { BookOpen, Bot, Home, Users } from 'lucide-react'
 
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar'
 import { Sidebar } from '.'
 
 export default {
@@ -10,10 +11,13 @@ export default {
     initialPath: '/ai-agents/chatgpt'
   },
   decorators: [
-    Story => (
-      <div className='flex min-h-screen'>
+    (Story, context) => (
+      <SidebarProvider defaultOpen={!context.parameters.sidebarCollapsed}>
         <Story />
-      </div>
+        <SidebarInset>
+          <SidebarTrigger className='md:hidden' />
+        </SidebarInset>
+      </SidebarProvider>
     )
   ]
 }
@@ -40,4 +44,9 @@ export const AllFeatures = {
       }
     ]
   }
+}
+
+export const Collapsed = {
+  args: AllFeatures.args,
+  parameters: { sidebarCollapsed: true }
 }

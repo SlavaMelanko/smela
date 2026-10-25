@@ -1,12 +1,16 @@
 import { useNavigate } from '@ui/hooks/useRouter'
 import { cn } from '@ui/lib/utils'
 
+const FULL_VIEW_BOX = '90 190 880 220'
+
 const sizeMap = {
-  sm: 130,
-  lg: 280
+  icon: { width: 28, viewBox: '185 215 172 172' },
+  sm: { width: 130, viewBox: FULL_VIEW_BOX },
+  lg: { width: 280, viewBox: FULL_VIEW_BOX }
 }
 
 export const Logo = ({ size = 'sm', className }) => {
+  const { width, viewBox } = sizeMap[size]
   const navigate = useNavigate()
 
   const navigateHome = () => {
@@ -16,8 +20,8 @@ export const Logo = ({ size = 'sm', className }) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
-      viewBox='90 190 880 220'
-      width={sizeMap[size]}
+      viewBox={viewBox}
+      width={width}
       className={cn(
         'cursor-pointer rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         className
