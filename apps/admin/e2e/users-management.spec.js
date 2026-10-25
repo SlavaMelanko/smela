@@ -1,3 +1,4 @@
+import { copyIdAndVerify } from '@smela/e2e/actions'
 import { createAuthenticatedRequest, waitForApiCall } from '@smela/e2e/api'
 import { HttpStatus } from '@smela/ui/lib/net'
 import { ADMIN_USERS_PATH, LOGIN_PATH } from '@smela/ui/services/backend/paths'
@@ -38,6 +39,10 @@ test('Admin: edits a user nickname and clears real names through the form', asyn
     const lastName = page.getByLabel(t.lastName.label)
 
     await expect(nickname).toHaveValue(user.nickname)
+    await test.step('copies the user ID', async () => {
+      await copyIdAndVerify(page, { id: user.id, label: t.user.copyId }, t)
+    })
+
     // Populate both names first so clearing proves persistence even if the seed has no names
     await api(path, {
       method: 'PATCH',

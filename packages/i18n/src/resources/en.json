@@ -40,6 +40,10 @@
     "error": "Security verification failed. Please try again."
   },
   "changesSaved": "Changes saved successfully.",
+  "clipboard": {
+    "error": "Could not copy to clipboard.",
+    "success": "Copied to clipboard."
+  },
   "contextMenu": {
     "cancel": "Cancel",
     "invite": "Invitation",
@@ -205,6 +209,7 @@
     "verb": "Log out"
   },
   "membership": "Membership",
+  "moreActions": "More actions",
   "name": {
     "error": {
       "max": "Name can't exceed 50 characters.",
@@ -420,6 +425,7 @@
       "success": "Team created.",
       "title": "Create team"
     },
+    "copyId": "Copy team ID",
     "empty": "No team yet",
     "invites": {
       "accept": "Accept invitation to {{name}}",
@@ -467,6 +473,9 @@
       "required": "URL is required."
     },
     "label": "URL"
+  },
+  "user": {
+    "copyId": "Copy user ID"
   },
   "website": {
     "label": "Website"

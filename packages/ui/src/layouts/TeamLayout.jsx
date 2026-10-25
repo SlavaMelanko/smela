@@ -48,7 +48,7 @@ export const TeamLayout = () => {
       <div className='flex'>
         <BackButton />
       </div>
-      <TeamPageHeader name={team.name} website={team.website} />
+      <TeamPageHeader id={team.id} name={team.name} website={team.website} />
       <Tabs
         value={getActiveTab(location.pathname)}
         onValueChange={value => navigate(`/team/${value}`)}

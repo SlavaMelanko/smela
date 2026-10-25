@@ -53,7 +53,7 @@ export const TeamPage = () => {
       <div className='flex'>
         <BackButton />
       </div>
-      <TeamPageHeader name={team.name} website={team.website} />
+      <TeamPageHeader id={team.id} name={team.name} website={team.website} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsLine tabs={getTeamTabs(team, t)} />
         <TabsContent value={TeamTab.GENERAL}>

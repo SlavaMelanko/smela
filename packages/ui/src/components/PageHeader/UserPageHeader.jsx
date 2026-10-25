@@ -10,6 +10,7 @@ import {
   PageHeaderIcon,
   PageHeaderTitle
 } from './PageHeader'
+import { CopyIdMenuItem, PageHeaderMenu } from './PageHeaderMenu'
 import { getRoleIcon } from './utils'
 
 const LastActiveInfo = ({ date }) => {
@@ -26,8 +27,10 @@ const LastActiveInfo = ({ date }) => {
 }
 
 export const UserPageHeader = ({ user }) => {
+  const { t } = useLocale()
   const { user: me } = useCurrentUser()
   const isMe = user?.id === me?.id
+  const showLastActive = !isMe && user?.lastActive
 
   return (
     <PageHeader>
@@ -41,11 +44,16 @@ export const UserPageHeader = ({ user }) => {
           <PageHeaderEmail email={user?.email} />
         </PageHeaderContent>
       </PageHeaderGroup>
-      {!isMe && user?.lastActive && (
-        <PageHeaderGroup className='hidden sm:flex'>
-          <LastActiveInfo date={user.lastActive} />
-        </PageHeaderGroup>
-      )}
+      <PageHeaderGroup>
+        {showLastActive && (
+          <div className='hidden sm:block'>
+            <LastActiveInfo date={user.lastActive} />
+          </div>
+        )}
+        <PageHeaderMenu>
+          <CopyIdMenuItem id={user?.id} label={t('user.copyId')} />
+        </PageHeaderMenu>
+      </PageHeaderGroup>
     </PageHeader>
   )
 }
