@@ -9,7 +9,8 @@ import {
 } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
-import { ChevronDown, Plus } from 'lucide-react'
+import { cn } from '@ui/lib/utils'
+import { ChevronDown, Info, Plus, Users } from 'lucide-react'
 import { useId } from 'react'
 
 import { EmptyState } from './EmptyState'
@@ -26,18 +27,6 @@ const TeamButton = ({ name, position, onClick }) => (
     <TeamInfo name={name} position={position} />
   </button>
 )
-
-const CurrentTeamButton = ({ team }) => {
-  const navigate = useNavigate()
-
-  return (
-    <TeamButton
-      name={team.name}
-      position={team.position}
-      onClick={() => navigate('/team')}
-    />
-  )
-}
 
 const NoTeamButton = ({ onCreateTeam }) => {
   const { t } = useLocale()
@@ -93,7 +82,7 @@ const TriggerIcon = ({ hasInvites, descriptionId }) => {
   const { t } = useLocale()
 
   return hasInvites ? (
-    <span className='size-3 rounded-full bg-destructive'>
+    <span className='block size-3 rounded-full bg-destructive'>
       <span id={descriptionId} className='sr-only'>
         {t('team.invites.pending')}
       </span>
@@ -104,6 +93,7 @@ const TriggerIcon = ({ hasInvites, descriptionId }) => {
 }
 
 export const TeamSwitcher = ({
+  compact = false,
   teams = [],
   invites = [],
   onTeamChange,
@@ -113,31 +103,66 @@ export const TeamSwitcher = ({
 }) => {
   const { t } = useLocale()
   const descriptionId = useId()
+  const navigate = useNavigate()
   const [team] = teams
   const hasInvites = invites.length > 0
 
+  const openTeam = () => navigate('/team')
+
   if (!team && !hasInvites) {
-    return <EmptyState onCreateTeam={onCreateTeam} />
+    return <EmptyState compact={compact} onCreateTeam={onCreateTeam} />
   }
 
   return (
-    <div className='flex w-full rounded-lg border border-sidebar-border bg-sidebar-accent/50'>
-      {team ? (
-        <CurrentTeamButton team={team} />
-      ) : (
-        <NoTeamButton onCreateTeam={onCreateTeam} />
+    <div
+      className={cn(
+        'flex w-full',
+        !compact &&
+          'rounded-lg border border-sidebar-border bg-sidebar-accent/50'
       )}
+    >
+      {!compact &&
+        (team ? (
+          <TeamButton
+            name={team.name}
+            position={team.position}
+            onClick={openTeam}
+          />
+        ) : (
+          <NoTeamButton onCreateTeam={onCreateTeam} />
+        ))}
 
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t('team.switch')}
           aria-describedby={hasInvites ? descriptionId : undefined}
-          className='flex w-10 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l border-sidebar-border text-sidebar-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent'
+          title={compact ? (team?.name ?? t('team.switch')) : undefined}
+          className={cn(
+            'flex shrink-0 cursor-pointer items-center justify-center transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring data-open:bg-sidebar-accent',
+            compact
+              ? 'relative size-8 rounded-md'
+              : 'w-10 rounded-r-lg border-l border-sidebar-border text-sidebar-foreground'
+          )}
         >
-          <TriggerIcon hasInvites={hasInvites} descriptionId={descriptionId} />
+          {compact ? (
+            <>
+              <Users className='size-5' />
+              {hasInvites && (
+                <span className='absolute right-0 top-0'>
+                  <TriggerIcon hasInvites descriptionId={descriptionId} />
+                </span>
+              )}
+            </>
+          ) : (
+            <TriggerIcon
+              hasInvites={hasInvites}
+              descriptionId={descriptionId}
+            />
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align='end'
+          side={compact ? 'right' : 'bottom'}
           className='w-72 max-w-[calc(100vw-2rem)]'
         >
           {hasInvites && (
@@ -154,6 +179,10 @@ export const TeamSwitcher = ({
             <>
               <TeamList teams={teams} onTeamChange={onTeamChange} />
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={openTeam}>
+                <Info className='size-4' />
+                {t('team.details')}
+              </DropdownMenuItem>
             </>
           )}
           <CreateTeamItem onCreateTeam={onCreateTeam} />

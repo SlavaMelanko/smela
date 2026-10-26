@@ -7,6 +7,7 @@ import { useCreateUserTeam } from '@ui/hooks/useCreateUserTeam'
 import { Outlet } from '@ui/hooks/useRouter'
 import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { useUserTeams } from '@ui/hooks/useUserTeams'
+import { loadSidebarOpen } from '@ui/lib/userPreferences'
 import { Suspense } from 'react'
 
 export const UserLayout = () => {
@@ -16,7 +17,7 @@ export const UserLayout = () => {
 
   return (
     <NotificationProvider>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={loadSidebarOpen()}>
         <Sidebar
           items={items}
           teams={teams}

@@ -1,37 +1,18 @@
 import { Copyright } from '@ui/components/Copyright'
-import { ChevronIcon, Logo } from '@ui/components/icons'
+import { Logo } from '@ui/components/icons'
 import { TeamSwitcher } from '@ui/components/TeamSwitcher'
 import {
-  Badge,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar
 } from '@ui/components/ui'
-import { useLocale } from '@ui/hooks/useLocale'
-import { useLocation, useNavigate } from '@ui/hooks/useRouter'
-import { ExternalLink } from 'lucide-react'
 
-import { ActiveIndicator } from './ActiveIndicator'
-
-const formatBadge = count => {
-  const num = Number(count)
-
-  return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
-}
+import { NavMenu } from './NavMenu'
+import { SidebarToggle } from './SidebarToggle'
 
 export const Sidebar = ({
   items,
@@ -42,101 +23,25 @@ export const Sidebar = ({
   onAcceptInvite,
   onDeclineInvite
 }) => {
-  const { t } = useLocale()
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const { setOpenMobile } = useSidebar()
-
-  const isActive = url => pathname === url || pathname.startsWith(`${url}/`)
-
-  const navigateTo = item => {
-    if (item.external) {
-      window.open(item.url, '_blank', 'noopener,noreferrer')
-    } else {
-      navigate(item.url)
-    }
-
-    setOpenMobile(false)
-  }
+  const { state, isMobile } = useSidebar()
+  const compact = state === 'collapsed' && !isMobile
 
   return (
-    <ShadcnSidebar>
+    <ShadcnSidebar collapsible='icon'>
       <SidebarHeader className='h-11 items-center justify-center'>
-        <Logo />
+        <Logo size={compact ? 'icon' : 'sm'} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map(item =>
-                item.items ? (
-                  <Collapsible
-                    key={item.title}
-                    defaultOpen={item.items.some(sub => isActive(sub.url))}
-                    className='group/collapsible'
-                  >
-                    <SidebarMenuItem>
-                      <SidebarMenuButton render={<CollapsibleTrigger />}>
-                        {item.icon && <item.icon />}
-                        <span className='truncate'>{t(item.title)}</span>
-                        <ChevronIcon className='ml-auto group-data-open/collapsible:rotate-180' />
-                      </SidebarMenuButton>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.items.map(subItem => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                isActive={isActive(subItem.url)}
-                                onClick={() => {
-                                  navigate(subItem.url)
-                                  setOpenMobile(false)
-                                }}
-                              >
-                                <ActiveIndicator
-                                  isActive={isActive(subItem.url)}
-                                  className='h-3/4'
-                                />
-                                <span className='truncate'>
-                                  {t(subItem.title)}
-                                </span>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      isActive={isActive(item.url)}
-                      onClick={() => navigateTo(item)}
-                    >
-                      <ActiveIndicator
-                        isActive={isActive(item.url)}
-                        className='h-3/5'
-                      />
-                      {item.icon && <item.icon />}
-                      <span className='truncate'>{t(item.title)}</span>
-                      {item.external && <ExternalLink />}
-                    </SidebarMenuButton>
-                    {item.badge && (
-                      <SidebarMenuBadge className='top-1/2! -translate-y-1/2'>
-                        <Badge variant='notification'>
-                          {formatBadge(item.badge)}
-                        </Badge>
-                      </SidebarMenuBadge>
-                    )}
-                  </SidebarMenuItem>
-                )
-              )}
-            </SidebarMenu>
+            <NavMenu items={items} compact={compact} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         {teams && (
           <TeamSwitcher
+            compact={compact}
             teams={teams}
             invites={invites}
             onTeamChange={onTeamChange}
@@ -145,7 +50,15 @@ export const Sidebar = ({
             onDeclineInvite={onDeclineInvite}
           />
         )}
-        <Copyright />
+        <div className='relative flex h-6 items-center justify-center'>
+          {!isMobile && (
+            <SidebarToggle
+              compact={compact}
+              className={!compact && 'absolute left-0 top-1/2 -translate-y-1/2'}
+            />
+          )}
+          {!compact && <Copyright />}
+        </div>
       </SidebarFooter>
     </ShadcnSidebar>
   )

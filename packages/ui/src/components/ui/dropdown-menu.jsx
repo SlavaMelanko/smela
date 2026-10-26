@@ -183,7 +183,7 @@ function DropdownMenuRadioItem({
         className='flex size-4 shrink-0 items-center justify-center'
         data-slot='dropdown-menu-radio-item-indicator'
       >
-        <MenuPrimitive.RadioItemIndicator className='size-2 rounded-full bg-success' />
+        <MenuPrimitive.RadioItemIndicator className='size-3 rounded-full bg-success' />
       </span>
       {children}
     </MenuPrimitive.RadioItem>

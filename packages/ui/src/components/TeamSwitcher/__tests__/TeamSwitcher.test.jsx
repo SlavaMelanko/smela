@@ -5,6 +5,47 @@ import { renderWithProviders } from '@ui/tests'
 import { TeamSwitcher } from '../TeamSwitcher'
 
 describe('TeamSwitcher', () => {
+  it('keeps team navigation and switching available in compact mode', async () => {
+    const user = userEvent.setup()
+    const onTeamChange = vi.fn()
+
+    renderWithProviders(
+      <TeamSwitcher
+        compact
+        teams={[
+          { id: 'design', name: 'Design' },
+          { id: 'engineering', name: 'Engineering' }
+        ]}
+        onTeamChange={onTeamChange}
+      />
+    )
+
+    expect(screen.queryByText('Design')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Switch team' }))
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Team details' })
+    )
+
+    expect(globalThis.mockNavigate).toHaveBeenCalledWith('/team')
+
+    await user.click(screen.getByRole('button', { name: 'Switch team' }))
+    await user.click(
+      await screen.findByRole('menuitemradio', { name: /Engineering/ })
+    )
+
+    expect(onTeamChange).toHaveBeenCalledWith('engineering')
+  })
+
+  it('creates a team from the compact empty state', async () => {
+    const user = userEvent.setup()
+    const onCreateTeam = vi.fn()
+
+    renderWithProviders(<TeamSwitcher compact onCreateTeam={onCreateTeam} />)
+
+    await user.click(screen.getByRole('button', { name: 'Create team' }))
+    expect(onCreateTeam).toHaveBeenCalledOnce()
+  })
+
   it.each([
     { hasTeam: true, hasInvite: false, description: '' },
     {
