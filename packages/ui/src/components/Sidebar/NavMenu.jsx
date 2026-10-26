@@ -26,7 +26,11 @@ import { ActiveIndicator } from './ActiveIndicator'
 const formatBadge = count => {
   const num = Number(count)
 
-  return Number.isNaN(num) || num <= 0 ? '0' : num > 9 ? '9+' : num
+  if (Number.isNaN(num) || num <= 0) {
+    return '0'
+  }
+
+  return num > 9 ? '9+' : num
 }
 
 // Stays one Collapsible in both modes so the group keeps its open state across toggles
