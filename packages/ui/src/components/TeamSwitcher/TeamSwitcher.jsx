@@ -10,7 +10,7 @@ import {
 import { useLocale } from '@ui/hooks/useLocale'
 import { useNavigate } from '@ui/hooks/useRouter'
 import { cn } from '@ui/lib/utils'
-import { ChevronDown, Plus, Users } from 'lucide-react'
+import { ChevronDown, Info, Plus, Users } from 'lucide-react'
 import { useId } from 'react'
 
 import { EmptyState } from './EmptyState'
@@ -177,13 +177,12 @@ export const TeamSwitcher = ({
           )}
           {team && (
             <>
-              {compact && (
-                <DropdownMenuItem onClick={openTeam}>
-                  <TeamInfo name={team.name} position={team.position} />
-                </DropdownMenuItem>
-              )}
               <TeamList teams={teams} onTeamChange={onTeamChange} />
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={openTeam}>
+                <Info className='size-4' />
+                {t('team.details')}
+              </DropdownMenuItem>
             </>
           )}
           <CreateTeamItem onCreateTeam={onCreateTeam} />

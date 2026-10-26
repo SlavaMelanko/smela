@@ -22,7 +22,10 @@ describe('TeamSwitcher', () => {
 
     expect(screen.queryByText('Design')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Switch team' }))
-    await user.click(await screen.findByRole('menuitem', { name: /Design/ }))
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Team details' })
+    )
+
     expect(globalThis.mockNavigate).toHaveBeenCalledWith('/team')
 
     await user.click(screen.getByRole('button', { name: 'Switch team' }))

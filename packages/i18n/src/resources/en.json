@@ -428,6 +428,7 @@
       "title": "Create team"
     },
     "copyId": "Copy team ID",
+    "details": "Team details",
     "empty": "No team yet",
     "invites": {
       "accept": "Accept invitation to {{name}}",
