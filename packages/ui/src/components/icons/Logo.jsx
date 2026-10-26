@@ -2,9 +2,10 @@ import { useNavigate } from '@ui/hooks/useRouter'
 import { cn } from '@ui/lib/utils'
 
 const FULL_VIEW_BOX = '90 190 880 220'
+const ICON_VIEW_BOX = '185 215 172 172'
 
 const sizeMap = {
-  icon: { width: 28, viewBox: '185 215 172 172' },
+  icon: { width: 28, viewBox: ICON_VIEW_BOX },
   sm: { width: 130, viewBox: FULL_VIEW_BOX },
   lg: { width: 280, viewBox: FULL_VIEW_BOX }
 }

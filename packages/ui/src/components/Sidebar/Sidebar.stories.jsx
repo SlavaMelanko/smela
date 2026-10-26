@@ -1,7 +1,26 @@
 import { BookOpen, Bot, Home, Users } from 'lucide-react'
+import { useState } from 'react'
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar'
 import { Sidebar } from '.'
+
+const initialTeams = [
+  { id: 'kemmer', name: 'Kemmer and Co', position: 'Developer' },
+  { id: 'design', name: 'Design', position: 'Designer' }
+]
+
+const SidebarPreview = ({ items }) => {
+  const [teams, setTeams] = useState(initialTeams)
+
+  const switchTeam = teamId => {
+    setTeams(current => [
+      current.find(team => team.id === teamId),
+      ...current.filter(team => team.id !== teamId)
+    ])
+  }
+
+  return <Sidebar items={items} teams={teams} onTeamChange={switchTeam} />
+}
 
 export default {
   title: 'Components/Sidebar',
@@ -23,6 +42,7 @@ export default {
 }
 
 export const AllFeatures = {
+  render: args => <SidebarPreview {...args} />,
   args: {
     items: [
       { title: 'sidebar.home', url: '/home', icon: Home },
@@ -38,7 +58,7 @@ export const AllFeatures = {
       { title: 'sidebar.users', url: '/users', icon: Users, badge: 5 },
       {
         title: 'sidebar.documentation',
-        url: 'https://docs.example.com',
+        url: 'https://google.com',
         icon: BookOpen,
         external: true
       }
@@ -47,6 +67,6 @@ export const AllFeatures = {
 }
 
 export const Collapsed = {
-  args: AllFeatures.args,
+  ...AllFeatures,
   parameters: { sidebarCollapsed: true }
 }
