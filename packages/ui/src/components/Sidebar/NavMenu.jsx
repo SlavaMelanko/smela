@@ -30,7 +30,7 @@ const formatBadge = count => {
     return '0'
   }
 
-  return num > 9 ? '9+' : num
+  return num > 9 ? '9+' : String(num)
 }
 
 // Stays one Collapsible in both modes so the group keeps its open state across toggles
