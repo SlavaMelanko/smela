@@ -26,7 +26,8 @@ export const Empty = {
   )
 }
 
-export const Error = {
+export const Failed = {
+  name: 'Error',
   args: {
     onRetry: fn()
   },
