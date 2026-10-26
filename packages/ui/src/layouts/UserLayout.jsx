@@ -1,16 +1,13 @@
 import { Header } from '@ui/components/Header'
 import { Sidebar } from '@ui/components/Sidebar'
 import { Spinner } from '@ui/components/Spinner'
-import {
-  readSidebarOpen,
-  SidebarInset,
-  SidebarProvider
-} from '@ui/components/ui'
+import { SidebarInset, SidebarProvider } from '@ui/components/ui'
 import { NotificationProvider } from '@ui/contexts/NotificationContext'
 import { useCreateUserTeam } from '@ui/hooks/useCreateUserTeam'
 import { Outlet } from '@ui/hooks/useRouter'
 import { useSidebarMenu } from '@ui/hooks/useSidebarMenu'
 import { useUserTeams } from '@ui/hooks/useUserTeams'
+import { loadSidebarOpen } from '@ui/lib/userPreferences'
 import { Suspense } from 'react'
 
 export const UserLayout = () => {
@@ -20,7 +17,7 @@ export const UserLayout = () => {
 
   return (
     <NotificationProvider>
-      <SidebarProvider defaultOpen={readSidebarOpen()}>
+      <SidebarProvider defaultOpen={loadSidebarOpen()}>
         <Sidebar
           items={items}
           teams={teams}

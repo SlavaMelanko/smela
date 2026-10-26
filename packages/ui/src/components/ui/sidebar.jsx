@@ -1,6 +1,7 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { useIsMobile } from '@ui/hooks/useMediaQuery'
+import { storeSidebarOpen } from '@ui/lib/userPreferences'
 import { cn } from '@ui/lib/utils'
 import { cva } from 'class-variance-authority'
 import { PanelLeftIcon } from 'lucide-react'
@@ -19,22 +20,12 @@ import {
 import { Skeleton } from './skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip'
 
-const SIDEBAR_COOKIE_NAME = 'sidebar_state'
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = '16rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 const SidebarContext = React.createContext(null)
-
-function readSidebarOpen() {
-  const match = document.cookie.match(
-    new RegExp(`(?:^|; )${SIDEBAR_COOKIE_NAME}=(true|false)`)
-  )
-
-  return match ? match[1] === 'true' : true
-}
 
 function useSidebar() {
   const context = React.useContext(SidebarContext)
@@ -72,8 +63,7 @@ function SidebarProvider({
         _setOpen(openState)
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      storeSidebarOpen(openState)
     },
     [setOpenProp, open]
   )
@@ -633,7 +623,6 @@ function SidebarMenuSubButton({
 }
 
 export {
-  readSidebarOpen,
   Sidebar,
   SidebarContent,
   SidebarFooter,

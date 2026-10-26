@@ -115,7 +115,6 @@ export {
   SheetTrigger
 } from './sheet'
 export {
-  readSidebarOpen,
   Sidebar,
   SidebarContent,
   SidebarFooter,

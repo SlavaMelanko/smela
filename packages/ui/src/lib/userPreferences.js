@@ -3,7 +3,8 @@ import { localStorage } from './storage/index.js'
 const Key = {
   THEME: 'theme',
   LOCALE: 'locale',
-  FORMAT: 'locale_format'
+  FORMAT: 'locale_format',
+  SIDEBAR_OPEN: 'sidebar_open'
 }
 
 //
@@ -59,3 +60,13 @@ export const loadFormatPreferences = locale => {
 
 export const storeFormatPreferences = value =>
   localStorage.set(Key.FORMAT, JSON.stringify(value))
+
+//
+// Sidebar
+//
+
+export const loadSidebarOpen = () =>
+  localStorage.get(Key.SIDEBAR_OPEN) !== 'false'
+
+export const storeSidebarOpen = value =>
+  localStorage.set(Key.SIDEBAR_OPEN, String(value))
