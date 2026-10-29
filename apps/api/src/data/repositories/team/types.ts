@@ -52,11 +52,7 @@ export interface UserTeamInfo {
 export interface UserTeamInvite {
   id: string
   name: string
-  inviter: {
-    nickname: string | null
-    firstName: string | null
-    lastName: string | null
-  } | null
+  inviter: { nickname: string | null } | null
 }
 
 export interface TeamSearchParams {

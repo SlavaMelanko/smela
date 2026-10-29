@@ -520,11 +520,7 @@ test.describe('User: Existing account invitations', () => {
     expect(pending.invites).toEqual([
       expect.objectContaining({
         id: inviter.team.id,
-        inviter: {
-          nickname: inviter.credentials.nickname,
-          firstName: null,
-          lastName: null
-        }
+        inviter: { nickname: inviter.credentials.nickname }
       })
     ])
 
