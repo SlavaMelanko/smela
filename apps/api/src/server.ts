@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono'
 
+import { serveStatic } from '@hono/bun'
 import { Hono } from 'hono'
-import { serveStatic } from 'hono/bun'
 import { requestId } from 'hono/request-id'
 
 import type { AppContext } from '@/context'

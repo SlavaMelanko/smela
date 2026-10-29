@@ -35,8 +35,8 @@ multi-tenancy, role-based access control, and permission-based access.
 
 - [Git](https://git-scm.com/)
 - [Bun](https://bun.sh/) (see [.bun-version](.bun-version))
-- [Node.js](https://nodejs.org/) — required by the `react-email` dev server
-  (`packages/emails`)
+- [Node.js](https://nodejs.org/) (see [.nvmrc](.nvmrc)) — required by Vitest
+  (`packages/ui`) and the `react-email` dev server (`packages/emails`)
 - [tmux](https://github.com/tmux/tmux/wiki)
 - [Docker](https://www.docker.com/) for running PostgreSQL
 
