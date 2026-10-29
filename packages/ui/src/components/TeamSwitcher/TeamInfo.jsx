@@ -1,8 +1,14 @@
 import { useLocale } from '@ui/hooks/useLocale'
+import { cn } from '@ui/lib/utils'
 import { Users } from 'lucide-react'
 
-const TeamIcon = ({ icon: Icon }) => (
-  <div className='flex shrink-0 items-center justify-center size-9 rounded-full text-sidebar-primary'>
+const TeamIcon = ({ icon: Icon, className }) => (
+  <div
+    className={cn(
+      'flex shrink-0 items-center justify-center size-9 rounded-full text-sidebar-primary',
+      className
+    )}
+  >
     <Icon className='size-6' />
   </div>
 )
@@ -29,12 +35,12 @@ const TeamPosition = ({ position }) => {
   )
 }
 
-export const TeamInfo = ({ name, position }) => {
+export const TeamInfo = ({ name, position, iconClassName }) => {
   const { t } = useLocale()
 
   return (
     <>
-      <TeamIcon icon={Users} />
+      <TeamIcon icon={Users} className={iconClassName} />
       <TeamBody>
         <TeamName>{name}</TeamName>
         <TeamPosition position={position || t('position.default')} />

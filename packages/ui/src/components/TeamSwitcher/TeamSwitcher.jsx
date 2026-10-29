@@ -17,14 +17,14 @@ import { EmptyState } from './EmptyState'
 import { InviteList } from './InviteList'
 import { TeamInfo } from './TeamInfo'
 
-const TeamButton = ({ name, position, onClick }) => (
+const TeamButton = ({ name, position, onClick, iconClassName }) => (
   <button
     type='button'
     onClick={onClick}
     disabled={!onClick}
     className='flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-lg px-2 py-4 transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-sidebar-ring disabled:cursor-default'
   >
-    <TeamInfo name={name} position={position} />
+    <TeamInfo name={name} position={position} iconClassName={iconClassName} />
   </button>
 )
 
@@ -36,6 +36,7 @@ const NoTeamButton = ({ onCreateTeam }) => {
       name={t('team.empty')}
       position={t('team.add.title')}
       onClick={onCreateTeam}
+      iconClassName='text-muted-foreground'
     />
   )
 }
@@ -146,7 +147,12 @@ export const TeamSwitcher = ({
         >
           {compact ? (
             <>
-              <Users className='size-5' />
+              <Users
+                className={cn(
+                  'size-5',
+                  team ? 'text-sidebar-primary' : 'text-muted-foreground'
+                )}
+              />
               {hasInvites && (
                 <span className='absolute right-0 top-0'>
                   <TriggerIcon hasInvites descriptionId={descriptionId} />
