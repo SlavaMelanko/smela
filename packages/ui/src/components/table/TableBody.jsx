@@ -1,3 +1,6 @@
+// React Compiler skips re-renders because TanStack mutates rows in place
+'use no memo'
+
 import { flexRender } from '@tanstack/react-table'
 import {
   ContextMenu,

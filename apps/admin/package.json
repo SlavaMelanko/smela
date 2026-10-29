@@ -39,8 +39,10 @@
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.9",
     "@codecov/vite-plugin": "^2.0.1",
     "@faker-js/faker": "^10.5.0",
+    "@rolldown/plugin-babel": "^0.2.4",
     "@smela/e2e": "workspace:*",
     "@smela/eslint": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",

@@ -2,8 +2,9 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import webpackStatsPlugin from 'rollup-plugin-webpack-stats'
 import { defineConfig } from 'vite'
@@ -25,11 +26,8 @@ export default defineConfig({
     }
   },
   plugins: [
-    react({
-      babel: {
-        plugins: [['babel-plugin-react-compiler', {}]]
-      }
-    }),
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
     process.env.ANALYZE_BUNDLE &&
       visualizer({
