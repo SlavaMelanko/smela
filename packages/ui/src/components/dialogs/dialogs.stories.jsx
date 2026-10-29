@@ -7,6 +7,7 @@ import {
   CreateMemberDialog,
   CreateSocialLinkDialog,
   CreateTeamDialog,
+  LeaveTeamDialog,
   RemoveTeamMemberDialog
 } from '.'
 
@@ -39,6 +40,15 @@ export const RemoveTeamMember = {
         onClose={noop}
         onConfirm={noop}
       />
+    </DialogWrapper>
+  )
+}
+
+export const LeaveTeam = {
+  args: { size: 'sm' },
+  render: ({ size }) => (
+    <DialogWrapper size={size}>
+      <LeaveTeamDialog onClose={noop} onConfirm={noop} />
     </DialogWrapper>
   )
 }

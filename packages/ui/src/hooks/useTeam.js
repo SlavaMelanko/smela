@@ -375,3 +375,17 @@ export const useRemoveMember = teamId => {
     }
   })
 }
+
+// Leaving removes the active team, so /me must refetch to pick the next one
+export const useLeaveUserTeam = (teamId, memberId) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => teamApi.deleteMember(teamId, memberId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.user() })
+      // Drop the left team's details and members, so rejoining starts fresh
+      queryClient.removeQueries({ queryKey: teamKeys.team(teamId) })
+    }
+  })
+}

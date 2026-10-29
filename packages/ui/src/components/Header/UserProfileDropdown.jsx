@@ -33,7 +33,7 @@ export const UserProfileDropdown = ({ user }) => {
     },
     {
       label: 'logout.noun',
-      icon: <LogOut className='size-4 text-destructive' />,
+      icon: <LogOut className='size-4' />,
       onClick: handleLogOut,
       separatorBefore: true,
       danger: true

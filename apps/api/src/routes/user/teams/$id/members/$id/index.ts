@@ -59,15 +59,12 @@ teamsMemberByIdRoute.patch(
 teamsMemberByIdRoute.delete(
   '/',
   validateParams(memberIdParamsSchema),
-  requireTeamAccess(Permission.ManageTeams),
+  // Removing yourself means leaving the team, which any active member can do
+  requireTeamAccess(Permission.ManageTeams, { allowSelf: true }),
   async c => {
     const team = c.get('team')!
     const targetMember = c.get('targetMember')!
-    const { id: currentUserId, role } = c.get('user')
-
-    if (targetMember.id === currentUserId) {
-      throw new AppError(ErrorCode.Forbidden, 'Cannot remove yourself')
-    }
+    const { role } = c.get('user')
 
     const result = await removeTeamMember(team, targetMember, role)
 
