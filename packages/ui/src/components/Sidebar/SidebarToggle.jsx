@@ -1,13 +1,13 @@
 import { Button, useSidebar } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
 import { cn } from '@ui/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { PanelLeft, PanelRight } from 'lucide-react'
 
 export const SidebarToggle = ({ compact, className }) => {
   const { t } = useLocale()
   const { toggleSidebar } = useSidebar()
   const label = t(compact ? 'sidebar.expand' : 'sidebar.collapse')
-  const Icon = compact ? ChevronRight : ChevronLeft
+  const Icon = compact ? PanelRight : PanelLeft
 
   return (
     <Button

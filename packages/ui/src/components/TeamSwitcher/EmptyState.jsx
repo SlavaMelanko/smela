@@ -23,7 +23,7 @@ export const EmptyState = ({ compact = false, onCreateTeam }) => {
     >
       {compact ? (
         <>
-          <Users className='size-5' />
+          <Users className='size-5 text-muted-foreground' />
           <span className='absolute bottom-0 right-0 flex size-3 items-center justify-center rounded-full bg-primary text-primary-foreground'>
             <Plus className='size-2.5' strokeWidth={3} />
           </span>
@@ -31,7 +31,11 @@ export const EmptyState = ({ compact = false, onCreateTeam }) => {
       ) : (
         <>
           <div className='flex min-w-0 flex-1 items-center gap-2 px-2 py-4'>
-            <TeamInfo name={t('team.empty')} position={t('team.add.title')} />
+            <TeamInfo
+              name={t('team.empty')}
+              position={t('team.add.title')}
+              iconClassName='text-muted-foreground'
+            />
           </div>
           <span className='flex w-10 shrink-0 items-center justify-center border-l border-sidebar-border text-sidebar-foreground'>
             <Plus className='size-4' />

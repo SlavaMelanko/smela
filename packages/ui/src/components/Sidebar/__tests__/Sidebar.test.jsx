@@ -41,13 +41,13 @@ describe('Sidebar', () => {
     const trigger = screen.getByRole('button', { name: 'Collapse sidebar' })
 
     expect(trigger.closest('[data-slot="sidebar-footer"]')).toBeInTheDocument()
-    expect(trigger.querySelector('svg')).toHaveClass('lucide-chevron-left')
+    expect(trigger.querySelector('svg')).toHaveClass('lucide-panel-left')
 
     await user.click(trigger)
 
     expect(sidebar).toHaveAttribute('data-collapsible', 'icon')
     expect(trigger).toHaveAccessibleName('Expand sidebar')
-    expect(trigger.querySelector('svg')).toHaveClass('lucide-chevron-right')
+    expect(trigger.querySelector('svg')).toHaveClass('lucide-panel-right')
     expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument()
 
     await user.click(trigger)
