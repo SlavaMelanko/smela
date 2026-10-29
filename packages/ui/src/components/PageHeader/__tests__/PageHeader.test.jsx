@@ -87,6 +87,33 @@ describe('PageHeader', () => {
 
     expect(await screen.findByText(en.clipboard.error)).toBeInTheDocument()
   })
+
+  it('TeamPageHeader hides leaving the team by default', async () => {
+    const user = userEvent.setup()
+
+    renderHeader(<TeamPageHeader id='t1' name='Acme Corp' />)
+
+    await user.click(screen.getByRole('button', { name: en.moreActions }))
+    await screen.findByRole('menuitem', { name: en.team.copyId })
+
+    expect(
+      screen.queryByRole('menuitem', { name: en.team.leave.title })
+    ).not.toBeInTheDocument()
+  })
+
+  it('TeamPageHeader leaves the team from the menu', async () => {
+    const user = userEvent.setup()
+    const onLeave = vi.fn()
+
+    renderHeader(<TeamPageHeader id='t1' name='Acme Corp' onLeave={onLeave} />)
+
+    await user.click(screen.getByRole('button', { name: en.moreActions }))
+    await user.click(
+      await screen.findByRole('menuitem', { name: en.team.leave.title })
+    )
+
+    expect(onLeave).toHaveBeenCalled()
+  })
 })
 
 describe('UserPageHeader', () => {

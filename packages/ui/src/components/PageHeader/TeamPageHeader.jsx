@@ -1,6 +1,7 @@
 import { BackButton } from '@ui/components/buttons'
+import { DropdownMenuItem, DropdownMenuSeparator } from '@ui/components/ui'
 import { useLocale } from '@ui/hooks/useLocale'
-import { Users } from 'lucide-react'
+import { LogOut, Users } from 'lucide-react'
 
 import {
   PageHeader,
@@ -12,7 +13,7 @@ import {
 } from './PageHeader'
 import { CopyIdMenuItem, PageHeaderMenu } from './PageHeaderMenu'
 
-export const TeamPageHeader = ({ id, name, website }) => {
+export const TeamPageHeader = ({ id, name, website, onLeave, isLeaving }) => {
   const { t } = useLocale()
 
   return (
@@ -27,6 +28,19 @@ export const TeamPageHeader = ({ id, name, website }) => {
       </PageHeaderGroup>
       <PageHeaderMenu>
         <CopyIdMenuItem id={id} label={t('team.copyId')} />
+        {onLeave && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant='destructive'
+              disabled={isLeaving}
+              onClick={onLeave}
+            >
+              <LogOut />
+              {t('team.leave.title')}
+            </DropdownMenuItem>
+          </>
+        )}
       </PageHeaderMenu>
     </PageHeader>
   )

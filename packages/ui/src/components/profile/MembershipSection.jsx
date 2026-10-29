@@ -2,9 +2,11 @@ import { MembershipForm } from '@ui/components/form'
 import { useCurrentUser } from '@ui/hooks/useAuth'
 import { useLocale } from '@ui/hooks/useLocale'
 import { useToast } from '@ui/hooks/useToast'
+import { canLeaveTeam } from '@ui/lib/team'
 
 import { PageContent } from '../PageContent'
 import { TextSeparator } from '../Separator'
+import { LeaveTeamItem } from './LeaveTeamItem'
 import { RemoveMemberItem } from './RemoveMemberItem'
 
 export const MembershipSection = ({
@@ -21,6 +23,10 @@ export const MembershipSection = ({
   const { t, te } = useLocale()
   const { user: me } = useCurrentUser()
   const { showSuccessToast, showErrorToast } = useToast()
+
+  const isSelf = me?.id === member?.id
+  const canLeave = isSelf && canLeaveTeam(me, creator)
+  const canRemove = !isSelf && canManageTeams && canRemoveMember
 
   const handleUpdate = data => {
     update(data, {
@@ -45,10 +51,14 @@ export const MembershipSection = ({
         onSubmit={handleUpdate}
         canManageTeams={canManageTeams}
       />
-      {canManageTeams && canRemoveMember && me?.id !== member?.id && (
+      {(canLeave || canRemove) && (
         <>
           <TextSeparator />
-          <RemoveMemberItem member={member} teamId={team?.id} />
+          {isSelf ? (
+            <LeaveTeamItem member={member} teamId={team?.id} />
+          ) : (
+            <RemoveMemberItem member={member} teamId={team?.id} />
+          )}
         </>
       )}
     </PageContent>

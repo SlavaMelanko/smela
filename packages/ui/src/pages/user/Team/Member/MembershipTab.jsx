@@ -27,7 +27,7 @@ export const MembershipTab = ({ team, member, canManageTeams = false }) => {
       update={update}
       isUpdating={isUpdating}
       canManageTeams={canManageTeams}
-      canRemoveMember={creator?.id !== member?.id}
+      canRemoveMember={!!creator && creator.id !== member?.id}
     />
   )
 }

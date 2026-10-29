@@ -437,13 +437,19 @@
       "pending": "You have pending invitations",
       "title": "Invitations"
     },
+    "leave": {
+      "cta": "Leave",
+      "description": "Are you sure you want to leave the team?",
+      "success": "You left the team.",
+      "title": "Leave team"
+    },
     "members": {
       "empty": "No team members yet.",
       "remove": {
         "cta": "Remove",
         "description": "Are you sure you want to remove {{name}} from the team?",
         "success": "Member removed from the team.",
-        "title": "Remove team member from team"
+        "title": "Remove member"
       }
     },
     "name": {
