@@ -219,11 +219,7 @@ export const findUserInvites = async (
     .select({
       id: teamsTable.id,
       name: teamsTable.name,
-      inviter: {
-        nickname: invitersTable.nickname,
-        firstName: invitersTable.firstName,
-        lastName: invitersTable.lastName
-      }
+      inviter: { nickname: invitersTable.nickname }
     })
     .from(membershipsTable)
     .innerJoin(teamsTable, eq(membershipsTable.teamId, teamsTable.id))

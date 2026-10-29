@@ -394,7 +394,7 @@ test.describe('User: Creator protection', () => {
     await manager.page.reload()
   })
 
-  test('members cannot edit their own permissions or remove themselves', async ({
+  test('members cannot edit their own permissions and only non-creators can leave', async ({
     teamActors,
     t
   }) => {
@@ -412,9 +412,15 @@ test.describe('User: Creator protection', () => {
       })
     }
 
-    await manager.api(memberPath(teamId, manager.user.id), {
+    await creator.api(memberPath(teamId, creator.user.id), {
       method: 'DELETE',
       status: HttpStatus.FORBIDDEN
+    })
+
+    // Removing yourself means leaving the team
+    await manager.api(memberPath(teamId, manager.user.id), {
+      method: 'DELETE',
+      status: HttpStatus.OK
     })
   })
 
