@@ -53,7 +53,7 @@ describe('createTeam', () => {
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-01')
       })),
-      setMembershipPermissions: mock(async () => {})
+      grantMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
 
     const transaction = async <T>(callback: (tx: unknown) => Promise<T>) =>
@@ -80,7 +80,7 @@ describe('createTeam', () => {
       { userId: USER_1, teamId: TEAM_1, status: MembershipStatus.Active },
       {}
     )
-    expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
+    expect(mockTeamRepo.grantMembershipPermissions).toHaveBeenCalledWith(
       testUuids.MEMBERSHIP_1,
       getMemberFullPermissions(),
       {}

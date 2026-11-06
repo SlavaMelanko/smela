@@ -20,7 +20,7 @@ describe('inviteAdmin', () => {
   let mockUserRoleAssign: any
   let mockAuthCreate: any
   let mockTokenIssue: any
-  let mockRbacSet: any
+  let mockRbacGrant: any
   let mockTransaction: any
   let mockSendUserInviteEmail: any
 
@@ -54,7 +54,7 @@ describe('inviteAdmin', () => {
     mockUserRoleAssign = mock(async () => ({}))
     mockAuthCreate = mock(async () => ({}))
     mockTokenIssue = mock(async () => ({}))
-    mockRbacSet = mock(async () => {})
+    mockRbacGrant = mock(async () => {})
     mockSendUserInviteEmail = mock(async () => {})
 
     // eslint-disable-next-line ts/no-unsafe-return
@@ -68,7 +68,7 @@ describe('inviteAdmin', () => {
       } satisfies Partial<typeof userRepo>,
       rbacRepo: {
         assignRole: mockUserRoleAssign,
-        setUserPermissions: mockRbacSet
+        grantUserPermissions: mockRbacGrant
       } satisfies Partial<typeof rbacRepo>,
       authRepo: { create: mockAuthCreate } satisfies Partial<typeof authRepo>,
       tokenRepo: { issue: mockTokenIssue } satisfies Partial<typeof tokenRepo>,

@@ -82,7 +82,7 @@ describe('google-oauth', () => {
     } satisfies Partial<typeof authRepo>
 
     mockRbacRepo = {
-      setUserPermissions: mock(async () => {})
+      grantUserPermissions: mock(async () => {})
     } satisfies Partial<typeof rbacRepo>
 
     mockRefreshTokenRepo = {
@@ -218,8 +218,8 @@ describe('google-oauth', () => {
     it('grants default permissions to new user', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
-      expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledTimes(1)
-      expect(mockRbacRepo.setUserPermissions).toHaveBeenCalledWith(
+      expect(mockRbacRepo.grantUserPermissions).toHaveBeenCalledTimes(1)
+      expect(mockRbacRepo.grantUserPermissions).toHaveBeenCalledWith(
         mockUser.id,
         getUserDefaultPermissions(),
         expect.anything()
@@ -314,7 +314,7 @@ describe('google-oauth', () => {
     it('keeps existing permissions', async () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
-      expect(mockRbacRepo.setUserPermissions).not.toHaveBeenCalled()
+      expect(mockRbacRepo.grantUserPermissions).not.toHaveBeenCalled()
     })
   })
 

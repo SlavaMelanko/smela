@@ -332,7 +332,7 @@ const seedSystemUsers = async () => {
       role: user.role
     })
 
-    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
+    await rbacRepo.grantUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ ${user.role} ${user.email} seeded`)
   }
@@ -388,7 +388,7 @@ const seedTestUsers = async (teamId: string) => {
           status: user.membershipStatus
         })
 
-        await teamRepo.setMembershipPermissions(
+        await teamRepo.grantMembershipPermissions(
           membership.id,
           user.memberPermissions
         )
@@ -426,8 +426,8 @@ const seedTestUsers = async (teamId: string) => {
       status: user.membershipStatus
     })
 
-    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
-    await teamRepo.setMembershipPermissions(
+    await rbacRepo.grantUserPermissions(createdUser.id, user.userPermissions)
+    await teamRepo.grantMembershipPermissions(
       membership.id,
       user.memberPermissions
     )
@@ -480,7 +480,7 @@ const seedGoogleUsers = async () => {
       passwordHash: null
     })
 
-    await rbacRepo.setUserPermissions(createdUser.id, user.userPermissions)
+    await rbacRepo.grantUserPermissions(createdUser.id, user.userPermissions)
 
     console.log(`✅ Google user ${user.email} seeded`)
   }

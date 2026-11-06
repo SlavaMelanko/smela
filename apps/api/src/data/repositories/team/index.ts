@@ -4,6 +4,7 @@ import {
   createTeam,
   deleteMembership,
   deletePendingMembership,
+  grantMembershipPermissions,
   markMembershipLastActive,
   setMembershipPermissions,
   updateMembership,
@@ -40,6 +41,7 @@ const membershipMutations = {
   createMembership,
   deleteMembership,
   deletePendingMembership,
+  grantMembershipPermissions,
   markMembershipLastActive,
   setMembershipPermissions,
   updateMembership

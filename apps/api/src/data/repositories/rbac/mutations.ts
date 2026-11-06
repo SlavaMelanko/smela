@@ -3,7 +3,11 @@ import { and, eq, inArray } from 'drizzle-orm'
 import type { PermissionsInput } from '@/types'
 
 import type { Database } from '../../clients'
-import type { CreateUserRoleInput, UserRoleRecord } from './types'
+import type {
+  CreateUserRoleInput,
+  PermissionRecord,
+  UserRoleRecord
+} from './types'
 
 import { db } from '../../clients'
 import { userPermissionsTable, userRoleTable } from '../../schema'
@@ -24,6 +28,33 @@ export const assignRole = async (
   return created
 }
 
+const insertUserPermissions = async (
+  userId: string,
+  permissionIds: PermissionRecord['id'][],
+  executor: Database
+): Promise<void> => {
+  if (permissionIds.length === 0) {
+    return
+  }
+
+  await executor
+    .insert(userPermissionsTable)
+    .values(permissionIds.map(permissionId => ({ userId, permissionId })))
+    .onConflictDoNothing()
+}
+
+// Insert-only, for a user created in the same flow: there is nothing to revoke
+export const grantUserPermissions = async (
+  userId: string,
+  permissions: PermissionsInput,
+  tx?: Database
+): Promise<void> => {
+  const allPermissions = await findAllPermissions(tx)
+  const { grantIds } = splitPermissions(permissions, allPermissions)
+
+  await insertUserPermissions(userId, grantIds, tx || db)
+}
+
 export const setUserPermissions = async (
   userId: string,
   permissions: PermissionsInput,
@@ -32,17 +63,6 @@ export const setUserPermissions = async (
   const executor = tx || db
   const allPermissions = await findAllPermissions(tx)
   const { grantIds, revokeIds } = splitPermissions(permissions, allPermissions)
-
-  const grant = async () => {
-    if (grantIds.length === 0) {
-      return
-    }
-
-    await executor
-      .insert(userPermissionsTable)
-      .values(grantIds.map(permissionId => ({ userId, permissionId })))
-      .onConflictDoNothing()
-  }
 
   const revoke = async () => {
     if (revokeIds.length === 0) {
@@ -59,5 +79,8 @@ export const setUserPermissions = async (
       )
   }
 
-  await Promise.all([grant(), revoke()])
+  await Promise.all([
+    insertUserPermissions(userId, grantIds, executor),
+    revoke()
+  ])
 }

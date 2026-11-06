@@ -6,6 +6,7 @@ import { AppError, ErrorCode } from '@/errors'
 import { MembershipStatus } from '@/types'
 
 import type { Database } from '../../clients'
+import type { PermissionRecord } from '../rbac'
 import type {
   CreateMembershipInput,
   CreateTeamInput,
@@ -192,6 +193,33 @@ export const deleteMembership = async (
     )
 }
 
+const insertMembershipPermissions = async (
+  membershipId: string,
+  permissionIds: PermissionRecord['id'][],
+  executor: Database
+): Promise<void> => {
+  if (permissionIds.length === 0) {
+    return
+  }
+
+  await executor
+    .insert(membershipPermissionsTable)
+    .values(permissionIds.map(permissionId => ({ membershipId, permissionId })))
+    .onConflictDoNothing()
+}
+
+// Insert-only, for a membership created in the same flow: there is nothing to revoke
+export const grantMembershipPermissions = async (
+  membershipId: string,
+  permissions: PermissionsInput,
+  tx?: Database
+): Promise<void> => {
+  const allPermissions = await rbacRepo.findAllPermissions(tx)
+  const { grantIds } = splitPermissions(permissions, allPermissions)
+
+  await insertMembershipPermissions(membershipId, grantIds, tx || db)
+}
+
 export const setMembershipPermissions = async (
   membershipId: string,
   permissions: PermissionsInput,
@@ -200,17 +228,6 @@ export const setMembershipPermissions = async (
   const executor = tx || db
   const allPermissions = await rbacRepo.findAllPermissions(tx)
   const { grantIds, revokeIds } = splitPermissions(permissions, allPermissions)
-
-  const grant = async () => {
-    if (grantIds.length === 0) {
-      return
-    }
-
-    await executor
-      .insert(membershipPermissionsTable)
-      .values(grantIds.map(permissionId => ({ membershipId, permissionId })))
-      .onConflictDoNothing()
-  }
 
   const revoke = async () => {
     if (revokeIds.length === 0) {
@@ -227,5 +244,8 @@ export const setMembershipPermissions = async (
       )
   }
 
-  await Promise.all([grant(), revoke()])
+  await Promise.all([
+    insertMembershipPermissions(membershipId, grantIds, executor),
+    revoke()
+  ])
 }

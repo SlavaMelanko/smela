@@ -1,4 +1,8 @@
-import { assignRole, setUserPermissions } from './mutations'
+import {
+  assignRole,
+  grantUserPermissions,
+  setUserPermissions
+} from './mutations'
 import {
   findAllPermissions,
   findInviters,
@@ -15,5 +19,6 @@ export const rbacRepo = {
   findInviters,
   findRole,
   findUserPermissions,
+  grantUserPermissions,
   setUserPermissions
 }

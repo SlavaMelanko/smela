@@ -79,7 +79,7 @@ describe('inviteMember', () => {
   let mockAuthRepoCreate: any
   let mockTeamRepo: any
   let mockTokenRepoIssue: any
-  let mockRbacSet: any
+  let mockRbacGrant: any
   let mockEmailService: any
 
   const inviteParams = {
@@ -113,10 +113,10 @@ describe('inviteMember', () => {
         joinedAt: new Date('2024-01-01'),
         lastActiveAt: new Date('2024-01-01')
       })),
-      setMembershipPermissions: mock(async () => {})
+      grantMembershipPermissions: mock(async () => {})
     } satisfies Partial<typeof teamRepo>
     mockTokenRepoIssue = mock(async () => {})
-    mockRbacSet = mock(async () => {})
+    mockRbacGrant = mock(async () => {})
     mockEmailService = {
       send: mock(async () => ({ provider: 'ethereal', messageId: 'test-id' }))
     }
@@ -130,7 +130,7 @@ describe('inviteMember', () => {
       tokenRepo: { issue: mockTokenRepoIssue } satisfies Partial<
         typeof tokenRepo
       >,
-      rbacRepo: { setUserPermissions: mockRbacSet } satisfies Partial<
+      rbacRepo: { grantUserPermissions: mockRbacGrant } satisfies Partial<
         typeof rbacRepo
       >,
       db: createTransactionMock()
@@ -171,7 +171,7 @@ describe('inviteMember', () => {
         }),
         expect.anything()
       )
-      expect(mockRbacSet).toHaveBeenCalledWith(
+      expect(mockRbacGrant).toHaveBeenCalledWith(
         USER_1,
         getUserDefaultPermissions(),
         expect.anything()
@@ -207,7 +207,7 @@ describe('inviteMember', () => {
         },
         expect.anything()
       )
-      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.grantMembershipPermissions).toHaveBeenCalledWith(
         testUuids.MEMBERSHIP_1,
         inviteParams.permissions,
         expect.anything()
@@ -271,14 +271,14 @@ describe('inviteMember', () => {
         }),
         expect.anything()
       )
-      expect(mockTeamRepo.setMembershipPermissions).toHaveBeenCalledWith(
+      expect(mockTeamRepo.grantMembershipPermissions).toHaveBeenCalledWith(
         testUuids.MEMBERSHIP_1,
         inviteParams.permissions,
         expect.anything()
       )
       expect(mockUserRepo.create).not.toHaveBeenCalled()
       expect(mockAuthRepoCreate).not.toHaveBeenCalled()
-      expect(mockRbacSet).not.toHaveBeenCalled()
+      expect(mockRbacGrant).not.toHaveBeenCalled()
     })
 
     it('emails an in-app link without a token', async () => {
