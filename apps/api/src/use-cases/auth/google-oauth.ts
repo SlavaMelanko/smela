@@ -49,7 +49,7 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
         tx
       )
 
-      await rbacRepo.setUserPermissions(
+      await rbacRepo.grantUserPermissions(
         user.id,
         getUserDefaultPermissions(),
         tx

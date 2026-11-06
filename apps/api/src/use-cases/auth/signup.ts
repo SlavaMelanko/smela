@@ -53,7 +53,7 @@ const createNewUser = async ({
       tx
     )
 
-    await rbacRepo.setUserPermissions(
+    await rbacRepo.grantUserPermissions(
       newUser.id,
       getUserDefaultPermissions(),
       tx

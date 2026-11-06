@@ -92,7 +92,11 @@ const addPendingMember = async (
     tx
   )
 
-  await teamRepo.setMembershipPermissions(membership.id, member.permissions, tx)
+  await teamRepo.grantMembershipPermissions(
+    membership.id,
+    member.permissions,
+    tx
+  )
 }
 
 const inviteNewUser = async (
@@ -126,7 +130,7 @@ const inviteNewUser = async (
 
     await addPendingMember(newUser.id, team, member, inviterId, tx)
 
-    await rbacRepo.setUserPermissions(
+    await rbacRepo.grantUserPermissions(
       newUser.id,
       getUserDefaultPermissions(),
       tx

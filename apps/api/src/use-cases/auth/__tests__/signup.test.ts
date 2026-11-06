@@ -85,7 +85,7 @@ describe('signUpWithEmail', () => {
       create: mock(async () => 1)
     } satisfies Partial<typeof refreshTokenRepo>
     mockRbacRepo = {
-      setUserPermissions: mock(async () => {}),
+      grantUserPermissions: mock(async () => {}),
       findUserPermissions: mock(async () => [
         { action: Action.View, resource: Resource.Dashboard },
         { action: Action.Manage, resource: Resource.Dashboard },
