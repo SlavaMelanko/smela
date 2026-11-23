@@ -1,3 +1,4 @@
+import { EmailSenderType } from '@smela/emails'
 import { sql } from 'drizzle-orm'
 import {
   pgTable,
@@ -7,8 +8,6 @@ import {
   uuid,
   varchar
 } from 'drizzle-orm/pg-core'
-
-import { EmailSenderType } from '@/services/email'
 
 import { createPgEnum } from '../utils'
 
