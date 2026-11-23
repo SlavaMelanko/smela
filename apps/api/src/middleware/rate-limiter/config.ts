@@ -31,7 +31,7 @@ export interface RateLimiterConfig {
 
   /**
    * Function to generate unique keys for rate limiting.
-   * @default getClientIp - extracts client IP from request headers
+   * @default client IP from `getClientIp`, or `'unknown-ip'` when unavailable
    */
   keyGenerator?: (c: Context) => string
 

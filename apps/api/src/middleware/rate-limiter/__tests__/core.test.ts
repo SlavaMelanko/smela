@@ -114,9 +114,7 @@ describe('createRateLimiter', () => {
       })
     )
 
-    const headers = { 'X-Forwarded-For': '192.168.1.1' }
-
-    expect(await sendRequests(3, headers)).toEqual([
+    expect(await sendRequests(3)).toEqual([
       HttpStatus.OK,
       HttpStatus.OK,
       HttpStatus.TOO_MANY_REQUESTS

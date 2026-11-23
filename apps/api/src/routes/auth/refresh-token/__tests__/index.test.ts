@@ -84,14 +84,13 @@ describe('auth /refresh-token', () => {
     it('passes device info from request headers to use case', async () => {
       const res = await post(app, REFRESH_TOKEN_URL, undefined, {
         ...cookieHeader,
-        'x-forwarded-for': '192.168.1.1',
         'user-agent': 'Mozilla/5.0 (Test)'
       })
 
       expect(res.status).toBe(HttpStatus.OK)
       expect(mockRefreshAuthTokens).toHaveBeenCalledWith(
         { refreshToken: REFRESH_TOKEN },
-        { ipAddress: '192.168.1.1', userAgent: 'Mozilla/5.0 (Test)' }
+        { ipAddress: null, userAgent: 'Mozilla/5.0 (Test)' }
       )
     })
 

@@ -32,6 +32,10 @@ export const networkEnvVars = (nodeEnv?: string) => {
           )
       : z.string().optional(),
 
+    // Reverse proxies in front of the API (load balancer, CDN). Only their
+    // X-Forwarded-For entries are trusted to identify the client IP
+    TRUSTED_PROXY_COUNT: z.coerce.number().int().min(0).default(0),
+
     // Base URLs
     BE_BASE_URL: z.url().default('http://localhost:3000'),
     FE_USER_URL: z.url().default('http://localhost:5173'),

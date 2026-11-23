@@ -7,8 +7,8 @@ multiple configurations, IP detection, and environment-aware defaults.
 
 - 🚦 **Flexible Rate Limiting**: Configure limits, windows, and behaviors per
   endpoint
-- 🌍 **Smart IP Detection**: Supports X-Forwarded-For, X-Real-IP, and
-  CF-Connecting-IP headers
+- 🌍 **Spoof-Resistant IP Detection**: Uses the socket address, and trusts
+  `X-Forwarded-For` only through a configured number of proxies
 - 🎯 **Predefined Presets**: Ready-to-use configurations for common scenarios
 - 🧪 **Test-Friendly**: High limits in development/test environments
 - 📊 **Standard Headers**: RFC-compliant rate limit headers
@@ -101,7 +101,7 @@ const advancedLimiter = createRateLimiter({
   keyGenerator: c => {
     const userId = c.get('userId')
 
-    return userId ? `user:${userId}` : getClientIp(c)
+    return userId ? `user:${userId}` : (getClientIp(c) ?? 'unknown-ip')
   },
 
   // Skip rate limiting for certain conditions
@@ -125,20 +125,23 @@ const advancedLimiter = createRateLimiter({
 | `limit`        | `number`                  | `100` (prod), `1000` (dev/test)                | Max requests per window                   |
 | `message`      | `string`                  | `'Too many requests, please try again later.'` | Error message                             |
 | `statusCode`   | `StatusCode`              | `429`                                          | HTTP status code for rate limit responses |
-| `keyGenerator` | `(c: Context) => string`  | `getClientIp`                                  | Function to generate rate limit keys      |
+| `keyGenerator` | `(c: Context) => string`  | client IP or `'unknown-ip'`                    | Function to generate rate limit keys      |
 | `skip`         | `(c: Context) => boolean` | `undefined`                                    | Function to skip rate limiting            |
 
 ## IP Detection
 
-The middleware automatically detects client IPs from various headers:
+The default key is the client IP from `getClientIp` (`@/net/http`):
 
-1. **X-Forwarded-For** (takes first IP if multiple)
-2. **X-Real-IP**
-3. **CF-Connecting-IP** (Cloudflare)
-4. **Fallback**: `'unknown-ip'`
+- `TRUSTED_PROXY_COUNT=0` (default): the socket address. Client headers are
+  ignored, so `X-Forwarded-For` can't be spoofed to bypass limits
+- `TRUSTED_PROXY_COUNT=N`: the N-th `X-Forwarded-For` entry from the right. Each
+  proxy appends the address it received the request from, so entries further
+  left are client-supplied. Set N to the number of proxies in front of the API
+  (load balancer, CDN such as Cloudflare)
+- Fallback: `'unknown-ip'`
 
 ```typescript
-import { getClientIp } from '@/middleware/rate-limiter'
+import { getClientIp } from '@/net/http'
 
 app.use('*', (c, next) => {
   const clientIp = getClientIp(c)
@@ -207,7 +210,7 @@ const userRateLimiter = createRateLimiter({
   keyGenerator: c => {
     const userId = c.get('userId')
 
-    return userId || getClientIp(c)
+    return userId || getClientIp(c) || 'unknown-ip'
   }
 })
 
@@ -223,7 +226,7 @@ const apiKeyLimiter = createRateLimiter({
   keyGenerator: c => {
     const apiKey = c.req.header('X-API-Key')
 
-    return apiKey ? `api:${apiKey}` : getClientIp(c)
+    return apiKey ? `api:${apiKey}` : (getClientIp(c) ?? 'unknown-ip')
   }
 })
 

@@ -1,12 +1,13 @@
-import type { MiddlewareHandler } from 'hono'
+import type { Context, MiddlewareHandler } from 'hono'
 
 import { rateLimiter } from 'hono-rate-limiter'
 
 import { isDevOrTestEnv } from '@/env'
+import { getClientIp } from '@/net/http'
 
 import type { RateLimiterConfig } from './config'
 
-import { getClientIp } from './utils'
+const getClientIpKey = (c: Context) => getClientIp(c) ?? 'unknown-ip'
 
 /**
  * Creates a rate limiter middleware with the specified configuration.
@@ -22,7 +23,7 @@ export const createRateLimiter = (
     limit = config.limit ?? (isDevOrTestEnv() ? 1_000 : 100),
     message = 'Too many requests, please try again later.',
     statusCode = 429,
-    keyGenerator = getClientIp,
+    keyGenerator = getClientIpKey,
     skip
   } = config
 

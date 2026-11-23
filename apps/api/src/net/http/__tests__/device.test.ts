@@ -1,69 +1,37 @@
-import type { Context } from 'hono'
-
 import { describe, expect, test } from 'bun:test'
+import { Hono } from 'hono'
+
+import type { DeviceInfo } from '../device'
 
 import { getDeviceInfo } from '../device'
 
+const app = new Hono().get('/device', c => c.json(getDeviceInfo(c)))
+
+const requestDeviceInfo = async (headers?: Record<string, string>) => {
+  const res = await app.request('/device', { headers })
+
+  return (await res.json()) as DeviceInfo
+}
+
 describe('getDeviceInfo', () => {
-  test('extracts IP from x-forwarded-for header', () => {
-    const mockContext = {
-      req: {
-        header: (name: string) => {
-          if (name === 'x-forwarded-for') {
-            return '192.168.1.1, 10.0.0.1'
-          }
-
-          if (name === 'user-agent') {
-            return 'Mozilla/5.0 Test Browser'
-          }
-
-          return undefined
-        }
-      }
-    } as Context
-
-    const result = getDeviceInfo(mockContext)
-
-    expect(result).toEqual({
-      ipAddress: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 Test Browser'
+  test('extracts trimmed user agent', async () => {
+    const result = await requestDeviceInfo({
+      'user-agent': ' Mozilla/5.0 Test Browser '
     })
+
+    expect(result.userAgent).toBe('Mozilla/5.0 Test Browser')
   })
 
-  test('falls back to x-real-ip when x-forwarded-for is missing', () => {
-    const mockContext = {
-      req: {
-        header: (name: string) => {
-          if (name === 'x-real-ip') {
-            return '203.0.113.1'
-          }
-          if (name === 'user-agent') {
-            return 'Safari/537.36'
-          }
-
-          return undefined
-        }
-      }
-    } as Context
-
-    const result = getDeviceInfo(mockContext)
-
-    expect(result).toEqual({
-      ipAddress: '203.0.113.1',
-      userAgent: 'Safari/537.36'
+  test('ignores X-Forwarded-For without trusted proxies', async () => {
+    const result = await requestDeviceInfo({
+      'x-forwarded-for': '192.168.1.1'
     })
+
+    expect(result.ipAddress).toBeNull()
   })
 
-  test('returns null values when headers are missing', () => {
-    const mockContext = {
-      req: {
-        header: () => undefined
-      }
-    } as unknown as Context
-
-    const result = getDeviceInfo(mockContext)
-
-    expect(result).toEqual({
+  test('returns null values when headers are missing', async () => {
+    expect(await requestDeviceInfo()).toEqual({
       ipAddress: null,
       userAgent: null
     })

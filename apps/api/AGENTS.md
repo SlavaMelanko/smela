@@ -74,6 +74,10 @@ Security decisions that aren't obvious from the code:
   webhooks. Query and param schemas intentionally omit `.strict()`.
 - **Rate limits**: 5 auth attempts/15min (production), 100 requests/15min
   general. Request size caps: 10KB auth, 100KB general, 5MB uploads.
+- **Client IP**: always via `getClientIp` (`src/net/http`), never raw headers.
+  It uses the socket address unless `TRUSTED_PROXY_COUNT` is set; then it takes
+  the N-th `X-Forwarded-For` entry from the right. Set it to the number of
+  proxies in front of the API, or rate limits share one bucket per proxy.
 
 CSP, HSTS, and other security headers are configured per environment; CAPTCHA
 (reCAPTCHA v2 invisible) guards auth endpoints.
