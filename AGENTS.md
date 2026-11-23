@@ -71,6 +71,16 @@ comments. When a comment is necessary:
   const pool = createConnectionPool()
   ```
 
+### Web Platform
+
+These rules apply with or without the optional
+[Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance)
+plugin. If it's installed, its suggestions must follow them.
+
+- This project's Baseline target is Baseline Widely available.
+- For dialogs, popovers, and menus, keep Radix/shadcn primitives in
+  `packages/ui`; don't replace them with native equivalents.
+
 ## Dev Notes
 
 - Keep the React version in sync across `packages/ui`, `packages/emails`,
