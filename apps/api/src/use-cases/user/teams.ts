@@ -25,7 +25,7 @@ export const createTeam = async (userId: string, input: CreateTeamInput) => {
       tx
     )
 
-    await teamRepo.setMembershipPermissions(
+    await teamRepo.grantInitialMembershipPermissions(
       membership.id,
       getMemberFullPermissions(),
       tx

@@ -75,7 +75,11 @@ export const inviteAdmin = async (
       tx
     )
 
-    await rbacRepo.setUserPermissions(newAdmin.id, admin.permissions, tx)
+    await rbacRepo.grantInitialUserPermissions(
+      newAdmin.id,
+      admin.permissions,
+      tx
+    )
 
     const token = await issueInviteToken(
       newAdmin.id,
