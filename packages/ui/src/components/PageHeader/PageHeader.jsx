@@ -1,3 +1,4 @@
+import { CopyButton } from '@ui/components/buttons'
 import { Link } from '@ui/components/links'
 import { EmailLink } from '@ui/components/links/EmailLink'
 import { SvgWrapper } from '@ui/components/svg'
@@ -40,16 +41,19 @@ export const PageHeaderWebsite = ({ url }) => {
   }
 
   return (
-    <Link
-      to={url}
-      size='sm'
-      underline='none'
-      openInNewTab
-      className='inline-flex items-center gap-1'
-    >
-      <Globe className='size-3.5' />
-      <span>{url}</span>
-    </Link>
+    <div className='group flex items-center gap-1'>
+      <Link
+        to={url}
+        size='sm'
+        underline='none'
+        openInNewTab
+        className='inline-flex items-center gap-1'
+      >
+        <Globe className='size-3.5' />
+        <span>{url}</span>
+      </Link>
+      <CopyButton value={url} />
+    </div>
   )
 }
 
@@ -58,5 +62,10 @@ export const PageHeaderEmail = ({ email }) => {
     return null
   }
 
-  return <EmailLink email={email} size='sm' underline='none' />
+  return (
+    <div className='group flex items-center gap-1'>
+      <EmailLink email={email} size='sm' underline='none' />
+      <CopyButton value={email} />
+    </div>
+  )
 }
