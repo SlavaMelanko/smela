@@ -22,7 +22,14 @@ export const CopyButton = ({ value, className }) => {
         className
       )}
     >
-      <Icon className={cn('size-4', copied && 'text-success')} />
+      <Icon
+        className={cn(
+          'size-4',
+          copied
+            ? 'text-success'
+            : 'text-muted-foreground group-hover/button:text-foreground'
+        )}
+      />
     </Button>
   )
 }
