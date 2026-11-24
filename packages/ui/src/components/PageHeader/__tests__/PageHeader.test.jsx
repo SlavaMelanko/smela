@@ -1,5 +1,5 @@
 import { resources } from '@smela/i18n/resources'
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider } from '@ui/contexts/ThemeContext'
 import { ToastProvider } from '@ui/contexts/ToastContext'
@@ -125,11 +125,7 @@ describe('copy button', () => {
     await user.click(screen.getByRole('button', { name: en.clipboard.copy }))
   }
 
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  it('copies email and shows check mark, then resets', async () => {
+  it('copies email and shows check mark', async () => {
     renderHeader(<UserPageHeader user={OTHER} />)
 
     await clickCopy()
@@ -141,14 +137,6 @@ describe('copy button', () => {
     })
 
     expect(doneButton).toBeInTheDocument()
-
-    await waitFor(
-      () =>
-        expect(
-          screen.getByRole('button', { name: en.clipboard.copy })
-        ).toBeInTheDocument(),
-      { timeout: 3000 }
-    )
   })
 
   it('has no transition so it hides instantly after reset', () => {

@@ -41,7 +41,7 @@ export const PageHeaderWebsite = ({ url }) => {
   }
 
   return (
-    <div className='group flex items-center gap-1'>
+    <div className='group/copy flex items-center gap-1'>
       <Link
         to={url}
         size='sm'
@@ -63,7 +63,7 @@ export const PageHeaderEmail = ({ email }) => {
   }
 
   return (
-    <div className='group flex items-center gap-1'>
+    <div className='group/copy flex items-center gap-1'>
       <EmailLink email={email} size='sm' underline='none' />
       <CopyButton value={email} />
     </div>
