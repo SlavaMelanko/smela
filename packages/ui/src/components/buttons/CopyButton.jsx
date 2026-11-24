@@ -17,7 +17,7 @@ export const CopyButton = ({ value, className }) => {
       onClick={() => copy(value)}
       aria-label={t(copied ? 'clipboard.success' : 'clipboard.copy')}
       className={cn(
-        'size-6 border-0 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100',
+        'size-6 border-0 transition-none focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100',
         copied && 'opacity-100!',
         className
       )}
