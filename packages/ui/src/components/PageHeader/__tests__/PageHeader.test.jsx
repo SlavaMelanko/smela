@@ -151,6 +151,15 @@ describe('copy button', () => {
     )
   })
 
+  it('has no transition so it hides instantly after reset', () => {
+    renderHeader(<UserPageHeader user={OTHER} />)
+
+    // jsdom has no CSS engine, so assert the class that disables the fade-out
+    expect(screen.getByRole('button', { name: en.clipboard.copy })).toHaveClass(
+      'transition-none'
+    )
+  })
+
   it('copies team website url', async () => {
     renderHeader(
       <TeamPageHeader id='t1' name='Acme' website='https://acme.com' />
