@@ -116,6 +116,61 @@ describe('PageHeader', () => {
   })
 })
 
+describe('copy button', () => {
+  const clickCopy = async () => {
+    const user = userEvent.setup()
+
+    vi.spyOn(navigator.clipboard, 'writeText').mockImplementation(mockWriteText)
+
+    await user.click(screen.getByRole('button', { name: en.clipboard.copy }))
+  }
+
+  it('copies email and shows check mark', async () => {
+    renderHeader(<UserPageHeader user={OTHER} />)
+
+    await clickCopy()
+
+    expect(mockWriteText).toHaveBeenCalledWith(OTHER.email)
+
+    const doneButton = await screen.findByRole('button', {
+      name: en.clipboard.success
+    })
+
+    expect(doneButton).toBeInTheDocument()
+  })
+
+  it('has no transition so it hides instantly after reset', () => {
+    renderHeader(<UserPageHeader user={OTHER} />)
+
+    // jsdom has no CSS engine, so assert the class that disables the fade-out
+    expect(screen.getByRole('button', { name: en.clipboard.copy })).toHaveClass(
+      'transition-none'
+    )
+  })
+
+  it('copies team website url', async () => {
+    renderHeader(
+      <TeamPageHeader id='t1' name='Acme' website='https://acme.com' />
+    )
+
+    await clickCopy()
+
+    expect(mockWriteText).toHaveBeenCalledWith('https://acme.com')
+  })
+
+  it('shows error toast and keeps copy icon when clipboard fails', async () => {
+    mockWriteText.mockRejectedValue(new Error('denied'))
+    renderHeader(<UserPageHeader user={OTHER} />)
+
+    await clickCopy()
+
+    expect(await screen.findByText(en.clipboard.error)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: en.clipboard.copy })
+    ).toBeInTheDocument()
+  })
+})
+
 describe('UserPageHeader', () => {
   it('copies user ID from the menu', async () => {
     renderHeader(<UserPageHeader user={OTHER} />)

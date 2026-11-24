@@ -41,6 +41,7 @@
   },
   "changesSaved": "Changes saved successfully.",
   "clipboard": {
+    "copy": "Copy",
     "error": "Could not copy to clipboard.",
     "success": "Copied to clipboard."
   },
