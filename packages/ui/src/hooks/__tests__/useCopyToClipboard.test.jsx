@@ -1,9 +1,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { LocaleProvider } from '@ui/contexts/LocaleContext'
 import { ToastProvider } from '@ui/contexts/ToastContext'
+import i18n from 'i18next'
 
 import { useCopyToClipboard } from '../useCopyToClipboard'
 
-const wrapper = ({ children }) => <ToastProvider>{children}</ToastProvider>
+const wrapper = ({ children }) => (
+  <LocaleProvider i18n={i18n}>
+    <ToastProvider>{children}</ToastProvider>
+  </LocaleProvider>
+)
 
 describe('useCopyToClipboard', () => {
   const writeText = vi.fn()
