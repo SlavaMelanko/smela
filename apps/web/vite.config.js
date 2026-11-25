@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import babel from '@rolldown/plugin-babel'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -14,9 +15,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isProdOrStage =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
 
+// Remote builds create source maps only to upload them to Sentry. The plugin
+// deletes them after upload, so they never ship in dist/
+const uploadSourceMaps = isProdOrStage && !!process.env.SENTRY_AUTH_TOKEN
+
+const getSourcemap = () => {
+  if (!isProdOrStage) {
+    return true
+  }
+
+  return uploadSourceMaps ? 'hidden' : false
+}
+
 export default defineConfig({
   build: {
-    sourcemap: isProdOrStage ? 'hidden' : true,
+    sourcemap: getSourcemap(),
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name].[hash][extname]',
@@ -48,6 +61,11 @@ export default defineConfig({
           reasons: true,
           chunkModules: true
         }
+      }),
+    uploadSourceMaps &&
+      sentryVitePlugin({
+        sourcemaps: { filesToDeleteAfterUpload: ['./dist/**/*.map'] },
+        telemetry: false
       })
   ].filter(Boolean),
   resolve: {
