@@ -14,10 +14,42 @@ import {
 import { z } from 'zod'
 
 import type { SupportedLocale, Theme } from '@/services/email'
+import type { PermissionsInput, Resource } from '@/types'
 
 import { TOKEN_LENGTH } from '@/security/token'
 import { EmailSenderType } from '@/services/email'
-import { Resource, Role, UserStatus } from '@/types'
+import {
+  getAdminBasePermissions,
+  getMemberFullPermissions,
+  Role,
+  UserStatus
+} from '@/types'
+
+const resourcePermissions = z
+  .object({
+    view: z
+      .boolean()
+      .nullish()
+      .transform(v => v ?? false),
+    manage: z
+      .boolean()
+      .nullish()
+      .transform(v => v ?? false)
+  })
+  .optional()
+
+// Accepts only the resources present in the given preset
+const buildPermissionsSchema = (preset: PermissionsInput) =>
+  z
+    .object(
+      Object.fromEntries(
+        Object.keys(preset).map(r => [r, resourcePermissions])
+      ) as Record<Resource, typeof resourcePermissions>
+    )
+    .strict()
+    .refine(data => Object.values(data).some(v => v !== undefined), {
+      message: 'At least one resource must be specified'
+    })
 
 // Postgres returns UUIDs in lowercase, so a lowercase input compares equal to stored IDs
 const uuid = z.uuid().transform(id => id.toLowerCase())
@@ -142,30 +174,9 @@ export const rules = {
       .pipe(z.array(z.enum(Role)))
   },
 
-  permissions: (() => {
-    const resourcePermissions = z
-      .object({
-        view: z
-          .boolean()
-          .nullish()
-          .transform(v => v ?? false),
-        manage: z
-          .boolean()
-          .nullish()
-          .transform(v => v ?? false)
-      })
-      .optional()
-
-    type ResourcePermissions = typeof resourcePermissions
-
-    return z
-      .object(
-        Object.fromEntries(
-          Object.values(Resource).map(r => [r, resourcePermissions])
-        ) as Record<Resource, ResourcePermissions>
-      )
-      .refine(data => Object.values(data).some(v => v !== undefined), {
-        message: 'At least one resource must be specified'
-      })
-  })()
+  // Each schema rejects resources its holder can't have, e.g. dashboard on a team membership
+  permissions: {
+    admin: buildPermissionsSchema(getAdminBasePermissions()),
+    member: buildPermissionsSchema(getMemberFullPermissions())
+  }
 }

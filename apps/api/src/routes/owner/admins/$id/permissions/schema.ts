@@ -8,6 +8,6 @@ export const adminIdParamsSchema = z.object({
 
 export const updateAdminPermissionsBodySchema = z
   .object({
-    permissions: rules.permissions
+    permissions: rules.permissions.admin
   })
   .strict()

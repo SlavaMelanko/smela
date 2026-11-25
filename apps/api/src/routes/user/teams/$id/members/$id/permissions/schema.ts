@@ -9,6 +9,6 @@ export const memberPermissionsParamsSchema = z.object({
 
 export const updateMemberPermissionsBodySchema = z
   .object({
-    permissions: rules.permissions
+    permissions: rules.permissions.member
   })
   .strict()
