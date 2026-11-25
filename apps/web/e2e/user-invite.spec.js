@@ -379,7 +379,7 @@ test.describe.serial('User: Team Members', () => {
 
     const checkInvitePromise = waitForApiCall(page, {
       path: CHECK_INVITE_PATH,
-      method: 'GET',
+      method: 'POST',
       status: HttpStatus.GONE
     })
 

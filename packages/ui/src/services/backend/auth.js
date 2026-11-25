@@ -38,9 +38,7 @@ export const authApi = {
   },
 
   checkInvite(token) {
-    return apiClient.get(
-      `${CHECK_INVITE_PATH}?token=${encodeURIComponent(token)}`
-    )
+    return apiClient.post(CHECK_INVITE_PATH, { token })
   },
 
   acceptInvite(data) {
