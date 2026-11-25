@@ -2,6 +2,14 @@ import { z } from 'zod'
 
 import { isStagingOrProd } from './core'
 
+const ONE_DAY_SECONDS = 86400
+const THIRTY_DAYS_SECONDS = 30 * ONE_DAY_SECONDS
+
+// Production keeps users signed in longer. Shorter lifetimes elsewhere
+// make expiry and rotation easy to exercise
+const refreshTokenExpiration = (nodeEnv?: string) =>
+  nodeEnv === 'production' ? THIRTY_DAYS_SECONDS : ONE_DAY_SECONDS
+
 export const networkEnvVars = (nodeEnv?: string) => {
   const jwtSecretSchema = z.string().min(10)
 
@@ -18,7 +26,7 @@ export const networkEnvVars = (nodeEnv?: string) => {
       .number()
       .int()
       .positive()
-      .default(86400), // 24 hours
+      .default(refreshTokenExpiration(nodeEnv)),
     COOKIE_REFRESH_TOKEN_DOMAIN: z.string().optional(), // domain for cookies in production/staging
 
     // CORS: Required for staging/production, optional for dev/test

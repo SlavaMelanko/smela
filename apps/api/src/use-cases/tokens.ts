@@ -4,7 +4,6 @@ import type { InviteMetadata } from '@/security/token'
 import type { Permission } from '@/types'
 
 import { refreshTokenRepo, tokenRepo } from '@/data'
-import { env } from '@/env'
 import { AppError, ErrorCode } from '@/errors'
 import { signJwt } from '@/security/jwt'
 import {
@@ -34,9 +33,7 @@ export const createRefreshToken = async (
   const {
     token: { raw, hashed },
     expiresAt
-  } = await generateHashedToken(TokenType.RefreshToken, {
-    expirySeconds: env.COOKIE_REFRESH_TOKEN_EXPIRATION
-  })
+  } = await generateHashedToken(TokenType.RefreshToken)
 
   await refreshTokenRepo.create(
     {

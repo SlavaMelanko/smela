@@ -58,10 +58,10 @@ implementations: `/src/services/captcha/` (single provider),
 
 Security decisions that aren't obvious from the code:
 
-- **Token expiration**: access 15min (`JWT_EXPIRATION`), refresh 30 days
-  (`COOKIE_REFRESH_TOKEN_EXPIRATION`), rotated on each use with the old token
-  revoked. Short access-token life reduces attack surface per OAuth 2.0
-  guidance.
+- **Token expiration**: access 15min (`JWT_EXPIRATION`), refresh 30 days in
+  production and 24 hours elsewhere (`COOKIE_REFRESH_TOKEN_EXPIRATION`), rotated
+  on each use with the old token revoked. Short access-token life reduces attack
+  surface per OAuth 2.0 guidance.
 - **JWT secret rotation**: signing uses `JWT_SECRET`, verification falls back to
   optional `JWT_SECRET_PREVIOUS` during the grace period. Runbook:
   [README.md](README.md#-jwt-secret-rotation).
