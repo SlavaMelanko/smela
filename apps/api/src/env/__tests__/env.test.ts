@@ -161,6 +161,25 @@ describe('validateEnvVars', () => {
     expect(processExitMock).toHaveBeenCalledWith(1)
   })
 
+  test('defaults refresh token lifetime to 30 days in production only', () => {
+    const remoteEnv = {
+      ALLOWED_ORIGINS: 'https://example.com',
+      EMAIL_RESEND_API_KEY: 'test-key'
+    }
+
+    const prodEnv = validateEnvVars({
+      ...createBaseEnv('production'),
+      ...remoteEnv
+    })
+    const stagingEnv = validateEnvVars({
+      ...createBaseEnv('staging'),
+      ...remoteEnv
+    })
+
+    expect(prodEnv.COOKIE_REFRESH_TOKEN_EXPIRATION).toBe(2592000)
+    expect(stagingEnv.COOKIE_REFRESH_TOKEN_EXPIRATION).toBe(86400)
+  })
+
   test('requires EMAIL_RESEND_API_KEY in staging and production', () => {
     // Should work without EMAIL_RESEND_API_KEY in development
     const devEnv = validateEnvVars(createBaseEnv('development'))
