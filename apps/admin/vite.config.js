@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { codecovVitePlugin } from '@codecov/vite-plugin'
 import babel from '@rolldown/plugin-babel'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -14,6 +15,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isProdOrStage =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
 
+// Remote builds create source maps only to upload them to Sentry. The plugin
+// deletes them after upload, so they never ship in dist/
+const uploadSourceMaps = isProdOrStage && !!process.env.SENTRY_AUTH_TOKEN
+
 export default defineConfig({
   server: {
     port: 5175
@@ -22,7 +27,7 @@ export default defineConfig({
     port: 5175
   },
   build: {
-    sourcemap: isProdOrStage ? 'hidden' : true,
+    sourcemap: !isProdOrStage || uploadSourceMaps,
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name].[hash][extname]',
@@ -42,6 +47,11 @@ export default defineConfig({
         gzipSize: true,
         brotliSize: true,
         template: 'treemap'
+      }),
+    uploadSourceMaps &&
+      sentryVitePlugin({
+        sourcemaps: { filesToDeleteAfterUpload: ['./dist/**/*.map'] },
+        telemetry: false
       }),
     // Codecov requires its plugin to be last
     process.env.ANALYZE_BUNDLE &&
