@@ -466,15 +466,12 @@
         },
         {
           "name": "check-invite",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"token\": \"f6ba2d60ed7efb017b2d535b07a227a1d6d68e57c174a369d30612836fb1e267\",\n    \"password\": \"{{initial_password}}\"\n}\n",
+              "raw": "{\n    \"token\": \"a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12\"\n}\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -482,15 +479,9 @@
               }
             },
             "url": {
-              "raw": "{{auth_api_url}}/check-invite?token=a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12",
+              "raw": "{{auth_api_url}}/check-invite",
               "host": ["{{auth_api_url}}"],
-              "path": ["check-invite"],
-              "query": [
-                {
-                  "key": "token",
-                  "value": "a5a4ed7a48f6a1a6287dceef7969380f7010c82a6840b0a0166106ceecf0ea12"
-                }
-              ]
+              "path": ["check-invite"]
             }
           },
           "response": []

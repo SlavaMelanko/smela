@@ -162,7 +162,7 @@ test.describe.serial('User: Member Permissions', () => {
 
     const checkInvitePromise = waitForApiCall(page, {
       path: CHECK_INVITE_PATH,
-      method: 'GET',
+      method: 'POST',
       status: HttpStatus.OK
     })
 
