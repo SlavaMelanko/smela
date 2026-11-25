@@ -2,19 +2,19 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { validateQuery } from '@/middleware'
+import { validateBody } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { checkInvite } from '@/use-cases/auth/check-invite'
 
-import { checkInviteQuerySchema } from './schema'
+import { checkInviteBodySchema } from './schema'
 
 export const checkInviteRoute = new Hono<AppContext>()
 
-checkInviteRoute.get(
+checkInviteRoute.post(
   '/check-invite',
-  validateQuery(checkInviteQuerySchema),
+  validateBody(checkInviteBodySchema),
   async c => {
-    const { token } = c.req.valid('query')
+    const { token } = c.req.valid('json')
 
     const result = await checkInvite(token)
 

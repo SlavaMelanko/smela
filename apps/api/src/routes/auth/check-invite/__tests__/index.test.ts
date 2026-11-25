@@ -2,7 +2,7 @@ import type { Hono } from 'hono'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import { createTestApp, get, ModuleMocker } from '@/__tests__'
+import { createTestApp, ModuleMocker, post } from '@/__tests__'
 import { HttpStatus } from '@/net/http'
 import { InviteKind, TOKEN_LENGTH } from '@/security/token'
 
@@ -35,9 +35,9 @@ describe('auth /check-invite', () => {
     await moduleMocker.clear()
   })
 
-  describe('GET /check-invite', () => {
+  describe('POST /check-invite', () => {
     it('checks invite and return result', async () => {
-      const res = await get(app, `${CHECK_INVITE_URL}?token=${validToken}`)
+      const res = await post(app, CHECK_INVITE_URL, { token: validToken })
 
       expect(res.status).toBe(HttpStatus.OK)
 
@@ -53,7 +53,7 @@ describe('auth /check-invite', () => {
         throw new Error('Check invite failed')
       })
 
-      const res = await get(app, `${CHECK_INVITE_URL}?token=${validToken}`)
+      const res = await post(app, CHECK_INVITE_URL, { token: validToken })
 
       expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR)
       expect(mockCheckInvite).toHaveBeenCalledTimes(1)
@@ -66,10 +66,9 @@ describe('auth /check-invite', () => {
       ]
 
       for (const testCase of invalidTokens) {
-        const res = await get(
-          app,
-          `${CHECK_INVITE_URL}?token=${testCase.token}`
-        )
+        const res = await post(app, CHECK_INVITE_URL, {
+          token: testCase.token
+        })
 
         expect(res.status).toBe(HttpStatus.BAD_REQUEST)
         expect(mockCheckInvite).not.toHaveBeenCalled()
@@ -77,7 +76,17 @@ describe('auth /check-invite', () => {
     })
 
     it('rejects missing token', async () => {
-      const res = await get(app, CHECK_INVITE_URL)
+      const res = await post(app, CHECK_INVITE_URL, {})
+
+      expect(res.status).toBe(HttpStatus.BAD_REQUEST)
+      expect(mockCheckInvite).not.toHaveBeenCalled()
+    })
+
+    it('rejects unknown body fields', async () => {
+      const res = await post(app, CHECK_INVITE_URL, {
+        token: validToken,
+        extra: 'field'
+      })
 
       expect(res.status).toBe(HttpStatus.BAD_REQUEST)
       expect(mockCheckInvite).not.toHaveBeenCalled()
