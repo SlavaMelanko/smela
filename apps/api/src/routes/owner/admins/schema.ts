@@ -13,6 +13,6 @@ export const createAdminBodySchema = z
     firstName: rules.user.name,
     lastName: rules.user.name.nullish(),
     email: rules.user.email,
-    permissions: rules.permissions
+    permissions: rules.permissions.admin
   })
   .strict()

@@ -4,9 +4,9 @@ import { Resource } from '@/types'
 
 import { rules } from '../rules'
 
-describe('rules.permissions', () => {
+describe('rules.permissions.admin', () => {
   it('accepts true for both flags', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true, manage: true }
     })
 
@@ -14,7 +14,7 @@ describe('rules.permissions', () => {
   })
 
   it('accepts false for both flags', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: false, manage: false }
     })
 
@@ -22,7 +22,7 @@ describe('rules.permissions', () => {
   })
 
   it('accepts mixed true and false flags', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true, manage: false }
     })
 
@@ -30,7 +30,7 @@ describe('rules.permissions', () => {
   })
 
   it('coerces null view to false', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: null, manage: true }
     })
 
@@ -38,7 +38,7 @@ describe('rules.permissions', () => {
   })
 
   it('coerces null manage to false', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true, manage: null }
     })
 
@@ -46,7 +46,7 @@ describe('rules.permissions', () => {
   })
 
   it('coerces both null flags to false', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: null, manage: null }
     })
 
@@ -54,7 +54,7 @@ describe('rules.permissions', () => {
   })
 
   it('coerces undefined view to false', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { manage: true }
     })
 
@@ -62,7 +62,7 @@ describe('rules.permissions', () => {
   })
 
   it('coerces undefined manage to false', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true }
     })
 
@@ -70,13 +70,13 @@ describe('rules.permissions', () => {
   })
 
   it('coerces both undefined flags to false', () => {
-    const result = rules.permissions.parse({ [Resource.Users]: {} })
+    const result = rules.permissions.admin.parse({ [Resource.Users]: {} })
 
     expect(result[Resource.Users]).toEqual({ view: false, manage: false })
   })
 
   it('allows a resource to be omitted when others are present', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true, manage: false }
     })
 
@@ -84,7 +84,7 @@ describe('rules.permissions', () => {
   })
 
   it('allows partial coverage across multiple resources', () => {
-    const result = rules.permissions.parse({
+    const result = rules.permissions.admin.parse({
       [Resource.Users]: { view: true, manage: false },
       [Resource.Teams]: { view: null }
     })
@@ -95,12 +95,12 @@ describe('rules.permissions', () => {
   })
 
   it('rejects an empty object with no resources', () => {
-    expect(() => rules.permissions.parse({})).toThrow()
+    expect(() => rules.permissions.admin.parse({})).toThrow()
   })
 
   it('rejects a non-boolean view value', () => {
     expect(() =>
-      rules.permissions.parse({
+      rules.permissions.admin.parse({
         [Resource.Users]: { view: 'yes', manage: true }
       })
     ).toThrow()
@@ -108,14 +108,25 @@ describe('rules.permissions', () => {
 
   it('rejects a non-boolean manage value', () => {
     expect(() =>
-      rules.permissions.parse({ [Resource.Users]: { view: true, manage: 1 } })
+      rules.permissions.admin.parse({
+        [Resource.Users]: { view: true, manage: 1 }
+      })
     ).toThrow()
   })
 
   it('rejects a non-object resource value', () => {
     expect(() =>
-      rules.permissions.parse({ [Resource.Users]: 'read' })
+      rules.permissions.admin.parse({ [Resource.Users]: 'read' })
     ).toThrow()
+  })
+
+  it('rejects the admins resource outside admin scope', () => {
+    const result = rules.permissions.admin.safeParse({
+      [Resource.Users]: { view: true },
+      [Resource.Admins]: { view: true }
+    })
+
+    expect(result.success).toBe(false)
   })
 })
 
@@ -133,6 +144,34 @@ describe('rules.user.nickname', () => {
   it('accepts the minimum and maximum lengths', () => {
     expect(rules.user.nickname.parse('A')).toBe('A')
     expect(rules.user.nickname.parse('a'.repeat(50))).toHaveLength(50)
+  })
+})
+
+describe('rules.permissions.member', () => {
+  it('accepts team permissions', () => {
+    const result = rules.permissions.member.parse({
+      [Resource.Teams]: { view: true, manage: true }
+    })
+
+    expect(result[Resource.Teams]).toEqual({ view: true, manage: true })
+  })
+
+  it.each([
+    Resource.Admins,
+    Resource.Dashboard,
+    Resource.System,
+    Resource.Users
+  ])('rejects %s outside team scope', resource => {
+    const result = rules.permissions.member.safeParse({
+      [Resource.Teams]: { view: true },
+      [resource]: { view: true }
+    })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects an empty object', () => {
+    expect(rules.permissions.member.safeParse({}).success).toBe(false)
   })
 })
 

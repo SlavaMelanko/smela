@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
 import type { AppContext } from '@/context'
 
-import { TEST_TEAM_ID, testUuids } from '@/__tests__'
+import { ModuleMocker, TEST_TEAM_ID, testUuids } from '@/__tests__'
 import { ErrorCode } from '@/errors'
 import { onError } from '@/handlers'
 import HttpStatus from '@/net/http/status'
@@ -19,17 +19,6 @@ const mockTeamRepoFindMember = mock()
 const mockResolveMembershipPermissionList = mock(async () => [
   Permission.ViewTeams
 ])
-
-void mock.module('@/data', () => ({
-  teamRepo: {
-    find: mockTeamRepoFind,
-    findMember: mockTeamRepoFindMember
-  }
-}))
-
-void mock.module('@/use-cases/resolve-permissions', () => ({
-  resolveMembershipPermissionList: mockResolveMembershipPermissionList
-}))
 
 // Claims grant both permissions so admins pass, while proving regular users
 // get team permissions from their membership instead
@@ -89,7 +78,20 @@ const makeApp = (role: Role, userId: string) => {
 }
 
 describe('requireTeamAccess', () => {
-  beforeEach(() => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  beforeEach(async () => {
+    await moduleMocker.mock('@/data', () => ({
+      teamRepo: {
+        find: mockTeamRepoFind,
+        findMember: mockTeamRepoFindMember
+      }
+    }))
+
+    await moduleMocker.mock('@/use-cases/resolve-permissions', () => ({
+      resolveMembershipPermissionList: mockResolveMembershipPermissionList
+    }))
+
     mockTeamRepoFind.mockClear()
     mockTeamRepoFindMember.mockClear()
     mockResolveMembershipPermissionList.mockClear()
@@ -100,6 +102,10 @@ describe('requireTeamAccess', () => {
       name: 'Test Team',
       memberCount: 5
     }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
   })
 
   it('blocks all users when team does not exist', async () => {

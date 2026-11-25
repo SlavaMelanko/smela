@@ -10,6 +10,6 @@ export const inviteMemberBodySchema = z
   .object({
     email: rules.user.email,
     position: rules.team.position.optional(),
-    permissions: rules.permissions
+    permissions: rules.permissions.member
   })
   .strict()
