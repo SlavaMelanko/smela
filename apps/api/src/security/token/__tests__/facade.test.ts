@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'bun:test'
 
 import { ModuleMocker } from '@/__tests__'
+import { env } from '@/env'
 import { TOKEN_LENGTH } from '@/security/token'
 import { seconds } from '@/utils/chrono'
 
 import { generateHashedToken, generateToken } from '../facade'
 import {
   EMAIL_VERIFICATION_EXPIRY_SECONDS,
-  PASSWORD_RESET_EXPIRY_SECONDS,
-  REFRESH_TOKEN_EXPIRY_SECONDS
+  PASSWORD_RESET_EXPIRY_SECONDS
 } from '../options'
 import { TokenType } from '../types'
 
@@ -136,10 +136,11 @@ describe('facade', () => {
       expect(/^[0-9a-f]+$/.test(result.token.hashed)).toBe(true)
 
       const expectedMinExpiry = new Date(
-        beforeGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS)
+        beforeGeneration.getTime() +
+          seconds(env.COOKIE_REFRESH_TOKEN_EXPIRATION)
       )
       const expectedMaxExpiry = new Date(
-        afterGeneration.getTime() + seconds(REFRESH_TOKEN_EXPIRY_SECONDS)
+        afterGeneration.getTime() + seconds(env.COOKIE_REFRESH_TOKEN_EXPIRATION)
       )
 
       expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(

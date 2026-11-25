@@ -58,7 +58,7 @@ implementations: `/src/services/captcha/` (single provider),
 
 Security decisions that aren't obvious from the code:
 
-- **Token expiration**: access 15min (`JWT_EXPIRATION`), refresh 30 days
+- **Token expiration**: access 15min (`JWT_EXPIRATION`), refresh 24 hours
   (`COOKIE_REFRESH_TOKEN_EXPIRATION`), rotated on each use with the old token
   revoked. Short access-token life reduces attack surface per OAuth 2.0
   guidance.
