@@ -19,17 +19,9 @@ const isProdOrStage =
 // deletes them after upload, so they never ship in dist/
 const uploadSourceMaps = isProdOrStage && !!process.env.SENTRY_AUTH_TOKEN
 
-const getSourcemap = () => {
-  if (!isProdOrStage) {
-    return true
-  }
-
-  return uploadSourceMaps ? 'hidden' : false
-}
-
 export default defineConfig({
   build: {
-    sourcemap: getSourcemap(),
+    sourcemap: !isProdOrStage || uploadSourceMaps,
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name].[hash][extname]',
