@@ -726,7 +726,7 @@ test.describe('User: Pending account invitations', () => {
     // Issuing the second invite token invalidates the first token
     const deprecatedPromise = waitForApiCall(page, {
       path: CHECK_INVITE_PATH,
-      method: 'GET',
+      method: 'POST',
       status: HttpStatus.GONE
     })
 
@@ -737,7 +737,7 @@ test.describe('User: Pending account invitations', () => {
     // Open the latest token link and set the account's password
     const checkPromise = waitForApiCall(page, {
       path: CHECK_INVITE_PATH,
-      method: 'GET',
+      method: 'POST',
       status: HttpStatus.OK
     })
 
