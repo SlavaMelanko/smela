@@ -99,3 +99,11 @@ export const validateOneTimeToken = async (token: string, type: TokenType) => {
 
   return TokenValidator.validate(tokenRecord, type)
 }
+
+export const consumeOneTimeToken = async (tokenId: number, tx: Database) => {
+  const isConsumed = await tokenRepo.markAsUsed(tokenId, tx)
+
+  if (!isConsumed) {
+    throw new AppError(ErrorCode.TokenAlreadyUsed)
+  }
+}

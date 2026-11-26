@@ -1,11 +1,15 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { db, tokenRepo, userRepo } from '@/data'
-import { TokenStatus, TokenType } from '@/security/token'
+import { db, userRepo } from '@/data'
+import { TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
-import { createAuthTokens, validateOneTimeToken } from '../tokens'
+import {
+  consumeOneTimeToken,
+  createAuthTokens,
+  validateOneTimeToken
+} from '../tokens'
 
 export interface VerifyEmailInput {
   token: string
@@ -21,15 +25,7 @@ export const verifyEmail = async (
   )
 
   const updatedUser = await db.transaction(async tx => {
-    // Mark token as used
-    await tokenRepo.update(
-      validatedToken.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: new Date()
-      },
-      tx
-    )
+    await consumeOneTimeToken(validatedToken.id, tx)
 
     // Update user status
     return userRepo.update(

@@ -3,7 +3,7 @@ import {
   deprecateOldTokens,
   deprecateTeamInviteTokens,
   issueToken,
-  updateToken
+  markTokenAsUsed
 } from './mutations'
 import { findByTokenHash } from './queries'
 
@@ -15,5 +15,5 @@ export const tokenRepo = {
   deprecate: deprecateOldTokens,
   deprecateTeamInvites: deprecateTeamInviteTokens,
   findByHash: findByTokenHash,
-  update: updateToken
+  markAsUsed: markTokenAsUsed
 }

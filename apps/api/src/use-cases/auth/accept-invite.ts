@@ -2,15 +2,16 @@ import type { Database } from '@/data'
 import type { DeviceInfo } from '@/net/http/device'
 import type { InviteMetadata } from '@/security/token'
 
-import { authRepo, db, teamRepo, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, teamRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
-import { InviteKind, TokenStatus, TokenType } from '@/security/token'
+import { InviteKind, TokenType } from '@/security/token'
 import { UserStatus } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeams } from '../resolve-team'
 import {
+  consumeOneTimeToken,
   createAuthTokens,
   readInviteMetadata,
   validateOneTimeToken
@@ -55,15 +56,7 @@ export const acceptInvite = async (
   const metadata = readInviteMetadata(validatedToken.metadata)
 
   const user = await db.transaction(async tx => {
-    // Mark token as used
-    await tokenRepo.update(
-      validatedToken.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: new Date()
-      },
-      tx
-    )
+    await consumeOneTimeToken(validatedToken.id, tx)
 
     // Update user's password
     const passwordHash = await hashPassword(password)

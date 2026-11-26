@@ -78,7 +78,7 @@ describe('resetPassword', () => {
 
     mockTokenRepo = {
       findByHash: mock(async () => mockTokenRecord),
-      update: mock(async () => {})
+      markAsUsed: mock(async () => true)
     } satisfies Partial<typeof tokenRepo>
     mockAuthRepo = {
       update: mock(async () => {})
@@ -132,7 +132,7 @@ describe('resetPassword', () => {
     expect(error).toMatchObject({ name: 'AppError', code })
 
     expect(mockTransaction.transaction).not.toHaveBeenCalled()
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockAuthRepo.update).not.toHaveBeenCalled()
   }
 
@@ -149,15 +149,11 @@ describe('resetPassword', () => {
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-    expect(mockTokenRepo.update).toHaveBeenCalledWith(
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledWith(
       mockTokenRecord.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: expect.any(Date)
-      },
       {}
     )
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
 
     expect(mockAuthRepo.update).toHaveBeenCalledWith(
       mockTokenRecord.userId,
@@ -283,8 +279,20 @@ describe('resetPassword', () => {
     await expectRejectsWithoutUpdates(ErrorCode.TokenTypeMismatch)
   })
 
+  it('throws TokenAlreadyUsed when a concurrent request used the token first', async () => {
+    mockTokenRepo.markAsUsed.mockImplementation(async () => false)
+
+    const error = await resetPassword(
+      { token: mockTokenString, password: mockPassword },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ code: ErrorCode.TokenAlreadyUsed })
+    expect(mockAuthRepo.update).not.toHaveBeenCalled()
+  })
+
   it('throws without updating password when marking token as used fails', async () => {
-    mockTokenRepo.update.mockImplementation(async () => {
+    mockTokenRepo.markAsUsed.mockImplementation(async () => {
       throw new Error('Database connection failed')
     })
 
@@ -296,7 +304,7 @@ describe('resetPassword', () => {
     expect(error).toMatchObject({ message: 'Database connection failed' })
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockAuthRepo.update).not.toHaveBeenCalled()
   })
 
@@ -313,7 +321,7 @@ describe('resetPassword', () => {
     expect(error).toMatchObject({ message: 'Password update failed' })
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
   })
 

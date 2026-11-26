@@ -3,7 +3,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm'
 import { TokenStatus, TokenType } from '@/security/token'
 
 import type { Database } from '../../clients'
-import type { CreateTokenInput, UpdateTokenInput } from './types'
+import type { CreateTokenInput } from './types'
 
 import { db } from '../../clients'
 import { tokensTable } from '../../schema'
@@ -80,15 +80,24 @@ export const issueToken = async (
   return tx ? run(tx) : db.transaction(run)
 }
 
-export const updateToken = async (
+// Conditional on Pending, so of two concurrent requests with the same token
+// only one gets the row back
+export const markTokenAsUsed = async (
   tokenId: number,
-  updates: UpdateTokenInput,
   tx?: Database
-): Promise<void> => {
+): Promise<boolean> => {
   const executor = tx || db
 
-  await executor
+  const updated = await executor
     .update(tokensTable)
-    .set(updates)
-    .where(eq(tokensTable.id, tokenId))
+    .set({ status: TokenStatus.Used, usedAt: new Date() })
+    .where(
+      and(
+        eq(tokensTable.id, tokenId),
+        eq(tokensTable.status, TokenStatus.Pending)
+      )
+    )
+    .returning({ id: tokensTable.id })
+
+  return updated.length > 0
 }
