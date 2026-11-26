@@ -58,7 +58,8 @@ Two-secret pattern: signing always uses `JWT_SECRET`; verification tries
 `JWT_SECRET` first, then falls back to the optional `JWT_SECRET_PREVIOUS`.
 Recommended rotation period: 90 days (2-3x longest token lifetime).
 
-1. Generate a new secret and set it as `JWT_SECRET`
+1. Generate a new secret (at least 32 characters, e.g.
+   `openssl rand -base64 48`) and set it as `JWT_SECRET`
 2. Move the old secret to `JWT_SECRET_PREVIOUS`
 3. Deploy changes
 4. Wait the grace period — 37 days (30-day max refresh token lifetime + 7-day

@@ -23,7 +23,7 @@ describe('validateEnvVars', () => {
     POSTGRES_HOST: 'localhost',
     POSTGRES_PORT: '5432',
     POSTGRES_DB: 'test_db',
-    JWT_SECRET: 'test-jwt-secret-key-min-10-chars',
+    JWT_SECRET: 'test-jwt-secret-key-min-32-chars',
     CAPTCHA_SECRET_KEY: '1234567890123456789012345678901234567890',
     GOOGLE_CLIENT_ID: 'test-google-client-id',
     GOOGLE_CLIENT_SECRET: 'test-google-client-secret',
@@ -257,6 +257,11 @@ describe('validateEnvVars', () => {
   test.each([
     { field: 'JWT_SECRET', value: undefined, desc: 'missing JWT secret' },
     { field: 'JWT_SECRET', value: 'short', desc: 'JWT secret too short' },
+    {
+      field: 'JWT_SECRET',
+      value: 'a'.repeat(31),
+      desc: 'JWT secret below 256 bits'
+    },
     { field: 'NODE_ENV', value: 'invalid-env', desc: 'invalid NODE_ENV' },
     { field: 'LOG_LEVEL', value: 'invalid-level', desc: 'invalid LOG_LEVEL' },
     {
@@ -278,10 +283,10 @@ describe('validateEnvVars', () => {
     processExitMock.mockClear()
     const envWithPrevious = validateEnvVars({
       ...createBaseEnv(),
-      JWT_SECRET_PREVIOUS: 'previous-secret-key-min-10-chars'
+      JWT_SECRET_PREVIOUS: 'previous-secret-key-min-32-chars'
     })
     expect(envWithPrevious.JWT_SECRET_PREVIOUS).toBe(
-      'previous-secret-key-min-10-chars'
+      'previous-secret-key-min-32-chars'
     )
     expect(processExitMock).not.toHaveBeenCalled()
 

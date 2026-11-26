@@ -11,7 +11,9 @@ const refreshTokenExpiration = (nodeEnv?: string) =>
   nodeEnv === 'production' ? THIRTY_DAYS_SECONDS : ONE_DAY_SECONDS
 
 export const networkEnvVars = (nodeEnv?: string) => {
-  const jwtSecretSchema = z.string().min(10)
+  // HMAC keys must be at least as long as the hash output (RFC 7518 §3.2),
+  // otherwise a single issued token lets attackers brute-force the secret offline
+  const jwtSecretSchema = z.string().min(32)
 
   return {
     // JWT configuration
