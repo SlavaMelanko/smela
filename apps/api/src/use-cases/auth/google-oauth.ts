@@ -1,6 +1,6 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, rbacRepo, userRepo } from '@/data'
+import { authRepo, db, rbacRepo, refreshTokenRepo, userRepo } from '@/data'
 import { exchangeCodeForProfile } from '@/services/google'
 import { AuthProvider, getUserDefaultPermissions, UserStatus } from '@/types'
 
@@ -61,8 +61,12 @@ const findOrCreateGoogleUser = async (input: GoogleOAuthInput) => {
       tx
     )
 
-    // Google account implies email is verified
+    // Google account implies email is verified. A New account never proved it
+    // owns the email, so its password and sessions may belong to someone who
+    // registered it first. Drop them before Google takes over the account
     if (user.status === UserStatus.New) {
+      await authRepo.deleteByProvider(user.id, AuthProvider.Local, tx)
+      await refreshTokenRepo.revokeByUserId(user.id, undefined, tx)
       user = await userRepo.update(user.id, { status: UserStatus.Verified }, tx)
     }
 

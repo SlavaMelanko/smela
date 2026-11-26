@@ -78,7 +78,8 @@ describe('google-oauth', () => {
 
     mockAuthRepo = {
       findByProvider: mock(async () => mockAuthRecord),
-      create: mock(async () => {})
+      create: mock(async () => {}),
+      deleteByProvider: mock(async () => {})
     } satisfies Partial<typeof authRepo>
 
     mockRbacRepo = {
@@ -86,7 +87,8 @@ describe('google-oauth', () => {
     } satisfies Partial<typeof rbacRepo>
 
     mockRefreshTokenRepo = {
-      create: mock(async () => 1)
+      create: mock(async () => 1),
+      revokeByUserId: mock(async () => {})
     } satisfies Partial<typeof refreshTokenRepo>
 
     mockTeamRepo = {
@@ -300,7 +302,22 @@ describe('google-oauth', () => {
       )
     })
 
-    it('does not update status for already-verified user', async () => {
+    it('drops the password and sessions of a New account', async () => {
+      await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
+
+      expect(mockAuthRepo.deleteByProvider).toHaveBeenCalledWith(
+        existingEmailUser.id,
+        AuthProvider.Local,
+        expect.anything()
+      )
+      expect(mockRefreshTokenRepo.revokeByUserId).toHaveBeenCalledWith(
+        existingEmailUser.id,
+        undefined,
+        expect.anything()
+      )
+    })
+
+    it('keeps password and sessions of an already-verified user', async () => {
       mockUserRepo.findByEmail.mockImplementation(async () => ({
         ...existingEmailUser,
         status: UserStatus.Verified
@@ -309,6 +326,8 @@ describe('google-oauth', () => {
       await logInOrSignUpWithGoogle(mockGoogleProfile, mockDeviceInfo)
 
       expect(mockUserRepo.update).not.toHaveBeenCalled()
+      expect(mockAuthRepo.deleteByProvider).not.toHaveBeenCalled()
+      expect(mockRefreshTokenRepo.revokeByUserId).not.toHaveBeenCalled()
     })
 
     it('keeps existing permissions', async () => {
