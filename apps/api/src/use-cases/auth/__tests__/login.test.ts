@@ -212,7 +212,7 @@ describe('logInWithEmail', () => {
     })
   })
 
-  it('throws SocialAuthOnly when auth record has no password hash', async () => {
+  it('throws InvalidCredentials when auth record has no password hash', async () => {
     mockAuthRepo.findById.mockImplementation(async () => ({
       ...mockAuthRecord,
       passwordHash: null
@@ -222,7 +222,7 @@ describe('logInWithEmail', () => {
       logInWithEmail(mockLoginParams, mockDeviceInfo)
     ).rejects.toMatchObject({
       name: 'AppError',
-      code: ErrorCode.SocialAuthOnly
+      code: ErrorCode.InvalidCredentials
     })
   })
 
@@ -294,7 +294,7 @@ describe('logInWithEmail', () => {
     expect(error).toMatchObject({ message: 'Auth table query failed' })
   })
 
-  it('throws SocialAuthOnly when auth record has undefined password hash', async () => {
+  it('throws InvalidCredentials when auth record has undefined password hash', async () => {
     mockAuthRepo.findById.mockImplementation(async () => ({
       ...mockAuthRecord,
       passwordHash: undefined
@@ -306,7 +306,7 @@ describe('logInWithEmail', () => {
 
     expect(error).toMatchObject({
       name: 'AppError',
-      code: ErrorCode.SocialAuthOnly
+      code: ErrorCode.InvalidCredentials
     })
   })
 
