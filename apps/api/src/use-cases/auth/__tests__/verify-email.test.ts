@@ -61,7 +61,7 @@ describe('verifyEmail', () => {
     }
     mockTokenRepo = {
       findByHash: mock(async () => mockTokenRecord),
-      update: mock(async () => {})
+      markAsUsed: mock(async () => true)
     } satisfies Partial<typeof tokenRepo>
     mockUser = buildUser()
     mockUserRepo = {
@@ -101,15 +101,11 @@ describe('verifyEmail', () => {
 
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-    expect(mockTokenRepo.update).toHaveBeenCalledWith(
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledWith(
       mockTokenRecord.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: expect.any(Date)
-      },
       {}
     )
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
 
     expect(mockUserRepo.update).toHaveBeenCalledWith(
       mockTokenRecord.userId,
@@ -159,16 +155,16 @@ describe('verifyEmail', () => {
     )
   })
 
-  it('sets current timestamp when marking token as used', async () => {
-    const beforeCall = Date.now()
-    await verifyEmail({ token: mockTokenString }, mockDeviceInfo)
-    const afterCall = Date.now()
+  it('throws TokenAlreadyUsed when a concurrent request used the token first', async () => {
+    mockTokenRepo.markAsUsed.mockImplementation(async () => false)
 
-    const updateCall = mockTokenRepo.update.mock.calls[0]
-    const usedAt = updateCall[1].usedAt as Date
+    const error = await verifyEmail(
+      { token: mockTokenString },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
 
-    expect(usedAt.getTime()).toBeGreaterThanOrEqual(beforeCall)
-    expect(usedAt.getTime()).toBeLessThanOrEqual(afterCall)
+    expect(error).toMatchObject({ code: ErrorCode.TokenAlreadyUsed })
+    expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
   it('throws TokenNotFound when token does not exist', async () => {
@@ -185,7 +181,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -209,7 +205,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -234,7 +230,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -257,7 +253,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -287,7 +283,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -303,12 +299,12 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).not.toHaveBeenCalled()
+    expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
   it('propagates token update errors', async () => {
-    mockTokenRepo.update.mockImplementation(async () => {
+    mockTokenRepo.markAsUsed.mockImplementation(async () => {
       throw new Error('Token update failed')
     })
 
@@ -319,7 +315,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).not.toHaveBeenCalled()
   })
 
@@ -335,7 +331,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
   })
 
@@ -355,7 +351,7 @@ describe('verifyEmail', () => {
     expect(mockTokenRepo.findByHash).toHaveBeenCalledWith(
       await hashToken(mockTokenString)
     )
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
   })
 
@@ -374,7 +370,7 @@ describe('verifyEmail', () => {
     expect(result.data).toHaveProperty('user')
     expect(result.data).toHaveProperty('accessToken')
     expect(result.data.user.email).toBe(mockUser.email)
-    expect(mockTokenRepo.update).toHaveBeenCalledTimes(1)
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledTimes(1)
     expect(mockUserRepo.update).toHaveBeenCalledTimes(1)
   })
 
@@ -445,12 +441,8 @@ describe('verifyEmail', () => {
     expect(result.data).toHaveProperty('user')
     expect(result.data).toHaveProperty('accessToken')
     expect(result.data.user.email).toBe(mockUser.email)
-    expect(mockTokenRepo.update).toHaveBeenCalledWith(
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledWith(
       mockTokenRecord.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: expect.any(Date)
-      },
       {}
     )
   })

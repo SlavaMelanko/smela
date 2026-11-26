@@ -30,7 +30,6 @@ import {
   hashToken,
   InviteKind,
   TOKEN_LENGTH,
-  TokenStatus,
   TokenType
 } from '@/security/token'
 import { MembershipStatus, Role, UserStatus } from '@/types'
@@ -88,7 +87,7 @@ describe('acceptInvite', () => {
 
     mockTokenRepo = {
       findByHash: mock(async () => mockTokenRecord),
-      update: mock(async () => {})
+      markAsUsed: mock(async () => true)
     } satisfies Partial<typeof tokenRepo>
     mockAuthRepo = {
       update: mock(async () => {})
@@ -146,12 +145,8 @@ describe('acceptInvite', () => {
     )
     expect(mockTransaction.transaction).toHaveBeenCalledTimes(1)
 
-    expect(mockTokenRepo.update).toHaveBeenCalledWith(
+    expect(mockTokenRepo.markAsUsed).toHaveBeenCalledWith(
       mockTokenRecord.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: expect.any(Date)
-      },
       {}
     )
     expect(mockAuthRepo.update).toHaveBeenCalledWith(
@@ -320,7 +315,7 @@ describe('acceptInvite', () => {
       expect(error).toMatchObject({ name: 'AppError', code })
 
       expect(mockTransaction.transaction).not.toHaveBeenCalled()
-      expect(mockTokenRepo.update).not.toHaveBeenCalled()
+      expect(mockTokenRepo.markAsUsed).not.toHaveBeenCalled()
       expect(mockAuthRepo.update).not.toHaveBeenCalled()
       expect(mockUserRepo.update).not.toHaveBeenCalled()
     })
@@ -337,7 +332,7 @@ describe('acceptInvite', () => {
       it(`throws and skips later writes when ${name} fails`, async () => {
         // Same order as writes
         const writeMocks = [
-          mockTokenRepo.update,
+          mockTokenRepo.markAsUsed,
           mockAuthRepo.update,
           mockUserRepo.update
         ]

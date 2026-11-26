@@ -1,13 +1,17 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, refreshTokenRepo, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, refreshTokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
-import { TokenStatus, TokenType } from '@/security/token'
+import { TokenType } from '@/security/token'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeams } from '../resolve-team'
-import { createAuthTokens, validateOneTimeToken } from '../tokens'
+import {
+  consumeOneTimeToken,
+  createAuthTokens,
+  validateOneTimeToken
+} from '../tokens'
 
 export interface ResetPasswordInput {
   token: string
@@ -24,15 +28,7 @@ export const resetPassword = async (
   )
 
   await db.transaction(async tx => {
-    // Mark token as used
-    await tokenRepo.update(
-      validatedToken.id,
-      {
-        status: TokenStatus.Used,
-        usedAt: new Date()
-      },
-      tx
-    )
+    await consumeOneTimeToken(validatedToken.id, tx)
 
     // Update user's password
     const passwordHash = await hashPassword(password)
