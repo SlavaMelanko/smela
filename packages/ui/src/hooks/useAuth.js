@@ -125,7 +125,9 @@ export const useLogout = () => {
     meta: {
       invalidatesQueries: authKeys.all()
     },
-    onSuccess: () => {
+    // Clear local session even if the server call fails, so a shared device
+    // never keeps the token
+    onSettled: () => {
       accessTokenStorage.remove()
 
       queryClient.removeQueries({ queryKey: authKeys.user() })
