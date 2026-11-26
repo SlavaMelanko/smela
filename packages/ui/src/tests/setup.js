@@ -12,6 +12,12 @@ import { initReactI18next } from 'react-i18next'
 globalThis.TextEncoder = TextEncoder
 globalThis.TextDecoder = TextDecoder
 
+// JSDOM lacks the Web Locks API. A single test context needs no exclusion,
+// so the lock simply runs its callback
+Object.defineProperty(navigator, 'locks', {
+  value: { request: (_name, callback) => callback() }
+})
+
 // Mock fetch globally
 globalThis.fetch = vi.fn()
 

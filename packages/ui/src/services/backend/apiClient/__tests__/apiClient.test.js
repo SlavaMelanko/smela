@@ -270,6 +270,42 @@ describe('ApiClient', () => {
       expect(mockFetch).toHaveBeenCalledTimes(3)
     })
 
+    it('should reuse a token another tab refreshed instead of refreshing again', async () => {
+      localStorage.setItem('access_token', 'stale-token')
+
+      mockFetch
+        .mockImplementationOnce(async () => {
+          // Another tab rotates the token while this request is in flight
+          localStorage.setItem('access_token', 'fresh-token')
+
+          return {
+            ok: false,
+            status: HttpStatus.UNAUTHORIZED,
+            json: vi.fn().mockResolvedValueOnce({ code: 'auth/unauthorized' })
+          }
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: vi.fn().mockResolvedValueOnce({ data: 'success' })
+        })
+
+      const result = await apiClient.get('/protected')
+
+      expect(result).toEqual({ data: 'success' })
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockFetch).toHaveBeenLastCalledWith(
+        'https://api.test.com/protected',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer fresh-token'
+          })
+        })
+      )
+
+      localStorage.clear()
+    })
+
     it('should not refresh token for auth/invalid-credentials', async () => {
       const invalidCredsError = {
         error: 'Invalid email or password',

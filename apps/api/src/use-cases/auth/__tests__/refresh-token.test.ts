@@ -23,6 +23,7 @@ import { ErrorCode } from '@/errors'
 import { verifyJwt } from '@/security/jwt'
 import { hashToken } from '@/security/token'
 import { Role, UserStatus } from '@/types'
+import { minute, nowMinus } from '@/utils/chrono'
 
 import { refreshAuthTokens } from '../refresh-token'
 
@@ -71,7 +72,8 @@ describe('refreshAuthTokens', () => {
         tokenHash === mockStoredToken.tokenHash ? mockStoredToken : undefined
       ),
       create: mock(async () => 1),
-      revokeByHash: mock(async () => true)
+      revokeByHash: mock(async () => true),
+      revokeByUserId: mock(async () => {})
     } satisfies Partial<typeof refreshTokenRepo>
     mockDb = {
       transaction: mock(
@@ -244,6 +246,49 @@ describe('refreshAuthTokens', () => {
       name: 'AppError',
       code: ErrorCode.RefreshTokenRevoked
     })
+  })
+
+  it('throws RefreshTokenRevoked when a concurrent refresh already rotated the token', async () => {
+    mockRefreshTokenRepo.revokeByHash.mockImplementation(async () => false)
+
+    const error = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ code: ErrorCode.RefreshTokenRevoked })
+  })
+
+  it('keeps other sessions when a token is replayed within the grace period', async () => {
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      revokedAt: new Date()
+    }))
+
+    const error = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ code: ErrorCode.RefreshTokenRevoked })
+    expect(mockRefreshTokenRepo.revokeByUserId).not.toHaveBeenCalled()
+  })
+
+  it('revokes all user sessions when a token is replayed after the grace period', async () => {
+    mockRefreshTokenRepo.findByHash.mockImplementation(async () => ({
+      ...mockStoredToken,
+      revokedAt: nowMinus(minute())
+    }))
+
+    const error = await refreshAuthTokens(
+      { refreshToken: mockRefreshToken },
+      mockDeviceInfo
+    ).catch((error: unknown) => error)
+
+    expect(error).toMatchObject({ code: ErrorCode.RefreshTokenRevoked })
+    expect(mockRefreshTokenRepo.revokeByUserId).toHaveBeenCalledWith(
+      mockStoredToken.userId
+    )
   })
 
   it('checks revoked status before expiration', async () => {
