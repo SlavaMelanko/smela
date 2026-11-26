@@ -299,16 +299,19 @@ describe('refreshAuthTokens', () => {
     })
   })
 
-  it('refreshes tokens for suspended user', async () => {
-    const suspendedUser = { ...mockUser, status: UserStatus.Suspended }
-    mockUserRepo.findById.mockImplementation(async () => suspendedUser)
+  it.each([UserStatus.Suspended, UserStatus.Archived])(
+    'throws InvalidRefreshToken when user is %s',
+    async status => {
+      const blockedUser = { ...mockUser, status }
+      mockUserRepo.findById.mockImplementation(async () => blockedUser)
 
-    const result = await refreshAuthTokens(
-      { refreshToken: mockRefreshToken },
-      mockDeviceInfo
-    )
-    expect(result.data.user.status).toBe(UserStatus.Suspended)
-  })
+      const input = { refreshToken: mockRefreshToken }
+      expect(refreshAuthTokens(input, mockDeviceInfo)).rejects.toMatchObject({
+        name: 'AppError',
+        code: ErrorCode.InvalidRefreshToken
+      })
+    }
+  )
 
   it('refreshes tokens for new user', async () => {
     const newUser = { ...mockUser, status: UserStatus.New }

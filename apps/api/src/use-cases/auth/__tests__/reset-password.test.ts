@@ -87,7 +87,8 @@ describe('resetPassword', () => {
       findById: mock(async () => mockUser)
     } satisfies Partial<typeof userRepo>
     mockRefreshTokenRepo = {
-      create: mock(async () => 1)
+      create: mock(async () => 1),
+      revokeByUserId: mock(async () => {})
     } satisfies Partial<typeof refreshTokenRepo>
     mockTeam = undefined
     mockTeamRepo = {
@@ -166,6 +167,12 @@ describe('resetPassword', () => {
       {}
     )
     expect(mockAuthRepo.update).toHaveBeenCalledTimes(1)
+
+    expect(mockRefreshTokenRepo.revokeByUserId).toHaveBeenCalledWith(
+      mockTokenRecord.userId,
+      undefined,
+      {}
+    )
 
     expect(mockUserRepo.findById).toHaveBeenCalledWith(mockTokenRecord.userId)
     expect(mockRefreshTokenRepo.create).toHaveBeenCalledTimes(1)

@@ -1,9 +1,9 @@
 import type { PaginationParams, SearchParams } from '@/data'
 import type { UserStatus } from '@/types'
 
-import { userRepo } from '@/data'
+import { db, refreshTokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
-import { isUser, Role } from '@/types'
+import { isNewOrActive, isUser, Role } from '@/types'
 
 const normalizeRoles = (params: SearchParams): SearchParams => {
   const filteredRoles = params.roles.filter(isUser)
@@ -51,7 +51,17 @@ export const updateUser = async (userId: string, updates: UpdateUserInput) => {
     throw new AppError(ErrorCode.NotFound, 'User not found')
   }
 
-  const updatedUser = await userRepo.update(userId, updates)
+  const isBlocked = updates.status && !isNewOrActive(updates.status)
+
+  const updatedUser = await db.transaction(async tx => {
+    const updated = await userRepo.update(userId, updates, tx)
+
+    if (isBlocked) {
+      await refreshTokenRepo.revokeByUserId(userId, undefined, tx)
+    }
+
+    return updated
+  })
 
   return { user: updatedUser }
 }

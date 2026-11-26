@@ -4,6 +4,7 @@ import { db, refreshTokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { logger } from '@/logging'
 import { hashToken } from '@/security/token'
+import { isNewOrActive } from '@/types'
 
 import { resolvePermissionList } from '../resolve-permissions'
 import { resolveUserTeams } from '../resolve-team'
@@ -69,7 +70,7 @@ export const refreshAuthTokens = async (
     resolveUserTeams(storedToken.userId)
   ])
 
-  if (!user) {
+  if (!user || !isNewOrActive(user.status)) {
     throw new AppError(ErrorCode.InvalidRefreshToken)
   }
 
