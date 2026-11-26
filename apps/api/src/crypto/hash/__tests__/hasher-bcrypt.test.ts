@@ -12,7 +12,7 @@ describe('BcryptHasher', () => {
     expect(hashedText).toBeDefined()
     expect(hashedText).not.toBe(plainText)
     expect(hashedText.length).toBeGreaterThan(50)
-    expect(hashedText.startsWith('$2b$10$')).toBe(true)
+    expect(hashedText.startsWith('$2b$12$')).toBe(true)
   })
 
   it('produces different hashes for the same string due to salt', async () => {
@@ -32,6 +32,13 @@ describe('BcryptHasher', () => {
     expect(isMatch).toBe(true)
   })
 
+  it('verifies hashes made with a lower cost', async () => {
+    const plainText = 'legacyPassword123'
+    const legacyHash = await new BcryptHasher(10).hash(plainText)
+
+    expect(await hasher.compare(plainText, legacyHash)).toBe(true)
+  })
+
   it('returns false for non-matching text', async () => {
     const plainText = 'testPassword123'
     const wrongText = 'wrongPassword456'
@@ -43,12 +50,12 @@ describe('BcryptHasher', () => {
   })
 
   it('hashes with custom salt rounds', async () => {
-    const hasher12 = new BcryptHasher(12)
+    const hasher10 = new BcryptHasher(10)
     const plainText = 'password123'
-    const hashedText = await hasher12.hash(plainText)
+    const hashedText = await hasher10.hash(plainText)
 
     expect(hashedText).toBeDefined()
     expect(hashedText).not.toBe(plainText)
-    expect(hashedText.startsWith('$2b$12$')).toBe(true)
+    expect(hashedText.startsWith('$2b$10$')).toBe(true)
   })
 })

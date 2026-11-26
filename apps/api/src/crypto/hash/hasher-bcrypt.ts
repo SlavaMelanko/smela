@@ -3,7 +3,7 @@ import type { Hasher } from './hasher'
 export class BcryptHasher implements Hasher {
   private readonly saltRounds: number
 
-  constructor(saltRounds: number = 10) {
+  constructor(saltRounds: number = 12) {
     this.saltRounds = saltRounds
   }
 
