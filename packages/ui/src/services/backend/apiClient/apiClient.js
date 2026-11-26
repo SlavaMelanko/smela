@@ -65,10 +65,11 @@ export class ApiClient {
   async #doRequest(path, options = {}) {
     return withTimeout(async signal => {
       const url = `${this.#baseUrl}${path}`
+      const token = accessTokenStorage.get()
       const config = {
         ...options,
         credentials: 'include',
-        headers: this.#prepareHeaders(options),
+        headers: this.#prepareHeaders(options, token),
         signal
       }
 
@@ -86,7 +87,7 @@ export class ApiClient {
               return this.#doRequest(path, options)
             },
             () => {
-              return this.#refreshToken()
+              return this.#refreshToken(token)
             },
             accessToken => {
               accessTokenStorage.set(accessToken)
@@ -109,13 +110,11 @@ export class ApiClient {
     }, this.#timeout)
   }
 
-  #prepareHeaders(options) {
+  #prepareHeaders(options, token) {
     const headers = {
       ...this.#defaultHeaders,
       ...options.headers
     }
-
-    const token = accessTokenStorage.get()
 
     if (token) {
       headers.Authorization = `Bearer ${token}`
@@ -124,7 +123,22 @@ export class ApiClient {
     return headers
   }
 
-  async #refreshToken() {
+  // Tabs share one refresh cookie, and the server treats a reused refresh
+  // token as theft. The lock runs one refresh at a time across tabs, and a
+  // tab that waited reuses the token another tab already stored
+  async #refreshToken(rejectedToken) {
+    return navigator.locks.request('auth-refresh', async () => {
+      const currentToken = accessTokenStorage.get()
+
+      if (currentToken && currentToken !== rejectedToken) {
+        return { accessToken: currentToken }
+      }
+
+      return this.#requestNewTokens()
+    })
+  }
+
+  async #requestNewTokens() {
     return withTimeout(async signal => {
       const url = `${this.#baseUrl}${REFRESH_TOKEN_PATH}`
       const config = {
