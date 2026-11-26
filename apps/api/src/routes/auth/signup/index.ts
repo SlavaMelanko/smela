@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { validateBody, verifyCaptcha } from '@/middleware'
+import { authRateLimiter, validateBody, verifyCaptcha } from '@/middleware'
 import { getDeviceInfo, HttpStatus, setRefreshCookie } from '@/net/http'
 import { signUpWithEmail } from '@/use-cases/auth/signup'
 
@@ -12,6 +12,7 @@ export const signupRoute = new Hono<AppContext>()
 
 signupRoute.post(
   '/signup',
+  authRateLimiter,
   validateBody(signupBodySchema),
   verifyCaptcha(),
   async c => {

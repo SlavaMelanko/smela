@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { validateBody, verifyCaptcha } from '@/middleware'
+import { authRateLimiter, validateBody, verifyCaptcha } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { requestPasswordReset } from '@/use-cases/auth/request-password-reset'
 
@@ -12,6 +12,7 @@ export const requestPasswordResetRoute = new Hono<AppContext>()
 
 requestPasswordResetRoute.post(
   '/request-password-reset',
+  authRateLimiter,
   validateBody(requestPasswordResetBodySchema),
   verifyCaptcha(),
   async c => {

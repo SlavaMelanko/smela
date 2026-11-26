@@ -8,7 +8,6 @@ import type { AppContext } from '@/context'
 
 import { notFound, onError } from '@/handlers'
 import {
-  authRateLimiter,
   authRequestSizeLimiter,
   cors,
   generalRateLimiter,
@@ -54,10 +53,11 @@ class Server {
   }
 
   private setupRoutes() {
-    this.createRouteGroup('/api/v1/auth', authPublicRoutes, [
-      authRequestSizeLimiter,
-      authRateLimiter
-    ])
+    this.createRouteGroup(
+      '/api/v1/auth',
+      authPublicRoutes,
+      authRequestSizeLimiter
+    )
     this.createRouteGroup('/api/v1/user', userRoutesAllowNew, requireUserAuth)
     this.createRouteGroup(
       '/api/v1/user/verified',
