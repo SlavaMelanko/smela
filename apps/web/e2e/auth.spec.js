@@ -666,7 +666,7 @@ test.describe('Authentication: Google OAuth', () => {
     ).toBeVisible()
   })
 
-  test('login: shows error for Google-only account using email login', async ({
+  test('login: shows invalid credentials for Google-only account using email login', async ({
     page,
     t
   }) => {
@@ -674,7 +674,7 @@ test.describe('Authentication: Google OAuth', () => {
 
     const apiPromise = waitForApiCall(page, {
       path: LOGIN_PATH,
-      status: HttpStatus.CONFLICT
+      status: HttpStatus.UNAUTHORIZED
     })
 
     await fillLoginFormAndSubmit(
@@ -689,7 +689,7 @@ test.describe('Authentication: Google OAuth', () => {
     await apiPromise
 
     await expect(
-      page.getByText(t.backend['auth/social-auth-only'])
+      page.getByText(t.backend['auth/invalid-credentials'])
     ).toBeVisible()
   })
 

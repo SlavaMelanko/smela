@@ -23,11 +23,6 @@ export const ErrorRegistry: Record<
     message: 'Current password is incorrect.',
     status: HttpStatus.UNAUTHORIZED
   },
-  [ErrorCode.SocialAuthOnly]: {
-    message:
-      'This account uses social login. Please sign in with your social provider.',
-    status: HttpStatus.CONFLICT
-  },
   [ErrorCode.Unauthorized]: {
     message: 'Unauthorized access.',
     status: HttpStatus.UNAUTHORIZED

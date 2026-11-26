@@ -67,8 +67,10 @@ Security decisions that aren't obvious from the code:
   [README.md](README.md#-jwt-secret-rotation).
 - **Token storage**: refresh and one-time tokens are stored as SHA-256 hashes
   only, so a leaked database can't be used to redeem them.
-- **Email enumeration**: auth endpoints return consistent responses whether or
-  not the account exists.
+- **Email enumeration**: login and password reset return the same response and
+  take the same time whether or not the account exists (login compares against a
+  dummy bcrypt hash on a miss). Signup still returns `EmailAlreadyInUse`;
+  CAPTCHA and the auth rate limit are the accepted mitigation.
 - **Zod strictness**: use `.strict()` on body schemas for auth, payment, and
   internal (owner/admin) routes; default strip behavior for public APIs and
   webhooks. Query and param schemas intentionally omit `.strict()`.

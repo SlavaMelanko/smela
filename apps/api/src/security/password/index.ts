@@ -13,6 +13,16 @@ export const generatePasswordHash = async (length = 32): Promise<string> => {
   return hashPassword(password)
 }
 
+let dummyHash: Promise<string> | undefined
+
+/**
+ * Hash of a random password at the real cost, created once on first use.
+ * Comparing against it makes a login for an unknown account take as long as
+ * a wrong password, so response time doesn't reveal which emails exist
+ */
+export const getDummyPasswordHash = async () =>
+  (dummyHash ??= generatePasswordHash())
+
 export const comparePasswordHashes = async (
   password: string,
   hash: string
