@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { authRateLimiter, validateBody, verifyCaptcha } from '@/middleware'
+import { validateBody, verifyCaptcha } from '@/middleware'
 import { getDeviceInfo, HttpStatus, setRefreshCookie } from '@/net/http'
 import { logInWithEmail } from '@/use-cases/auth/login'
 
@@ -12,7 +12,6 @@ export const loginRoute = new Hono<AppContext>()
 
 loginRoute.post(
   '/login',
-  authRateLimiter,
   validateBody(loginBodySchema),
   verifyCaptcha(),
   async c => {

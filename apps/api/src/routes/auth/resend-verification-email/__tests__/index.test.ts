@@ -51,7 +51,6 @@ describe('auth /resend-verification-email', () => {
       })
 
       expect(res.status).toBe(HttpStatus.ACCEPTED)
-      expect(res.headers.get('RateLimit-Limit')).toBe('1000')
 
       const data = await res.json()
       expect(data).toEqual({ success: true })

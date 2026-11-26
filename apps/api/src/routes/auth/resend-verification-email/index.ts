@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import type { AppContext } from '@/context'
 
-import { authRateLimiter, validateBody, verifyCaptcha } from '@/middleware'
+import { validateBody, verifyCaptcha } from '@/middleware'
 import { HttpStatus } from '@/net/http'
 import { resendVerificationEmail } from '@/use-cases/auth/resend-verification-email'
 
@@ -12,7 +12,6 @@ export const resendVerificationEmailRoute = new Hono<AppContext>()
 
 resendVerificationEmailRoute.post(
   '/resend-verification-email',
-  authRateLimiter,
   validateBody(resendVerificationEmailBodySchema),
   verifyCaptcha(),
   async c => {

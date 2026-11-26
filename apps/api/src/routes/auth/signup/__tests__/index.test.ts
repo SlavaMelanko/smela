@@ -97,7 +97,6 @@ describe('auth /signup', () => {
       const res = await post(app, SIGNUP_URL, validPayload)
 
       expect(res.status).toBe(HttpStatus.CREATED)
-      expect(res.headers.get('RateLimit-Limit')).toBe('1000')
 
       const data = await res.json()
       expect(data).toEqual({

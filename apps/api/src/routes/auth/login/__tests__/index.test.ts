@@ -90,7 +90,6 @@ describe('auth /login', () => {
       })
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(res.headers.get('RateLimit-Limit')).toBe('1000')
 
       const data = await res.json()
       expect(data).toEqual({
