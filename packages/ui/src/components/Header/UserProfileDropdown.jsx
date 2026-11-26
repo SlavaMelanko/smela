@@ -10,7 +10,7 @@ export const UserProfileDropdown = ({ user }) => {
 
   const handleLogOut = () => {
     logOut(undefined, {
-      onSuccess: () => {
+      onSettled: () => {
         navigate('/login')
       }
     })
