@@ -5,14 +5,14 @@ import { createRateLimiter } from './core'
 /**
  * Rate limiter for authentication endpoints.
  *
- * - Production: 5 attempts per 15 minutes
+ * - Production: 100 attempts per 15 minutes
  * - Development/Test: 1000 attempts per 15 minutes
  *
  * Use for authentication endpoints like login, signup, etc.
  */
 export const authRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: isDevOrTestEnv() ? 1_000 : 5,
+  limit: isDevOrTestEnv() ? 1_000 : 100,
   message: 'Too many authentication attempts, please try again later.',
   skip: c => {
     // Skip rate limiting for test environment if special header is present

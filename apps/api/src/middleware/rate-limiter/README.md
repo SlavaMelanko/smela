@@ -48,7 +48,7 @@ app.use(
 
 For authentication endpoints (login, registration, password reset).
 
-- **Production**: 5 attempts per 15 minutes
+- **Production**: 100 attempts per 15 minutes
 - **Development/Test**: 1000 attempts per 15 minutes
 - **Use cases**: `/api/v1/auth/login`, `/api/v1/auth/signup`,
   `/api/v1/auth/reset-password`
