@@ -1,12 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
-import type { SearchResult, User, userRepo } from '@/data'
+import type { refreshTokenRepo, SearchResult, User, userRepo } from '@/data'
 
-import { buildUser, ModuleMocker, testUuids } from '@/__tests__'
+import {
+  buildUser,
+  createTransactionMock,
+  ModuleMocker,
+  testUuids
+} from '@/__tests__'
 import { AppError, ErrorCode } from '@/errors'
 import { Role, UserStatus } from '@/types'
 
-import { getUser, searchUsers } from '../users'
+import { getUser, searchUsers, updateUser } from '../users'
 
 describe('searchUsers', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)
@@ -128,4 +133,56 @@ describe('getUser', () => {
       message: 'User not found'
     })
   })
+})
+
+describe('updateUser', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  let mockUser: User
+  let mockUserRepo: any
+  let mockRefreshTokenRepo: any
+
+  beforeEach(async () => {
+    mockUser = buildUser({ role: Role.User, status: UserStatus.Active })
+
+    mockUserRepo = {
+      findById: mock(async () => mockUser),
+      update: mock(async () => mockUser)
+    } satisfies Partial<typeof userRepo>
+    mockRefreshTokenRepo = {
+      revokeByUserId: mock(async () => {})
+    } satisfies Partial<typeof refreshTokenRepo>
+
+    await moduleMocker.mock('@/data', () => ({
+      db: createTransactionMock(),
+      userRepo: mockUserRepo,
+      refreshTokenRepo: mockRefreshTokenRepo
+    }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  it.each([UserStatus.Suspended, UserStatus.Archived])(
+    'revokes all sessions when status changes to %s',
+    async status => {
+      await updateUser(mockUser.id, { status })
+
+      expect(mockRefreshTokenRepo.revokeByUserId).toHaveBeenCalledWith(
+        mockUser.id,
+        undefined,
+        {}
+      )
+    }
+  )
+
+  it.each([{ status: UserStatus.Active }, { nickname: 'New' }])(
+    'keeps sessions for %o',
+    async updates => {
+      await updateUser(mockUser.id, updates)
+
+      expect(mockRefreshTokenRepo.revokeByUserId).not.toHaveBeenCalled()
+    }
+  )
 })

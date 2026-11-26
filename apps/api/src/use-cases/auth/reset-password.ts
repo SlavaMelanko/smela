@@ -1,6 +1,6 @@
 import type { DeviceInfo } from '@/net/http/device'
 
-import { authRepo, db, tokenRepo, userRepo } from '@/data'
+import { authRepo, db, refreshTokenRepo, tokenRepo, userRepo } from '@/data'
 import { AppError, ErrorCode } from '@/errors'
 import { hashPassword } from '@/security/password'
 import { TokenStatus, TokenType } from '@/security/token'
@@ -37,6 +37,10 @@ export const resetPassword = async (
     // Update user's password
     const passwordHash = await hashPassword(password)
     await authRepo.update(validatedToken.userId, { passwordHash }, tx)
+
+    // Sign out every existing session, since reset is how users recover
+    // from a compromised account
+    await refreshTokenRepo.revokeByUserId(validatedToken.userId, undefined, tx)
   })
 
   const user = await userRepo.findById(validatedToken.userId)
