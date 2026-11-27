@@ -29,6 +29,7 @@ import {
   UserStatus
 } from '@/types'
 
+import { resolveNickname } from '../../resolve-nickname'
 import {
   cancelMemberInvite,
   inviteMember,
@@ -241,11 +242,16 @@ describe('inviteMember', () => {
       )
     })
 
-    it('returns the pending member', async () => {
+    it('returns only the pending membership summary', async () => {
       const result = await inviteMember(mockTeam, inviteParams, USER_2)
 
-      expect(mockTeamRepo.findMember).toHaveBeenCalledWith(TEAM_1, USER_1)
-      expect(result.member?.status).toBe(MembershipStatus.Pending)
+      expect(result.member).toEqual({
+        id: expect.any(String),
+        email: inviteParams.email,
+        nickname: resolveNickname(inviteParams.email),
+        status: MembershipStatus.Pending,
+        position: inviteParams.position ?? null
+      })
     })
   })
 
@@ -283,6 +289,18 @@ describe('inviteMember', () => {
       expect(mockUserRepo.create).not.toHaveBeenCalled()
       expect(mockAuthRepoCreate).not.toHaveBeenCalled()
       expect(mockRbacGrant).not.toHaveBeenCalled()
+    })
+
+    it('does not expose account details in the response', async () => {
+      const result = await inviteMember(mockTeam, inviteParams, USER_2)
+
+      expect(result.member).toEqual({
+        id: expect.any(String),
+        email: inviteParams.email,
+        nickname: resolveNickname(inviteParams.email),
+        status: MembershipStatus.Pending,
+        position: inviteParams.position ?? null
+      })
     })
 
     it('emails an in-app link without a token', async () => {

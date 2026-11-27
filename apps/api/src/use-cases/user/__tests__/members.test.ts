@@ -12,6 +12,7 @@ import { ErrorCode } from '@/errors'
 import { Action, MembershipStatus, Resource, Role } from '@/types'
 
 import {
+  getTeamMember,
   getTeamMemberPermissions,
   removeTeamMember,
   updateTeamMemberPermissions
@@ -33,6 +34,48 @@ const teamsWithoutProtectedCreator = [
     team: buildTeam({ creator: { id: USER_3, nickname: 'Carol' } })
   }
 ]
+
+describe('getTeamMember', () => {
+  const moduleMocker = new ModuleMocker(import.meta.url)
+
+  const pending = {
+    ...buildTeamMember(USER_1),
+    status: MembershipStatus.Pending,
+    firstName: 'Alice',
+    lastName: 'Smith',
+    lastActive: new Date()
+  }
+
+  beforeEach(async () => {
+    await moduleMocker.mock('@/data', () => ({ teamRepo: {}, userRepo: {} }))
+  })
+
+  afterEach(async () => {
+    await moduleMocker.clear()
+  })
+
+  it('hides profile and activity of a pending member from users', () => {
+    const { member } = getTeamMember(pending, Role.User)
+
+    expect(member).toMatchObject({
+      nickname: 'alice',
+      firstName: null,
+      lastName: null,
+      lastActive: null,
+      email: pending.email
+    })
+  })
+
+  it.each([Role.Admin, Role.Owner])('shows a pending member to %s', role => {
+    expect(getTeamMember(pending, role).member).toEqual(pending)
+  })
+
+  it('shows an active member to users', () => {
+    const active = { ...pending, status: MembershipStatus.Active }
+
+    expect(getTeamMember(active, Role.User).member).toEqual(active)
+  })
+})
 
 describe('removeTeamMember', () => {
   const moduleMocker = new ModuleMocker(import.meta.url)

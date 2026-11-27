@@ -73,6 +73,7 @@ describe('user /teams/:teamId/members/:memberId', () => {
     mockCancelMemberInvite = mock(async () => ({ success: true }))
 
     await moduleMocker.mock('@/use-cases/user', () => ({
+      getTeamMember: (member: unknown) => ({ member }),
       updateTeamMember: mockUpdateTeamMember,
       removeTeamMember: mockRemoveTeamMember,
       resendMemberInvite: mockResendMemberInvite,
@@ -173,6 +174,36 @@ describe('user /teams/:teamId/members/:memberId', () => {
         selfBody
       )
     })
+
+    it('forbids team manager from updating another user member fields', async () => {
+      const res = await patch(app, MEMBER_URL, { member: { firstName: 'Eve' } })
+
+      expect(res.status).toBe(HttpStatus.FORBIDDEN)
+      expect(mockUpdateTeamMember).not.toHaveBeenCalled()
+    })
+
+    it.each([Role.Admin, Role.Owner])(
+      'allows %s to update another user member fields',
+      async role => {
+        app = createTestApp('/api/v1/user/verified', teamsRoute, [
+          withClaims({
+            id: testUuids.USER_1,
+            role,
+            permissions: [Permission.ManageTeams]
+          })
+        ])
+        const adminBody = { member: { firstName: 'Eve' } }
+
+        const res = await patch(app, MEMBER_URL, adminBody)
+
+        expect(res.status).toBe(HttpStatus.OK)
+        expect(mockUpdateTeamMember).toHaveBeenCalledWith(
+          TEST_TEAM_ID,
+          testUuids.USER_2,
+          adminBody
+        )
+      }
+    )
 
     it('forbids self-update of membership fields without manage permission', async () => {
       mockTeamPermissions.mockImplementation(async () => [Permission.ViewTeams])

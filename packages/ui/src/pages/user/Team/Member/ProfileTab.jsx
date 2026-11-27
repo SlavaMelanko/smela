@@ -18,7 +18,7 @@ export const ProfileTab = ({ team, member, canManageUsers = false }) => {
       update={update}
       isUpdating={isUpdating}
       formFields={{ [FieldName.STATUS]: false }}
-      // Allow editing own profile regardless of team permissions
+      // Only the user can edit their own profile, team managers cannot
       canManageUsers={canManageUsers}
     />
   )

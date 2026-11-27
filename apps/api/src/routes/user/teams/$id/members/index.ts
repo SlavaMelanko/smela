@@ -18,8 +18,9 @@ teamsMembersRoute.get(
   requireTeamAccess(Permission.ViewTeams),
   async c => {
     const { teamId } = c.req.valid('param')
+    const { role } = c.get('user')
 
-    const result = await getTeamMembers(teamId)
+    const result = await getTeamMembers(teamId, role)
 
     return c.json(result, HttpStatus.OK)
   }

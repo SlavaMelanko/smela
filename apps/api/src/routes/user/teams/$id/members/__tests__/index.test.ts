@@ -81,7 +81,7 @@ describe('user /teams/:teamId/members', () => {
       const res = await get(app, MEMBERS_URL)
 
       expect(res.status).toBe(HttpStatus.OK)
-      expect(mockGetTeamMembers).toHaveBeenCalledWith(TEST_TEAM_ID)
+      expect(mockGetTeamMembers).toHaveBeenCalledWith(TEST_TEAM_ID, Role.User)
 
       const data = await res.json()
       expect(data.members).toEqual(mockMembers)

@@ -72,7 +72,7 @@ export const TeamMemberPage = () => {
           <ProfileTab
             member={member}
             team={myTeam}
-            canManageUsers={canManageTeams || isOwnProfile}
+            canManageUsers={isOwnProfile}
           />
         </TabsContent>
         {hasMembership && canViewTeams && (
