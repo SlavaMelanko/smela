@@ -188,10 +188,12 @@ export const inviteMember = async (
   sendInviteEmail(user, inviter, team, token)
 
   // Minimal on purpose. An existing account never consented to share its
-  // name or activity with the inviter
+  // name or activity with the inviter. The id lets the client address the member
   return {
     member: {
+      id: user.id,
       email: user.email,
+      nickname: resolveNickname(user.email),
       status: MembershipStatus.Pending,
       position: member.position ?? null
     }
