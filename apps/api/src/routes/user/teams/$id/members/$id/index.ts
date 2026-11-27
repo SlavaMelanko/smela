@@ -5,9 +5,10 @@ import type { AppContext } from '@/context'
 import { AppError, ErrorCode } from '@/errors'
 import { requireTeamAccess, validateBody, validateParams } from '@/middleware'
 import { HttpStatus } from '@/net/http'
-import { Permission } from '@/types'
+import { isAdmin, Permission } from '@/types'
 import {
   cancelMemberInvite,
+  getTeamMember,
   removeTeamMember,
   resendMemberInvite,
   updateTeamMember
@@ -26,8 +27,9 @@ teamsMemberByIdRoute.get(
   requireTeamAccess(Permission.ViewTeams),
   async c => {
     const targetMember = c.get('targetMember')!
+    const { role } = c.get('user')
 
-    return c.json({ member: targetMember }, HttpStatus.OK)
+    return c.json(getTeamMember(targetMember, role), HttpStatus.OK)
   }
 )
 
@@ -39,7 +41,7 @@ teamsMemberByIdRoute.patch(
   async c => {
     const { teamId, memberId } = c.req.valid('param')
     const body = c.req.valid('json')
-    const { id: currentUserId } = c.get('user')
+    const { id: currentUserId, role } = c.get('user')
 
     const isSelf = currentUserId === memberId
     const canManage =
@@ -47,6 +49,11 @@ teamsMemberByIdRoute.patch(
 
     // Prevent self-updating users from changing membership fields (e.g. position)
     if (isSelf && !canManage && body.membership) {
+      throw new AppError(ErrorCode.Forbidden)
+    }
+
+    // Member fields live on the global user row, so team managers must not touch them
+    if (body.member && !isSelf && !isAdmin(role)) {
       throw new AppError(ErrorCode.Forbidden)
     }
 

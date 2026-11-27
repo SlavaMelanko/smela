@@ -6,6 +6,8 @@ import { AppError, ErrorCode } from '@/errors'
 import { getMemberBasePermissions, isAdmin, MembershipStatus } from '@/types'
 import { resolveMembershipPermissionMap } from '@/use-cases/resolve-permissions'
 
+import { resolveNickname } from '../resolve-nickname'
+
 // Platform admins bypass creator protection. Other members can't change the active creator
 const isProtectedCreator = (
   team: TeamWithMemberCount,
@@ -16,11 +18,32 @@ const isProtectedCreator = (
   member.status === MembershipStatus.Active &&
   member.id === team.creator?.id
 
-export const getTeamMembers = async (teamId: string) => {
+// A pending invitee never accepted, so an existing account's profile and
+// activity stay private. Same placeholder as a freshly invited account.
+// Platform admins see everything
+const maskPendingMember = (
+  member: TeamMemberDetails,
+  role: Role
+): TeamMemberDetails =>
+  isAdmin(role) || member.status !== MembershipStatus.Pending
+    ? member
+    : {
+        ...member,
+        nickname: resolveNickname(member.email),
+        firstName: null,
+        lastName: null,
+        lastActive: null
+      }
+
+export const getTeamMembers = async (teamId: string, role: Role) => {
   const members = await teamRepo.findMembers(teamId)
 
-  return { members }
+  return { members: members.map(member => maskPendingMember(member, role)) }
 }
+
+export const getTeamMember = (member: TeamMemberDetails, role: Role) => ({
+  member: maskPendingMember(member, role)
+})
 
 export interface UpdateTeamMemberInput {
   membership?: {
