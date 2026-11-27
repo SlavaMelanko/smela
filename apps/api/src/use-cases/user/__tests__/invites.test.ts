@@ -29,6 +29,7 @@ import {
   UserStatus
 } from '@/types'
 
+import { resolveNickname } from '../../resolve-nickname'
 import {
   cancelMemberInvite,
   inviteMember,
@@ -245,7 +246,9 @@ describe('inviteMember', () => {
       const result = await inviteMember(mockTeam, inviteParams, USER_2)
 
       expect(result.member).toEqual({
+        id: expect.any(String),
         email: inviteParams.email,
+        nickname: resolveNickname(inviteParams.email),
         status: MembershipStatus.Pending,
         position: inviteParams.position ?? null
       })
@@ -292,7 +295,9 @@ describe('inviteMember', () => {
       const result = await inviteMember(mockTeam, inviteParams, USER_2)
 
       expect(result.member).toEqual({
+        id: expect.any(String),
         email: inviteParams.email,
+        nickname: resolveNickname(inviteParams.email),
         status: MembershipStatus.Pending,
         position: inviteParams.position ?? null
       })
