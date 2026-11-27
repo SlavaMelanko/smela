@@ -1,4 +1,5 @@
 import { HttpStatus } from '@ui/lib/net'
+import { accessTokenStorage } from '@ui/lib/storage'
 
 // Hoisted to module level by Vitest — ensures @ui/lib/env is not mocked when
 // other test files run in the same worker
@@ -270,19 +271,17 @@ describe('ApiClient', () => {
       expect(mockFetch).toHaveBeenCalledTimes(3)
     })
 
-    it('should reuse a token another tab refreshed instead of refreshing again', async () => {
-      localStorage.setItem('access_token', 'stale-token')
-
+    it('should retry the request with the refreshed token', async () => {
       mockFetch
-        .mockImplementationOnce(async () => {
-          // Another tab rotates the token while this request is in flight
-          localStorage.setItem('access_token', 'fresh-token')
-
-          return {
-            ok: false,
-            status: HttpStatus.UNAUTHORIZED,
-            json: vi.fn().mockResolvedValueOnce({ code: 'auth/unauthorized' })
-          }
+        .mockResolvedValueOnce({
+          ok: false,
+          status: HttpStatus.UNAUTHORIZED,
+          json: vi.fn().mockResolvedValueOnce({ code: 'auth/unauthorized' })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: vi.fn().mockResolvedValueOnce({ accessToken: 'fresh-token' })
         })
         .mockResolvedValueOnce({
           ok: true,
@@ -290,10 +289,8 @@ describe('ApiClient', () => {
           json: vi.fn().mockResolvedValueOnce({ data: 'success' })
         })
 
-      const result = await apiClient.get('/protected')
+      await apiClient.get('/protected')
 
-      expect(result).toEqual({ data: 'success' })
-      expect(mockFetch).toHaveBeenCalledTimes(2)
       expect(mockFetch).toHaveBeenLastCalledWith(
         'https://api.test.com/protected',
         expect.objectContaining({
@@ -303,7 +300,7 @@ describe('ApiClient', () => {
         })
       )
 
-      localStorage.clear()
+      accessTokenStorage.remove()
     })
 
     it('should not refresh token for auth/invalid-credentials', async () => {

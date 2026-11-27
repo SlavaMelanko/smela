@@ -18,7 +18,7 @@ export const authKeys = {
   invitation: token => [...authKeys.all(), 'invitation', token]
 }
 
-// The access token lives in storage only, so it never reaches the query cache
+// The access token lives in memory only, so it never reaches the query cache
 const cacheAuthResponse = (queryClient, data) => {
   const { accessToken, ...session } = data
 
@@ -34,13 +34,24 @@ const cacheAuthResponse = (queryClient, data) => {
   }
 }
 
-export const useCurrentUser = (options = {}) => {
-  const hasAccessToken = !!accessTokenStorage.get()
+// The access token is lost on page reload, so restore it from the refresh
+// cookie first. A visitor without a session resolves to null, not an error
+const fetchCurrentUser = async () => {
+  if (!accessTokenStorage.get()) {
+    try {
+      await authApi.refreshToken()
+    } catch {
+      return null
+    }
+  }
 
+  return userApi.getCurrentUser()
+}
+
+export const useCurrentUser = (options = {}) => {
   const query = useQuery({
     queryKey: authKeys.user(),
-    queryFn: userApi.getCurrentUser,
-    enabled: hasAccessToken,
+    queryFn: fetchCurrentUser,
     ...options
   })
 
@@ -49,11 +60,11 @@ export const useCurrentUser = (options = {}) => {
   const teamPermissions = query.data?.team?.permissions ?? []
 
   return {
-    isPending: hasAccessToken ? query.isPending : false,
+    isPending: query.isPending,
     isFetching: query.isFetching,
-    isError: hasAccessToken ? query.isError : false,
+    isError: query.isError,
     error: query.error,
-    isSuccess: hasAccessToken ? query.isSuccess : false,
+    isSuccess: query.isSuccess,
     user: query.data?.user ?? null,
     team: query.data?.team ?? null,
     teams: query.data?.teams ?? [],

@@ -87,11 +87,9 @@ export class ApiClient {
               return this.#doRequest(path, options)
             },
             () => {
-              return this.#refreshToken(token)
+              return this.refreshSession()
             },
-            accessToken => {
-              accessTokenStorage.set(accessToken)
-            },
+            null,
             () => {
               accessTokenStorage.remove()
             }
@@ -124,17 +122,15 @@ export class ApiClient {
   }
 
   // Tabs share one refresh cookie, and the server treats a reused refresh
-  // token as theft. The lock runs one refresh at a time across tabs, and a
-  // tab that waited reuses the token another tab already stored
-  async #refreshToken(rejectedToken) {
+  // token as theft. The lock runs one refresh at a time across tabs, so each
+  // tab sends the cookie the previous tab just rotated
+  refreshSession() {
     return navigator.locks.request('auth-refresh', async () => {
-      const currentToken = accessTokenStorage.get()
+      const data = await this.#requestNewTokens()
 
-      if (currentToken && currentToken !== rejectedToken) {
-        return { accessToken: currentToken }
-      }
+      accessTokenStorage.set(data.accessToken)
 
-      return this.#requestNewTokens()
+      return data
     })
   }
 
